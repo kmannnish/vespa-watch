@@ -5,4 +5,8 @@ color: black
 fa-icon: user-friends
 ---
 
-## Partners 
+## Ghent university
+
+## Research Institute for Nature and Forest (INBO)
+
+## ... 
