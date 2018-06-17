@@ -1,9 +1,4 @@
-remote_theme: "t413/SinglePaged"
+remote_theme: "mmistakes/so-simple-theme"
 title: "Vespa-Watch"
 description: "Monitoring of Vespa velutina"
-
-### template colors, used site-wide via css ###
-colors:
-  black:     '#111111'
-  white:     '#f8f8f8'
-  yellow:    '#fab125' 
+logo: "/images/logo_vespa.jpg"
