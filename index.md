@@ -5,8 +5,6 @@ color: black
 style: center
 ---
 
-# Vespa watch project
-
 De Aziatische hoornaar (*Vespa velutina* ssp. *nigrithorax*) is een invasieve wespensoort afkomstig uit China. In 2004 werd de soort voor het eerst gesignaleerd in Zuidwest-Frankrijk (departement Lot-et-Garonne). Sindsdien verspreidde de exoot zich in snel tempo over buurlanden Spanje (en Portugal), Italië, Zwitserland en Duitsland. Anno 2015 werden ook het eerste nesten in België aangetroffen.
 
 De Aziatische hoornaar jaagt op middelgrote insecten zoals bijen, muggen en vliegen. Vooral voor de imkerij vormt de exoot een reële bedreiging. De hoornaars vallen in legerformatie een honingbij volk aan tot er vaak weinig van overblijft. Naast de imkerij veroorzaakt de komst van de Aziatische hoornaar ook een verstoring in het natuurlijk ecosysteem. Er blijft minder voedsel over voor nuttige opruimers zoals de inheemse Europese hoornaar en wespen.
