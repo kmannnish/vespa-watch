@@ -11,4 +11,4 @@ De Aziatische hoornaar is schadelijke voor de biodiversiteit en de imkerij, want
 
 Al te vaak wordt de Aziatische hoornaar verward met de Europese hoornaar of andere insecten zoals de Middelste wesp, bijen en hommels of de Stadsreus (een zweefvlieg). Via dit portaal wil Vespa-Watch tegemoet komen aan de herkenning van Aziatische hoornaars in Vlaanderen. Bovendien kan je ook een melding doen als je denkt een Aziatische hoornaar gespot te hebben. Zo helpt u mee aan het in kaart brengen van de Aziatische hoornaar in Vlaanderen.
 
-Deze versie van de website is tijdelijk. In 2019 volgt een uitbreiding op deze versie met ***real time* monitoring**, een brede uiteenzetting over de ecologie van de Aziatische hoornaar en beheeracties voor de imkerij en bestrijding instanties (zoals de brandweer).
+Deze versie van de website is tijdelijk. In 2019 volgt een uitbreiding op deze versie met ***real time* monitoring**, een brede uiteenzetting over de **ecologie** van de Aziatische hoornaar en **beheeracties** voor de imkerij en bestrijding instanties (zoals de brandweer).
