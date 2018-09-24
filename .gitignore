@@ -102,3 +102,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Vespa-watch specifics 
+djangoproject/djangoproject/settings/settings_local.py
+djangoproject/.idea/*
