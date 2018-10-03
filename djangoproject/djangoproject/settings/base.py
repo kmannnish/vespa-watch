@@ -65,6 +65,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django_settings_export.settings_export'
             ],
         },
     },
@@ -108,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Brussels'
 
 USE_I18N = True
 
@@ -123,3 +124,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 VESPAWATCH_PROJECT_ID = 22865  # Vespa-Watch project ID @ iNaturalist
+
+WEBSITE_NAME = "Vespa-Watch"
+
+SETTINGS_EXPORT = [
+    'WEBSITE_NAME',
+]
