@@ -13,6 +13,10 @@ class PictureInline(admin.TabularInline):
 
 @admin.register(Observation)
 class ObservationAdmin(admin.ModelAdmin):
+    list_display = ('species', 'inaturalist_id', 'observation_time', 'latitude', 'longitude')
+
+    list_filter = ('species', )
+
     inlines = [
         PictureInline,
     ]
