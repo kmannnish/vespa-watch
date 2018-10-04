@@ -1,11 +1,14 @@
 {% extends 'vespawatch/base.html' %}
 
 {% load i18n %}
+{% load page_fragments %}
 
 {% block content %}
     <div class="row">
         <div class="col">
             <h1>{% trans "Hello, world!" %}</h1>
+
+            {% get_page_fragment 'welcome' %}
         </div>
     </div>
 {% endblock %}

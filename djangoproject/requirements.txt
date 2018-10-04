@@ -2,8 +2,10 @@ certifi==2018.8.24
 chardet==3.0.4
 dateparser==0.7.0
 Django==2.1.1
+django-markdownx==2.0.24
 django-settings-export==1.2.1
 idna==2.7
+Markdown==3.0.1
 Pillow==5.2.0
 psycopg2-binary==2.7.5
 python-dateutil==2.7.3

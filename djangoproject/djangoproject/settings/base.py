@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
+from django.utils.translation import gettext_lazy as _
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -31,12 +33,20 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # From Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # From others
+    'markdownx',
+
+    # Local helpers
+    'page_fragments',
+
 
     'vespawatch'
 ]
@@ -49,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware'
 ]
 
 ROOT_URLCONF = 'djangoproject.urls'
@@ -117,6 +128,16 @@ USE_L10N = True
 
 USE_TZ = True
 
+LANGUAGES = [
+    ('nl', _('Dutch')),
+    ('en', _('English')),
+]
+
+LANGUAGES_AVAILABLE_IN_SELECTOR = [
+    ('nl', _('Dutch')),
+    ('en', _('English')),
+]
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
@@ -129,4 +150,8 @@ WEBSITE_NAME = "Vespa-Watch"
 
 SETTINGS_EXPORT = [
     'WEBSITE_NAME',
+    'LANGUAGES',
+    'LANGUAGES_AVAILABLE_IN_SELECTOR',
 ]
+
+PAGE_FRAGMENTS_FALLBACK_LANGUAGE = 'nl'
