@@ -34,23 +34,27 @@ zijn verre van kieskeurig als het aankomt op het zoeken van een geschikte nestpl
 als vlieggat bevinden zich aan de zijkant van het nest. Dit in tegenstelling tot de Europese hoornaar die haar vlieggat 
 aan de onderkant van het nest maakt.
 
-<figure style="width: 300px" class="align-center">
+<figure style="width: 450px">
   <img src="{{ './images/20180820_foto_primair_nest_Waregem.JPG' | absolute_url }}" alt="">
   <figcaption>Primair nest Waregem.</figcaption>
 </figure>
-<figure style="width: 300px" class="align-center">
+
+<figure style="width: 450px">
   <img src="{{ './images/20180913_foto_secundair_nest_Gits_Jonas_Lampens.jpg' | absolute_url }}" alt="">
   <figcaption>Secundair nest.</figcaption>
 </figure>
-<figure style="width: 300px" class="align-center">
+
+<figure style="width: 450px">
   <img src="{{ './images/20180710_foto_voorjaarsnest_Boezinge_Warre.jpg' | absolute_url }}" alt="">
   <figcaption>Voorjaarsnest Boezinge.</figcaption>
 </figure>
-<figure style="width: 300px" class="align-center">
+
+<figure style="width: 450px">
   <img src="{{ './images/20180706_Foto_voorjaarsnest_Roeselare.jpg' | absolute_url }}" alt="">
   <figcaption>Voorjaarsnest Roeselare.</figcaption>
 </figure> 
-<figure style="width: 300px" class="align-center">
+
+<figure style="width: 450px" class="align-center">
   <img src="{{ './images/20180810_foto_najaarsnest_Zonnebeke.jpg' | absolute_url }}" alt="">
   <figcaption>Najaarsnest Zonnebeke.</figcaption>
 </figure> 
@@ -74,7 +78,7 @@ Bovendien kunnen ze soms verward worden met maretak of vogelnesten.
   <figcaption>Aziatische hoornaar.</figcaption>
 </figure> 
 
-<br>Aziatische hoornaars jagen op honingbijen aan de vliegopening van een bijenkast. Ze hangen als een helikopter stil in de lucht en wachten tot een honingbij komt aanvliegen, die ze grijpt met enig gestuntel. Vervolgens vliegt de hoornaar iets verderop om haar prooi te ontleden. Ze behoudt gewoonlijk het borststuk dat wordt meegenomen naar het nest als voedsel voor de nakomelingen.<br><br><br><br><br><br><br><br>
+<br>Aziatische hoornaars jagen op honingbijen aan de vliegopening van een bijenkast. Ze hangen als een helikopter stil in de lucht en wachten tot een honingbij komt aanvliegen, die ze grijpt met enig gestuntel. Vervolgens vliegt de hoornaar iets verderop om haar prooi te ontleden. Ze behoudt gewoonlijk het borststuk dat wordt meegenomen naar het nest als voedsel voor de nakomelingen.<br><br><br><br><br><br><br><br><br>
 
 <figure style="width: 500px" class="align-right">
   <img src="{{ '/images/Europese_hoornaar_foraging_Hans De Blauw.jpg' | absolute_url }}" alt="">
