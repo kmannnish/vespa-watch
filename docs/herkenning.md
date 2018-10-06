@@ -72,8 +72,8 @@ Bovendien kunnen ze soms verward worden met maretak of vogelnesten.
 Aziatische hoornaars jagen op honingbijen aan de vliegopening van een bijenkast. Ze hangen als een helikopter stil in de lucht en wachten tot een honingbij komt aanvliegen, die ze grijpt met enig gestuntel. Vervolgens vliegt de hoornaar iets verderop om haar prooi te ontleden. Ze behoudt gewoonlijk het borststuk dat wordt meegenomen naar het nest als voedsel voor de nakomelingen. De Europese hoornaar heeft een gelijkaardig gedrag. Enig verschil is te onderscheiden waar de Europese hoornaar zelden stil in de lucht blijft hangen voor de bijenkast.
 
 <figure class="align-center">
-  <img src="{{ './images/Aziatische_hoornaar_foraging_HBV.JPG' | absolute_url }}" alt="">
-  <img src="{{ './images/Europese_hoornaar_foraging_Hans De Blauw.jpg' | absolute_url }}" alt="">
+  <img src="{{ './images/Aziatische_hoornaar_foraging_HBV.JPG' | absolute_url }}" alt="Aziatische hoornaar" width="300">
+  <img src="{{ './images/Europese_hoornaar_foraging_Hans De Blauw.jpg' | absolute_url }}" alt="Europese hoornaar" width="300">
   <figcaption>Aziatische hoornaar versus Europese hoornaar.</figcaption>
 </figure> 
 
