@@ -80,7 +80,7 @@ Aziatische hoornaars jagen op honingbijen aan de vliegopening van een bijenkast.
   <figcaption>Europese hoornaar.</figcaption>
 </figure> 
 
-<p>Als een nest in de buurt is dan tref je in het najaar geregeld hoornaars aan op bloeiende Klimop en Sneeuwbes (*Symphoricarpos*). De nectar die de hoornaar drinkt dient als brandstof voor de vele kilometers die ze dagelijks aflegt.</p>
+<p>Als een nest in de buurt is dan tref je in het najaar geregeld hoornaars aan op bloeiende Klimop en Sneeuwbes ( *Symphoricarpos* ). De nectar die de hoornaar drinkt dient als brandstof voor de vele kilometers die ze dagelijks aflegt.</p>
 
 <figure style="width: 300px" class="align-center">
   <img src="{{ './images/20180922_VespaVelutina_klimop_HoneyBeeValley.JPG' | absolute_url }}" alt="">
