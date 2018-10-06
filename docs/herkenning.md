@@ -80,15 +80,15 @@ Bovendien kunnen ze soms verward worden met maretak of vogelnesten.
   <img src="{{ '/images/Europese_hoornaar_foraging_Hans De Blauw.jpg' | absolute_url }}" alt="">
   <figcaption>Europese hoornaar.</figcaption>
 </figure> 
-De Europese hoornaar heeft een gelijkaardig gedrag. Enig verschil is te onderscheiden waar de Europese hoornaar zelden stil in de lucht blijft hangen voor de bijenkast.<br><br><br><br><br><br><br><br>
+De Europese hoornaar heeft een gelijkaardig gedrag. Enig verschil is te onderscheiden waar de Europese hoornaar zelden stil in de lucht blijft hangen voor de bijenkast.<br><br><br><br><br><br><br><br><br>
 
 <p>Als een nest in de buurt is dan tref je in het najaar geregeld hoornaars aan op bloeiende Klimop en Sneeuwbes ( *Symphoricarpos* ). De nectar die de hoornaar drinkt dient als brandstof voor de vele kilometers die ze dagelijks aflegt.</p>
 
-<figure style="width: 300px" class="align-left">
+<figure style="width: 450px" class="align-left">
   <img src="{{ './images/20180922_VespaVelutina_klimop_HoneyBeeValley.JPG' | absolute_url }}" alt="">
   <figcaption>Klimop.</figcaption>
 </figure>
-<figure style="width: 300px" class="align-right">
+<figure style="width: 450px" class="align-right">
   <img src="{{ './images/20180922_VespaVelutina_symphoricarpos_HoneyBeeValley.JPG' | absolute_url }}" alt="">
   <figcaption>Sneeuwbes.</figcaption>
 </figure> 
