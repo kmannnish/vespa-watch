@@ -11,11 +11,11 @@ De Aziatische hoornaar, wetenschappelijke naam *Vespa velutina nigrithorax*, is 
 
 De Aziatische hoornaar is schadelijke voor de biodiversiteit en de imkerij, want ze jaagt massaal op kleinere insecten zoals bijen, wespen en vliegen. De hoornaars bouwen grote nesten waarin gemiddeld 5000 nakomelingen worden grootgebracht. Daarvoor is een grote hoeveelheid voedsel nodig en blijft er minder over voor inheemse, nuttige rovers zoals de Europese hoornaar en libellen. Uit wetenschappelijk onderzoek blijkt dat het dieet van de Aziatische hoornaar voor 34% uit honingbijen bestaat in landelijk gebied (Villemant et al., 2011). In stedelijk gebied loopt dit percentage op tot 66%. De hoornaars jagen op honingbijen aan de vliegopening van bijenkasten.
 
-<figure style="width: 300px" class="align-left">
+<figure style="width: 300px" class="align-center">
   <img src="{{ './images/Aziatische_hoornaar_foraging_HBV.JPG' | absolute_url }}" alt="">
   <figcaption>Aziatische hoornaar.</figcaption>
 </figure>
-<figure style="width: 300px" class="align-right">
+<figure style="width: 300px" class="align-center">
   <img src="{{ './images/Europese_hoornaar_foraging_Hans De Blauw.jpg' | absolute_url }}" alt="">
   <figcaption>Europese hoornaar.</figcaption>
 </figure>
