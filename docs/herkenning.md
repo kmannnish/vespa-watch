@@ -34,24 +34,26 @@ zijn verre van kieskeurig als het aankomt op het zoeken van een geschikte nestpl
 als vlieggat bevinden zich aan de zijkant van het nest. Dit in tegenstelling tot de Europese hoornaar die haar vlieggat 
 aan de onderkant van het nest maakt.
 
-<figure style="width: 450px">
-  <img src="{{ './images/20180820_foto_primair_nest_Waregem.JPG' | absolute_url }}" alt="">
-  <img src="{{ './images/20180913_foto_secundair_nest_Gits_Jonas_Lampens.jpg' | absolute_url }}" alt="">
-  <figcaption>Primair nest Waregem en secundair nest.</figcaption>
+<figure style="width: 450px;display:inline-block">
+  <img src="{{ './images/20180820_foto_primair_nest_Waregem.JPG' | absolute_url }}" alt="primair_nest_Waregem">
+  <figcaption>Primair nest Waregem.</figcaption>
+</figure>
+<figure style="width: 450px;display:inline-block">
+  <img src="{{ './images/20180913_foto_secundair_nest_Gits_Jonas_Lampens.jpg' | absolute_url }}" alt="secundair_nest_Gits_Jonas_Lampens">
+  <figcaption>Secundair nest Gist.</figcaption>
 </figure>
 
-<figure style="width: 450px">
-  <img src="{{ './images/20180710_foto_voorjaarsnest_Boezinge_Warre.jpg' | absolute_url }}" alt="">
+<figure style="width: 450px;display:inline-block">
+  <img src="{{ './images/20180710_foto_voorjaarsnest_Boezinge_Warre.jpg' | absolute_url }}" alt="voorjaarsnest_Boezinge_Warre">
   <figcaption>Voorjaarsnest Boezinge.</figcaption>
 </figure>
-
-<figure style="width: 450px">
-  <img src="{{ './images/20180706_Foto_voorjaarsnest_Roeselare.jpg' | absolute_url }}" alt="">
+<figure style="width: 450px;display:inline-block">
+  <img src="{{ './images/20180706_Foto_voorjaarsnest_Roeselare.jpg' | absolute_url }}" alt="voorjaarsnest_Roeselare">
   <figcaption>Voorjaarsnest Roeselare.</figcaption>
 </figure> 
 
 <figure style="width: 450px" class="align-center">
-  <img src="{{ './images/20180810_foto_najaarsnest_Zonnebeke.jpg' | absolute_url }}" alt="">
+  <img src="{{ './images/20180810_foto_najaarsnest_Zonnebeke.jpg' | absolute_url }}" alt="najaarsnest_Zonnebeke">
   <figcaption>Najaarsnest Zonnebeke.</figcaption>
 </figure> 
 
