@@ -34,7 +34,7 @@ zijn verre van kieskeurig als het aankomt op het zoeken van een geschikte nestpl
 als vlieggat bevinden zich aan de zijkant van het nest. Dit in tegenstelling tot de Europese hoornaar die haar vlieggat 
 aan de onderkant van het nest maakt.
 
-<div>
+<p>
 <figure style="width: 300px" class="align-left">
 <img src="{{ './images/20180820_foto_primair_nest_Waregem.JPG' | absolute_url }}" alt="">
 <figcaption>Primair nest Waregem.</figcaption>
@@ -43,9 +43,9 @@ aan de onderkant van het nest maakt.
 <img src="{{ './images/20180913_foto_secundair_nest_Gits_Jonas_Lampens.jpg' | absolute_url }}" alt="">
 <figcaption>Secundair nest.</figcaption>
 </figure>
-</div>
+</p>
 
-<div>
+<p>
 <figure style="width: 300px" class="align-left">
   <img src="{{ './images/20180710_foto_voorjaarsnest_Boezinge_Warre.jpg' | absolute_url }}" alt="">
   <figcaption>Voorjaarsnest Boezinge.</figcaption>
@@ -54,14 +54,14 @@ aan de onderkant van het nest maakt.
   <img src="{{ './images/20180706_Foto_voorjaarsnest_Roeselare.jpg' | absolute_url }}" alt="">
   <figcaption>Voorjaarsnest Roeselare.</figcaption>
 </figure> 
-</div>
+</p>
 
-<div>
+<p>
 <figure style="width: 300px" class="align-right">
   <img src="{{ './images/20180810_foto_najaarsnest_Zonnebeke.jpg' | absolute_url }}" alt="">
   <figcaption>Najaarsnest Zonnebeke.</figcaption>
 </figure> 
-</div>
+</p>
 
 
 > Tip: als je een Aziatische hoornaar ziet in de maanden april-juni, kijk dan uit naar de voorjaarsnesten op 
