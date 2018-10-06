@@ -34,7 +34,7 @@ zijn verre van kieskeurig als het aankomt op het zoeken van een geschikte nestpl
 als vlieggat bevinden zich aan de zijkant van het nest. Dit in tegenstelling tot de Europese hoornaar die haar vlieggat 
 aan de onderkant van het nest maakt.
 
-<p>
+<center>
 <figure style="width: 300px" class="align-left">
 <img src="{{ './images/20180820_foto_primair_nest_Waregem.JPG' | absolute_url }}" alt="">
 <figcaption>Primair nest Waregem.</figcaption>
@@ -43,9 +43,9 @@ aan de onderkant van het nest maakt.
 <img src="{{ './images/20180913_foto_secundair_nest_Gits_Jonas_Lampens.jpg' | absolute_url }}" alt="">
 <figcaption>Secundair nest.</figcaption>
 </figure>
-</p>
+</center>
 
-<p>
+<center>
 <figure style="width: 300px" class="align-left">
   <img src="{{ './images/20180710_foto_voorjaarsnest_Boezinge_Warre.jpg' | absolute_url }}" alt="">
   <figcaption>Voorjaarsnest Boezinge.</figcaption>
@@ -54,15 +54,12 @@ aan de onderkant van het nest maakt.
   <img src="{{ './images/20180706_Foto_voorjaarsnest_Roeselare.jpg' | absolute_url }}" alt="">
   <figcaption>Voorjaarsnest Roeselare.</figcaption>
 </figure> 
-</p>
+</center>
 
-<p>
-<figure style="width: 300px" class="align-right">
+<figure style="width: 300px" class="align-center">
   <img src="{{ './images/20180810_foto_najaarsnest_Zonnebeke.jpg' | absolute_url }}" alt="">
   <figcaption>Najaarsnest Zonnebeke.</figcaption>
 </figure> 
-</p>
-
 
 > Tip: als je een Aziatische hoornaar ziet in de maanden april-juni, kijk dan uit naar de voorjaarsnesten op 
 beschutte plaatsen. Vanaf juli kan je nesten ook in boomtoppen aantreffen.
@@ -80,25 +77,26 @@ Bovendien kunnen ze soms verward worden met maretak of vogelnesten.
 
 Aziatische hoornaars jagen op honingbijen aan de vliegopening van een bijenkast. Ze hangen als een helikopter stil in de lucht en wachten tot een honingbij komt aanvliegen, die ze grijpt met enig gestuntel. Vervolgens vliegt de hoornaar iets verderop om haar prooi te ontleden. Ze behoudt gewoonlijk het borststuk dat wordt meegenomen naar het nest als voedsel voor de nakomelingen. De Europese hoornaar heeft een gelijkaardig gedrag. Enig verschil is te onderscheiden waar de Europese hoornaar zelden stil in de lucht blijft hangen voor de bijenkast.
 
-<figure style="width: 300px" class="align-left">
+<figure style="width: 300px" class="align-center">
   <img src="{{ './images/Aziatische_hoornaar_foraging_HBV.JPG' | absolute_url }}" alt="">
   <figcaption>Aziatische hoornaar.</figcaption>
 </figure>
-<figure style="width: 300px" class="align-right">
+<figure style="width: 300px" class="align-center">
   <img src="{{ './images/Europese_hoornaar_foraging_Hans De Blauw.jpg' | absolute_url }}" alt="">
   <figcaption>Europese hoornaar.</figcaption>
 </figure> 
 
 <p>Als een nest in de buurt is dan tref je in het najaar geregeld hoornaars aan op bloeiende Klimop en Sneeuwbes (*Symphoricarpos*). De nectar die de hoornaar drinkt dient als brandstof voor de vele kilometers die ze dagelijks aflegt.</p>
 
-<figure style="width: 300px" class="align-left">
+<figure style="width: 300px" class="align-center">
   <img src="{{ './images/20180922_VespaVelutina_klimop_HoneyBeeValley.JPG' | absolute_url }}" alt="">
   <figcaption>Klimop.</figcaption>
 </figure>
-<figure style="width: 300px" class="align-right">
+<figure style="width: 300px" class="align-center">
   <img src="{{ './images/20180922_VespaVelutina_symphoricarpos_HoneyBeeValley.JPG' | absolute_url }}" alt="">
   <figcaption>Sneeuwbes.</figcaption>
 </figure> 
+
 
 
 
