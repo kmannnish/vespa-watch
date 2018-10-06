@@ -36,12 +36,8 @@ aan de onderkant van het nest maakt.
 
 <figure style="width: 450px">
   <img src="{{ './images/20180820_foto_primair_nest_Waregem.JPG' | absolute_url }}" alt="">
-  <figcaption>Primair nest Waregem.</figcaption>
-</figure>
-
-<figure style="width: 450px">
   <img src="{{ './images/20180913_foto_secundair_nest_Gits_Jonas_Lampens.jpg' | absolute_url }}" alt="">
-  <figcaption>Secundair nest.</figcaption>
+  <figcaption>Primair nest Waregem en secundair nest.</figcaption>
 </figure>
 
 <figure style="width: 450px">
