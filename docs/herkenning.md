@@ -1,5 +1,5 @@
 
-## Grootte
+## Hoe kan je de Aziatische hoornaar herkennen?
 
 In België zijn op dit moment twee soorten hoornaars te vinden: de Aziatische en de Europese hoornaar. 
 Hoornaars zijn **een flink stuk groter dan bijen en wespen**. De meeste bijen- en wespensoorten worden niet 
@@ -11,7 +11,7 @@ De Aziatische hoornaar is net iets kleiner dan de Europese hoornaar; in cijfers 
   <figcaption>(figuur via ecotuinweetjes)</figcaption>
 </figure> 
 
-## Kleur
+### Kleur
 
 Een groot, vliegend insect is dus niet perse de Aziatische hoornaar. Gelukkig vergt het maar een kleine oefening om het onderscheid tussen de Europese en Aziatische hoornaar te leren kennen. Het kleurpatroon is daarbij doorslaggevend; en wel de **kleur van de bovenzijde van het lichaam en de kleur van de poten**. De kop en het borststuk van de Aziatische 
 hoornaar is volledig zwart. Het achterlijf is overwegend zwart met slechts één brede gele band. De poten zijn ook zwart 
@@ -23,7 +23,7 @@ nalaat, is de Aziatische hoornaar donker zwart.
 
 ![Kenmerken](./images/Figuur_kenmerken_EH_AH.JPG){: .align-center}
 
-## Nesten
+### Nesten
 
 Wespen maken hun nest uit dood hout dat ze verzamelen in de natuur. Het resultaat is een lichtbruine structuur die 
 je vaak in een beschutte plaats aantreft. De **Aziatische hoornaar maakt een bol- tot peervormig nest** dat groeit gedurende 
@@ -69,7 +69,7 @@ zijn moeilijk om te vinden aangezien ze pas duidelijk zichtbaar worden als de bl
 Bovendien kunnen ze soms verward worden met maretak of vogelnesten. 
 
 
-## Gedrag
+### Gedrag
 
 <figure style="width: 500px" class="align-left">
   <img src="{{ '/images/Aziatische_hoornaar_foraging_HBV.JPG' | absolute_url }}" alt="">
@@ -86,11 +86,11 @@ De Europese hoornaar heeft een gelijkaardig gedrag. Enig verschil is te ondersch
 
 <p>Als een nest in de buurt is dan tref je in het najaar geregeld hoornaars aan op bloeiende Klimop en Sneeuwbes ( *Symphoricarpos* ). De nectar die de hoornaar drinkt dient als brandstof voor de vele kilometers die ze dagelijks aflegt.</p>
 
-<figure style="width: 450px" class="align-left">
+<figure style="width: 450px;display:inline-block">
   <img src="{{ './images/20180922_VespaVelutina_klimop_HoneyBeeValley.JPG' | absolute_url }}" alt="">
   <figcaption>Klimop.</figcaption>
 </figure>
-<figure style="width: 450px" class="align-right">
+<figure style="width: 450px;display:inline-block">
   <img src="{{ './images/20180922_VespaVelutina_symphoricarpos_HoneyBeeValley.JPG' | absolute_url }}" alt="">
   <figcaption>Sneeuwbes.</figcaption>
 </figure> 

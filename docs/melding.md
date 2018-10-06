@@ -23,6 +23,11 @@ Gelieve volgende gegevens te voorzien in de mail:
 ### Rubriek 2: bewijsmateriaal observatie
 
 * Hoornaar lijkt op: Europese hoornaar of Aziatische hoornaar (maak een keuze)
+
+<figure style="width:500px">
+  <img src="{{ './images/Figuur_kenmerken_EH_AH.JPG' | absolute_url }}" alt="">
+</figure>
+
 * Geef een beschrijving van de kleur, grootte of gedrag:
 
 Gelieve een foto toe te voegen als bijlage!
