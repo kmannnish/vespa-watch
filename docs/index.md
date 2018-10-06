@@ -15,7 +15,7 @@ De Aziatische hoornaar is schadelijke voor de biodiversiteit en de imkerij, want
   <img src="{{ './images/Aziatische_hoornaar_foraging_HBV.JPG' | absolute_url }}" alt="">
   <figcaption>Aziatische hoornaar.</figcaption>
 </figure>
-<figure style="width: 300px" class="align-left">
+<figure style="width: 300px" class="align-right">
   <img src="{{ './images/Europese_hoornaar_foraging_Hans De Blauw.jpg' | absolute_url }}" alt="">
   <figcaption>Europese hoornaar.</figcaption>
 </figure> 
