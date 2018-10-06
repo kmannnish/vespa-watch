@@ -69,9 +69,17 @@ Bovendien kunnen ze soms verward worden met maretak of vogelnesten.
 
 ## Gedrag
 
-![image-left]({{ '/images/Aziatische_hoornaar_foraging_HBV.JPG' | absolute_url }}){: .align-left} Aziatische hoornaars jagen op honingbijen aan de vliegopening van een bijenkast. Ze hangen als een helikopter stil in de lucht en wachten tot een honingbij komt aanvliegen, die ze grijpt met enig gestuntel. Vervolgens vliegt de hoornaar iets verderop om haar prooi te ontleden. Ze behoudt gewoonlijk het borststuk dat wordt meegenomen naar het nest als voedsel voor de nakomelingen. 
+<figure style="width: 300px" class="align-left">
+  <img src="{{ '/images/Aziatische_hoornaar_foraging_HBV.JPG' | absolute_url }}" alt="">
+  <figcaption>Aziatische hoornaar.</figcaption>
+</figure> 
 
-![image-right]({{ '/images/Europese_hoornaar_foraging_Hans De Blauw.jpg' | absolute_url }}){: .align-right}
+Aziatische hoornaars jagen op honingbijen aan de vliegopening van een bijenkast. Ze hangen als een helikopter stil in de lucht en wachten tot een honingbij komt aanvliegen, die ze grijpt met enig gestuntel. Vervolgens vliegt de hoornaar iets verderop om haar prooi te ontleden. Ze behoudt gewoonlijk het borststuk dat wordt meegenomen naar het nest als voedsel voor de nakomelingen. 
+
+<figure style="width: 300px" class="align-right">
+  <img src="{{ '/images/Europese_hoornaar_foraging_Hans De Blauw.jpg' | absolute_url }}" alt="">
+  <figcaption>Europese hoornaar.</figcaption>
+</figure> 
 De Europese hoornaar heeft een gelijkaardig gedrag. Enig verschil is te onderscheiden waar de Europese hoornaar zelden stil in de lucht blijft hangen voor de bijenkast.
 
 <p>Als een nest in de buurt is dan tref je in het najaar geregeld hoornaars aan op bloeiende Klimop en Sneeuwbes ( *Symphoricarpos* ). De nectar die de hoornaar drinkt dient als brandstof voor de vele kilometers die ze dagelijks aflegt.</p>
