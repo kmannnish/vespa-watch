@@ -5,33 +5,33 @@ color: black
 fa-icon: user-friends
 ---
 
-Binnenkort komt hier een online formulier om nieuwe meldingen rechtstreeks te rapporteren.
+Binnenkort komt hier een online formulier om nieuwe meldingen rechtstreeks te rapporteren. Nieuwe meldingen kunnen momenteel gemeld worden door te mailen naar [Dries.Laget@UGent.be](mailto:Dries.Laget@UGent.be).
 {: .notice}
 
-
-Nieuwe meldingen kunnen momenteel gemeld worden door te mailen naar [Dries.Laget@UGent.be](mailto:Dries.Laget@UGent.be). Gelieve volgende gegevens te voorzien in de mailing:
+Gelieve volgende gegevens te voorzien in de mail:
 
 
 ### Rubriek 1: info waarneming
 
-* Datum en uur
+* Datum en uur:
 * Type waarneming: individu/nest (maak een keuze)
-* Aantal
+* Aantal:
 * gedrag: foeragerend/jagend aan bijenkast/bloembezoek/andere (maak een keuze)
-* Gemeente en postcode
-* Coördinaten of adres indien mogelijk
+* Gemeente en postcode:
+* Coördinaten of adres (indien mogelijk):
 
 ### Rubriek 2: bewijsmateriaal observatie
 
-* Geef Hoornaar lijkt op: Europese hoornaar of Aziatische hoornaar (maak een keuze)
-* Geef een beschrijving van de kleur, grootte of gedrag
-* Gelieve ene foto toe te voegen als bijlage
+* Hoornaar lijkt op: Europese hoornaar of Aziatische hoornaar (maak een keuze)
+* Geef een beschrijving van de kleur, grootte of gedrag:
+
+Gelieve een foto toe te voegen als bijlage!
+{: .notice--info}
 
 ### Rubriek 3, gegevens waarnemer
 
-* Naam en voornaam
-* Telefoonnummer
+* Naam en voornaam:
+* Telefoonnummer:
 * Bent u een imker: ja/nee (maak een keuze)
-
 
 Alvast bedankt!
