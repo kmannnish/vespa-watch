@@ -1,5 +1,9 @@
-
-## Hoe kan je de Aziatische hoornaar herkennen?
+---
+title: "Hoe kan je de Aziatische hoornaar herkennen?"
+bg: white     
+color: black  
+style: center
+---
 
 In België zijn op dit moment twee soorten hoornaars te vinden: de Aziatische en de Europese hoornaar. 
 Hoornaars zijn **een flink stuk groter dan bijen en wespen**. De meeste bijen- en wespensoorten worden niet 
