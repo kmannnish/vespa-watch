@@ -20,6 +20,6 @@ Op verschillende plaatsen in Vlaanderen wordt in het kader van Vespa-Watch geëx
 
 Vespa-Watch organiseert ook 3 zoekacties naar Aziatische hoornaars op bloeiende klimop in het najaar. Klimop is een van de planten waarop hoornaars vaak komen nectar drinken of kleine insecten jagen. De Klimopblitzes kwamen tot stand in samenwerking met Natuurpunt (werkgroep Aculea) en zijn vrij toegankelijk. In 2018 is de locatie van de klimopblitzes gekozen waar een nest Aziatische hoornaars nog niet eerder werd gevonden: Assebroek (22/9), Mortsel (29/9) en Welden-Oudenaarde (6/10). Meer informatie vind je [hier](http://aculea.be/activiteiten/index.html). 
 
-<figure style="width:400px class="align-center">
+<figure style="width:400px" class="align-center">
   <img src="{{ './images/logo_vlaanderen.png' | absolute_url }}" alt="">
 </figure>
