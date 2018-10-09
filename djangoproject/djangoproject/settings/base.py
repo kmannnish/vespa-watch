@@ -158,3 +158,5 @@ SETTINGS_EXPORT = [
 PAGE_FRAGMENTS_FALLBACK_LANGUAGE = 'nl'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+OBSERVATION_FIELD_ID = 9613 # # The identifier of the "vespawatch_id" observation field @iNaturalist
