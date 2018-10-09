@@ -10,4 +10,6 @@ urlpatterns = [
     path('observations/<int:pk>/', views.ObservationUpdate.as_view(), name='observation-update'),
     path('observations/<int:pk>/delete/', views.ObservationDelete.as_view(), name='observation-delete'),
     path('api/observations', views.observations_json, name='api_observations'),
+
+    path('geocoding_test/', views.geocoding_test)
 ]
