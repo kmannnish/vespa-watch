@@ -41,6 +41,12 @@ def _build_auth_header(access_token):
 
 
 def add_photo_to_observation(observation_id, file_object, access_token):
+    """Upload a picture and assign it to an existing observation.
+
+    :param observation_id: the ID of the observation
+    :param file_object: a file like object of the picture. Example: file_object = open('/Users/nicolasnoe/vespa.jpg', 'rb')
+    :param access_token: the access token, as returned by `get_access_token()`
+    """
     data = {'observation_photo[observation_id]': observation_id}
     file_data = {'file': file_object}
 

@@ -10,19 +10,17 @@ token = get_access_token(username='vespawatch', password=VESPAWATCH_USER_PASSWOR
                          app_secret=VESPAWATCH_APP_SECRET)
 
 
-# obs = get_all_observations(params={'user_id': 'niconoe'})
+obs = get_all_observations(params={'user_id': 'niconoe'})
 
-params = {'observation':
-                 {'taxon_id': 54327,  # Vespa Crabro
-                  'observed_on_string': datetime.datetime.now().isoformat(),
-                  'time_zone': 'Brussels',
-                  'description': 'This is a test for the VespaWatch project',
-                  'tag_list': 'vespawatch, wasp, Flanders',
-                  'latitude': 50.647143,
-                  'longitude': 4.360216,
-                  'positional_accuracy': 50 # meters
-                  },
-
+params = {'observation':{'taxon_id': 54327,  # Vespa Crabro
+                         'observed_on_string': datetime.datetime.now().isoformat(),
+                         'time_zone': 'Brussels',
+                         'description': 'This is a test for the VespaWatch project',
+                         'tag_list': 'vespawatch, wasp, Flanders',
+                         'latitude': 50.647143,
+                         'longitude': 4.360216,
+                         'positional_accuracy': 50 # meters
+                         },
  }
 
 r = create_observations(params=params, access_token=token)
