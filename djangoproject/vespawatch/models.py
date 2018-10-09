@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Species(models.Model):
@@ -31,8 +32,12 @@ class Observation(models.Model):
     observation_time = models.DateTimeField()
     comments = models.TextField(blank=True)
 
+    def get_absolute_url(self):
+        return reverse('vespawatch:observation-update', kwargs={'pk': self.pk})
+
     def as_dict(self):
         return {
+            'id': self.pk,
             'species': self.species.name,
             'subject': self.get_subject_display(),
             'nest_location': self.nest_location,

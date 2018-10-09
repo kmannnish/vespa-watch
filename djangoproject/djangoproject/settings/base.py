@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # From others
+    'crispy_forms',
     'markdownx',
 
     # Local helpers
@@ -155,3 +156,5 @@ SETTINGS_EXPORT = [
 ]
 
 PAGE_FRAGMENTS_FALLBACK_LANGUAGE = 'nl'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

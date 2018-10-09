@@ -23,13 +23,15 @@ function observationToHtml(obs) {
         html += '<b>subject:</b> '+ obs.subject + '<br>';
     }
 
-    if (obs.inaturalist_id != null) {
-        html += '<a target="_blank" href="http://www.inaturalist.org/observations/' + obs.inaturalist_id + '">iNaturalist observation</a>';
-    }
-
     if (obs.comments != null) {
         html += '<p>' + obs.comments + '</p>';
     }
+
+    if (obs.inaturalist_id != null) {
+        html += '<a target="_blank" href="http://www.inaturalist.org/observations/' + obs.inaturalist_id + '">iNaturalist observation</a><br>';
+    }
+
+    html += '<a href="/observations/' + obs.id + '/">Edit</a>';
 
     return html;
 }
