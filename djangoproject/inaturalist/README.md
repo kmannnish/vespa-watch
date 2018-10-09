@@ -1,10 +1,11 @@
 Python client for the [iNaturalist APIs](https://www.inaturalist.org/pages/api+reference)
 
-# Work in progress, currently implemented:
+# Status: work in progress. Currently implemented:
 
 - Search occurrences (with pagination support)
-- Username / password authentication
+- (Username / password) authentication
 - Creating observations
+- Upload a picture and assign to an observation
 
 
 ## TODO:

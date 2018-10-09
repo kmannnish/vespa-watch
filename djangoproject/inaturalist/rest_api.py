@@ -2,9 +2,12 @@
 # See: https://www.inaturalist.org/pages/api+reference
 import requests
 
-from inaturalist.helpers import merge_two_dicts
-
 INAT_BASE_URL = "https://www.inaturalist.org"
+
+
+class AuthenticationError(Exception):
+    pass
+
 
 def get_access_token(username, password, app_id, app_secret):
     """
@@ -27,7 +30,10 @@ def get_access_token(username, password, app_id, app_secret):
     }
 
     response = requests.post(("{base_url}/oauth/token".format(base_url=INAT_BASE_URL)), payload)
-    return response.json()["access_token"]
+    try:
+        return response.json()["access_token"]
+    except KeyError:
+        raise AuthenticationError("Authentication error, please check credentials.")
 
 
 def _build_auth_header(access_token):
@@ -35,9 +41,7 @@ def _build_auth_header(access_token):
 
 
 def add_photo_to_observation(observation_id, file_object, access_token):
-    #headers = merge_two_dicts(_build_auth_header(access_token), {'content-disposition': 'form-data'})
-
-    data = {'observation_data': {'observation_id': observation_id}}
+    data = {'observation_photo[observation_id]': observation_id}
     file_data = {'file': file_object}
 
     response = requests.post(url="{base_url}/observation_photos".format(base_url=INAT_BASE_URL),
