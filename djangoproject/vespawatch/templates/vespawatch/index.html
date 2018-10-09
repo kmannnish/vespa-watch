@@ -1,5 +1,6 @@
-{% extends 'vespawatch/base.html' %}
+    {% extends 'vespawatch/base.html' %}
 
+{% load static %}
 {% load i18n %}
 {% load page_fragments %}
 
@@ -11,4 +12,13 @@
             {% get_page_fragment 'welcome' %}
         </div>
     </div>
+    <div class="row">
+        <div class="col">
+            <div id="map"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrascripts %}
+    <script src="{% static 'vespawatch/vespawatch.js' %}"></script>
 {% endblock %}

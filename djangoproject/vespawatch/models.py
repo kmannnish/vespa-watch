@@ -34,7 +34,7 @@ class Observation(models.Model):
     def as_dict(self):
         return {
             'species': self.species.name,
-            'subject': self.subject,
+            'subject': self.get_subject_display(),
             'nest_location': self.nest_location,
             'latitude': self.latitude,
             'longitude': self.longitude,
