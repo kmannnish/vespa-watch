@@ -106,4 +106,4 @@ venv.bak/
 # Vespa-watch specifics 
 djangoproject/djangoproject/settings/settings_local.py
 .idea/
-
+djangoproject/inaturalist/credentials.py

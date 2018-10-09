@@ -32,6 +32,12 @@ class Observation(models.Model):
     observation_time = models.DateTimeField()
     comments = models.TextField(blank=True)
 
+    originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
+
+    @property
+    def exists_in_inaturalist(self):
+        return self.inaturalist_id is not None
+
     def get_absolute_url(self):
         return reverse('vespawatch:observation-update', kwargs={'pk': self.pk})
 

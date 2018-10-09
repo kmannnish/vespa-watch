@@ -1,10 +1,46 @@
 # Code used to access the (read/write, but slow) Rails based API of iNaturalist
 # See: https://www.inaturalist.org/pages/api+reference
+from time import sleep
+
 import requests
 
-from inaturalist.helpers import merge_two_dicts
+from inaturalist.constants import THROTTLING_DELAY, INAT_BASE_URL
 
-INAT_BASE_URL = "https://www.inaturalist.org"
+
+class AuthenticationError(Exception):
+    pass
+
+
+def get_observation_fields(search_query="", page=1):
+    """
+    Search the (globally available) observation
+    :param search_query:
+    :param page:
+    :return:
+    """
+    payload = {
+        'q': search_query,
+        'page': page
+    }
+
+    response = requests.get("{base_url}/observation_fields.json".format(base_url=INAT_BASE_URL), params=payload)
+    return response.json()
+
+def get_all_observation_fields(search_query=""):
+    """ Like get_observation_fields(), but handles pagination for you. """
+    results = []
+    page = 1
+
+    while True:
+        r = get_observation_fields(search_query=search_query, page=page)
+
+        if not r:
+            return results
+
+        results = results + r
+        page = page + 1
+        sleep(THROTTLING_DELAY)
+
 
 def get_access_token(username, password, app_id, app_secret):
     """
@@ -27,7 +63,10 @@ def get_access_token(username, password, app_id, app_secret):
     }
 
     response = requests.post(("{base_url}/oauth/token".format(base_url=INAT_BASE_URL)), payload)
-    return response.json()["access_token"]
+    try:
+        return response.json()["access_token"]
+    except KeyError:
+        raise AuthenticationError("Authentication error, please check credentials.")
 
 
 def _build_auth_header(access_token):
@@ -35,9 +74,13 @@ def _build_auth_header(access_token):
 
 
 def add_photo_to_observation(observation_id, file_object, access_token):
-    #headers = merge_two_dicts(_build_auth_header(access_token), {'content-disposition': 'form-data'})
+    """Upload a picture and assign it to an existing observation.
 
-    data = {'observation_data': {'observation_id': observation_id}}
+    :param observation_id: the ID of the observation
+    :param file_object: a file like object of the picture. Example: file_object = open('/Users/nicolasnoe/vespa.jpg', 'rb')
+    :param access_token: the access token, as returned by `get_access_token()`
+    """
+    data = {'observation_photo[observation_id]': observation_id}
     file_data = {'file': file_object}
 
     response = requests.post(url="{base_url}/observation_photos".format(base_url=INAT_BASE_URL),
