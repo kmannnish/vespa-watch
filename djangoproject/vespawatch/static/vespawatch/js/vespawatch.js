@@ -5,6 +5,8 @@ var mapZoom = 8;
 var map;
 var mapCircles = [];
 var observations;
+var observationsCF;
+var cfDimensions = {};
 
 
 // Generate a HTML string that represents the observation
@@ -39,13 +41,16 @@ function observationToHtml(obs) {
 
 // Get all obsevations from the observations global and add a circle to the map for each observation
 function addObservationsToMap() {
-    observations.forEach(function (obs) {
+    mapCircles = [];
+
+    cfDimensions.timeDim.top(200).forEach(function (obs) {
+        var color = 'orange';
         var circle = L.circleMarker([obs.longitude, obs.latitude], {
             stroke: true,  // whether to draw a stroke
             weight: 1, // stroke width in pixels
-            color: 'red',  // stroke color
-            opacity: 0.5,  // stroke opacity
-            fillColor: 'black',
+            color: color,  // stroke color
+            opacity: 0.8,  // stroke opacity
+            fillColor: color,
             fillOpacity: 0.5,
             radius: 10,
             className: "circle"
@@ -59,21 +64,44 @@ function logObservations(obs) {
     console.log(obs);
 }
 
+function setCrossFilter() {
+    observationsCF = crossfilter(observations);
+    cfDimensions.timeDim = observationsCF.dimension(function (d) {return d.observation_time;});
+}
+
 function getObservations() {
-    mapCircles = [];
     axios.get(observationsUrl)
         .then(function (response) {
             // handle success
             logObservations(response.data);
             observations = response.data.observations;
+            setCrossFilter();
+            initTimerangeSlider();
             addObservationsToMap();
         })
         .catch(function (error) {
             // handle error
             console.log(error);
         });
+}
 
+function clearMap() {
+    mapCircles.forEach(function (mapCircle) {
+        map.removeLayer(mapCircle);
+    });
+}
 
+function initTimerangeSlider() {
+    var range = document.getElementById('range');
+    var latestObs = cfDimensions.timeDim.top(1);
+    var earliestObs = cfDimensions.timeDim.bottom(1);
+    var slider = dateslider(range, earliestObs[0].observation_time, latestObs[0].observation_time, function(start, end) {
+        console.log('start: ' + start);
+        console.log('end: ' + end);
+        cfDimensions.timeDim.filterRange([start, end]);
+        clearMap();
+        addObservationsToMap();
+    });
 }
 
 function initMap() {

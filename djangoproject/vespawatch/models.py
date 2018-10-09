@@ -50,7 +50,7 @@ class Observation(models.Model):
             'latitude': self.latitude,
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,
-            'observation_time': self.observation_time,
+            'observation_time': self.observation_time.timestamp() * 1000,
             'comments': self.comments
         }
 
