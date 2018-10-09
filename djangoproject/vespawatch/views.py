@@ -1,7 +1,8 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.views.generic import CreateView, DeleteView, UpdateView
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse, HttpResponseRedirect
+from django.views.generic import DeleteView
 from django.urls import reverse_lazy
+from .forms import ObservationForm, PublicObservationForm
 from .models import Observation
 
 
@@ -9,17 +10,38 @@ def index(request):
     return render(request, 'vespawatch/index.html')
 
 
-class ObservationCreate(CreateView):
-    model = Observation
-    template_name = 'vespawatch/observation_add_form.html'
-    fields = ('species', 'subject', 'nest_location', 'latitude', 'longitude', 'inaturalist_id', 'observation_time',
-              'comments')
+def create_observation(request):
+    if request.method == 'POST':
+        form = PublicObservationForm(request.POST)
+        if form.is_valid():
+            observation = Observation(**form.cleaned_data)
+            print(observation)
+            observation.save()
+            return HttpResponseRedirect('/')
+    else:
+        if request.user.is_authenticated:
+            form = ObservationForm()
+        else:
+            form = PublicObservationForm()
 
-class ObservationUpdate(UpdateView):
-    model = Observation
-    template_name = 'vespawatch/observation_update_form.html'
-    fields = ('species', 'subject', 'nest_location', 'latitude', 'longitude', 'inaturalist_id', 'observation_time',
-              'comments')
+    return render(request, 'vespawatch/observation_create.html', {'form': form})
+
+
+def update_observation(request, pk):
+    observation = get_object_or_404(Observation, pk=pk)
+    if request.method == 'POST':
+        form = PublicObservationForm(request.POST, instance=observation)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/')
+
+    elif request.method == 'GET':
+        if request.user.is_authenticated:
+            form = ObservationForm(instance=observation)
+        else:
+            form = PublicObservationForm(instance=observation)
+    return render(request, 'vespawatch/observation_update.html', {'form': form, 'object': observation})
+
 
 class ObservationDelete(DeleteView):
     model = Observation
