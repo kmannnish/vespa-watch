@@ -1,19 +1,20 @@
 {% extends 'vespawatch/base.html' %}
 {% load crispy_forms_tags %}
+{% load i18n %}
 
 {% block content %}
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-8">
-          <h1 class="mt-2">Observation</h1>
+          <h1 class="mt-2">{% trans "Observation" %}</h1>
           <hr class="mt-0 mb-4">
 
           <form method="post">
             {% csrf_token %}
             {{ form|crispy }}
-            <button type="submit" class="btn btn-success">Save observation</button>
-            <a href="{% url 'vespawatch:observation-delete' object.pk %}" class="btn btn-danger">Delete</a>
-            <a href="{% url 'vespawatch:index' %}" class="btn btn-light">Cancel</a>
+            <button type="submit" class="btn btn-success">{% trans "Save observation" %}</button>
+            <a href="{% url 'vespawatch:observation-delete' object.pk %}" class="btn btn-danger">{% trans "Delete" %}</a>
+            <a href="{% url 'vespawatch:index' %}" class="btn btn-light">{% trans "Cancel" %}</a>
           </form>
 
         </div>
