@@ -37,3 +37,7 @@ def observations_json(request):
     return JsonResponse({
         'observations': [x.as_dict() for x in observations]
     })
+
+
+def geocoding_test(request):
+    return render(request, 'vespawatch/geocoding_test.html')
