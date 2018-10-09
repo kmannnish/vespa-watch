@@ -1,12 +1,45 @@
 # Code used to access the (read/write, but slow) Rails based API of iNaturalist
 # See: https://www.inaturalist.org/pages/api+reference
+from time import sleep
+
 import requests
 
-INAT_BASE_URL = "https://www.inaturalist.org"
+from inaturalist.constants import THROTTLING_DELAY, INAT_BASE_URL
 
 
 class AuthenticationError(Exception):
     pass
+
+
+def get_observation_fields(search_query="", page=1):
+    """
+    Search the (globally available) observation
+    :param search_query:
+    :param page:
+    :return:
+    """
+    payload = {
+        'q': search_query,
+        'page': page
+    }
+
+    response = requests.get("{base_url}/observation_fields.json".format(base_url=INAT_BASE_URL), params=payload)
+    return response.json()
+
+def get_all_observation_fields(search_query=""):
+    """ Like get_observation_fields(), but handles pagination for you. """
+    results = []
+    page = 1
+
+    while True:
+        r = get_observation_fields(search_query=search_query, page=page)
+
+        if not r:
+            return results
+
+        results = results + r
+        page = page + 1
+        sleep(THROTTLING_DELAY)
 
 
 def get_access_token(username, password, app_id, app_secret):

@@ -5,11 +5,10 @@ from time import sleep
 import requests
 from requests.compat import urljoin
 
+from inaturalist.constants import THROTTLING_DELAY, INAT_NODE_API_BASE_URL
 from inaturalist.helpers import merge_two_dicts
 
-INAT_NODE_API_BASE_URL = "https://api.inaturalist.org/v1/"
 PER_PAGE_RESULTS = 30  # Paginated queries: how many records do we ask per page?
-THROTTLING_DELAY = 1  # In seconds, support <0 floats such as 0.1
 
 def make_inaturalist_api_get_call(endpoint, params, **kwargs):
     """Make an API call to iNaturalist.
