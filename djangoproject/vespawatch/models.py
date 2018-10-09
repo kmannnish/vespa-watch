@@ -31,6 +31,18 @@ class Observation(models.Model):
     observation_time = models.DateTimeField()
     comments = models.TextField(blank=True)
 
+    def as_dict(self):
+        return {
+            'species': self.species.name,
+            'subject': self.subject,
+            'nest_location': self.nest_location,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'inaturalist_id': self.inaturalist_id,
+            'observation_time': self.observation_time,
+            'comments': self.comments
+        }
+
 
 class ObservationPicture(models.Model):
     observation = models.ForeignKey(Observation, on_delete=models.PROTECT)
