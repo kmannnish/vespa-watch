@@ -4,7 +4,6 @@ var mapPosition = [50.5, 4.5];
 var mapZoom = 8;
 var map;
 var mapCircles = [];
-var observations;
 var observationsCF;
 var cfDimensions = {};
 
@@ -64,7 +63,7 @@ function logObservations(obs) {
     console.log(obs);
 }
 
-function setCrossFilter() {
+function setCrossFilter(observations) {
     observationsCF = crossfilter(observations);
     cfDimensions.timeDim = observationsCF.dimension(function (d) {return d.observation_time;});
 }
@@ -72,10 +71,8 @@ function setCrossFilter() {
 function getObservations() {
     axios.get(observationsUrl)
         .then(function (response) {
-            // handle success
             logObservations(response.data);
-            observations = response.data.observations;
-            setCrossFilter();
+            setCrossFilter(response.data.observations);
             initTimerangeSlider();
             addObservationsToMap();
         })
