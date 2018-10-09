@@ -1,18 +1,25 @@
-This Python package holds the code used to access iNaturalist APIs.
+Python client for the [iNaturalist APIs](https://www.inaturalist.org/pages/api+reference)
 
-Let's try to keep it clean/reusable enough so we can imagine releasing it as its own on PyPI later on.
+# Work in progress, currently implemented:
 
-# TODO: Package depends on requests, requires it (+second level-requirements?: certifi, chardet, idna, urllib3) here
+- Search occurrences (with pagination support)
+- Username / password authentication
+- Creating observations
 
-- Design decision to be taken: create a specific Data class (or similar) to act as an abstraction layer of 
-iNaturalist...
 
-API questions:
+## TODO:
+- Create packaging/setup.py (we depends on requests)
+- Design decision: support Python 2 or not?
+- Design decision: create a specific Data class (or similar) to act as an abstraction layer of 
+iNaturalist?
+
+## API questions:
 
 - pagination: max page size
 - how to exactly know which API we're using? prefix?
+- Resource Owner Password Credentials... Do we really need an app (with app_client, app_secret, authorized users, ...)?
 
-API quirks:
+## Notes: API quirks:
 
 - Searching observations: if using id_above/id_below, do NOT specify a page number, those will conflict 
 (but page_size is fine)

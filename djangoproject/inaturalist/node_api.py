@@ -5,19 +5,11 @@ from time import sleep
 import requests
 from requests.compat import urljoin
 
+from inaturalist.helpers import merge_two_dicts
+
 INAT_NODE_API_BASE_URL = "https://api.inaturalist.org/v1/"
 PER_PAGE_RESULTS = 30  # Paginated queries: how many records do we ask per page?
 THROTTLING_DELAY = 1  # In seconds, support <0 floats such as 0.1
-
-# Pagination: should we aim for two versions:
-#   - Low-level: the package user manage pagination
-#   - High-level: we loop so user doesn't need to handle pagination. Should we block then return all results or use
-#     yield?
-
-def merge_two_dicts(x, y):
-    z = x.copy()   # start with x's keys and values
-    z.update(y)    # modifies z with y's keys and values & returns None
-    return z
 
 def make_inaturalist_api_get_call(endpoint, params, **kwargs):
     """Make an API call to iNaturalist.
@@ -41,16 +33,16 @@ def get_observations(params):
     return r.json()
 
 def get_all_observations(params):
-    """Like get_observations() but handles pagination so you get all the results in one shot
+    """Like get_observations() but handles pagination so you get all the results in one shot.
 
-    Some params will be overwritten: order_by, order, per_page, id_above (do NOT specify page when using this)
+    Some params will be overwritten: order_by, order, per_page, id_above (do NOT specify page when using this).
 
-    Returns a list of dict (one entry per observation)
+    Returns a list of dicts (one entry per observation)
     """
 
     # According to the doc: "The large size of the observations index prevents us from supporting the page parameter
     # when retrieving records from large result sets. If you need to retrieve large numbers of records, use the per_page
-    #and id_above or id_below parameters instead.
+    # and id_above or id_below parameters instead.
 
     results = []
     id_above = 0
