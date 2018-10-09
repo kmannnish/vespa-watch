@@ -13,20 +13,24 @@ token = get_access_token(username='vespawatch', password=VESPAWATCH_USER_PASSWOR
 
 #obs = get_all_observations(params={'user_id': 'niconoe'})
 
-# params = {'observation':{'taxon_id': 54327,  # Vespa Crabro
-#                          'observed_on_string': datetime.datetime.now().isoformat(),
-#                          'time_zone': 'Brussels',
-#                          'description': 'This is a test for the VespaWatch project',
-#                          'tag_list': 'vespawatch, wasp, Flanders',
-#                          'latitude': 50.647143,
-#                          'longitude': 4.360216,
-#                          'positional_accuracy': 50 # meters
-#                          },
-#  }
-#
-# r = create_observations(params=params, access_token=token)
-#
-# r = add_photo_to_observation(observation_id=r[0]['id'], file_object=open('/Users/nicolasnoe/vespa.jpg', 'rb'), access_token=token)
+params = {'observation':{'taxon_id': 54327,  # Vespa Crabro
+                         'observed_on_string': datetime.datetime.now().isoformat(),
+                         'time_zone': 'Brussels',
+                         'description': 'This is a test for the VespaWatch project',
+                         'tag_list': 'vespawatch, wasp, Flanders',
+                         'latitude': 50.647143,
+                         'longitude': 4.360216,
+                         'positional_accuracy': 50, # meters,
 
-r = get_all_observation_fields(search_query="DNA")
+                         # sets vespawatch_id (an observation field whose ID is 9613) to the value '100'.
+                         'observation_field_values_attributes': [{'observation_field_id': 9613,
+                                                                  'value': 100}],
+                         },
+ }
+
+r = create_observations(params=params, access_token=token)
+
+r = add_photo_to_observation(observation_id=r[0]['id'], file_object=open('/Users/nicolasnoe/vespa.jpg', 'rb'), access_token=token)
+
+# r = get_all_observation_fields(search_query="DNA")
 pass
