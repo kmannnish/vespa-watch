@@ -96,6 +96,7 @@ class ManagementAction(models.Model):
         (EMPTY_NEST_NOTHING_DONE, 'Empty nest, nothing done'),
     )
 
+    observation = models.ForeignKey(Observation, on_delete=models.PROTECT)
     outcome = models.CharField(max_length=2, choices=OUTCOME_CHOICE)
     action_time = models.DateTimeField()
     person_name = models.CharField(max_length=255, blank=True)

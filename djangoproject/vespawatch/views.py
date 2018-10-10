@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import DeleteView
 from django.urls import reverse_lazy
-from .forms import ObservationForm, PublicObservationForm
-from .models import Observation
+from .forms import ManagementActionForm, ObservationForm, PublicObservationForm
+from .models import Observation, ManagementAction
 
 
 def index(request):
@@ -46,6 +46,38 @@ def update_observation(request, pk):
 class ObservationDelete(DeleteView):
     model = Observation
     success_url = reverse_lazy('vespawatch:index')
+
+
+def create_action(request):
+    if request.method == 'POST':
+        form = ManagementActionForm(request.POST)
+        if form.is_valid():
+            action = ManagementAction(**form.cleaned_data)
+            action.save()
+        return HttpResponseRedirect('/')
+
+    else:
+        form = ManagementActionForm()
+    return render(request, 'vespawatch/action_create.html', {'form': form})
+
+
+def update_action(request, pk=None):
+    action = get_object_or_404(ManagementAction, pk=pk)
+    if request.method == 'POST':
+        form = ManagementActionForm(request.POST, instance=action)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/')
+    else:
+        form = ManagementActionForm(instance=action)
+
+    return render(request, 'vespawatch/action_update.html', {'form': form, 'object': action})
+
+
+class ManagmentActionDelete(DeleteView):
+    model = ManagementAction
+    success_url = reverse_lazy('vespawatch:index')
+
 
 # ==============
 # API methods

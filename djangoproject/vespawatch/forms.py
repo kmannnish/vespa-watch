@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Observation
+from .models import ManagementAction, Observation
 
 class PublicObservationForm(ModelForm):
     class Meta:
@@ -18,3 +18,9 @@ class ObservationForm(ModelForm):
         fields = ['species', 'individual_count', 'behaviour', 'subject', 'nest_location', 'latitude', 'longitude',
                   'inaturalist_id', 'observation_time', 'comments'
         ]
+
+
+class ManagementActionForm(ModelForm):
+    class Meta:
+        model = ManagementAction
+        fields = ['observation', 'outcome', 'action_time', 'person_name']
