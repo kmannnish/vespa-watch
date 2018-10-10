@@ -32,19 +32,19 @@ class Observation(models.Model):
         (OTHER, 'Other')
     )
 
-
     species = models.ForeignKey(Species, on_delete=models.PROTECT, blank=True, null=True)  # Blank allows because some nests can't be easily identified
     individual_count = models.IntegerField(blank=True, null=True)
     behaviour = models.CharField(max_length=2, choices=BEHAVIOUR_CHOICES, blank=True, null=True)
     subject = models.CharField(max_length=2, choices=SUBJECT_CHOICES)
-    nest_location = models.CharField(max_length=255, blank=True)
+    location = models.CharField(max_length=255, blank=True)
+    observation_time = models.DateTimeField()
+    comments = models.TextField(blank=True)
 
     latitude = models.FloatField()
     longitude = models.FloatField()
 
     inaturalist_id = models.BigIntegerField(blank=True, null=True)
-    observation_time = models.DateTimeField()
-    comments = models.TextField(blank=True)
+    inaturalist_species = models.CharField(max_length=100, blank=True, null=True)
 
     originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
 
@@ -79,6 +79,9 @@ class Observation(models.Model):
             'comments': self.comments
         }
 
+    def __str__(self):
+        return f'{self.get_subject_display()} of {self.species.name}, {self.observation_time.strftime("%Y-%m-%d")}'
+
 
 class ObservationPicture(models.Model):
     observation = models.ForeignKey(Observation, on_delete=models.PROTECT)
@@ -100,3 +103,6 @@ class ManagementAction(models.Model):
     outcome = models.CharField(max_length=2, choices=OUTCOME_CHOICE)
     action_time = models.DateTimeField()
     person_name = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return f'{self.action_time.strftime("%Y-%m-%d")} {self.get_outcome_display()} on {self.observation}'
