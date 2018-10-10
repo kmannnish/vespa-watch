@@ -159,4 +159,7 @@ PAGE_FRAGMENTS_FALLBACK_LANGUAGE = 'nl'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
 OBSERVATION_FIELD_ID = 9613 # # The identifier of the "vespawatch_id" observation field @iNaturalist

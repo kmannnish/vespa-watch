@@ -32,7 +32,7 @@ function observationToHtml(obs) {
         html += '<a target="_blank" href="http://www.inaturalist.org/observations/' + obs.inaturalist_id + '">iNaturalist observation</a><br>';
     }
 
-    html += '<a href="/observations/' + obs.id + '/">Edit</a>';
+    html += '<a href="/observations/' + obs.id + '/">View details</a>';
 
     return html;
 }
