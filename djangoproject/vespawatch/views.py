@@ -1,6 +1,8 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
-from django.views.generic import DeleteView
+from django.views.generic import DeleteView, DetailView
 from django.urls import reverse_lazy
 from .forms import ManagementActionForm, ObservationForm, PublicObservationForm
 from .models import Observation, ManagementAction
@@ -27,6 +29,7 @@ def create_observation(request):
     return render(request, 'vespawatch/observation_create.html', {'form': form})
 
 
+@login_required
 def update_observation(request, pk):
     observation = get_object_or_404(Observation, pk=pk)
     if request.method == 'POST':
@@ -36,18 +39,20 @@ def update_observation(request, pk):
             return HttpResponseRedirect('/')
 
     elif request.method == 'GET':
-        if request.user.is_authenticated:
-            form = ObservationForm(instance=observation)
-        else:
-            form = PublicObservationForm(instance=observation)
+        form = PublicObservationForm(instance=observation)
     return render(request, 'vespawatch/observation_update.html', {'form': form, 'object': observation})
 
 
-class ObservationDelete(DeleteView):
+class ObservationDetail(DetailView):
+    model = Observation
+
+
+class ObservationDelete(LoginRequiredMixin, DeleteView):
     model = Observation
     success_url = reverse_lazy('vespawatch:index')
 
 
+@login_required
 def create_action(request):
     if request.method == 'POST':
         form = ManagementActionForm(request.POST)
@@ -61,6 +66,7 @@ def create_action(request):
     return render(request, 'vespawatch/action_create.html', {'form': form})
 
 
+@login_required
 def update_action(request, pk=None):
     action = get_object_or_404(ManagementAction, pk=pk)
     if request.method == 'POST':
@@ -74,7 +80,7 @@ def update_action(request, pk=None):
     return render(request, 'vespawatch/action_update.html', {'form': form, 'object': action})
 
 
-class ManagmentActionDelete(DeleteView):
+class ManagmentActionDelete(LoginRequiredMixin, DeleteView):
     model = ManagementAction
     success_url = reverse_lazy('vespawatch:index')
 

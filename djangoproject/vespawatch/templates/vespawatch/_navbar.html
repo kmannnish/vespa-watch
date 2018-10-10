@@ -15,8 +15,29 @@
 
         {% include 'vespawatch/_language_selector.html' %}
 
-        <ul class="navbar-nav">
+    </div>
+
+
+    <div class="collapse navbar-collapse" id="menu-list">
+        <ul id="user-account" class="nav navbar-nav navbar-right">
+            {% if user.is_authenticated %}
+            <li class="dropdown"><a id="user" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                    aria-haspopup="true" aria-expanded="false">Me<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li class="disabled"><a><h5>Hi {{ user.username }}</h5></a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a id="logout" href="{% url 'logout' %}">Log Out</a></li>
+                </ul>
+            </li>
+            {% else %}
+            <li><a href="{% url 'login' %}">Log In</a></li>
+            {% endif %}
+        </ul>
+</div>
+            <ul class="navbar-nav">
+
+
+
             <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}"><i class="material-icons">lock</i></a></li>
         </ul>
-    </div>
 </nav>

@@ -69,9 +69,9 @@ class Observation(models.Model):
     def as_dict(self):
         return {
             'id': self.pk,
-            'species': self.species.name,
+            'species': self.inaturalist_species if self.inaturalist_species else self.species.name,
             'subject': self.get_subject_display(),
-            'nest_location': self.nest_location,
+            'location': self.location,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,

@@ -16,8 +16,7 @@
 
 
           <form method="post" action="{% url 'vespawatch:observation-add' %}" novalidate>
-            {% csrf_token %}
-            {{ form|crispy }}
+            {% include 'vespawatch/observation_form.html' %}
             <button type="submit" class="btn btn-success">{% trans "Save observation" %}</button>
             <a href="{% url 'vespawatch:index' %}" class="btn btn-light">{% trans "Cancel" %}</a>
           </form>
