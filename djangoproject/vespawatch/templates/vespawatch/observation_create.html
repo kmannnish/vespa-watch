@@ -9,7 +9,13 @@
           <h1 class="mt-2">{% trans "Observation" %}</h1>
           <hr class="mt-0 mb-4">
 
-          <form method="post">
+            {% if form.errors %}
+                {% trans "Please correct the errors below" %}
+                        {{ form.errors }}
+            {% endif %}
+
+
+          <form method="post" action="{% url 'vespawatch:observation-add' %}" novalidate>
             {% csrf_token %}
             {{ form|crispy }}
             <button type="submit" class="btn btn-success">{% trans "Save observation" %}</button>

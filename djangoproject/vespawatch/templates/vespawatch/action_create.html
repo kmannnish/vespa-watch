@@ -6,13 +6,19 @@
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-8">
-          <h1 class="mt-2">{% trans "Observation" %}</h1>
+          <h1 class="mt-2">{% trans "Management action" %}</h1>
           <hr class="mt-0 mb-4">
 
-          <form method="post">
+            {% if form.errors %}
+                {% trans "Please correct the errors below" %}
+                        {{ form.errors }}
+            {% endif %}
+
+
+          <form method="post" action="{% url 'vespawatch:action-add' %}" novalidate>
             {% csrf_token %}
             {{ form|crispy }}
-            <button type="submit" class="btn btn-success">{% trans "Save observation" %}</button>
+            <button type="submit" class="btn btn-success">{% trans "Save action" %}</button>
             <a href="{% url 'vespawatch:index' %}" class="btn btn-light">{% trans "Cancel" %}</a>
           </form>
 
