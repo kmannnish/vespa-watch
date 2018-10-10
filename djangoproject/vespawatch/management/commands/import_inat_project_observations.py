@@ -41,6 +41,7 @@ class Command(BaseCommand):
                         species, _ = Species.objects.get_or_create(name=inat_observation['taxon']['name'])
 
                         Observation.objects.create(
+                            originates_in_vespawatch=False,
                             subject=Observation.SPECIMEN,  # TODO: How to detect/manage properly?
                             inaturalist_id=inat_observation['id'],
                             species=species,

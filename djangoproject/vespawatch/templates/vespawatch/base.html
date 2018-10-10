@@ -10,8 +10,12 @@
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+   crossorigin=""/>
+    <link rel="stylesheet" href="{% static 'vespawatch/css/nouislider.min.css' %}">
 
-    <link rel="stylesheet" href="{% static 'vespawatch/vespawatch.css' %}"/>
+    <link rel="stylesheet" href="{% static 'vespawatch/css/vespawatch.css' %}"/>
 
     <title>{{ settings.WEBSITE_NAME }}</title>
 </head>
@@ -31,6 +35,18 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
-<script src="{% static 'vespawatch/_language_selector.js' %}"></script>
+<script src="{% static 'vespawatch/js/axios.min.js' %}"></script>
+<script src="{% static 'vespawatch/js/_language_selector.js' %}"></script>
+<script src="{% static 'vespawatch/js/moment-with-locales.js' %}"></script>
+<script src="{% static 'vespawatch/js/crossfilter.min.js' %}"></script>
+<script src="{% static 'vespawatch/js/nouislider.min.js' %}"></script>
+<script src="{% static 'vespawatch/js/wNumb.js' %}"></script>
+<script src="{% static 'vespawatch/js/vespawatch-dateslider.js' %}"></script>
+<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
+   integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+   crossorigin=""></script>
+
+{% block extrascripts %}
+{% endblock %}
 </body>
 </html>

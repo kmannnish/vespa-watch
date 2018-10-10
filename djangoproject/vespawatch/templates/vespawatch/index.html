@@ -1,5 +1,6 @@
 {% extends 'vespawatch/base.html' %}
 
+{% load static %}
 {% load i18n %}
 {% load page_fragments %}
 
@@ -11,4 +12,28 @@
             {% get_page_fragment 'welcome' %}
         </div>
     </div>
+    <div class="row">
+        <div class="col">
+            <div id="range"></div>
+            <span id="range-start"></span>
+            <span id="range-end"></span>
+
+
+        </div>
+        <div class="col">
+            <a href="{% url 'vespawatch:observation-add' %}" class="btn btn-success">{% trans "New observation" %}</a>
+        </div>
+        <div class="col">
+            <a href="{% url 'vespawatch:action-add' %}" class="btn btn-success">{% trans "New action" %}</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div id="map"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrascripts %}
+    <script src="{% static 'vespawatch/js/vespawatch.js' %}"></script>
 {% endblock %}
