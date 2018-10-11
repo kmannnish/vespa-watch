@@ -44,7 +44,7 @@ function addObservationsToMap() {
 
     cfDimensions.timeDim.top(200).forEach(function (obs) {
         var color = 'orange';
-        var circle = L.circleMarker([obs.longitude, obs.latitude], {
+        var circle = L.circleMarker([obs.latitude, obs.longitude], {
             stroke: true,  // whether to draw a stroke
             weight: 1, // stroke width in pixels
             color: color,  // stroke color
