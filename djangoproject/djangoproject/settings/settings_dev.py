@@ -11,6 +11,9 @@ DATABASES = {
     }
 }
 
+STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
+STATIC_URL = '/static/'
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'SECRETPHRASEFORDEV'
 
