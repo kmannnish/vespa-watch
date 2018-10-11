@@ -1,3 +1,4 @@
+import dateparser
 from django.db import models
 from django.urls import reverse
 
@@ -24,6 +25,24 @@ class VespawatchCreatedObservationsManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(originates_in_vespawatch=True)
 
+
+def create_observation_from_inat_data(inaturalist_data):
+    observation_time = dateparser.parse(inaturalist_data['observed_on_string'])
+
+    if observation_time:
+        # TODO: species: we have to reconcile with our Species table
+
+        Observation.objects.create(
+            originates_in_vespawatch=False,
+            subject=Observation.SPECIMEN,  # TODO: How to detect/manage properly?
+            inaturalist_id=inaturalist_data['id'],
+            species=species,
+            latitude=inaturalist_data['geojson']['coordinates'][1],
+            longitude=inaturalist_data['geojson']['coordinates'][0],
+            observation_time=observation_time)  # TODO: What to do with iNat observations without (parsable) time?
+    else:
+        # TODO: What to do with iNat observations without (parsable) time?
+        pass
 
 class Observation(models.Model):
     NEST = 'NE'
