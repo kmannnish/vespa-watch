@@ -43,6 +43,8 @@ INSTALLED_APPS = [
 
     # From others
     'crispy_forms',
+    'django_file_form',
+    'django_file_form.ajaxuploader',
     'markdownx',
 
     # Local helpers
@@ -144,6 +146,7 @@ LANGUAGES_AVAILABLE_IN_SELECTOR = [
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/img/'
 
 VESPAWATCH_PROJECT_ID = 22865  # Vespa-Watch project ID @ iNaturalist
 

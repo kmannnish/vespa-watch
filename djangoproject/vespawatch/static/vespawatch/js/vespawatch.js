@@ -32,6 +32,12 @@ function observationToHtml(obs) {
         html += '<a target="_blank" href="http://www.inaturalist.org/observations/' + obs.inaturalist_id + '">iNaturalist observation</a><br>';
     }
 
+    if (obs.imageUrls.length > 0 ) {
+        obs.imageUrls.forEach(function (img) {
+            html += '<img class="theme-img-thumb" src="' + img + '">'
+        });
+    }
+
     html += '<a href="/observations/' + obs.id + '/">View details</a>';
 
     return html;
