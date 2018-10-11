@@ -63,8 +63,12 @@
             </dl>
 
             {% if user.is_authenticated %}
-                <a href="{% url 'vespawatch:observation-update' observation.pk %}" class="btn btn-success">{% trans "Edit" %}</a>
-                <a href="{% url 'vespawatch:observation-delete' observation.pk %}" class="btn btn-danger">{% trans "Delete" %}</a>
+                {% if observation.originates_in_vespawatch %}
+                    <a href="{% url 'vespawatch:observation-update' observation.pk %}" class="btn btn-success"> {% trans "Edit" %}</a>
+                    <a href="{% url 'vespawatch:observation-delete' observation.pk %}" class="btn btn-danger"> {% trans "Delete" %}</a>
+                {% else %}
+                    <span>This observation was created on iNaturalist. You cannot edit it here</span>
+                {% endif %}
             {% endif %}
         </div>
     </div>
