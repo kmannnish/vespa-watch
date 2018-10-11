@@ -15,7 +15,4 @@ urlpatterns = [
 
     # API paths
     path('api/observations', views.observations_json, name='api_observations'),
-
-    # Tests
-    path('geocoding_test/', views.geocoding_test)
 ]
