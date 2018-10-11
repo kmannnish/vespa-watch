@@ -45,8 +45,8 @@ class Command(BaseCommand):
                             subject=Observation.SPECIMEN,  # TODO: How to detect/manage properly?
                             inaturalist_id=inat_observation['id'],
                             species=species,
-                            latitude=inat_observation['geojson']['coordinates'][0],
-                            longitude=inat_observation['geojson']['coordinates'][1],
+                            latitude=inat_observation['geojson']['coordinates'][1],
+                            longitude=inat_observation['geojson']['coordinates'][0],
                             observation_time=observation_time)  # TODO: What to do with iNat observations without (parsable) time?
                     else:
                         self.stdout.write(f'Cannot interpret time, skipping... observed_on_string={inat_observation["observed_on_string"]}')
