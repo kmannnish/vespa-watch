@@ -17,7 +17,7 @@ function observationToHtml(obs) {
     }
 
     if (obs.observation_time != null) {
-        html += obs.observation_time + '<br>';
+        html += moment(obs.observation_time).format('lll') + '<br>';
     }
 
     if (obs.subject != null) {

@@ -1,7 +1,9 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, ImageField, ClearableFileInput
 from .models import ManagementAction, Observation
 
 class PublicObservationForm(ModelForm):
+    file_field = ImageField(required=False, widget=ClearableFileInput(attrs={'multiple': True}))
+
     class Meta:
         model = Observation
         fields = ['species', 'individual_count', 'behaviour', 'subject', 'location', 'latitude', 'longitude',
