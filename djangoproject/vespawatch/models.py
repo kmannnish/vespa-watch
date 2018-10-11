@@ -1,10 +1,20 @@
 import dateparser
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.urls import reverse
 
 
 class Species(models.Model):
     name = models.CharField(max_length=100)
+
+    vernacular_name = models.CharField(max_length=100, blank=True)
+
+    inaturalist_push_taxon_id = models.BigIntegerField(null=True, blank=True,
+                                                       help_text="When pushing an observation to iNaturalist, we'll "
+                                                                 "use this taxon_id")
+    inaturalist_pull_taxon_ids = ArrayField(models.BigIntegerField(), blank=True, null=True,
+                                            help_text="When pulling observations from iNaturalist, reconcile according "
+                                                      "to those IDs.")
 
     def __str__(self):
         return  self.name
