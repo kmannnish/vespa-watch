@@ -103,7 +103,10 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# Vespa-watch specifics 
+# Mac OS X
+.DS_Store
+
+# Vespa-watch specific
 djangoproject/djangoproject/settings/settings_local.py
 .idea/
 djangoproject/testbed_inat_interactions.py
