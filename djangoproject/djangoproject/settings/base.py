@@ -149,6 +149,7 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/img/'
 
 VESPAWATCH_PROJECT_ID = 22865  # Vespa-Watch project ID @ iNaturalist
+VESPAWATCH_USER_ID = 1263313  # vespawatch user ID @ iNaturalist
 
 WEBSITE_NAME = "Vespa-Watch"
 

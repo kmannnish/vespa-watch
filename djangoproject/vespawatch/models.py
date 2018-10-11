@@ -1,3 +1,4 @@
+import dateparser
 from django.db import models
 from django.urls import reverse
 
@@ -11,6 +12,37 @@ class Species(models.Model):
     class Meta:
         verbose_name_plural = "species"
 
+
+
+class InatCreatedObservationsManager(models.Manager):
+    """The queryset only contains observations that originates from iNaturalist (NOT Vespa-Watch)"""
+    def get_queryset(self):
+        return super().get_queryset().filter(originates_in_vespawatch=False)
+
+
+class VespawatchCreatedObservationsManager(models.Manager):
+    """The queryset only contains observations that originates from Vespa-Watch"""
+    def get_queryset(self):
+        return super().get_queryset().filter(originates_in_vespawatch=True)
+
+
+def create_observation_from_inat_data(inaturalist_data):
+    observation_time = dateparser.parse(inaturalist_data['observed_on_string'])
+
+    if observation_time:
+        # TODO: species: we have to reconcile with our Species table
+
+        Observation.objects.create(
+            originates_in_vespawatch=False,
+            subject=Observation.SPECIMEN,  # TODO: How to detect/manage properly?
+            inaturalist_id=inaturalist_data['id'],
+            species=species,
+            latitude=inaturalist_data['geojson']['coordinates'][1],
+            longitude=inaturalist_data['geojson']['coordinates'][0],
+            observation_time=observation_time)  # TODO: What to do with iNat observations without (parsable) time?
+    else:
+        # TODO: What to do with iNat observations without (parsable) time?
+        pass
 
 class Observation(models.Model):
     NEST = 'NE'
@@ -32,6 +64,17 @@ class Observation(models.Model):
         (OTHER, 'Other')
     )
 
+    # Managers
+    objects = models.Manager()  # The default manager.
+    from_inat_objects = InatCreatedObservationsManager()
+    from_vespawatch_objects = VespawatchCreatedObservationsManager()
+
+    @property
+    def can_be_edited_or_deleted(self):
+        """Return True if this observation can be edited in Vespa-Watch (admin, ...)"""
+        return self.originates_in_vespawatch  # We can't edit obs that comes from iNaturalist (they're never pushed).
+
+    # Fields
     species = models.ForeignKey(Species, on_delete=models.PROTECT, blank=True, null=True)  # Blank allows because some nests can't be easily identified
     individual_count = models.IntegerField(blank=True, null=True)
     behaviour = models.CharField(max_length=2, choices=BEHAVIOUR_CHOICES, blank=True, null=True)
