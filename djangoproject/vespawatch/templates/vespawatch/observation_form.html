@@ -28,13 +28,14 @@
 {{ form.latitude|as_crispy_field }}
 {{ form.observation_time|as_crispy_field }}
 {{ form.comments|as_crispy_field }}
+{{ form.images|as_crispy_field }}
 {% if not user.is_authenticated %}
-{{ form.observer_title|as_crispy_field }}
-{{ form.observer_last_name|as_crispy_field }}
-{{ form.observer_first_name|as_crispy_field }}
-{{ form.observer_email|as_crispy_field }}
-{{ form.observer_is_beekeeper|as_crispy_field }}
-{{ form.observer_approve_data_process|as_crispy_field }}
-{{ form.observer_approve_display|as_crispy_field }}
-{{ form.observer_approve_data_distribution|as_crispy_field }}
+    {{ form.observer_title|as_crispy_field }}
+    {{ form.observer_last_name|as_crispy_field }}
+    {{ form.observer_first_name|as_crispy_field }}
+    {{ form.observer_email|as_crispy_field }}
+    {{ form.observer_is_beekeeper|as_crispy_field }}
+    {{ form.observer_approve_data_process|as_crispy_field }}
+    {{ form.observer_approve_display|as_crispy_field }}
+    {{ form.observer_approve_data_distribution|as_crispy_field }}
 {% endif %}

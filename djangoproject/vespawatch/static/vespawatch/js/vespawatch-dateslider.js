@@ -1,5 +1,4 @@
 var dateslider = function (el, start, end, callback) {
-    $(el).after('<span id="range-start" class="range-indicator"></span><br><span id="range-end" class="range-indicator"></span>');
     noUiSlider.create(el, {
     // Create two timestamps to define a range.
         range: {

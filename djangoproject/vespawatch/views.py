@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import DeleteView, DetailView
 from django.urls import reverse_lazy
-from .forms import ManagementActionForm, ObservationForm, PublicObservationForm
+from .forms import ManagementActionForm, ObservationForm, PublicObservationForm, ObservationPicture
 from .models import Observation, ManagementAction
 
 
@@ -37,9 +37,10 @@ def create_observation(request):
                 observer_approve_data_distribution=form.cleaned_data['observer_approve_data_distribution']
             )
             print(observation)
-            observation.save()
-            if form.cleaned_data['file_field']:
-                raise NotImplemented('I still have to figure out how to save images now')
+            form.save()
+            # if form.cleaned_data['images']:
+            #
+            #     raise NotImplemented('I still have to figure out how to save images now')
             return HttpResponseRedirect('/')
     else:
         if request.user.is_authenticated:

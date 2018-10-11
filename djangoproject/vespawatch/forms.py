@@ -1,8 +1,8 @@
 from django.forms import ModelForm, ImageField, ClearableFileInput
-from .models import ManagementAction, Observation
+from .models import ManagementAction, Observation, ObservationPicture
 
 class PublicObservationForm(ModelForm):
-    file_field = ImageField(required=False, widget=ClearableFileInput(attrs={'multiple': True}))
+    images = ImageField(required=False, widget=ClearableFileInput(attrs={'multiple': True}))
 
     class Meta:
         model = Observation
@@ -13,13 +13,28 @@ class PublicObservationForm(ModelForm):
                   'observer_approve_data_distribution'
         ]
 
+    def save(self, *args, **kwargs):
+        public_observation = super(PublicObservationForm, self).save(*args, **kwargs)
+        if hasattr(self.files, 'getlist'):
+            for image in self.files.getlist('images'):
+                ObservationPicture.objects.create(observation=public_observation, image=image)
+
 
 class ObservationForm(ModelForm):
+    images = ImageField(required=False, widget=ClearableFileInput(attrs={'multiple': True}))
+
     class Meta:
         model = Observation
         fields = ['species', 'individual_count', 'behaviour', 'subject', 'location', 'latitude', 'longitude',
                   'inaturalist_id', 'observation_time', 'comments'
         ]
+
+    def save(self, *args, **kwargs):
+        public_observation = super(ObservationForm, self).save(*args, **kwargs)
+        if hasattr(self.files, 'getlist'):
+            for image in self.files.getlist('images'):
+                ObservationPicture.objects.create(observation=public_observation, image=image)
+
 
 
 class ManagementActionForm(ModelForm):

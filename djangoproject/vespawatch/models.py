@@ -129,7 +129,8 @@ class Observation(models.Model):
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,
             'observation_time': self.observation_time.timestamp() * 1000,
-            'comments': self.comments
+            'comments': self.comments,
+            'imageUrls': [x.image.url for x in self.observationpicture_set.all()]
         }
 
     def __str__(self):
