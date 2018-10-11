@@ -12,6 +12,19 @@ class Species(models.Model):
         verbose_name_plural = "species"
 
 
+
+class InatCreatedObservationsManager(models.Manager):
+    """The queryset only contains observations that originates from iNaturalist (NOT Vespa-Watch)"""
+    def get_queryset(self):
+        return super().get_queryset().filter(originates_in_vespawatch=False)
+
+
+class VespawatchCreatedObservationsManager(models.Manager):
+    """The queryset only contains observations that originates from Vespa-Watch"""
+    def get_queryset(self):
+        return super().get_queryset().filter(originates_in_vespawatch=True)
+
+
 class Observation(models.Model):
     NEST = 'NE'
     SPECIMEN = 'SP'
@@ -32,6 +45,17 @@ class Observation(models.Model):
         (OTHER, 'Other')
     )
 
+    # Managers
+    objects = models.Manager()  # The default manager.
+    from_inat_objects = InatCreatedObservationsManager()
+    from_vespawatch_objects = VespawatchCreatedObservationsManager()
+
+    @property
+    def can_be_edited_or_deleted(self):
+        """Return True if this observation can be edited in Vespa-Watch (admin, ...)"""
+        return self.originates_in_vespawatch  # We can't edit obs that comes from iNaturalist (they're never pushed).
+
+    # Fields
     species = models.ForeignKey(Species, on_delete=models.PROTECT, blank=True, null=True)  # Blank allows because some nests can't be easily identified
     individual_count = models.IntegerField(blank=True, null=True)
     behaviour = models.CharField(max_length=2, choices=BEHAVIOUR_CHOICES, blank=True, null=True)
