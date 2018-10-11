@@ -5,13 +5,13 @@
 {% load page_fragments %}
 
 {% block content %}
-<div class="container">
     <div class="row">
         <div class="col">
             <h1>{% trans "Hello, world!" %}</h1>
 
             {% get_page_fragment 'welcome' %}
         </div>
+<main class="container">
     </div>
 
     <div class="row">
@@ -33,7 +33,7 @@
             <div id="map"></div>
         </div>
     </div>
-</div>
+</main>
 {% endblock %}
 
 {% block extra_scripts %}
