@@ -128,7 +128,7 @@ class Observation(models.Model):
 
 
 class ObservationPicture(models.Model):
-    observation = models.ForeignKey(Observation, on_delete=models.PROTECT)
+    observation = models.ForeignKey(Observation, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='observation_pictures/')
 
 

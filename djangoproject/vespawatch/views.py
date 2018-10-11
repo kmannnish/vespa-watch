@@ -4,8 +4,8 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import DeleteView, DetailView
 from django.urls import reverse_lazy
-from .forms import ManagementActionForm, ObservationForm, PublicObservationForm, ObservationPicture
-from .models import Observation, ManagementAction
+from .forms import ManagementActionForm, ObservationForm, ImageFormset
+from .models import Observation, ManagementAction, ObservationPicture
 
 
 def index(request):
@@ -14,39 +14,12 @@ def index(request):
 
 def create_observation(request):
     if request.method == 'POST':
-        form = PublicObservationForm(request.POST)
+        form = ObservationForm(request.POST, request.FILES)
         if form.is_valid():
-            observation = Observation(
-                species=form.cleaned_data['species'],
-                individual_count=form.cleaned_data['individual_count'],
-                behaviour=form.cleaned_data['behaviour'],
-                subject=form.cleaned_data['subject'],
-                observation_time=form.cleaned_data['observation_time'],
-                location=form.cleaned_data['location'],
-                latitude=form.cleaned_data['latitude'],
-                longitude=form.cleaned_data['longitude'],
-                comments=form.cleaned_data['comments'],
-                observer_title=form.cleaned_data['observer_title'],
-                observer_last_name=form.cleaned_data['observer_last_name'],
-                observer_first_name=form.cleaned_data['observer_first_name'],
-                observer_email=form.cleaned_data['observer_email'],
-                observer_phone=form.cleaned_data['observer_phone'],
-                observer_is_beekeeper=form.cleaned_data['observer_is_beekeeper'],
-                observer_approve_data_process=form.cleaned_data['observer_approve_data_process'],
-                observer_approve_display=form.cleaned_data['observer_approve_display'],
-                observer_approve_data_distribution=form.cleaned_data['observer_approve_data_distribution']
-            )
-            print(observation)
             form.save()
-            # if form.cleaned_data['images']:
-            #
-            #     raise NotImplemented('I still have to figure out how to save images now')
             return HttpResponseRedirect('/')
     else:
-        if request.user.is_authenticated:
-            form = ObservationForm()
-        else:
-            form = PublicObservationForm()
+        form = ObservationForm()
 
     return render(request, 'vespawatch/observation_create.html', {'form': form})
 
@@ -55,14 +28,26 @@ def create_observation(request):
 def update_observation(request, pk):
     observation = get_object_or_404(Observation, pk=pk)
     if request.method == 'POST':
-        form = PublicObservationForm(request.POST, instance=observation)
+        image_formset = ImageFormset(request.POST, request.FILES, instance=observation)
+        form = ObservationForm(request.POST, files=request.FILES, instance=observation)
         if form.is_valid():
             form.save()
+            if image_formset.is_valid():
+                instances = image_formset.save()
+                print(instances)
+                for obj in image_formset.deleted_objects:
+                    print('to delete')
+                    print(obj)
+                    if obj.pk:
+                        obj.delete()
+                print('done')
             return HttpResponseRedirect('/')
 
     elif request.method == 'GET':
-        form = PublicObservationForm(instance=observation)
-    return render(request, 'vespawatch/observation_update.html', {'form': form, 'object': observation})
+        form = ObservationForm(instance=observation)
+        image_formset = ImageFormset(instance=observation)
+    return render(request, 'vespawatch/observation_update.html',
+                  {'form': form, 'object': observation, 'image_formset': image_formset})
 
 
 class ObservationDetail(DetailView):

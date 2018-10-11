@@ -35,7 +35,7 @@
                 <dd>{{ observation.inaturalist_id }}</dd>
 
                 <dt>{% trans "Observation time" %}</dt>
-                <dd>{{ observation.inaturalist_id }}</dd>
+                <dd>{{ observation.observation_time }}</dd>
 
                 <dt>{% trans "Observer" %}</dt>
                 <dd>{{ observation.observer_title }} {{ observation.observer_first_name }} {{ observation.observer_last_name }}</dd>
@@ -61,6 +61,14 @@
                 <dt>{% trans "Comments" %}</dt>
                 <dd>{{ observation.comments }}</dd>
             </dl>
+
+        {% if observation.observationpicture_set %}
+            {% for image in observation.observationpicture_set.all %}
+                <img src="{{ image.image.url }}">
+            {% endfor %}
+        {% endif %}
+
+        <br>
 
             {% if user.is_authenticated %}
                 {% if observation.originates_in_vespawatch %}

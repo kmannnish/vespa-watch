@@ -15,7 +15,7 @@
                 {{ form.errors }}
             {% endif %}
 
-            <form method="post" action="{% url 'vespawatch:observation-add' %}" novalidate>
+            <form method="post" action="{% url 'vespawatch:observation-add' %}" enctype='multipart/form-data' novalidate>
                 {% include 'vespawatch/observation_form.html' %}
                 <button type="submit" class="btn btn-success">{% trans "Save observation" %}</button>
                 <a href="{% url 'vespawatch:index' %}" class="btn btn-light">{% trans "Cancel" %}</a>

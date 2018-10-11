@@ -28,7 +28,10 @@
 {{ form.latitude|as_crispy_field }}
 {{ form.observation_time|as_crispy_field }}
 {{ form.comments|as_crispy_field }}
-{{ form.images|as_crispy_field }}
+{{ image_formset.management_form }}
+{% for f in image_formset %}
+    {{ f|crispy }}
+{% endfor %}
 {% if not user.is_authenticated %}
     {{ form.observer_title|as_crispy_field }}
     {{ form.observer_last_name|as_crispy_field }}

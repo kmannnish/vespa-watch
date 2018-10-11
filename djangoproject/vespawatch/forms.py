@@ -1,9 +1,8 @@
-from django.forms import ModelForm, ImageField, ClearableFileInput
+from django.forms import inlineformset_factory, ModelForm
 from .models import ManagementAction, Observation, ObservationPicture
 
-class PublicObservationForm(ModelForm):
-    images = ImageField(required=False, widget=ClearableFileInput(attrs={'multiple': True}))
 
+class ObservationForm(ModelForm):
     class Meta:
         model = Observation
         fields = ['species', 'individual_count', 'behaviour', 'subject', 'location', 'latitude', 'longitude',
@@ -14,27 +13,18 @@ class PublicObservationForm(ModelForm):
         ]
 
     def save(self, *args, **kwargs):
-        public_observation = super(PublicObservationForm, self).save(*args, **kwargs)
+        observation = super().save(*args, **kwargs)
         if hasattr(self.files, 'getlist'):
             for image in self.files.getlist('images'):
-                ObservationPicture.objects.create(observation=public_observation, image=image)
+                ObservationPicture.objects.create(observation=observation, image=image)
 
-
-class ObservationForm(ModelForm):
-    images = ImageField(required=False, widget=ClearableFileInput(attrs={'multiple': True}))
-
+class ObservationPictureForm(ModelForm):
     class Meta:
-        model = Observation
-        fields = ['species', 'individual_count', 'behaviour', 'subject', 'location', 'latitude', 'longitude',
-                  'inaturalist_id', 'observation_time', 'comments'
-        ]
+        model = ObservationPicture
+        fields = ['observation', 'image']
 
-    def save(self, *args, **kwargs):
-        public_observation = super(ObservationForm, self).save(*args, **kwargs)
-        if hasattr(self.files, 'getlist'):
-            for image in self.files.getlist('images'):
-                ObservationPicture.objects.create(observation=public_observation, image=image)
 
+ImageFormset = inlineformset_factory(Observation, ObservationPicture, fields=('image',), extra=2)
 
 
 class ManagementActionForm(ModelForm):

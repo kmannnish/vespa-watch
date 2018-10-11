@@ -34,7 +34,7 @@ function observationToHtml(obs) {
 
     if (obs.imageUrls.length > 0 ) {
         obs.imageUrls.forEach(function (img) {
-            html += '<img class="theme-img-thumb" src="' + img + '">'
+            html += '<img class="theme-img-thumb" src="' + img + '"><br>'
         });
     }
 
