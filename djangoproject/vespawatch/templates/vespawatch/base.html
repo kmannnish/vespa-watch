@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -18,7 +19,57 @@
         <link rel="stylesheet" href="{% static 'vespawatch/css/vespawatch.css' %}"/>
     </head>
     <body>
-        {% include 'vespawatch/_navbar.html' %}
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">{{ settings.WEBSITE_NAME }}</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-content">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbar-content">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#">Pest control</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#">Identification</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#">About</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav mr-2">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="user-dropdown" role="button" data-toggle="dropdown">{{ user.first_name }} {{ user.last_name }} ({{ user.username }})</a>
+                        <div class="dropdown-menu" aria-labelledby="user-dropdown">
+                            <a class="dropdown-item" href="{% url 'logout' %}">Log out</a>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="btn btn-primary" href="{% url 'login' %}">Log in</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {# Requires _language_selector.js #}
+                    <form id="lang-form" class="form-inline" action="{% url 'set_language' %}" method="post">
+                    {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ redirect_to }}">
+                        <select class="form-control form-control-sm" name="language" id="lang">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_language_info_list for settings.LANGUAGES_AVAILABLE_IN_SELECTOR as languages %}
+                        {% for language in languages %}
+                            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>{{ language.name_local }}</option>
+                        {% endfor %}
+                        </select>
+                    </form>
+                </ul>
+            </div>
+        </nav>
 
         {% block content %}
         {% endblock %}
