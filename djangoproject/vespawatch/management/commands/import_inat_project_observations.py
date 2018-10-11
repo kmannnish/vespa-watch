@@ -4,7 +4,7 @@
 from django.core.management.base import BaseCommand, CommandError
 import dateparser
 
-from inaturalist.node_api import get_all_observations
+from pyinaturalist.node_api import get_all_observations
 
 from django.conf import settings
 
