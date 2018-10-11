@@ -43,9 +43,8 @@ INSTALLED_APPS = [
 
     # From others
     'crispy_forms',
-    'django_file_form',
-    'django_file_form.ajaxuploader',
     'markdownx',
+    'modeltranslation',
 
     # Local helpers
     'page_fragments',

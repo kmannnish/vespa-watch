@@ -10,7 +10,7 @@ from django.conf import settings
 from pyinaturalist.node_api import get_all_observations
 
 from vespawatch.management.commands._utils import VespaWatchCommand
-from vespawatch.models import Observation, create_observation_from_inat_data
+from vespawatch.models import Observation, create_observation_from_inat_data, SpeciesMatchError, ParseDateError
 
 PULL_CRITERIA = {
     'project_id': settings.VESPAWATCH_PROJECT_ID,
@@ -47,4 +47,9 @@ class Command(VespaWatchCommand):
                 self.w("This observation initially comes from a regular iNaturalist user.")
                 # All those observations have been dropped before: recreate
                 self.w("We create a local observation for it.")
-                create_observation_from_inat_data(inat_observation_data)
+                try:
+                    create_observation_from_inat_data(inat_observation_data)
+                except SpeciesMatchError:
+                    self.w("Error: cannot match species, skipping: " + str(inat_observation_data))
+                except ParseDateError:
+                    self.w("Error: cannot parse date, skipping: " + str(inat_observation_data))

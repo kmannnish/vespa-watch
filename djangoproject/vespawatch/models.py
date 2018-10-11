@@ -1,10 +1,20 @@
 import dateparser
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.urls import reverse
 
 
 class Species(models.Model):
     name = models.CharField(max_length=100)
+
+    vernacular_name = models.CharField(max_length=100, blank=True)
+
+    inaturalist_push_taxon_id = models.BigIntegerField(null=True, blank=True,
+                                                       help_text="When pushing an observation to iNaturalist, we'll "
+                                                                 "use this taxon_id")
+    inaturalist_pull_taxon_ids = ArrayField(models.BigIntegerField(), blank=True, null=True,
+                                            help_text="When pulling observations from iNaturalist, reconcile according "
+                                                      "to those IDs.")
 
     def __str__(self):
         return  self.name
@@ -26,11 +36,27 @@ class VespawatchCreatedObservationsManager(models.Manager):
         return super().get_queryset().filter(originates_in_vespawatch=True)
 
 
+class SpeciesMatchError(Exception):
+    """Unable to match this (iNaturalist) taxon id to our Species table"""
+
+class ParseDateError(Exception):
+    """Cannot parse this date"""
+
 def create_observation_from_inat_data(inaturalist_data):
+    """ Creates an observation in our local database according to the data from iNaturalist API
+
+    Raises:
+        SpeciesMatchError
+    """
     observation_time = dateparser.parse(inaturalist_data['observed_on_string'])
 
     if observation_time:
         # TODO: species: we have to reconcile with our Species table
+
+        try:
+            species = Species.objects.get(inaturalist_pull_taxon_ids__contains=[inaturalist_data['taxon']['id']])
+        except Species.DoesNotExist:
+            raise SpeciesMatchError
 
         Observation.objects.create(
             originates_in_vespawatch=False,
@@ -41,8 +67,7 @@ def create_observation_from_inat_data(inaturalist_data):
             longitude=inaturalist_data['geojson']['coordinates'][0],
             observation_time=observation_time)  # TODO: What to do with iNat observations without (parsable) time?
     else:
-        # TODO: What to do with iNat observations without (parsable) time?
-        pass
+        raise ParseDateError
 
 class Observation(models.Model):
     NEST = 'NE'
