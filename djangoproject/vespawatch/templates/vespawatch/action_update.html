@@ -3,26 +3,25 @@
 {% load i18n %}
 
 {% block content %}
-    <div class="container">
-      <div class="row justify-content-center">
+<div class="container">
+    <div class="row justify-content-center">
         <div class="col-8">
-          <h1 class="mt-2">{% trans "Management action" %}</h1>
-          <hr class="mt-0 mb-4">
+            <h1 class="mt-2">{% trans "Management action" %}</h1>
+            <hr class="mt-0 mb-4">
 
             {% if form.errors %}
                 {% trans "Please correct the errors below" %}
                 {{ form.errors }}
             {% endif %}
 
-          <form method="post" action="{% url 'vespawatch:action-update' object.pk %}" novalidate>
+            <form method="post" action="{% url 'vespawatch:action-update' object.pk %}" novalidate>
             {% csrf_token %}
             {{ form|crispy }}
-            <button type="submit" class="btn btn-success">{% trans "Save action" %}</button>
-            <a href="{% url 'vespawatch:action-delete' object.pk %}" class="btn btn-danger">{% trans "Delete" %}</a>
-            <a href="{% url 'vespawatch:index' %}" class="btn btn-light">{% trans "Cancel" %}</a>
+                <button type="submit" class="btn btn-success">{% trans "Save action" %}</button>
+                <a href="{% url 'vespawatch:action-delete' object.pk %}" class="btn btn-danger">{% trans "Delete" %}</a>
+                <a href="{% url 'vespawatch:index' %}" class="btn btn-light">{% trans "Cancel" %}</a>
           </form>
-
         </div>
-      </div>
     </div>
+</div>
 {% endblock %}

@@ -20,10 +20,8 @@
     <body>
         {% include 'vespawatch/_navbar.html' %}
 
-        <div class="container">
-            {% block content %}
-            {% endblock %}
-        </div>
+        {% block content %}
+        {% endblock %}
 
         <!-- JS -->
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -38,7 +36,7 @@
         <script src="{% static 'vespawatch/js/wNumb.js' %}"></script>
         <script src="{% static 'vespawatch/js/vespawatch-dateslider.js' %}"></script>        
 
-        {% block extrascripts %}
+        {% block extra_scripts %}
         {% endblock %}
     </body>
 </html>
