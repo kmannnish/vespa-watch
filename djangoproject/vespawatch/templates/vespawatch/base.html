@@ -28,16 +28,16 @@
             <div class="collapse navbar-collapse" id="navbar-content">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
+                        <a class="nav-link" href="/">{% trans 'Home' %}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link disabled" href="#">Pest control</a>
+                        <a class="nav-link disabled" href="#">{% trans 'Pest control' %}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link disabled" href="#">Identification</a>
+                        <a class="nav-link disabled" href="#">{% trans 'Identification' %}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link disabled" href="#">About</a>
+                        <a class="nav-link disabled" href="#">{% trans 'About' %}</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav mr-3">
@@ -45,12 +45,12 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="user-dropdown" role="button" data-toggle="dropdown">{{ user.first_name }} {{ user.last_name }} ({{ user.username }})</a>
                         <div class="dropdown-menu" aria-labelledby="user-dropdown">
-                            <a class="dropdown-item" href="{% url 'logout' %}">Log out</a>
+                            <a class="dropdown-item" href="{% url 'logout' %}">{% trans 'Log out' %}</a>
                         </div>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="btn btn-primary btn-sm" href="{% url 'login' %}">Log in</a>
+                        <a class="btn btn-primary btn-sm" href="{% url 'login' %}">{% trans 'Log in' %}</a>
                     </li>
                     {% endif %}
                 </ul>
