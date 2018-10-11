@@ -9,6 +9,7 @@ idna==2.7
 Markdown==3.0.1
 Pillow==5.2.0
 psycopg2-binary==2.7.5
+pyinaturalist==0.1.0
 python-dateutil==2.7.3
 pytz==2018.5
 regex==2018.8.29
