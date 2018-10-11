@@ -14,6 +14,14 @@ DATABASES = {
 STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
 STATIC_URL = '/static/'
 
+# Allowed hosts
+ALLOWED_HOSTS = [
+    '.elasticbeanstalk.com',
+    '.eu-west-1.elb.amazonaws.com',
+    '.vespawatch-dev.eu-west-1.elasticbeanstalk.com',
+    '.localhost',
+]
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'SECRETPHRASEFORDEV'
 
