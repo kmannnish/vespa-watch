@@ -28,7 +28,7 @@
             <div class="collapse navbar-collapse" id="navbar-content">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link disabled" href="/">Home</a>
+                        <a class="nav-link" href="/">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link disabled" href="#">Pest control</a>
@@ -40,7 +40,7 @@
                         <a class="nav-link disabled" href="#">About</a>
                     </li>
                 </ul>
-                <ul class="navbar-nav mr-2">
+                <ul class="navbar-nav mr-3">
                     {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="user-dropdown" role="button" data-toggle="dropdown">{{ user.first_name }} {{ user.last_name }} ({{ user.username }})</a>
@@ -50,13 +50,13 @@
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="btn btn-primary" href="{% url 'login' %}">Log in</a>
+                        <a class="btn btn-primary btn-sm" href="{% url 'login' %}">Log in</a>
                     </li>
                     {% endif %}
                 </ul>
+
                 <ul class="navbar-nav">
-                    {# Requires _language_selector.js #}
-                    <form id="lang-form" class="form-inline" action="{% url 'set_language' %}" method="post">
+                    <form class="form-inline" action="{% url 'set_language' %}" method="post" id="lang-form">
                     {% csrf_token %}
                         <input name="next" type="hidden" value="{{ redirect_to }}">
                         <select class="form-control form-control-sm" name="language" id="lang">
