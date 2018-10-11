@@ -2,12 +2,11 @@
 {% load i18n %}
 
 {% block content %}
-    <div class="container">
-      <div class="row justify-content-center">
+<div class="container">
+    <div class="row justify-content-center">
         <div class="col-8">
-          <h1 class="mt-2">{% trans "Observation" %}</h1>
-          <hr class="mt-0 mb-4">
-
+            <h1 class="mt-2">{% trans "Observation" %}</h1>
+            <hr class="mt-0 mb-4">
 
             <dl>
                 <dt>{% trans "Species" %}</dt>
@@ -67,8 +66,7 @@
                 <a href="{% url 'vespawatch:observation-update' observation.pk %}" class="btn btn-success">{% trans "Edit" %}</a>
                 <a href="{% url 'vespawatch:observation-delete' observation.pk %}" class="btn btn-danger">{% trans "Delete" %}</a>
             {% endif %}
-
         </div>
-      </div>
     </div>
+</div>
 {% endblock %}
