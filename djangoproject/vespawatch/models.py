@@ -1,7 +1,10 @@
+from datetime import datetime
+
 import dateparser
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.urls import reverse
+from django.utils.timezone import is_naive, make_aware
 
 
 class Species(models.Model):
@@ -48,7 +51,24 @@ def create_observation_from_inat_data(inaturalist_data):
     Raises:
         SpeciesMatchError
     """
-    observation_time = dateparser.parse(inaturalist_data['observed_on_string'])
+    observation_time = dateparser.parse(inaturalist_data['observed_on_string'],
+                                        settings={'TIMEZONE': inaturalist_data['observed_time_zone']})
+    if observation_time is None:
+        # Sometimes, dateparser doesn't understand the string but we have the bits and pieces in
+        # inaturalist_data['observed_on_details']
+        details = inaturalist_data['observed_on_details']
+        observation_time = datetime(year=details['year'],
+                                    month=details['month'],
+                                    day=details['day'],
+                                    hour=details['hour'])  # in the observed cases, we had nothing more precise than the
+                                                           # hour
+
+    # Sometimes, the time is naive (even when specifying it to dateparser), because (for the detected cases, at least)
+    # The time is 00:00:00. In that case we make it aware to avoid Django warnings (in the local time zone since all
+    # observations occur in Belgium
+    if is_naive(observation_time):
+        # Some dates (apparently)
+        observation_time = make_aware(observation_time)
 
     if observation_time:
         # TODO: species: we have to reconcile with our Species table
