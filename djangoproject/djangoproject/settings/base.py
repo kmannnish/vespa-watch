@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     # From others
     'crispy_forms',
     'markdownx',
+    'modeltranslation',
 
     # Local helpers
     'page_fragments',
@@ -144,6 +145,7 @@ LANGUAGES_AVAILABLE_IN_SELECTOR = [
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/img/'
 
 VESPAWATCH_PROJECT_ID = 22865  # Vespa-Watch project ID @ iNaturalist
 VESPAWATCH_USER_ID = 1263313  # vespawatch user ID @ iNaturalist
@@ -151,6 +153,7 @@ VESPAWATCH_USER_ID = 1263313  # vespawatch user ID @ iNaturalist
 WEBSITE_NAME = "Vespa-Watch"
 
 SETTINGS_EXPORT = [
+    'DEBUG',
     'WEBSITE_NAME',
     'LANGUAGES',
     'LANGUAGES_AVAILABLE_IN_SELECTOR',

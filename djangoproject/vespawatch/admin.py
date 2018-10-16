@@ -4,7 +4,7 @@ from .models import Species, Observation, ObservationPicture, ManagementAction
 
 @admin.register(Species)
 class SpeciesAdmin(admin.ModelAdmin):
-    pass
+    readonly_fields = ('inaturalist_pull_taxon_ids', 'inaturalist_push_taxon_id')
 
 
 class PictureInline(admin.TabularInline):

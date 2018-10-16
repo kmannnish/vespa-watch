@@ -17,24 +17,14 @@
     </div>
 </div>
 
-<main class="container">
+<main class="container" id="vw-main-app">
     <div>
     {% get_page_fragment 'welcome' %}
     </div>
 
     <div class="row">
         <div class="col">
-            <div id="range"></div>
-            <span id="range-start"></span>
-            <span id="range-end"></span>
-        </div>
-        <div class="col">
-            
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col">
+            <vw-observations-viz></vw-observations-viz>
             <div id="map"></div>
         </div>
     </div>

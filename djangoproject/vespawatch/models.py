@@ -1,10 +1,23 @@
+from datetime import datetime
+
 import dateparser
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.urls import reverse
+from django.utils.timezone import is_naive, make_aware
 
 
 class Species(models.Model):
     name = models.CharField(max_length=100)
+
+    vernacular_name = models.CharField(max_length=100, blank=True)
+
+    inaturalist_push_taxon_id = models.BigIntegerField(null=True, blank=True,
+                                                       help_text="When pushing an observation to iNaturalist, we'll "
+                                                                 "use this taxon_id")
+    inaturalist_pull_taxon_ids = ArrayField(models.BigIntegerField(), blank=True, null=True,
+                                            help_text="When pulling observations from iNaturalist, reconcile according "
+                                                      "to those IDs.")
 
     def __str__(self):
         return  self.name
@@ -26,11 +39,44 @@ class VespawatchCreatedObservationsManager(models.Manager):
         return super().get_queryset().filter(originates_in_vespawatch=True)
 
 
+class SpeciesMatchError(Exception):
+    """Unable to match this (iNaturalist) taxon id to our Species table"""
+
+class ParseDateError(Exception):
+    """Cannot parse this date"""
+
 def create_observation_from_inat_data(inaturalist_data):
-    observation_time = dateparser.parse(inaturalist_data['observed_on_string'])
+    """ Creates an observation in our local database according to the data from iNaturalist API
+
+    Raises:
+        SpeciesMatchError
+    """
+    observation_time = dateparser.parse(inaturalist_data['observed_on_string'],
+                                        settings={'TIMEZONE': inaturalist_data['observed_time_zone']})
+    if observation_time is None:
+        # Sometimes, dateparser doesn't understand the string but we have the bits and pieces in
+        # inaturalist_data['observed_on_details']
+        details = inaturalist_data['observed_on_details']
+        observation_time = datetime(year=details['year'],
+                                    month=details['month'],
+                                    day=details['day'],
+                                    hour=details['hour'])  # in the observed cases, we had nothing more precise than the
+                                                           # hour
+
+    # Sometimes, the time is naive (even when specifying it to dateparser), because (for the detected cases, at least)
+    # The time is 00:00:00. In that case we make it aware to avoid Django warnings (in the local time zone since all
+    # observations occur in Belgium
+    if is_naive(observation_time):
+        # Some dates (apparently)
+        observation_time = make_aware(observation_time)
 
     if observation_time:
         # TODO: species: we have to reconcile with our Species table
+
+        try:
+            species = Species.objects.get(inaturalist_pull_taxon_ids__contains=[inaturalist_data['taxon']['id']])
+        except Species.DoesNotExist:
+            raise SpeciesMatchError
 
         Observation.objects.create(
             originates_in_vespawatch=False,
@@ -41,8 +87,7 @@ def create_observation_from_inat_data(inaturalist_data):
             longitude=inaturalist_data['geojson']['coordinates'][0],
             observation_time=observation_time)  # TODO: What to do with iNat observations without (parsable) time?
     else:
-        # TODO: What to do with iNat observations without (parsable) time?
-        pass
+        raise ParseDateError
 
 class Observation(models.Model):
     NEST = 'NE'
@@ -119,7 +164,8 @@ class Observation(models.Model):
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,
             'observation_time': self.observation_time.timestamp() * 1000,
-            'comments': self.comments
+            'comments': self.comments,
+            'imageUrls': [x.image.url for x in self.observationpicture_set.all()]
         }
 
     def __str__(self):
@@ -127,7 +173,7 @@ class Observation(models.Model):
 
 
 class ObservationPicture(models.Model):
-    observation = models.ForeignKey(Observation, on_delete=models.PROTECT)
+    observation = models.ForeignKey(Observation, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='observation_pictures/')
 
 

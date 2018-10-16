@@ -110,3 +110,4 @@ venv.bak/
 djangoproject/djangoproject/settings/settings_local.py
 .idea/
 djangoproject/testbed_inat_interactions.py
+djangoproject/observation_pictures

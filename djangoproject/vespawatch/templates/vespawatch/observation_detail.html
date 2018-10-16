@@ -35,7 +35,7 @@
                 <dd>{{ observation.inaturalist_id }}</dd>
 
                 <dt>{% trans "Observation time" %}</dt>
-                <dd>{{ observation.inaturalist_id }}</dd>
+                <dd>{{ observation.observation_time }}</dd>
 
                 <dt>{% trans "Observer" %}</dt>
                 <dd>{{ observation.observer_title }} {{ observation.observer_first_name }} {{ observation.observer_last_name }}</dd>
@@ -62,9 +62,21 @@
                 <dd>{{ observation.comments }}</dd>
             </dl>
 
+        {% if observation.observationpicture_set %}
+            {% for image in observation.observationpicture_set.all %}
+                <img src="{{ image.image.url }}">
+            {% endfor %}
+        {% endif %}
+
+        <br>
+
             {% if user.is_authenticated %}
-                <a href="{% url 'vespawatch:observation-update' observation.pk %}" class="btn btn-success">{% trans "Edit" %}</a>
-                <a href="{% url 'vespawatch:observation-delete' observation.pk %}" class="btn btn-danger">{% trans "Delete" %}</a>
+                {% if observation.originates_in_vespawatch %}
+                    <a href="{% url 'vespawatch:observation-update' observation.pk %}" class="btn btn-success"> {% trans "Edit" %}</a>
+                    <a href="{% url 'vespawatch:observation-delete' observation.pk %}" class="btn btn-danger"> {% trans "Delete" %}</a>
+                {% else %}
+                    <span>This observation was created on iNaturalist. You cannot edit it here</span>
+                {% endif %}
             {% endif %}
         </div>
     </div>

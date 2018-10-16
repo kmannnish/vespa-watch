@@ -1,9 +1,8 @@
-from django.forms import ModelForm, ImageField, ClearableFileInput
-from .models import ManagementAction, Observation
+from django.forms import inlineformset_factory, ModelForm
+from .models import ManagementAction, Observation, ObservationPicture
 
-class PublicObservationForm(ModelForm):
-    file_field = ImageField(required=False, widget=ClearableFileInput(attrs={'multiple': True}))
 
+class ObservationForm(ModelForm):
     class Meta:
         model = Observation
         fields = ['species', 'individual_count', 'behaviour', 'subject', 'location', 'latitude', 'longitude',
@@ -13,13 +12,19 @@ class PublicObservationForm(ModelForm):
                   'observer_approve_data_distribution'
         ]
 
+    def save(self, *args, **kwargs):
+        observation = super().save(*args, **kwargs)
+        if hasattr(self.files, 'getlist'):
+            for image in self.files.getlist('images'):
+                ObservationPicture.objects.create(observation=observation, image=image)
 
-class ObservationForm(ModelForm):
+class ObservationPictureForm(ModelForm):
     class Meta:
-        model = Observation
-        fields = ['species', 'individual_count', 'behaviour', 'subject', 'location', 'latitude', 'longitude',
-                  'inaturalist_id', 'observation_time', 'comments'
-        ]
+        model = ObservationPicture
+        fields = ['observation', 'image']
+
+
+ImageFormset = inlineformset_factory(Observation, ObservationPicture, fields=('image',), extra=2)
 
 
 class ManagementActionForm(ModelForm):
