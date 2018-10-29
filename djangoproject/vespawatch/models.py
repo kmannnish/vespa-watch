@@ -154,6 +154,12 @@ class Observation(models.Model):
     def get_absolute_url(self):
         return reverse('vespawatch:observation-update', kwargs={'pk': self.pk})
 
+    def get_species_name(self):
+        if self.species:
+            return self.species.name
+        else:
+            return ''
+
     def as_dict(self):
         return {
             'id': self.pk,
@@ -169,7 +175,7 @@ class Observation(models.Model):
         }
 
     def __str__(self):
-        return f'{self.get_subject_display()} of {self.species.name}, {self.observation_time.strftime("%Y-%m-%d")}'
+        return f'{self.get_subject_display()} of {self.get_species_name()}, {self.observation_time.strftime("%Y-%m-%d")}'
 
 
 class ObservationPicture(models.Model):

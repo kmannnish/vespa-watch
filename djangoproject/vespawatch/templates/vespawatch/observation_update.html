@@ -4,7 +4,7 @@
 {% load i18n %}
 
 {% block content %}
-<main class="container">
+<main id="vw-main-app" class="container">
     <div class="row justify-content-center">
         <div class="col-8">
             <h1 class="mt-2">{% trans "Observation" %}</h1>
@@ -24,70 +24,4 @@
         </div>
     </div>
 </main>
-{% endblock %}
-
-{% block extra_scripts %}
-<script src="{% static 'vespawatch/js/leaflet-geosearch.min.js' %}"></script>
-<script>
-    var mapId = "map";
-    var mapPosition = [50.5, 4.5];
-    var mapZoom = 8;
-
-    var $latField = $('#id_latitude');
-    var $lngField = $('#id_longitude');
-
-    var marker;
-
-    var setLatLngFields = function(lat, lng) {
-        $latField.val(lat);
-        $lngField.val(lng);
-    };
-
-    var setMarker = function(lat, lng) {
-        if (marker != undefined) { map.removeLayer(marker); }; // Only one!
-
-        // Create the marker
-        marker = L.marker([lat, lng], {
-            draggable: true
-        }).addTo(map);
-
-        // Set the lat/lng fields for the first time...
-        setLatLngFields(marker.getLatLng().lat, marker.getLatLng().lng);
-
-        // ... Then make them follow the marker.
-        marker.on('dragend', function (e) {
-            setLatLngFields(marker.getLatLng().lat, marker.getLatLng().lng);
-        });
-    };
-
-    // 1. Initialize the map
-    map = L.map(mapId).setView(mapPosition, mapZoom);
-    L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png').addTo(map);
-
-    $('document').ready(function () {
-        var lat = $latField.val();
-        var lon = $lngField.val();
-        setMarker(lat, lon);
-        map.setView([lat, lon], zoom=14);
-    });
-
-    // 2. Watch the address form
-    function getLocationCoordinates() {
-
-        const provider = new GeoSearch.OpenStreetMapProvider({
-            params: {
-                countrycodes: 'BE'
-            }
-        });
-
-        provider
-            .search({query: $("#id_location").val()})
-            .then(function (result) {
-                var firstResult = result[0];
-                console.log(result);
-                setMarker(firstResult.y, firstResult.x);
-                map.fitBounds(firstResult.bounds);
-            });
-    };
-</script>
 {% endblock %}
