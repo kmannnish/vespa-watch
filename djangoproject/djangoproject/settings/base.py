@@ -153,6 +153,7 @@ VESPAWATCH_USER_ID = 1263313  # vespawatch user ID @ iNaturalist
 WEBSITE_NAME = "Vespa-Watch"
 
 SETTINGS_EXPORT = [
+    'DEBUG',
     'WEBSITE_NAME',
     'LANGUAGES',
     'LANGUAGES_AVAILABLE_IN_SELECTOR',

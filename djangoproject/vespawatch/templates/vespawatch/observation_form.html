@@ -6,26 +6,13 @@
 {{ form.behaviour|as_crispy_field }}
 {{ form.subject|as_crispy_field }}
 
-{#Location geocoding#}
-<div id="div_id_location" class="form-group">
-<label for="id_location" class="col-form-label ">{% trans "Location" %}</label>
 
-<div class="">
-<input type="text" name="id_location" class="textinput form-control" id="id_location">
-<button type="button" onclick="getLocationCoordinates()" class="btn btn-success">{% trans "Get position" %}</button>
-</div>
-</div>
+<vw-location-selector v-bind:init-coordinates="{% if object %}[{{ object.longitude }}, {{ object.latitude }}]{% else %}[4.5, 50.7]{% endif %}"
+                      init-marker="{% if object %}true{% else %}false{% endif %}"
+                      location="{% if object %}{{ object.location }}{% endif %}"></vw-location-selector>
 
 
-<div class="row">
-    <div class="col">
-        <div id="map" style="width: 640px; height: 480px;"></div>
-    </div>
-</div>
 
-
-{{ form.longitude|as_crispy_field }}
-{{ form.latitude|as_crispy_field }}
 {{ form.observation_time|as_crispy_field }}
 {{ form.comments|as_crispy_field }}
 {{ image_formset.management_form }}
