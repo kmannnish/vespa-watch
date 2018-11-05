@@ -1,5 +1,6 @@
 from django.conf import settings
 from pyinaturalist.rest_api import get_access_token
+from requests import HTTPError
 
 from vespawatch.management.commands._utils import VespaWatchCommand
 from vespawatch.models import Observation
@@ -25,6 +26,12 @@ class Command(VespaWatchCommand):
             self.w(f"Pushing our observation with id={obs.pk}...", ending="")
             if obs.exists_in_inaturalist:
                 self.w("This observation was already pushed, we'll update. ", ending="")
+                try:
+                    obs.update_at_inaturalist(access_token=token)
+                    self.w("OK")
+                except HTTPError as exc:
+                    self.w(self.style.ERROR("iNat returned an error: does the observation exists there and do we have "
+                                            "the right to update it? Exception: ") + str(exc))
             else:
                 self.w("This is a new observation, we'll create it at iNaturalist. ", ending="")
                 obs.create_at_inaturalist(access_token=token)

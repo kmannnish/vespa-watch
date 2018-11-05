@@ -5,7 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.urls import reverse
 from django.utils.timezone import is_naive, make_aware
-from pyinaturalist.rest_api import create_observations
+from pyinaturalist.rest_api import create_observations, update_observation
 
 
 class Species(models.Model):
@@ -154,6 +154,36 @@ class Observation(models.Model):
     observer_approve_display = models.NullBooleanField(help_text='The observer approves that the observation will be displayed on the Vespa-Watch map')
     observer_approve_data_distribution = models.NullBooleanField(help_text='The observer approves that the recorded observation will be distributed to third parties')
 
+    def _params_for_inat(self):
+        """(Create/update): Common ground for the pushed data to iNaturalist.
+
+        taxon_id is not part of it because we rely on iNaturalist to correct the identification, if necessary.
+        All the rest is pushed.
+        """
+
+        return {'observed_on_string': self.observation_time.isoformat(),
+                'time_zone': 'Brussels',
+                'description': self.comments,
+                'latitude': self.latitude,
+                'longitude': self.longitude,
+
+                # sets vespawatch_id (an observation field whose ID is 9613)
+                'observation_field_values_attributes':
+                    [{'observation_field_id': 9613, 'value': self.pk}],
+                }
+
+    def update_at_inaturalist(self, access_token):
+        """Update the iNaturalist observation for this obs
+
+        :param access_token:
+        :return:
+        """
+        p = { 'ignore_photos': 1,  # TODO: change that later if we decide to repush pictures in each time...
+                'observation': self._params_for_inat()
+            }
+
+        r = update_observation(observation_id=self.inaturalist_id, params=p, access_token=access_token)
+
     def create_at_inaturalist(self, access_token):
         """Creates a new observation at iNaturalist for this observation
 
@@ -166,23 +196,13 @@ class Observation(models.Model):
 
         # TODO: push more fields
         # TODO: check the push works when optional fields are missing
+        params_only_for_create = {'taxon_id': self.species.inaturalist_push_taxon_id}
 
-        params = {'observation':
-                      {'taxon_id': self.species.inaturalist_push_taxon_id,
-                       'observed_on_string': self.observation_time.isoformat(),
-                       'time_zone': 'Brussels',
-                       'description': self.comments,
-                       'latitude': self.latitude,
-                       'longitude': self.longitude,
-
-                       # sets vespawatch_id (an observation field whose ID is 9613)
-                       'observation_field_values_attributes':
-                           [{'observation_field_id': 9613, 'value': self.pk}],
-                       },
-                  }
+        params = {
+            'observation': {**params_only_for_create, **self._params_for_inat()}
+        }
 
         r = create_observations(params=params, access_token=access_token)
-
         self.inaturalist_id = r[0]['id']
         self.save()
 
