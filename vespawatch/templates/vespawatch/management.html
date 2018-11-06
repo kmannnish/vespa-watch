@@ -8,10 +8,33 @@
 
 <main class="container" id="vw-main-app">
 
+    <h1>{% trans "Zone" %} {{ zone }}</h1>
+    <a class="btn btn-lg btn-primary" href="{% url 'vespawatch:new' %}">{% trans 'Record an observation' %}</a>
+
+    <vw-observations-viz></vw-observations-viz>
+
+<h1>{% trans "My nests" %}</h1>
+
     <div class="row">
-        <div class="col">
-            <p>Management</p>
-        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>{% trans "Date" %}</th>
+                    <th>{% trans "Location" %}</th>
+                    <th>{% trans "Management" %}</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+        {% for nest in nests %}
+            <tr>
+                <td>{{ nest.observation_time }}</td>
+                <td>{{ nest.location }}</td>
+                <td></td>
+                <td>edit</td>
+            </tr>
+        {% endfor %}
+        </table>
     </div>
 </main>
 {% endblock %}
