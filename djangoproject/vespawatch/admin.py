@@ -43,7 +43,7 @@ class ObservationAdmin(admin.ModelAdmin):
     list_display = ('species', 'inaturalist_id', 'observation_time', 'latitude', 'longitude')
     readonly_fields = ('originates_in_vespawatch',)
 
-    list_filter = ('species', )
+    list_filter = ('species', 'subject', 'originates_in_vespawatch')
 
     inlines = [
         PictureInline,

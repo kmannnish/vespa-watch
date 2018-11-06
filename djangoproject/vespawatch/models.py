@@ -5,6 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.urls import reverse
 from django.utils.timezone import is_naive, make_aware
+from pyinaturalist.rest_api import create_observations, update_observation
 
 
 class Species(models.Model):
@@ -71,16 +72,22 @@ def create_observation_from_inat_data(inaturalist_data):
         observation_time = make_aware(observation_time)
 
     if observation_time:
-        # TODO: species: we have to reconcile with our Species table
-
+        # Reconcile the species
         try:
             species = Species.objects.get(inaturalist_pull_taxon_ids__contains=[inaturalist_data['taxon']['id']])
         except Species.DoesNotExist:
             raise SpeciesMatchError
 
+        # Check if it has the is_nest observation field value and if it's set to "true"
+        is_nest_ofv = next((item for item in inaturalist_data['ofvs'] if item["field_id"] == 9710), None)
+        if is_nest_ofv and is_nest_ofv['value'] == "true":
+            subject = Observation.NEST
+        else:  # Default is specimen
+            subject = Observation.SPECIMEN
+
         Observation.objects.create(
             originates_in_vespawatch=False,
-            subject=Observation.SPECIMEN,  # TODO: How to detect/manage properly?
+            subject=subject,
             inaturalist_id=inaturalist_data['id'],
             species=species,
             latitude=inaturalist_data['geojson']['coordinates'][1],
@@ -95,7 +102,7 @@ class Observation(models.Model):
 
     SUBJECT_CHOICES = (
         (NEST, 'Nest'),
-        (SPECIMEN, 'Specimen'),
+        (SPECIMEN, 'Individual'),
     )
 
     FOURAGING = 'FO'
@@ -146,6 +153,59 @@ class Observation(models.Model):
     observer_approve_data_process = models.NullBooleanField(help_text='The observer approves that his data will be processed by Vespa-Watch')
     observer_approve_display = models.NullBooleanField(help_text='The observer approves that the observation will be displayed on the Vespa-Watch map')
     observer_approve_data_distribution = models.NullBooleanField(help_text='The observer approves that the recorded observation will be distributed to third parties')
+
+    def _params_for_inat(self):
+        """(Create/update): Common ground for the pushed data to iNaturalist.
+
+        taxon_id is not part of it because we rely on iNaturalist to correct the identification, if necessary.
+        All the rest is pushed.
+        """
+
+        return {'observed_on_string': self.observation_time.isoformat(),
+                'time_zone': 'Brussels',
+                'description': self.comments,
+                'latitude': self.latitude,
+                'longitude': self.longitude,
+
+                # sets vespawatch_id (an observation field whose ID is 9613)
+                'observation_field_values_attributes':
+                    [{'observation_field_id': 9613, 'value': self.pk}],
+                }
+
+    def update_at_inaturalist(self, access_token):
+        """Update the iNaturalist observation for this obs
+
+        :param access_token:
+        :return:
+        """
+        p = { 'ignore_photos': 1,  # TODO: change that later if we decide to repush pictures in each time...
+                'observation': self._params_for_inat()
+            }
+
+        r = update_observation(observation_id=self.inaturalist_id, params=p, access_token=access_token)
+
+    def create_at_inaturalist(self, access_token):
+        """Creates a new observation at iNaturalist for this observation
+
+        It will update the current object so self.inaturalist_id is properly set.
+        On the other side, it will also set the vespawatch_id observation field so the observation can be found from
+        the iNaturalist record.
+
+        :param access_token: as returned by pyinaturalist.rest_api.get_access_token(
+        """
+
+        # TODO: push more fields
+        # TODO: check the push works when optional fields are missing
+        params_only_for_create = {'taxon_id': self.species.inaturalist_push_taxon_id}
+
+        params = {
+            'observation': {**params_only_for_create, **self._params_for_inat()}
+        }
+
+        r = create_observations(params=params, access_token=access_token)
+        self.inaturalist_id = r[0]['id']
+        self.save()
+
 
     @property
     def exists_in_inaturalist(self):

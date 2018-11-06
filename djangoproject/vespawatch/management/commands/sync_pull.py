@@ -44,12 +44,11 @@ class Command(VespaWatchCommand):
 
             if inat_observation_comes_from_vespawatch(inat_observation_data):
                 self.w("This observation initially comes from Vespa-Watch", ending="")
-
                 # The only thing we do is updating the identification, if needed.
             else:
-                self.w("This observation initially comes from a regular iNaturalist user.", ending="")
+                self.w("This observation initially comes from a regular iNaturalist user. ", ending="")
                 # All those observations have been dropped before: recreate
-                self.w("We create a local observation for it.", ending="")
+                self.w("We create a local observation for it. ", ending="")
                 try:
                     create_observation_from_inat_data(inat_observation_data)
                     success_count = success_count + 1
@@ -62,4 +61,4 @@ class Command(VespaWatchCommand):
                 except ParseDateError:
                     self.w(self.style.ERROR("Error: cannot parse date, skipping: " + str(inat_observation_data)))
 
-        self.w(f"Successfully import {success_count}/{total_count} observations.")
+        self.w(f"Successfully imported {success_count}/{total_count} observations.")
