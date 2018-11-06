@@ -256,7 +256,8 @@ class Observation(models.Model):
             'inaturalist_id': self.inaturalist_id,
             'observation_time': self.observation_time.timestamp() * 1000,
             'comments': self.comments,
-            'imageUrls': [x.image.url for x in self.observationpicture_set.all()]
+            'imageUrls': [x.image.url for x in self.observationpicture_set.all()],
+            'action': self.managementaction_set.first()
         }
 
     def __str__(self):
