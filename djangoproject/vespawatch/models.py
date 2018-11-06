@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import dateparser
+from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.urls import reverse
@@ -96,6 +97,25 @@ def create_observation_from_inat_data(inaturalist_data):
     else:
         raise ParseDateError
 
+def update_loc_obs_taxon_according_to_inat(inaturalist_data):
+    """Takes data coming from iNaturalist about one of our local observation, and update the taxon of said local obs,
+    if necessary."""
+    pass
+
+def inat_observation_comes_from_vespawatch(inat_observation_id):
+    """ Takes an observation_id from iNat API and returns True if this observation was first created from the
+    VespaWatch website.
+
+    Slow, since we need an API call to retrieve the observation_field_values
+    """
+
+    if 'observation_field_values' in inat_observation:
+        for ofv in inat_observation['observation_field_values']:
+            if ofv['observation_field_id'] == settings.OBSERVATION_FIELD_ID:
+                return True
+
+    return False
+
 class Observation(models.Model):
     NEST = 'NE'
     SPECIMEN = 'SP'
@@ -182,7 +202,7 @@ class Observation(models.Model):
                 'observation': self._params_for_inat()
             }
 
-        r = update_observation(observation_id=self.inaturalist_id, params=p, access_token=access_token)
+        return update_observation(observation_id=self.inaturalist_id, params=p, access_token=access_token)
 
     def create_at_inaturalist(self, access_token):
         """Creates a new observation at iNaturalist for this observation
