@@ -87,12 +87,12 @@ var VwObservationsVizMap = {
             });
         },
         init: function () {
-            var mapPosition = [50.5, 4.5];
+            var mapPosition = [50.85, 4.35];
             var mapZoom = 8;
             this.map = L.map("vw-map-map")
                 .setView(mapPosition, mapZoom);
             var CartoDB_Positron = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://carto.com/attributions">CARTO</a>',
                 subdomains: 'abcd',
                 maxZoom: 20
             })
@@ -113,7 +113,7 @@ var VwObservationsVizMap = {
         }
     },
 
-    template: '<div id="vw-map-map" style="height: 750px"></div>'
+    template: '<div id="vw-map-map" style="height: 450px;"></div>'
 };
 
 
