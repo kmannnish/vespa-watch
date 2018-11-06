@@ -19,14 +19,25 @@ var VwObservationsVizMap = {
 
     methods: {
         addObservationsToMap: function () {
+
+            function getColor(d) {
+                return d.subject === 'Individual' ? '#FF0000' :
+                    d.subject === 'Nest' ?
+                        d.action === 'FD' ? '#0000FF' :
+                        d.action === 'PD' ? '#00FF00' :
+                        d.action === 'ND' ? '#0FaF00' :
+                            '#1FCFaF'
+                    : '#000';  // if the subject is not 'Individual' or 'Nest'
+            }
+
             this.observations.forEach(obs => {
                 var color = 'orange';
                 var circle = L.circleMarker([obs.latitude, obs.longitude], {
                     stroke: true,  // whether to draw a stroke
                     weight: 1, // stroke width in pixels
-                    color: color,  // stroke color
+                    color: getColor(obs),  // stroke color
                     opacity: 0.8,  // stroke opacity
-                    fillColor: color,
+                    fillColor: getColor(obs),
                     fillOpacity: 0.5,
                     radius: 10,
                     className: "circle"
