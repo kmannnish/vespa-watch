@@ -10,7 +10,7 @@ from django.conf import settings
 from pyinaturalist.node_api import get_all_observations
 
 from vespawatch.management.commands._utils import VespaWatchCommand
-from vespawatch.models import Observation, create_observation_from_inat_data, SpeciesMatchError, ParseDateError, \
+from vespawatch.models import Individual, Nest, create_observation_from_inat_data, SpeciesMatchError, ParseDateError, \
     inat_observation_comes_from_vespawatch
 
 PULL_CRITERIA = {
@@ -31,7 +31,8 @@ class Command(VespaWatchCommand):
         self.w(f"Got {total_count} matching observations from iNaturalist.")
 
         self.w("Step 1: Will remove from our database all observations that originates from iNaturalist (they'll be recreated right after)...", ending="")
-        Observation.from_inat_objects.all().delete()
+        Individual.from_inat_objects.all().delete()
+        Nest.from_inat_objects.all().delete()
         self.w(self.style.SUCCESS("OK"))
 
         for inat_observation_data in observations:
