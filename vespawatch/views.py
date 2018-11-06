@@ -4,8 +4,8 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import DeleteView, DetailView
 from django.urls import reverse_lazy
-from .forms import ManagementActionForm, ObservationForm, ImageFormset
-from .models import Observation, ManagementAction, ObservationPicture
+from .forms import ManagementActionForm, IndividualForm, ImageFormset
+from .models import Individual, Nest, ManagementAction, IndividualPicture, NestPicture
 
 
 def index(request):
@@ -19,22 +19,22 @@ def management(request):
 
 def create_observation(request):
     if request.method == 'POST':
-        form = ObservationForm(request.POST, request.FILES)
+        form = IndividualForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect('/')
     else:
-        form = ObservationForm()
+        form = IndividualForm()
 
     return render(request, 'vespawatch/observation_create.html', {'form': form})
 
 
 @login_required
 def update_observation(request, pk):
-    observation = get_object_or_404(Observation, pk=pk)
+    observation = get_object_or_404(Individual, pk=pk)
     if request.method == 'POST':
         image_formset = ImageFormset(request.POST, request.FILES, instance=observation)
-        form = ObservationForm(request.POST, files=request.FILES, instance=observation)
+        form = IndividualForm(request.POST, files=request.FILES, instance=observation)
         if form.is_valid():
             form.save()
             if image_formset.is_valid():
@@ -49,18 +49,18 @@ def update_observation(request, pk):
             return HttpResponseRedirect('/')
 
     elif request.method == 'GET':
-        form = ObservationForm(instance=observation)
+        form = IndividualForm(instance=observation)
         image_formset = ImageFormset(instance=observation)
     return render(request, 'vespawatch/observation_update.html',
                   {'form': form, 'object': observation, 'image_formset': image_formset})
 
 
 class ObservationDetail(DetailView):
-    model = Observation
+    model = Individual
 
 
 class ObservationDelete(LoginRequiredMixin, DeleteView):
-    model = Observation
+    model = Individual
     success_url = reverse_lazy('vespawatch:index')
 
 
@@ -105,7 +105,9 @@ def observations_json(request):
     """
     Return all observations as json data
     """
-    observations = Observation.objects.all()
+    individuals = Individual.objects.all()
+    nests = Nest.objects.all()
+
     return JsonResponse({
-        'observations': [x.as_dict() for x in observations]
+        'observations': [x.as_dict() for x in individuals + nests]
     })

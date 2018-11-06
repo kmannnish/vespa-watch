@@ -82,18 +82,21 @@ def create_observation_from_inat_data(inaturalist_data):
         # Check if it has the vespawatch_evidence observation field value and if it's set to "nest"
         is_nest_ofv = next((item for item in inaturalist_data['ofvs'] if item["field_id"] == settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID), None)
         if is_nest_ofv and is_nest_ofv['value'] == "nest":
-            subject = Observation.NEST
+            Nest.objects.create(
+                originates_in_vespawatch=False,
+                inaturalist_id=inaturalist_data['id'],
+                species=species,
+                latitude=inaturalist_data['geojson']['coordinates'][1],
+                longitude=inaturalist_data['geojson']['coordinates'][0],
+                observation_time=observation_time)  # TODO: What to do with iNat observations without (parsable) time?
         else:  # Default is specimen
-            subject = Observation.SPECIMEN
-
-        Observation.objects.create(
-            originates_in_vespawatch=False,
-            subject=subject,
-            inaturalist_id=inaturalist_data['id'],
-            species=species,
-            latitude=inaturalist_data['geojson']['coordinates'][1],
-            longitude=inaturalist_data['geojson']['coordinates'][0],
-            observation_time=observation_time)  # TODO: What to do with iNat observations without (parsable) time?
+            Individual.objects.create(
+                originates_in_vespawatch=False,
+                inaturalist_id=inaturalist_data['id'],
+                species=species,
+                latitude=inaturalist_data['geojson']['coordinates'][1],
+                longitude=inaturalist_data['geojson']['coordinates'][0],
+                observation_time=observation_time)  # TODO: What to do with iNat observations without (parsable) time?
     else:
         raise ParseDateError
 
@@ -118,41 +121,10 @@ def inat_observation_comes_from_vespawatch(inat_observation_id):
     #
     # return False
 
-class Observation(models.Model):
-    NEST = 'NE'
-    SPECIMEN = 'SP'
 
-    SUBJECT_CHOICES = (
-        (NEST, 'Nest'),
-        (SPECIMEN, 'Individual'),
-    )
-
-    FOURAGING = 'FO'
-    HUNTING = 'HU'
-    FLOWER = 'FL'
-    OTHER = 'OT'
-    BEHAVIOUR_CHOICES = (
-        (FOURAGING, 'Fouraging'),
-        (HUNTING, 'Hunting at hive'),
-        (FLOWER, 'At flower'),
-        (OTHER, 'Other')
-    )
-
-    # Managers
-    objects = models.Manager()  # The default manager.
-    from_inat_objects = InatCreatedObservationsManager()
-    from_vespawatch_objects = VespawatchCreatedObservationsManager()
-
-    @property
-    def can_be_edited_or_deleted(self):
-        """Return True if this observation can be edited in Vespa-Watch (admin, ...)"""
-        return self.originates_in_vespawatch  # We can't edit obs that comes from iNaturalist (they're never pushed).
-
-    # Fields
+class AbstractObservation(models.Model):
+    originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
     species = models.ForeignKey(Species, on_delete=models.PROTECT, blank=True, null=True)  # Blank allows because some nests can't be easily identified
-    individual_count = models.IntegerField(blank=True, null=True)
-    behaviour = models.CharField(max_length=2, choices=BEHAVIOUR_CHOICES, blank=True, null=True)
-    subject = models.CharField(max_length=2, choices=SUBJECT_CHOICES)
     location = models.CharField(max_length=255, blank=True)
     observation_time = models.DateTimeField()
     comments = models.TextField(blank=True)
@@ -162,8 +134,6 @@ class Observation(models.Model):
 
     inaturalist_id = models.BigIntegerField(blank=True, null=True)
     inaturalist_species = models.CharField(max_length=100, blank=True, null=True)
-
-    originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
 
     # Observer info
     observer_title = models.CharField(max_length=50, blank=True, null=True)
@@ -176,6 +146,23 @@ class Observation(models.Model):
     observer_approve_display = models.NullBooleanField(help_text='The observer approves that the observation will be displayed on the Vespa-Watch map')
     observer_approve_data_distribution = models.NullBooleanField(help_text='The observer approves that the recorded observation will be distributed to third parties')
 
+    # Managers
+    objects = models.Manager()  # The default manager.
+    from_inat_objects = InatCreatedObservationsManager()
+    from_vespawatch_objects = VespawatchCreatedObservationsManager()
+
+    class Meta:
+        abstract = True
+
+    @property
+    def can_be_edited_or_deleted(self):
+        """Return True if this observation can be edited in Vespa-Watch (admin, ...)"""
+        return self.originates_in_vespawatch  # We can't edit obs that comes from iNaturalist (they're never pushed).
+
+    @property
+    def exists_in_inaturalist(self):
+        return self.inaturalist_id is not None
+
     def _params_for_inat(self):
         """(Create/update): Common ground for the pushed data to iNaturalist.
 
@@ -183,7 +170,7 @@ class Observation(models.Model):
         All the rest is pushed.
         """
 
-        vespawatch_evidence_value = 'nest' if self.subject == self.NEST else 'individual'
+        vespawatch_evidence_value = 'nest' if self.__name__ == 'Nest' else 'individual'
 
         return {'observed_on_string': self.observation_time.isoformat(),
                 'time_zone': 'Brussels',
@@ -232,41 +219,80 @@ class Observation(models.Model):
         self.save()
 
 
-    @property
-    def exists_in_inaturalist(self):
-        return self.inaturalist_id is not None
-
-    def get_absolute_url(self):
-        return reverse('vespawatch:observation-update', kwargs={'pk': self.pk})
-
     def get_species_name(self):
         if self.species:
             return self.species.name
         else:
             return ''
 
+
+class Nest(AbstractObservation):
+    duplicate_of = models.ForeignKey('self', on_delete=models.PROTECT, blank=True, null=True)
+
     def as_dict(self):
         return {
             'id': self.pk,
             'species': self.inaturalist_species if self.inaturalist_species else self.species.name,
-            'subject': self.get_subject_display(),
             'location': self.location,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,
             'observation_time': self.observation_time.timestamp() * 1000,
             'comments': self.comments,
-            'imageUrls': [x.image.url for x in self.observationpicture_set.all()],
+            'imageUrls': [x.image.url for x in self.nestpicture_set.all()],
             'action': self.managementaction_set.first()
         }
 
     def __str__(self):
-        return f'{self.get_subject_display()} of {self.get_species_name()}, {self.observation_time.strftime("%Y-%m-%d")}'
+        return f'Nest of {self.get_species_name()}, {self.observation_time.strftime("%Y-%m-%d")}'
 
 
-class ObservationPicture(models.Model):
-    observation = models.ForeignKey(Observation, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='observation_pictures/')
+class Individual(AbstractObservation):
+
+    FOURAGING = 'FO'
+    HUNTING = 'HU'
+    FLOWER = 'FL'
+    OTHER = 'OT'
+    BEHAVIOUR_CHOICES = (
+        (FOURAGING, 'Fouraging'),
+        (HUNTING, 'Hunting at hive'),
+        (FLOWER, 'At flower'),
+        (OTHER, 'Other')
+    )
+
+    # Fields
+    individual_count = models.IntegerField(blank=True, null=True)
+    behaviour = models.CharField(max_length=2, choices=BEHAVIOUR_CHOICES, blank=True, null=True)
+    nest = models.ForeignKey(Nest, on_delete=models.CASCADE, blank=True, null=True)
+
+    def get_absolute_url(self):
+        return reverse('vespawatch:observation-update', kwargs={'pk': self.pk})
+
+    def as_dict(self):
+        return {
+            'id': self.pk,
+            'species': self.inaturalist_species if self.inaturalist_species else self.species.name,
+            'location': self.location,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'inaturalist_id': self.inaturalist_id,
+            'observation_time': self.observation_time.timestamp() * 1000,
+            'comments': self.comments,
+            'imageUrls': [x.image.url for x in self.individualpicture_set.all()]
+        }
+
+    def __str__(self):
+        return f'Individual of {self.get_species_name()}, {self.observation_time.strftime("%Y-%m-%d")}'
+
+
+class IndividualPicture(models.Model):
+    observation = models.ForeignKey(Individual, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='individual_pictures/')
+
+
+class NestPicture(models.Model):
+    observation = models.ForeignKey(Nest, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='nest_pictures/')
 
 
 class ManagementAction(models.Model):
@@ -280,10 +306,10 @@ class ManagementAction(models.Model):
         (EMPTY_NEST_NOTHING_DONE, 'Empty nest, nothing done'),
     )
 
-    observation = models.ForeignKey(Observation, on_delete=models.PROTECT)
+    nest = models.ForeignKey(Nest, on_delete=models.PROTECT)
     outcome = models.CharField(max_length=2, choices=OUTCOME_CHOICE)
     action_time = models.DateTimeField()
     person_name = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
-        return f'{self.action_time.strftime("%Y-%m-%d")} {self.get_outcome_display()} on {self.observation}'
+        return f'{self.action_time.strftime("%Y-%m-%d")} {self.get_outcome_display()} on {self.nest}'
