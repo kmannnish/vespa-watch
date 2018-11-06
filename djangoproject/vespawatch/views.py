@@ -12,6 +12,11 @@ def index(request):
     return render(request, 'vespawatch/index.html')
 
 
+@login_required
+def management(request):
+    return render(request, 'vespawatch/management.html')
+
+
 def create_observation(request):
     if request.method == 'POST':
         form = ObservationForm(request.POST, request.FILES)

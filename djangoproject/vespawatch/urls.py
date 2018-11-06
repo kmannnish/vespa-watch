@@ -5,6 +5,7 @@ app_name = 'vespawatch'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('management', views.management, name='management'),
     path('actions/add/', views.create_action, name='action-add'),
     path('actions/<int:pk>/', views.update_action, name='action-update'),
     path('actions/<int:pk>/delete/', views.ManagmentActionDelete.as_view(), name='action-delete'),
