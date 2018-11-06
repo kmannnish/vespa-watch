@@ -264,14 +264,15 @@ var VwLocationSelectorLocationInput = {
         }
     },
     props: ['initLocation'],
-    template: `<div id="div_id_location" class="form-group">
-                    <label for="id_location" class="col-form-label ">{% trans "Location" %}</label>
-                        <div>
-                            <input type="text" name="location" class="textinput form-control" id="id_location" v-model="location">
-                            <button type="button" v-on:click="search" class="btn btn-success">{% trans "Get position" %}</button>
-                        </div>
-                    </div>`
-
+    template: `
+        <div id="div_id_location" class="form-group">
+            <label for="id_location" class="col-form-label ">{% trans "Location" %}</label>
+            <div>
+                <input type="text" name="location" class="textinput form-control" id="id_location" v-model="location">
+                <button type="button" v-on:click="search" class="btn btn-success">{% trans "Get position" %}</button>
+            </div>
+        </div>
+        `
 };
 
 var VwLocationSelectorMap = {
@@ -320,12 +321,13 @@ var VwLocationSelectorMap = {
         }
     },
     props: ['position', 'initMarker'],
-    template: `<div class="row">
-        <div class="col">
-            <div id="vw-location-selector-map-map" style="width: 640px; height: 480px;"></div>
+    template: `
+        <div class="row">
+            <div class="col">
+                <div id="vw-location-selector-map-map" style="width: 640px; height: 480px;"></div>
+            </div>
         </div>
-    </div>
-    `,
+        `,
     watch: {
         position: function (n, o) {
             console.log('Map: position updated');
@@ -353,22 +355,22 @@ var VwLocationSelectorCoordinates = {
     },
     props: ['longitude', 'latitude'],
     template: `
-    <div>
-        <div id="div_id_longitude" class="form-group">
-            <label for="id_longitude" class="col-form-label ">{% trans "Longitude" %}</label>
-            <div>
-                <input type="text" name="longitude" class="numberinput form-control" id="id_longitude" v-model="long">
+        <div>
+            <div id="div_id_longitude" class="form-group">
+                <label for="id_longitude" class="col-form-label ">{% trans "Longitude" %}</label>
+                <div>
+                    <input type="text" name="longitude" class="numberinput form-control" id="id_longitude" v-model="long">
+                </div>
+            </div>
+            
+            <div id="div_id_latitude" class="form-group">
+                <label for="id_latitude" class="col-form-label ">{% trans "Latitude" %}</label>
+                <div>
+                    <input type="text" name="latitude" class="numberinput form-control" id="id_latitude" v-model="lat">
+                </div>
             </div>
         </div>
-        
-        <div id="div_id_latitude" class="form-group">
-            <label for="id_latitude" class="col-form-label ">{% trans "Latitude" %}</label>
-            <div>
-                <input type="text" name="latitude" class="numberinput form-control" id="id_latitude" v-model="lat">
-            </div>
-        </div>
-    </div>
-    `
+        `
 };
 
 var VwLocationSelector = {
