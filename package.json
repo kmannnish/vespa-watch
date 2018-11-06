@@ -5,7 +5,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "create:css": "node-sass static_src/scss --output-style nested --source-map true --output vespawatch/static/vespawatch/main.css",
+    "create:css": "node-sass static_src/scss --output-style nested --source-map true --output vespawatch/static/vespawatch/css",
     "watch:css": "onchange 'static_src/scss/*.scss' -- npm run create:css"
   },
   "dependencies": {
