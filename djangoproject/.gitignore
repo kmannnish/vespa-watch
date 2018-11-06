@@ -1,0 +1,11 @@
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+# elastic beanstalk general setting (created from either dev or prd)
+settings.py
+
+# custom ignores
+start
