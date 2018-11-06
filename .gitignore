@@ -113,4 +113,5 @@ node_modules
 djangoproject/settings/settings_local.py
 .idea/
 testbed_inat_interactions.py
-observation_pictures
+individual_pictures
+nest_pictures
