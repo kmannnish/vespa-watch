@@ -209,7 +209,12 @@ var VwObservationsViz = {
         initTimerangeSlider: function () {
             var latestObs = this.cfDimensions.timeDim.top(1);
             var earliestObs = this.cfDimensions.timeDim.bottom(1);
-            this.timeRange = {start: earliestObs[0].observation_time, stop: latestObs[0].observation_time};
+            var start = earliestObs[0].observation_time;
+            var stop = latestObs[0].observation_time;
+            if (start === stop) {
+                stop++;
+            }
+            this.timeRange = {start: start, stop: stop};
         },
 
         setCrossFilter: function (observations) {
