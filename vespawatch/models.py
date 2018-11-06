@@ -1,9 +1,14 @@
+import os
+import uuid
 from datetime import datetime
 
 import dateparser
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.timezone import is_naive, make_aware
 from pyinaturalist.rest_api import create_observations, update_observation
@@ -265,8 +270,13 @@ class Observation(models.Model):
 
 
 class ObservationPicture(models.Model):
+    def get_file_path(instance, filename):
+        ext = filename.split('.')[-1]
+        filename = "%s.%s" % (uuid.uuid4(), ext)
+        return os.path.join('observation_pictures/', filename)
+
     observation = models.ForeignKey(Observation, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='observation_pictures/')
+    image = models.ImageField(upload_to=get_file_path)
 
 
 class ManagementAction(models.Model):
@@ -287,3 +297,28 @@ class ManagementAction(models.Model):
 
     def __str__(self):
         return f'{self.action_time.strftime("%Y-%m-%d")} {self.get_outcome_display()} on {self.observation}'
+
+
+class FirefightersZone(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    # Firefighters have a zone, other users (Admin, ...) don't.
+    zone = models.ForeignKey(FirefightersZone, on_delete=models.PROTECT, null=True, blank=True)
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
