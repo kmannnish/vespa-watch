@@ -10,15 +10,12 @@ from django.conf import settings
 from pyinaturalist.node_api import get_all_observations
 
 from vespawatch.management.commands._utils import VespaWatchCommand
-from vespawatch.models import Observation, create_observation_from_inat_data, SpeciesMatchError, ParseDateError
+from vespawatch.models import Observation, create_observation_from_inat_data, SpeciesMatchError, ParseDateError, \
+    inat_observation_comes_from_vespawatch
 
 PULL_CRITERIA = {
     'project_id': settings.VESPAWATCH_PROJECT_ID,
 }
-
-def inat_observation_comes_from_vespawatch(inat_observation):
-    """ Takes an observation retrieved from iNat API and returns True if this observation was first created from VespaWatch"""
-    return inat_observation['user']['id'] == settings.VESPAWATCH_USER_ID
 
 class Command(VespaWatchCommand):
     help = 'Execute the "pull" part of iNaturalist sync process'
