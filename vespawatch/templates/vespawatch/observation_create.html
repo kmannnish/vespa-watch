@@ -7,7 +7,13 @@
 <main id="vw-main-app" class="container">
     <div class="row justify-content-center">
         <div class="col-8">
-            <h1 class="mt-2">{% trans "Observation" %}</h1>
+            <h1 class="mt-2">
+                {% if type == 'individual' %}
+                    {% trans "Individual" %}
+                {% elif type == 'nest' %}
+                    {% trans "nest" %}
+                {% endif %}
+            </h1>
             <hr class="mt-0 mb-4">
 
             {% if form.errors %}
@@ -15,11 +21,18 @@
                 {{ form.errors }}
             {% endif %}
 
-            <form method="post" action="{% url 'vespawatch:observation-add' %}" enctype='multipart/form-data' novalidate>
-                {% include 'vespawatch/observation_form.html' %}
-                <button type="submit" class="btn btn-success">{% trans "Save observation" %}</button>
-                <a href="{% url 'vespawatch:index' %}" class="btn btn-light">{% trans "Cancel" %}</a>
-            </form>
+            {% if type == 'individual' %}
+                <form method="post" action="{% url 'vespawatch:individual-add' %}"enctype='multipart/form-data' novalidate>
+                    {% include 'vespawatch/individual_form.html' %}
+                    <button type="submit" class="btn btn-success">{% trans "Save individual" %}</button>
+            {% elif type == 'nest' %}
+                <form method="post" action="{% url 'vespawatch:nest-add' %}"enctype='multipart/form-data' novalidate>
+                    {% include 'vespawatch/nest_form.html' %}
+                    <button type="submit" class="btn btn-success">{% trans "Save nest" %}</button>
+            {% endif %}
+
+                    <a href="{% url 'vespawatch:index' %}" class="btn btn-light">{% trans "Cancel" %}</a>
+                </form>
         </div>
     </div>
 </main>

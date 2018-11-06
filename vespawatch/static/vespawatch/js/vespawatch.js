@@ -21,8 +21,8 @@ var VwObservationsVizMap = {
         addObservationsToMap: function () {
 
             function getColor(d) {
-                return d.subject === 'Individual' ? '#FF0000' :
-                    d.subject === 'Nest' ?
+                return d.subject === 'individual' ? '#FF0000' :
+                    d.subject === 'nest' ?
                         d.action === 'FD' ? '#0000FF' :
                         d.action === 'PD' ? '#00FF00' :
                         d.action === 'ND' ? '#0FaF00' :

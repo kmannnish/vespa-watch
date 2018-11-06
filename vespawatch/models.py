@@ -233,6 +233,7 @@ class Nest(AbstractObservation):
         return {
             'id': self.pk,
             'species': self.inaturalist_species if self.inaturalist_species else self.species.name,
+            'subject': 'nest',
             'location': self.location,
             'latitude': self.latitude,
             'longitude': self.longitude,
@@ -272,6 +273,7 @@ class Individual(AbstractObservation):
         return {
             'id': self.pk,
             'species': self.inaturalist_species if self.inaturalist_species else self.species.name,
+            'subject': 'individual',
             'location': self.location,
             'latitude': self.latitude,
             'longitude': self.longitude,

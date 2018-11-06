@@ -1,0 +1,28 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% csrf_token %}
+{{ form.species|as_crispy_field }}
+
+
+<vw-location-selector v-bind:init-coordinates="{% if object %}[{{ object.longitude }}, {{ object.latitude }}]{% else %}[4.5, 50.7]{% endif %}"
+                      init-marker="{% if object %}true{% else %}false{% endif %}"
+                      location="{% if object %}{{ object.location }}{% endif %}"></vw-location-selector>
+
+
+
+{{ form.observation_time|as_crispy_field }}
+{{ form.comments|as_crispy_field }}
+{{ image_formset.management_form }}
+{% for f in image_formset %}
+    {{ f|crispy }}
+{% endfor %}
+{% if not user.is_authenticated %}
+    {{ form.observer_title|as_crispy_field }}
+    {{ form.observer_last_name|as_crispy_field }}
+    {{ form.observer_first_name|as_crispy_field }}
+    {{ form.observer_email|as_crispy_field }}
+    {{ form.observer_is_beekeeper|as_crispy_field }}
+    {{ form.observer_approve_data_process|as_crispy_field }}
+    {{ form.observer_approve_display|as_crispy_field }}
+    {{ form.observer_approve_data_distribution|as_crispy_field }}
+{% endif %}

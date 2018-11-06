@@ -1,0 +1,81 @@
+{% extends 'vespawatch/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<main id="vw-main-app" class="container">
+    <div class="row justify-content-center">
+        <div class="col-8">
+            <h1 class="mt-2">{% trans "nest" %}</h1>
+            <hr class="mt-0 mb-4">
+
+            <dl>
+                <dt>{% trans "Species" %}</dt>
+                <dd>{% if nest.inaturalist_species %}
+                {{ nest.inaturalist_species }}
+                {% else %}
+                {{  nest.species.name }}
+                {% endif %}</dd>
+
+                <dt>{% trans "ID" %}</dt>
+                <dd>{{ nest.pk }}</dd>
+
+                <dt>{% trans "Location" %}</dt>
+                <dd>{{ nest.location }}</dd>
+
+                <dt>{% trans "Latitude" %}</dt>
+                <dd>{{ nest.latitude }}</dd>
+
+                <dt>{% trans "Longitude" %}</dt>
+                <dd>{{ nest.longitude }}</dd>
+
+                <dt>{% trans "iNaturalist ID" %}</dt>
+                <dd>{{ nest.inaturalist_id }}</dd>
+
+                <dt>{% trans "nest time" %}</dt>
+                <dd>{{ nest.nest_time }}</dd>
+
+                <dt>{% trans "Observer" %}</dt>
+                <dd>{{ nest.observer_title }} {{ nest.observer_first_name }} {{ nest.observer_last_name }}</dd>
+
+                <dt>{% trans "Email" %}</dt>
+                <dd>{{ nest.observer_email }}</dd>
+
+                <dt>{% trans "Phone" %}</dt>
+                <dd>{{ nest.observer_phone }}</dd>
+
+                <dt>{% trans "Is beekeper" %}</dt>
+                <dd>{{ nest.observer_is_beekeeper }}</dd>
+
+                <dt>{% trans "Data processing allowed" %}</dt>
+                <dd>{{ nest.observer_approve_data_process }}</dd>
+
+                <dt>{% trans "Display data apporved" %}</dt>
+                <dd>{{ nest.observer_approve_display }}</dd>
+
+                <dt>{% trans "Distribute data apporved" %}</dt>
+                <dd>{{ nest.observer_approve_data_distribution }}</dd>
+
+                <dt>{% trans "Comments" %}</dt>
+                <dd>{{ nest.comments }}</dd>
+            </dl>
+
+        {% if nest.nestpicture_set %}
+            {% for image in nest.nestpicture_set.all %}
+                <img src="{{ image.image.url }}">
+            {% endfor %}
+        {% endif %}
+
+        <br>
+
+            {% if user.is_authenticated %}
+                {% if nest.originates_in_vespawatch %}
+                    <a href="{% url 'vespawatch:nest-update' nest.pk %}" class="btn btn-success"> {% trans "Edit" %}</a>
+                    <a href="{% url 'vespawatch:nest-delete' nest.pk %}" class="btn btn-danger"> {% trans "Delete" %}</a>
+                {% else %}
+                    <span>{% trans "This nest was created on iNaturalist. You cannot edit it here" %}</span>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</main>
+{% endblock %}

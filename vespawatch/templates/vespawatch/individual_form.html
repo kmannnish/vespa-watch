@@ -4,7 +4,6 @@
 {{ form.species|as_crispy_field }}
 {{ form.individual_count|as_crispy_field }}
 {{ form.behaviour|as_crispy_field }}
-{{ form.subject|as_crispy_field }}
 
 
 <vw-location-selector v-bind:init-coordinates="{% if object %}[{{ object.longitude }}, {{ object.latitude }}]{% else %}[4.5, 50.7]{% endif %}"
