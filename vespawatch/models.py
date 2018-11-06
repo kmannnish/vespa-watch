@@ -1,3 +1,5 @@
+import os
+import uuid
 from datetime import datetime
 
 import dateparser
@@ -265,8 +267,13 @@ class Observation(models.Model):
 
 
 class ObservationPicture(models.Model):
+    def get_file_path(instance, filename):
+        ext = filename.split('.')[-1]
+        filename = "%s.%s" % (uuid.uuid4(), ext)
+        return os.path.join('observation_pictures/', filename)
+
     observation = models.ForeignKey(Observation, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='observation_pictures/')
+    image = models.ImageField(upload_to=get_file_path)
 
 
 class ManagementAction(models.Model):
