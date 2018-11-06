@@ -79,9 +79,9 @@ def create_observation_from_inat_data(inaturalist_data):
         except Species.DoesNotExist:
             raise SpeciesMatchError
 
-        # Check if it has the is_nest observation field value and if it's set to "true"
-        is_nest_ofv = next((item for item in inaturalist_data['ofvs'] if item["field_id"] == 9710), None)
-        if is_nest_ofv and is_nest_ofv['value'] == "true":
+        # Check if it has the vespawatch_evidence observation field value and if it's set to "nest"
+        is_nest_ofv = next((item for item in inaturalist_data['ofvs'] if item["field_id"] == settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID), None)
+        if is_nest_ofv and is_nest_ofv['value'] == "nest":
             subject = Observation.NEST
         else:  # Default is specimen
             subject = Observation.SPECIMEN
@@ -109,12 +109,14 @@ def inat_observation_comes_from_vespawatch(inat_observation_id):
     Slow, since we need an API call to retrieve the observation_field_values
     """
 
-    if 'observation_field_values' in inat_observation:
-        for ofv in inat_observation['observation_field_values']:
-            if ofv['observation_field_id'] == settings.OBSERVATION_FIELD_ID:
-                return True
-
+    #TODO: implement
     return False
+    # if 'observation_field_values' in inat_observation:
+    #     for ofv in inat_observation['observation_field_values']:
+    #         if ofv['observation_field_id'] == settings.OBSERVATION_FIELD_ID:
+    #             return True
+    #
+    # return False
 
 class Observation(models.Model):
     NEST = 'NE'
@@ -181,6 +183,8 @@ class Observation(models.Model):
         All the rest is pushed.
         """
 
+        vespawatch_evidence_value = 'nest' if self.subject == self.NEST else 'individual'
+
         return {'observed_on_string': self.observation_time.isoformat(),
                 'time_zone': 'Brussels',
                 'description': self.comments,
@@ -189,7 +193,8 @@ class Observation(models.Model):
 
                 # sets vespawatch_id (an observation field whose ID is 9613)
                 'observation_field_values_attributes':
-                    [{'observation_field_id': 9613, 'value': self.pk}],
+                    [{'observation_field_id': settings.OBSERVATION_FIELD_ID, 'value': self.pk},
+                    {'observation_field_id': settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID, 'value': vespawatch_evidence_value}]
                 }
 
     def update_at_inaturalist(self, access_token):

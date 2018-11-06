@@ -157,7 +157,8 @@ SETTINGS_EXPORT = [
     'WEBSITE_NAME',
     'LANGUAGES',
     'LANGUAGES_AVAILABLE_IN_SELECTOR',
-    'OBSERVATION_FIELD_ID'
+    'OBSERVATION_FIELD_ID',
+    'VESPAWATCH_EVIDENCE_OBS_FIELD_ID'
 ]
 
 PAGE_FRAGMENTS_FALLBACK_LANGUAGE = 'nl'
@@ -167,4 +168,5 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-OBSERVATION_FIELD_ID = 9613 # # The identifier of the "vespawatch_id" observation field @iNaturalist
+OBSERVATION_FIELD_ID = 9613 # # The identifier of the "vespawatch_id" observation field @iNaturalist #TODO: rename
+VESPAWATCH_EVIDENCE_OBS_FIELD_ID = 9770  # The identifier of the "vespawatch_evidence" observation field @iNaturalist

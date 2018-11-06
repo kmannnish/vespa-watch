@@ -40,7 +40,7 @@ class ObservationAdmin(admin.ModelAdmin):
             return False
         return super().has_delete_permission(request, obj=obj)
 
-    list_display = ('species', 'inaturalist_id', 'observation_time', 'latitude', 'longitude')
+    list_display = ('species', 'subject', 'inaturalist_id', 'observation_time', 'latitude', 'longitude')
     readonly_fields = ('originates_in_vespawatch',)
 
     list_filter = ('species', 'subject', 'originates_in_vespawatch')
