@@ -275,11 +275,13 @@ var VwLocationSelectorLocationInput = {
     },
     props: ['initLocation'],
     template: `
-        <div id="div_id_location" class="form-group">
-            <label for="id_location" class="col-form-label ">{% trans "Location" %}</label>
-            <div>
-                <input type="text" name="location" class="textinput form-control" id="id_location" v-model="location">
-                <button type="button" v-on:click="search" class="btn btn-success">{% trans "Get position" %}</button>
+        <div class="form-group">
+            <label for="id_location">{% trans "Location" %}</label>
+            <div class="input-group">
+                <input type="text" class="form-control" id="id_location" name="location" v-model="location">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-secondary" v-on:click="search" >{% trans "Search" %}</button>
+                </div>
             </div>
         </div>
         `
@@ -331,13 +333,7 @@ var VwLocationSelectorMap = {
         }
     },
     props: ['position', 'initMarker'],
-    template: `
-        <div class="row">
-            <div class="col">
-                <div id="vw-location-selector-map-map" style="width: 640px; height: 480px;"></div>
-            </div>
-        </div>
-        `,
+    template: '<div class="mb-2" id="vw-location-selector-map-map" style="height: 200px;"></div>',
     watch: {
         position: function (n, o) {
             console.log('Map: position updated');
@@ -365,19 +361,18 @@ var VwLocationSelectorCoordinates = {
     },
     props: ['longitude', 'latitude'],
     template: `
-        <div>
-            <div id="div_id_longitude" class="form-group">
-                <label for="id_longitude" class="col-form-label ">{% trans "Longitude" %}</label>
-                <div>
-                    <input type="text" name="longitude" class="numberinput form-control" id="id_longitude" v-model="long">
-                </div>
+        <div class="form-row">
+            <div class="form-group col-md-3" id="div_id_latitude">
+                <label for="id_latitude">{% trans "Latitude" %}</label>
+                <input type="text" class="form-control numberinput" id="id_latitude" name="latitude" v-model="lat">
             </div>
-            
-            <div id="div_id_latitude" class="form-group">
-                <label for="id_latitude" class="col-form-label ">{% trans "Latitude" %}</label>
-                <div>
-                    <input type="text" name="latitude" class="numberinput form-control" id="id_latitude" v-model="lat">
-                </div>
+            <div class="form-group col-md-3" id="div_id_longitude">
+                <label for="id_longitude">{% trans "Longitude" %}</label>
+                <input type="text" class="form-control numberinput" id="id_longitude" name="longitude" v-model="long">
+            </div>
+            <div class="form-group col-md-6" id="div_id_address">
+                <label for="id_address">{% trans "Address" %}</label>
+                <input type="text" class="form-control numberinput" id="id_address" name="address">
             </div>
         </div>
         `
@@ -437,12 +432,13 @@ var VwLocationSelector = {
 
     props: ['initCoordinates', 'initMarker', 'location'],
 
-    template: `<div>
-        <vw-location-selector-location-input v-bind:init-location="location" v-on:search="getCoordinates"></vw-location-selector-location-input>
-        <vw-location-selector-map v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
-        <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude"></vw-location-selector-coordinates>
-        </div>`
-
+    template: `
+        <section>
+            <vw-location-selector-location-input v-bind:init-location="location" v-on:search="getCoordinates"></vw-location-selector-location-input>
+            <vw-location-selector-map v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
+            <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude"></vw-location-selector-coordinates>
+        </section>
+        `
 };
 
 var app = new Vue({
