@@ -234,6 +234,9 @@ class AbstractObservation(models.Model):
 class Nest(AbstractObservation):
     duplicate_of = models.ForeignKey('self', on_delete=models.PROTECT, blank=True, null=True)
 
+    def get_absolute_url(self):
+        return reverse('vespawatch:nest-update', kwargs={'pk': self.pk})
+
     def as_dict(self):
         return {
             'id': self.pk,
@@ -272,7 +275,7 @@ class Individual(AbstractObservation):
     nest = models.ForeignKey(Nest, on_delete=models.CASCADE, blank=True, null=True)
 
     def get_absolute_url(self):
-        return reverse('vespawatch:observation-update', kwargs={'pk': self.pk})
+        return reverse('vespawatch:individual-update', kwargs={'pk': self.pk})
 
     def as_dict(self):
         return {

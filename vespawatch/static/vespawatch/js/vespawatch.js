@@ -77,7 +77,7 @@ var VwObservationsVizMap = {
                 });
             }
 
-            html += '<a href="/observations/' + obs.id + '/">View details</a>';
+            html += '<a href="/' + obs.subject + 's/' + obs.id + '/">View details</a>';
 
             return html;
         },
