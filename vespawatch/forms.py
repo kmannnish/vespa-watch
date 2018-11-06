@@ -48,7 +48,7 @@ class NestPictureForm(ModelForm):
 
 IndividualImageFormset = inlineformset_factory(Individual, IndividualPicture, fields=('image',), extra=2)
 NestImageFormset = inlineformset_factory(Nest, NestPicture, fields=('image',), extra=2)
-
+ManagementFormset = inlineformset_factory(Nest, ManagementAction, fields=('outcome', 'action_time', 'person_name'), extra=1, max_num=1)
 
 class ManagementActionForm(ModelForm):
     class Meta:

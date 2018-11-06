@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import DeleteView, DetailView
 from django.urls import reverse_lazy
-from .forms import ManagementActionForm, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
+from .forms import ManagementActionForm, ManagementFormset, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
 from .models import Individual, Nest, ManagementAction, IndividualPicture, NestPicture
 
 
@@ -76,10 +76,14 @@ def create_nest(request):
         form = NestForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            management_formset = ManagementFormset(request.POST, request.FILES, instance=form.instance)
+            if management_formset.is_valid():
+                management_formset.save()
             return HttpResponseRedirect('/')
     else:
         form = NestForm()
-    return render(request, 'vespawatch/observation_create.html', {'form': form, 'type': 'nest'})
+        management_formset = ManagementFormset()
+    return render(request, 'vespawatch/observation_create.html', {'form': form, 'management_formset': management_formset, 'type': 'nest'})
 
 
 @login_required
@@ -87,6 +91,7 @@ def update_nest(request, pk):
     nest = get_object_or_404(Nest, pk=pk)
     if request.method == 'POST':
         image_formset = NestImageFormset(request.POST, request.FILES, instance=nest)
+        management_formset = ManagementFormset(request.POST, request.FILES, instance=nest)
         form = NestForm(request.POST, files=request.FILES, instance=nest)
         if form.is_valid():
             form.save()
@@ -95,12 +100,18 @@ def update_nest(request, pk):
                 for obj in image_formset.deleted_objects:
                     if obj.pk:
                         obj.delete()
+            if management_formset.is_valid():
+                instances = management_formset.save()
+                for obj in management_formset.deleted_objects:
+                    if obj.pk:
+                        obj.delete()
             return HttpResponseRedirect('/')
     elif request.method == 'GET':
         form = NestForm(instance=nest)
         image_formset = NestImageFormset(instance=nest)
+        management_formset = ManagementFormset(instance=nest)
     return render(request, 'vespawatch/observation_update.html',
-                  {'form': form, 'object': nest, 'type': 'nest', 'image_formset': image_formset})
+                  {'form': form, 'object': nest, 'type': 'nest', 'image_formset': image_formset, 'management_formset': management_formset,})
 
 
 class NestDetail(DetailView):

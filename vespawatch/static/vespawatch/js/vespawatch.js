@@ -23,9 +23,9 @@ var VwObservationsVizMap = {
             function getColor(d) {
                 return d.subject === 'individual' ? '#FF0000' :
                     d.subject === 'nest' ?
-                        d.action === 'FD' ? '#0000FF' :
-                        d.action === 'PD' ? '#00FF00' :
-                        d.action === 'ND' ? '#0FaF00' :
+                        d.actionCode === 'FD' ? '#0000FF' :
+                        d.actionCode === 'PD' ? '#00FF00' :
+                        d.actionCode === 'ND' ? '#0FaF00' :
                             '#1FCFaF'
                     : '#000';  // if the subject is not 'Individual' or 'Nest'
             }

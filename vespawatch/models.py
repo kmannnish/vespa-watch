@@ -238,6 +238,8 @@ class Nest(AbstractObservation):
         return reverse('vespawatch:nest-update', kwargs={'pk': self.pk})
 
     def as_dict(self):
+        action = self.managementaction_set.first()
+
         return {
             'id': self.pk,
             'species': self.inaturalist_species if self.inaturalist_species else self.species.name,
@@ -249,7 +251,8 @@ class Nest(AbstractObservation):
             'observation_time': self.observation_time.timestamp() * 1000,
             'comments': self.comments,
             'imageUrls': [x.image.url for x in self.nestpicture_set.all()],
-            'action': self.managementaction_set.first()
+            'action': action.get_outcome_display() if action else None,
+            'actionCode': action.outcome if action else None,
         }
 
     def __str__(self):
@@ -327,7 +330,7 @@ class ManagementAction(models.Model):
         (EMPTY_NEST_NOTHING_DONE, 'Empty nest, nothing done'),
     )
 
-    nest = models.ForeignKey(Nest, on_delete=models.PROTECT)
+    nest = models.ForeignKey(Nest, on_delete=models.CASCADE)
     outcome = models.CharField(max_length=2, choices=OUTCOME_CHOICE)
     action_time = models.DateTimeField()
     person_name = models.CharField(max_length=255, blank=True)
