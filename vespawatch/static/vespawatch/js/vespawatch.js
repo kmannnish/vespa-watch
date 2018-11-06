@@ -113,7 +113,7 @@ var VwObservationsVizMap = {
         }
     },
 
-    template: '<div id="vw-map-map" style="height: 450px;"></div>'
+    template: '<div class="mb-2" id="vw-map-map" style="height: 450px;"></div>'
 };
 
 
@@ -178,7 +178,7 @@ var VwObservationsVizTimeSlider = {
         }
     },
     template: `
-        <div class="row align-items-center py-4">
+        <div class="row align-items-center py-2 mb-2">
             <div class="col-2">{{ startStr }}</div>
             <div class="col"><div id="vw-time-slider"></div></div>
             <div class="col-2 text-right">{{ stopStr }}</div>
