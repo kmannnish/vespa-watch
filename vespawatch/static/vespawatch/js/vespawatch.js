@@ -87,12 +87,12 @@ var VwObservationsVizMap = {
             });
         },
         init: function () {
-            var mapPosition = [50.5, 4.5];
+            var mapPosition = [50.85, 4.35];
             var mapZoom = 8;
             this.map = L.map("vw-map-map")
                 .setView(mapPosition, mapZoom);
             var CartoDB_Positron = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://carto.com/attributions">CARTO</a>',
                 subdomains: 'abcd',
                 maxZoom: 20
             })
@@ -113,7 +113,7 @@ var VwObservationsVizMap = {
         }
     },
 
-    template: '<div id="vw-map-map" style="height: 750px"></div>'
+    template: '<div class="mb-2" id="vw-map-map" style="height: 450px;"></div>'
 };
 
 
@@ -132,10 +132,10 @@ var VwObservationsVizTimeSlider = {
     props: ['value'],
     computed: {
         startStr: function () {
-            return moment(this.selectedTimeRange.start).format('lll');
+            return moment(this.selectedTimeRange.start).format('D MMM YYYY');
         },
         stopStr: function () {
-            return moment(this.selectedTimeRange.stop).format('lll');
+            return moment(this.selectedTimeRange.stop).format('D MMM YYYY');
         }
     },
     methods: {
@@ -177,7 +177,13 @@ var VwObservationsVizTimeSlider = {
             this.init();
         }
     },
-    template: '<div> <div id="vw-time-slider"></div> <span id="vw-time-start">{{ startStr }}</span> - <span id="vw-time-stop">{{ stopStr }}</span></div>'
+    template: `
+        <div class="row align-items-center py-2 mb-2">
+            <div class="col-2">{{ startStr }}</div>
+            <div class="col"><div id="vw-time-slider"></div></div>
+            <div class="col-2 text-right">{{ stopStr }}</div>
+        </div>
+        `
 };
 
 // The VwObservationsViz consists of 2 child components: the time slider (VwObservationsVizTimeSlider)
@@ -248,8 +254,12 @@ var VwObservationsViz = {
         this.getData();
     },
 
-    template: '<div> <vw-observations-viz-time-slider v-on:time-updated="filterOnTimeRange" v-model="timeRange"></vw-observations-viz-time-slider> <vw-observations-viz-map v-bind:observations="observations"></vw-observations-viz-map> </div>'
-
+    template: `
+        <section>
+            <vw-observations-viz-map v-bind:observations="observations"></vw-observations-viz-map>
+            <vw-observations-viz-time-slider v-on:time-updated="filterOnTimeRange" v-model="timeRange"></vw-observations-viz-time-slider>
+        </section>
+        `
 };
 
 var VwLocationSelectorLocationInput = {
@@ -264,14 +274,17 @@ var VwLocationSelectorLocationInput = {
         }
     },
     props: ['initLocation'],
-    template: `<div id="div_id_location" class="form-group">
-                    <label for="id_location" class="col-form-label ">{% trans "Location" %}</label>
-                        <div>
-                            <input type="text" name="location" class="textinput form-control" id="id_location" v-model="location">
-                            <button type="button" v-on:click="search" class="btn btn-success">{% trans "Get position" %}</button>
-                        </div>
-                    </div>`
-
+    template: `
+        <div class="form-group">
+            <label for="id_location">{% trans "Location" %}</label>
+            <div class="input-group">
+                <input type="text" class="form-control" id="id_location" name="location" v-model="location">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-secondary" v-on:click="search" >{% trans "Search" %}</button>
+                </div>
+            </div>
+        </div>
+        `
 };
 
 var VwLocationSelectorMap = {
@@ -320,12 +333,7 @@ var VwLocationSelectorMap = {
         }
     },
     props: ['position', 'initMarker'],
-    template: `<div class="row">
-        <div class="col">
-            <div id="vw-location-selector-map-map" style="width: 640px; height: 480px;"></div>
-        </div>
-    </div>
-    `,
+    template: '<div class="mb-2" id="vw-location-selector-map-map" style="height: 200px;"></div>',
     watch: {
         position: function (n, o) {
             console.log('Map: position updated');
@@ -353,22 +361,21 @@ var VwLocationSelectorCoordinates = {
     },
     props: ['longitude', 'latitude'],
     template: `
-    <div>
-        <div id="div_id_longitude" class="form-group">
-            <label for="id_longitude" class="col-form-label ">{% trans "Longitude" %}</label>
-            <div>
-                <input type="text" name="longitude" class="numberinput form-control" id="id_longitude" v-model="long">
+        <div class="form-row">
+            <div class="form-group col-md-3" id="div_id_latitude">
+                <label for="id_latitude">{% trans "Latitude" %}</label>
+                <input type="text" class="form-control numberinput" id="id_latitude" name="latitude" v-model="lat">
+            </div>
+            <div class="form-group col-md-3" id="div_id_longitude">
+                <label for="id_longitude">{% trans "Longitude" %}</label>
+                <input type="text" class="form-control numberinput" id="id_longitude" name="longitude" v-model="long">
+            </div>
+            <div class="form-group col-md-6" id="div_id_address">
+                <label for="id_address">{% trans "Address" %}</label>
+                <input type="text" class="form-control numberinput" id="id_address" name="address">
             </div>
         </div>
-        
-        <div id="div_id_latitude" class="form-group">
-            <label for="id_latitude" class="col-form-label ">{% trans "Latitude" %}</label>
-            <div>
-                <input type="text" name="latitude" class="numberinput form-control" id="id_latitude" v-model="lat">
-            </div>
-        </div>
-    </div>
-    `
+        `
 };
 
 var VwLocationSelector = {
@@ -425,12 +432,13 @@ var VwLocationSelector = {
 
     props: ['initCoordinates', 'initMarker', 'location'],
 
-    template: `<div>
-        <vw-location-selector-location-input v-bind:init-location="location" v-on:search="getCoordinates"></vw-location-selector-location-input>
-        <vw-location-selector-map v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
-        <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude"></vw-location-selector-coordinates>
-        </div>`
-
+    template: `
+        <section>
+            <vw-location-selector-location-input v-bind:init-location="location" v-on:search="getCoordinates"></vw-location-selector-location-input>
+            <vw-location-selector-map v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
+            <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude"></vw-location-selector-coordinates>
+        </section>
+        `
 };
 
 var app = new Vue({
