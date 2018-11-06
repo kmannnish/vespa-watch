@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block content %}
-<main class="container">
+<main class="container" id="vw-main-app">
     <form action="" method="post">
     {% csrf_token %}
     {% trans 'The following managment actions as well as their related objects will be deleted. Are you sure?' %}
