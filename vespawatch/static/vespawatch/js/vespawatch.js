@@ -132,10 +132,10 @@ var VwObservationsVizTimeSlider = {
     props: ['value'],
     computed: {
         startStr: function () {
-            return moment(this.selectedTimeRange.start).format('lll');
+            return moment(this.selectedTimeRange.start).format('D MMM YYYY');
         },
         stopStr: function () {
-            return moment(this.selectedTimeRange.stop).format('lll');
+            return moment(this.selectedTimeRange.stop).format('D MMM YYYY');
         }
     },
     methods: {
@@ -177,7 +177,13 @@ var VwObservationsVizTimeSlider = {
             this.init();
         }
     },
-    template: '<div> <div id="vw-time-slider"></div> <span id="vw-time-start">{{ startStr }}</span> - <span id="vw-time-stop">{{ stopStr }}</span></div>'
+    template: `
+        <div class="row align-items-center py-4">
+            <div class="col-2">{{ startStr }}</div>
+            <div class="col"><div id="vw-time-slider"></div></div>
+            <div class="col-2 text-right">{{ stopStr }}</div>
+        </div>
+        `
 };
 
 // The VwObservationsViz consists of 2 child components: the time slider (VwObservationsVizTimeSlider)
@@ -248,8 +254,12 @@ var VwObservationsViz = {
         this.getData();
     },
 
-    template: '<div> <vw-observations-viz-time-slider v-on:time-updated="filterOnTimeRange" v-model="timeRange"></vw-observations-viz-time-slider> <vw-observations-viz-map v-bind:observations="observations"></vw-observations-viz-map> </div>'
-
+    template: `
+        <section>
+            <vw-observations-viz-map v-bind:observations="observations"></vw-observations-viz-map>
+            <vw-observations-viz-time-slider v-on:time-updated="filterOnTimeRange" v-model="timeRange"></vw-observations-viz-time-slider>
+        </section>
+        `
 };
 
 var VwLocationSelectorLocationInput = {
