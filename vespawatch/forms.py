@@ -1,32 +1,47 @@
-from django.forms import inlineformset_factory, ModelForm
+from django.forms import inlineformset_factory, ModelForm, BooleanField
 from .models import ManagementAction, Nest, Individual, NestPicture, IndividualPicture
 
 
 class IndividualForm(ModelForm):
+    terms_of_service = BooleanField(label='Accept the terms of service', required=False)   # TODO how to translate that label?
+
     class Meta:
         model = Individual
         fields = ['species', 'individual_count', 'behaviour', 'location', 'latitude', 'longitude',
                   'inaturalist_id', 'observation_time', 'comments',
                   'observer_title', 'observer_last_name', 'observer_first_name', 'observer_email', 'observer_phone',
-                  'observer_is_beekeeper', 'observer_approve_data_process', 'observer_approve_display',
-                  'observer_approve_data_distribution'
+                  'observer_is_beekeeper'
         ]
 
     def save(self, *args, **kwargs):
+
+        if not self.cleaned_data['terms_of_service']:
+            msg = "You must accept the terms of service."
+            self.add_error('terms_of_service', msg)
         observation = super().save(*args, **kwargs)
         if hasattr(self.files, 'getlist'):
             for image in self.files.getlist('images'):
                 IndividualPicture.objects.create(observation=observation, image=image)
 
 class NestForm(ModelForm):
+    terms_of_service = BooleanField(label='Accept the terms of service', required=False)   # TODO how to translate that label?
+
     class Meta:
         model = Nest
         fields = ['species', 'location', 'latitude', 'longitude',
                   'inaturalist_id', 'observation_time', 'comments',
                   'observer_title', 'observer_last_name', 'observer_first_name', 'observer_email', 'observer_phone',
-                  'observer_is_beekeeper', 'observer_approve_data_process', 'observer_approve_display',
-                  'observer_approve_data_distribution'
+                  'observer_is_beekeeper'
         ]
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        toc = cleaned_data.get('toc')
+        print('Toc: {}'.format(toc))
+        if not toc:
+            msg = "You must accept the terms of service."
+            self.add_error('terms_of_service', msg)
+        return cleaned_data
 
     def save(self, *args, **kwargs):
         observation = super().save(*args, **kwargs)
