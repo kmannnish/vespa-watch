@@ -1,0 +1,81 @@
+{% extends 'vespawatch/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<main id="vw-main-app" class="container">
+    <div class="row justify-content-center">
+        <div class="col-8">
+            <h1 class="mt-2">{% trans "Individual" %}</h1>
+            <hr class="mt-0 mb-4">
+
+            <dl>
+                <dt>{% trans "Species" %}</dt>
+                <dd>{% if individual.inaturalist_species %}
+                {{ individual.inaturalist_species }}
+                {% else %}
+                {{  individual.species.name }}
+                {% endif %}</dd>
+
+                <dt>{% trans "ID" %}</dt>
+                <dd>{{ individual.pk }}</dd>
+
+                <dt>{% trans "Location" %}</dt>
+                <dd>{{ individual.location }}</dd>
+
+                <dt>{% trans "Latitude" %}</dt>
+                <dd>{{ individual.latitude }}</dd>
+
+                <dt>{% trans "Longitude" %}</dt>
+                <dd>{{ individual.longitude }}</dd>
+
+                <dt>{% trans "iNaturalist ID" %}</dt>
+                <dd>{{ individual.inaturalist_id }}</dd>
+
+                <dt>{% trans "individual time" %}</dt>
+                <dd>{{ individual.individual_time }}</dd>
+
+                <dt>{% trans "Observer" %}</dt>
+                <dd>{{ individual.observer_title }} {{ individual.observer_first_name }} {{ individual.observer_last_name }}</dd>
+
+                <dt>{% trans "Email" %}</dt>
+                <dd>{{ individual.observer_email }}</dd>
+
+                <dt>{% trans "Phone" %}</dt>
+                <dd>{{ individual.observer_phone }}</dd>
+
+                <dt>{% trans "Is beekeper" %}</dt>
+                <dd>{{ individual.observer_is_beekeeper }}</dd>
+
+                <dt>{% trans "Data processing allowed" %}</dt>
+                <dd>{{ individual.observer_approve_data_process }}</dd>
+
+                <dt>{% trans "Display data apporved" %}</dt>
+                <dd>{{ individual.observer_approve_display }}</dd>
+
+                <dt>{% trans "Distribute data apporved" %}</dt>
+                <dd>{{ individual.observer_approve_data_distribution }}</dd>
+
+                <dt>{% trans "Comments" %}</dt>
+                <dd>{{ individual.comments }}</dd>
+            </dl>
+
+        {% if individual.individualpicture_set %}
+            {% for image in individual.individualpicture_set.all %}
+                <img src="{{ image.image.url }}">
+            {% endfor %}
+        {% endif %}
+
+        <br>
+
+            {% if user.is_authenticated %}
+                {% if individual.originates_in_vespawatch %}
+                    <a href="{% url 'vespawatch:individual-update' individual.pk %}" class="btn btn-success"> {% trans "Edit" %}</a>
+                    <a href="{% url 'vespawatch:individual-delete' individual.pk %}" class="btn btn-danger"> {% trans "Delete" %}</a>
+                {% else %}
+                    <span>{% trans "This observation was created on iNaturalist. You cannot edit it here" %}</span>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</main>
+{% endblock %}

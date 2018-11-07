@@ -21,11 +21,11 @@ var VwObservationsVizMap = {
         addObservationsToMap: function () {
 
             function getColor(d) {
-                return d.subject === 'Individual' ? '#FF0000' :
-                    d.subject === 'Nest' ?
-                        d.action === 'FD' ? '#0000FF' :
-                        d.action === 'PD' ? '#00FF00' :
-                        d.action === 'ND' ? '#0FaF00' :
+                return d.subject === 'individual' ? '#FF0000' :
+                    d.subject === 'nest' ?
+                        d.actionCode === 'FD' ? '#0000FF' :
+                        d.actionCode === 'PD' ? '#00FF00' :
+                        d.actionCode === 'ND' ? '#0FaF00' :
                             '#1FCFaF'
                     : '#000';  // if the subject is not 'Individual' or 'Nest'
             }
@@ -77,7 +77,7 @@ var VwObservationsVizMap = {
                 });
             }
 
-            html += '<a href="/observations/' + obs.id + '/">View details</a>';
+            html += '<a href="/' + obs.subject + 's/' + obs.id + '/">View details</a>';
 
             return html;
         },
@@ -268,6 +268,14 @@ var VwLocationSelectorLocationInput = {
             location: this.initLocation ? '' + this.initLocation : ''
         }
     },
+    computed: {
+        positionLabel: function() {
+            return gettext('Position');
+        },
+        searchLabel: function() {
+            return gettext('Search');
+        }
+    },
     methods: {
         search: function () {
             this.$emit('search', this.location);
@@ -276,11 +284,11 @@ var VwLocationSelectorLocationInput = {
     props: ['initLocation'],
     template: `
         <div class="form-group">
-            <label for="id_location">{% trans "Location" %}</label>
+            <label for="id_position">{{positionLabel}}</label>
             <div class="input-group">
-                <input type="text" class="form-control" id="id_location" name="location" v-model="location">
+                <input type="text" class="form-control" id="id_position" name="position" v-model="location">
                 <div class="input-group-append">
-                    <button type="button" class="btn btn-secondary" v-on:click="search" >{% trans "Search" %}</button>
+                    <button type="button" class="btn btn-secondary" v-on:click="search" >{{searchLabel}}</button>
                 </div>
             </div>
         </div>
@@ -351,28 +359,46 @@ var VwLocationSelectorCoordinates = {
             get: function () {return this.latitude},
             set: function (v) {this.$emit("lat-updated", v);}
         },
+        latitudeLabel: function() {
+            return gettext('Latitude');
+        },
+        locationLabel: function() {
+            return gettext('Location');
+        },
         long: {
             get:
                 function () {
                     return this.longitude
                 },
             set: function (v) {this.$emit("lon-updated", v);}
+        },
+        longitudeLabel: function() {
+            return gettext('Longitude');
+        },
+        _location: {
+            get: function () {
+                return this.location;
+            },
+            set: function () {
+                // do nothing
+            }
         }
+
     },
-    props: ['longitude', 'latitude'],
+    props: ['longitude', 'latitude', 'location'],
     template: `
         <div class="form-row">
             <div class="form-group col-md-3" id="div_id_latitude">
-                <label for="id_latitude">{% trans "Latitude" %}</label>
+                <label for="id_latitude">{{latitudeLabel}}</label>
                 <input type="text" class="form-control numberinput" id="id_latitude" name="latitude" v-model="lat">
             </div>
             <div class="form-group col-md-3" id="div_id_longitude">
-                <label for="id_longitude">{% trans "Longitude" %}</label>
+                <label for="id_longitude">{{longitudeLabel}}</label>
                 <input type="text" class="form-control numberinput" id="id_longitude" name="longitude" v-model="long">
             </div>
             <div class="form-group col-md-6" id="div_id_address">
-                <label for="id_address">{% trans "Address" %}</label>
-                <input type="text" class="form-control numberinput" id="id_address" name="address">
+                <label for="id_address">{{locationLabel}}</label>
+                <input type="text" class="form-control numberinput" id="id_address" name="address" v-model="_location">
             </div>
         </div>
         `
@@ -436,7 +462,7 @@ var VwLocationSelector = {
         <section>
             <vw-location-selector-location-input v-bind:init-location="location" v-on:search="getCoordinates"></vw-location-selector-location-input>
             <vw-location-selector-map v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
-            <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude"></vw-location-selector-coordinates>
+            <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:location="location" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude"></vw-location-selector-coordinates>
         </section>
         `
 };

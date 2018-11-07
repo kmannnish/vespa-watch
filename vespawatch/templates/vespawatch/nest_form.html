@@ -2,9 +2,6 @@
 {% load crispy_forms_tags %}
 {% csrf_token %}
 {{ form.species|as_crispy_field }}
-{{ form.individual_count|as_crispy_field }}
-{{ form.behaviour|as_crispy_field }}
-{{ form.subject|as_crispy_field }}
 
 
 <vw-location-selector v-bind:init-coordinates="{% if object %}[{{ object.longitude }}, {{ object.latitude }}]{% else %}[4.5, 50.7]{% endif %}"
@@ -19,7 +16,17 @@
 {% for f in image_formset %}
     {{ f|crispy }}
 {% endfor %}
-{% if not user.is_authenticated %}
+
+{% if user.is_authenticated %}
+    <h3>{% trans "Management action" %}</h3>
+    {{ management_formset.management_form }}
+
+    {% for f in management_formset %}
+        {{ f|crispy }}
+    {% endfor %}
+
+{% else %}
+
     {{ form.observer_title|as_crispy_field }}
     {{ form.observer_last_name|as_crispy_field }}
     {{ form.observer_first_name|as_crispy_field }}
@@ -28,4 +35,5 @@
     {{ form.observer_approve_data_process|as_crispy_field }}
     {{ form.observer_approve_display|as_crispy_field }}
     {{ form.observer_approve_data_distribution|as_crispy_field }}
+
 {% endif %}
