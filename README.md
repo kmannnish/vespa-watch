@@ -23,3 +23,15 @@ This directory contains the Django project for Vespa-watch.
 - Simple split settings:
     - copy `djangoproject/settings/settings_local.template.py ` to `djangoproject/settings/settings_local.py`
     - tell Django to use those local settings: `$ export DJANGO_SETTINGS_MODULE=djangoproject.settings.settings_local`
+
+
+### CSS/SASS
+
+We use SASS to generate our custom stylesheets, meaning:
+
+- Never manually edit `static/vespawatch/css/main.css`
+- Instead, make changes in `static_src/scss/*` and compile them with `npm run create:css`. The resulting files 
+will be saved under `static/vespawatch/css/` so they are made available the standard way to django (for template inclusion, `
+the collectstatic command, ...)
+- In development you can use `npm run watch:css` instead, so the SASS files are automatically compiled on save.
+- The first time, you'll need to install the dependencies for this process: ``npm install``
