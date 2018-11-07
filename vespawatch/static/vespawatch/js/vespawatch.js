@@ -410,6 +410,7 @@ var VwLocationSelector = {
             bbox: [[50.2, 4.4], [50.9, 4.9]],
             locationCoordinates: [this.initCoordinates[0], this.initCoordinates[1]],  // the coordinates that will be passed to the long lat fields
             markerCoordinates: [this.initCoordinates[0], this.initCoordinates[1]],  // the coordinates that will be passed to the map
+            modelLocation: this.location ? '' + this.location : '',
             provider: new GeoSearch.OpenStreetMapProvider({
                 params: {
                     countrycodes: 'BE'
@@ -440,6 +441,7 @@ var VwLocationSelector = {
                 console.log(result);
                 this.locationCoordinates = [firstResult.x, firstResult.y];
                 this.markerCoordinates = [firstResult.x, firstResult.y];
+                this.modelLocation = location;
             })
         },
         setCoordinates: function (coordinates) {
@@ -462,7 +464,7 @@ var VwLocationSelector = {
         <section>
             <vw-location-selector-location-input v-bind:init-location="location" v-on:search="getCoordinates"></vw-location-selector-location-input>
             <vw-location-selector-map v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
-            <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:location="location" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude"></vw-location-selector-coordinates>
+            <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:location="modelLocation" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude"></vw-location-selector-coordinates>
         </section>
         `
 };
