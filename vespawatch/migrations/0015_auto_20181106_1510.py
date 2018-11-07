@@ -29,9 +29,4 @@ class Migration(migrations.Migration):
                 ('zone', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='vespawatch.FirefightersZone')),
             ],
         ),
-        migrations.AlterField(
-            model_name='observationpicture',
-            name='image',
-            field=models.ImageField(upload_to=vespawatch.models.ObservationPicture.get_file_path),
-        ),
     ]

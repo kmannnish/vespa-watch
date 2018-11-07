@@ -5,7 +5,7 @@
 <main class="container" id="vw-main-app">
     <form action="" method="post">
     {% csrf_token %}
-    {% trans 'The following observations as well as their related objects will be deleted. Are you sure?' %}
+    {% trans 'The following individuals as well as their related objects will be deleted. Are you sure?' %}
         <ul>
             <li><input type="hidden" value="{{ object.pk }}" name="itemsToDelete"></li>
             <li><a href="{{ object.get_absolute_url }}">{{ object }}</a></li>

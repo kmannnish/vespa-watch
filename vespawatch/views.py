@@ -4,8 +4,8 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import DeleteView, DetailView
 from django.urls import reverse_lazy
-from .forms import ManagementActionForm, ObservationForm, ImageFormset
-from .models import Observation, ManagementAction, ObservationPicture
+from .forms import ManagementActionForm, ManagementFormset, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
+from .models import Individual, Nest, ManagementAction, IndividualPicture, NestPicture
 
 
 def index(request):
@@ -14,55 +14,116 @@ def index(request):
 
 @login_required
 def management(request):
-    return render(request, 'vespawatch/management.html')
+    nests = Nest.objects.all()
+    profile = request.user.profile
+    zone = profile.zone
+    return render(request, 'vespawatch/management.html', {'nests': nests, 'zone': zone})
 
 
-def create_observation(request):
+def new_observation(request):
+    return render(request, 'vespawatch/new_observation.html')
+
+
+
+
+# CREATE UPDATE INDIVIDUAL OBSERVATIONS
+
+def create_individual(request):
     if request.method == 'POST':
-        form = ObservationForm(request.POST, request.FILES)
+        form = IndividualForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect('/')
     else:
-        form = ObservationForm()
-
-    return render(request, 'vespawatch/observation_create.html', {'form': form})
-
+        form = IndividualForm()
+    return render(request, 'vespawatch/observation_create.html', {'form': form, 'type': 'individual'})
 
 @login_required
-def update_observation(request, pk):
-    observation = get_object_or_404(Observation, pk=pk)
+def update_individual(request, pk):
+    indiv = get_object_or_404(Individual, pk=pk)
     if request.method == 'POST':
-        image_formset = ImageFormset(request.POST, request.FILES, instance=observation)
-        form = ObservationForm(request.POST, files=request.FILES, instance=observation)
+        image_formset = IndividualImageFormset(request.POST, request.FILES, instance=indiv)
+        form = IndividualForm(request.POST, files=request.FILES, instance=indiv)
         if form.is_valid():
             form.save()
             if image_formset.is_valid():
                 instances = image_formset.save()
-                print(instances)
                 for obj in image_formset.deleted_objects:
-                    print('to delete')
-                    print(obj)
                     if obj.pk:
                         obj.delete()
-                print('done')
             return HttpResponseRedirect('/')
-
     elif request.method == 'GET':
-        form = ObservationForm(instance=observation)
-        image_formset = ImageFormset(instance=observation)
+        form = IndividualForm(instance=indiv)
+        image_formset = IndividualImageFormset(instance=indiv)
     return render(request, 'vespawatch/observation_update.html',
-                  {'form': form, 'object': observation, 'image_formset': image_formset})
+                  {'form': form, 'object': indiv, 'type': 'individual', 'image_formset': image_formset})
 
 
-class ObservationDetail(DetailView):
-    model = Observation
+class IndividualDetail(DetailView):
+    model = Individual
 
 
-class ObservationDelete(LoginRequiredMixin, DeleteView):
-    model = Observation
+class IndividualDelete(LoginRequiredMixin, DeleteView):
+    model = Individual
     success_url = reverse_lazy('vespawatch:index')
 
+
+
+# CREATE UPDATE NEST OBSERVATIONS
+
+def create_nest(request):
+    if request.method == 'POST':
+        form = NestForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            management_formset = ManagementFormset(request.POST, request.FILES, instance=form.instance)
+            if management_formset.is_valid():
+                management_formset.save()
+            return HttpResponseRedirect('/')
+    else:
+        form = NestForm()
+        management_formset = ManagementFormset()
+    return render(request, 'vespawatch/observation_create.html', {'form': form, 'management_formset': management_formset, 'type': 'nest'})
+
+
+@login_required
+def update_nest(request, pk):
+    nest = get_object_or_404(Nest, pk=pk)
+    if request.method == 'POST':
+        image_formset = NestImageFormset(request.POST, request.FILES, instance=nest)
+        management_formset = ManagementFormset(request.POST, request.FILES, instance=nest)
+        form = NestForm(request.POST, files=request.FILES, instance=nest)
+        if form.is_valid():
+            form.save()
+            if image_formset.is_valid():
+                instances = image_formset.save()
+                for obj in image_formset.deleted_objects:
+                    if obj.pk:
+                        obj.delete()
+            if management_formset.is_valid():
+                instances = management_formset.save()
+                for obj in management_formset.deleted_objects:
+                    if obj.pk:
+                        obj.delete()
+            return HttpResponseRedirect('/')
+    elif request.method == 'GET':
+        form = NestForm(instance=nest)
+        image_formset = NestImageFormset(instance=nest)
+        management_formset = ManagementFormset(instance=nest)
+    return render(request, 'vespawatch/observation_update.html',
+                  {'form': form, 'object': nest, 'type': 'nest', 'image_formset': image_formset, 'management_formset': management_formset,})
+
+
+class NestDetail(DetailView):
+    model = Nest
+
+
+class NestDelete(LoginRequiredMixin, DeleteView):
+    model = Nest
+    success_url = reverse_lazy('vespawatch:index')
+
+
+# CREATE/UPDATE/DELETE MANAGEMENT ACTIONS
 
 @login_required
 def create_action(request):
@@ -105,7 +166,9 @@ def observations_json(request):
     """
     Return all observations as json data
     """
-    observations = Observation.objects.all()
+    individuals = list(Individual.objects.all())
+    nests = list(Nest.objects.all())
+
     return JsonResponse({
-        'observations': [x.as_dict() for x in observations]
+        'observations': [x.as_dict() for x in individuals + nests]
     })
