@@ -30,8 +30,15 @@
             <tr>
                 <td>{{ nest.observation_time }}</td>
                 <td>{{ nest.location }}</td>
-                <td></td>
-                <td>edit</td>
+                <td>{{ nest.get_management_action_display }}</td>
+                <td>
+                    {% if nest.originates_in_vespawatch %}
+
+                        <a href="{% url 'vespawatch:nest-update' nest.pk %}">edit</a>
+                    {% else %}
+                        <span>{% trans "This observation was created on iNaturalist. You cannot edit it here" %}</span>
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
         </table>

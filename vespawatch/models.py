@@ -237,9 +237,15 @@ class Nest(AbstractObservation):
     def get_absolute_url(self):
         return reverse('vespawatch:nest-update', kwargs={'pk': self.pk})
 
-    def as_dict(self):
+    def get_management_action_display(self):
         action = self.managementaction_set.first()
+        return action.get_outcome_display() if action else ''
 
+    def get_management_action(self):
+        action = self.managementaction_set.first()
+        return action.outcome if action else None
+
+    def as_dict(self):
         return {
             'id': self.pk,
             'species': self.inaturalist_species if self.inaturalist_species else self.species.name,
@@ -251,8 +257,8 @@ class Nest(AbstractObservation):
             'observation_time': self.observation_time.timestamp() * 1000,
             'comments': self.comments,
             'imageUrls': [x.image.url for x in self.nestpicture_set.all()],
-            'action': action.get_outcome_display() if action else None,
-            'actionCode': action.outcome if action else None,
+            'action': self.get_management_action_display(),
+            'actionCode': self.get_management_action(),
         }
 
     def __str__(self):
