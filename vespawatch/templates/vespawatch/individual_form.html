@@ -24,5 +24,14 @@
     {{ form.observer_first_name|as_crispy_field }}
     {{ form.observer_email|as_crispy_field }}
     {{ form.observer_is_beekeeper|as_crispy_field }}
-    {{ form.terms_of_service|as_crispy_field }}
+    <div class="form-group">
+        <div id="div_id_terms_of_service" class="form-check">
+            <label for="id_terms_of_service" class="form-check-label">
+                <input type="checkbox" name="terms_of_service" id="id_terms_of_service" class="checkboxinput form-check-input">
+                {% trans "Accept the" %} <button type="button" class="btn btn-link" data-toggle="modal" data-target="#TOSModal">{% trans "terms of service" %}</button>
+            </label>
+        </div>
+    </div>
+    {% include 'vespawatch/terms_of_service_modal.html' %}
+
 {% endif %}
