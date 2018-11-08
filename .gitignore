@@ -115,3 +115,17 @@ djangoproject/settings/settings_local.py
 testbed_inat_interactions.py
 individual_pictures
 nest_pictures
+
+# deployment exclusions
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+# elastic beanstalk general setting (created from either dev or prd)
+settings.py
+
+# custom ignores
+start
+
