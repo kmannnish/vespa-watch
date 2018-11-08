@@ -1,0 +1,24 @@
+{
+  "TagSet": [
+    {
+      "Key": "Name",
+      "Value": "lw-vespawatch"
+    },
+    {
+      "Key": "APPLICATION",
+      "Value": "LW-VESPAWATCH"
+    },
+    {
+      "Key": "BUSINESS_UNIT",
+      "Value": "FAUNABEHEER"
+    },
+    {
+      "Key": "COST_CENTER",
+      "Value": "EVINBO"
+    },
+    {
+      "Key": "OWNER",
+      "Value": "LIFEWATCH"
+    }
+  ]
+}
