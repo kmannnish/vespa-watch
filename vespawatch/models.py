@@ -147,9 +147,6 @@ class AbstractObservation(models.Model):
     observer_email = models.EmailField(blank=True, null=True)
     observer_phone = models.CharField(max_length=20, blank=True, null=True)
     observer_is_beekeeper = models.NullBooleanField()
-    observer_approve_data_process = models.NullBooleanField(help_text='The observer approves that his data will be processed by Vespa-Watch')
-    observer_approve_display = models.NullBooleanField(help_text='The observer approves that the observation will be displayed on the Vespa-Watch map')
-    observer_approve_data_distribution = models.NullBooleanField(help_text='The observer approves that the recorded observation will be distributed to third parties')
 
     # Managers
     objects = models.Manager()  # The default manager.

@@ -5,7 +5,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import DeleteView, DetailView
 from django.urls import reverse_lazy
 from .forms import ManagementActionForm, ManagementFormset, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
-from .models import Individual, Nest, ManagementAction, IndividualPicture, NestPicture
+from .models import Individual, Nest, ManagementAction
 
 
 def index(request):
@@ -31,6 +31,11 @@ def new_observation(request):
 def create_individual(request):
     if request.method == 'POST':
         form = IndividualForm(request.POST, request.FILES)
+        if request.user.is_authenticated:
+            # set to terms_of_service to true if the user is authenticated
+            form_data_copy = form.data.copy()
+            form_data_copy['terms_of_service'] = True
+            form.data = form_data_copy
         if form.is_valid():
             form.save()
             return HttpResponseRedirect('/')
@@ -44,6 +49,11 @@ def update_individual(request, pk):
     if request.method == 'POST':
         image_formset = IndividualImageFormset(request.POST, request.FILES, instance=indiv)
         form = IndividualForm(request.POST, files=request.FILES, instance=indiv)
+        if request.user.is_authenticated:
+            # set to terms_of_service to true if the user is authenticated
+            form_data_copy = form.data.copy()
+            form_data_copy['terms_of_service'] = True
+            form.data = form_data_copy
         if form.is_valid():
             form.save()
             if image_formset.is_valid():
@@ -74,12 +84,20 @@ class IndividualDelete(LoginRequiredMixin, DeleteView):
 def create_nest(request):
     if request.method == 'POST':
         form = NestForm(request.POST, request.FILES)
+        if request.user.is_authenticated:
+            # set to terms_of_service to true if the user is authenticated
+            form_data_copy = form.data.copy()
+            form_data_copy['terms_of_service'] = True
+            form.data = form_data_copy
         if form.is_valid():
             form.save()
-            management_formset = ManagementFormset(request.POST, request.FILES, instance=form.instance)
-            if management_formset.is_valid():
-                management_formset.save()
+            if request.user.is_authenticated:
+                management_formset = ManagementFormset(request.POST, request.FILES, instance=form.instance)
+                if management_formset.is_valid():
+                    management_formset.save()
             return HttpResponseRedirect('/')
+        else:
+            management_formset = ManagementFormset()
     else:
         form = NestForm()
         management_formset = ManagementFormset()
@@ -93,6 +111,11 @@ def update_nest(request, pk):
         image_formset = NestImageFormset(request.POST, request.FILES, instance=nest)
         management_formset = ManagementFormset(request.POST, request.FILES, instance=nest)
         form = NestForm(request.POST, files=request.FILES, instance=nest)
+        if request.user.is_authenticated:
+            # set to terms_of_service to true if the user is authenticated
+            form_data_copy = form.data.copy()
+            form_data_copy['terms_of_service'] = True
+            form.data = form_data_copy
         if form.is_valid():
             form.save()
             if image_formset.is_valid():
@@ -100,12 +123,15 @@ def update_nest(request, pk):
                 for obj in image_formset.deleted_objects:
                     if obj.pk:
                         obj.delete()
-            if management_formset.is_valid():
-                instances = management_formset.save()
-                for obj in management_formset.deleted_objects:
-                    if obj.pk:
-                        obj.delete()
+            if request.user.is_authenticated:
+                if management_formset.is_valid():
+                    instances = management_formset.save()
+                    for obj in management_formset.deleted_objects:
+                        if obj.pk:
+                            obj.delete()
             return HttpResponseRedirect('/')
+        else:
+            management_formset = ManagementFormset(instance=nest)
     elif request.method == 'GET':
         form = NestForm(instance=nest)
         image_formset = NestImageFormset(instance=nest)
