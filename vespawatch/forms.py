@@ -13,11 +13,16 @@ class IndividualForm(ModelForm):
                   'observer_is_beekeeper'
         ]
 
-    def save(self, *args, **kwargs):
-
-        if not self.cleaned_data['terms_of_service']:
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        toc = cleaned_data.get('terms_of_service')
+        print('Toc: {}'.format(toc))
+        if not toc:
             msg = "You must accept the terms of service."
             self.add_error('terms_of_service', msg)
+        return cleaned_data
+
+    def save(self, *args, **kwargs):
         observation = super().save(*args, **kwargs)
         if hasattr(self.files, 'getlist'):
             for image in self.files.getlist('images'):
@@ -36,7 +41,7 @@ class NestForm(ModelForm):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        toc = cleaned_data.get('toc')
+        toc = cleaned_data.get('terms_of_service')
         print('Toc: {}'.format(toc))
         if not toc:
             msg = "You must accept the terms of service."
