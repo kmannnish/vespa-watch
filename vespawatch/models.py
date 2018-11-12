@@ -173,7 +173,7 @@ class AbstractObservation(models.Model):
         All the rest is pushed.
         """
 
-        vespawatch_evidence_value = 'nest' if self.__name__ == 'Nest' else 'individual'
+        vespawatch_evidence_value = 'nest' if self.__class__ == Nest else 'individual'
 
         return {'observed_on_string': self.observation_time.isoformat(),
                 'time_zone': 'Brussels',

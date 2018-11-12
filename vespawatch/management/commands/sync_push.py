@@ -13,8 +13,8 @@ class Command(VespaWatchCommand):
         self.w("Will push our observations to iNaturalist... (the observations that originate from iNaturalist won't "
                "be pushed.")
 
-        qs = [list(Individual.from_vespawatch_objects.all()) + list(Nest.from_vespawatch_objects.all())]
-        self.w(f"We currently have {qs.count()} pushable observations.")
+        observations = list(Individual.from_vespawatch_objects.all()) + list(Nest.from_vespawatch_objects.all())
+        self.w(f"We currently have {len(observations)} pushable observations.")
 
         self.w("Getting an access token for iNaturalist...", ending="")
         token = get_access_token(username=settings.INAT_USER_USERNAME, password=settings.INAT_USER_PASSWORD,
@@ -22,7 +22,7 @@ class Command(VespaWatchCommand):
                                  app_secret=settings.INAT_APP_SECRET)
         self.w("OK")
 
-        for obs in qs:
+        for obs in observations:
             self.w(f"Pushing our observation with id={obs.pk}...", ending="")
             if obs.exists_in_inaturalist:
                 self.w("This observation was already pushed, we'll update. ", ending="")
