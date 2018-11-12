@@ -12,6 +12,7 @@ from django.dispatch import receiver
 from django.template import defaultfilters
 from django.urls import reverse
 from django.utils.timezone import is_naive, make_aware
+from pyinaturalist.node_api import get_observation
 from pyinaturalist.rest_api import create_observations, update_observation
 
 
@@ -117,15 +118,14 @@ def inat_observation_comes_from_vespawatch(inat_observation_id):
 
     Slow, since we need an API call to retrieve the observation_field_values
     """
+    obs_data = get_observation(observation_id=inat_observation_id)
 
-    #TODO: implement
+    # We simply check if there's a vespawatch_id observation field on this observation
+    for ofv in obs_data['ofvs']:
+        if ofv['field_id'] == settings.OBSERVATION_FIELD_ID:
+            return True
+
     return False
-    # if 'observation_field_values' in inat_observation:
-    #     for ofv in inat_observation['observation_field_values']:
-    #         if ofv['observation_field_id'] == settings.OBSERVATION_FIELD_ID:
-    #             return True
-    #
-    # return False
 
 
 class AbstractObservation(models.Model):
