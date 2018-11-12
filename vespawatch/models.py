@@ -9,6 +9,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.template import defaultfilters
 from django.urls import reverse
 from django.utils.timezone import is_naive, make_aware
 from pyinaturalist.rest_api import create_observations, update_observation
@@ -227,6 +228,11 @@ class AbstractObservation(models.Model):
         else:
             return ''
 
+    @property
+    def formatted_observation_date(self):
+        # We need to be aware of the timezone, hence the defaultfilter trick
+        return defaultfilters.date(self.observation_time, 'Y-m-d')
+
 
 class Nest(AbstractObservation):
     duplicate_of = models.ForeignKey('self', on_delete=models.PROTECT, blank=True, null=True)
@@ -259,11 +265,10 @@ class Nest(AbstractObservation):
         }
 
     def __str__(self):
-        return f'Nest of {self.get_species_name()}, {self.observation_time.strftime("%Y-%m-%d")}'
+        return f'Nest of {self.get_species_name()}, {self.formatted_observation_date}'
 
 
 class Individual(AbstractObservation):
-
     FOURAGING = 'FO'
     HUNTING = 'HU'
     FLOWER = 'FL'
@@ -298,7 +303,7 @@ class Individual(AbstractObservation):
         }
 
     def __str__(self):
-        return f'Individual of {self.get_species_name()}, {self.observation_time.strftime("%Y-%m-%d")}'
+        return f'Individual of {self.get_species_name()}, {self.formatted_observation_date}'
 
 
 class IndividualPicture(models.Model):
