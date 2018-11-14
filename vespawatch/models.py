@@ -169,7 +169,7 @@ def inat_observation_comes_from_vespawatch(inat_observation_id):
 
     # We simply check if there's a vespawatch_id observation field on this observation
     for ofv in obs_data['ofvs']:
-        if ofv['field_id'] == settings.OBSERVATION_FIELD_ID:
+        if ofv['field_id'] == settings.VESPAWATCH_ID_OBS_FIELD_ID:
             return True
 
     return False
@@ -230,7 +230,7 @@ class AbstractObservation(models.Model):
 
                 # sets vespawatch_id (an observation field whose ID is 9613)
                 'observation_field_values_attributes':
-                    [{'observation_field_id': settings.OBSERVATION_FIELD_ID, 'value': self.pk},
+                    [{'observation_field_id': settings.VESPAWATCH_ID_OBS_FIELD_ID, 'value': self.pk},
                     {'observation_field_id': settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID, 'value': vespawatch_evidence_value}]
                 }
 
