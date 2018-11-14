@@ -35,3 +35,21 @@ will be saved under `static/vespawatch/css/` so they are made available the stan
 the collectstatic command, ...)
 - In development you can use `npm run watch:css` instead, so the SASS files are automatically compiled on save.
 - The first time, you'll need to install the dependencies for this process: ``npm install``
+
+### GeoDjango / PostGIS setup notes
+
+- Geographic libraries needed: GEOS, PROJ.4, GDAL
+- Install PostGIS on existing PosgreSQL database:
+
+    $ psql -d <db_name>
+    
+    psql (9.6.5, server 9.6.8)
+    Type "help" for help.
+
+    vespa-watch=# CREATE EXTENSION postgis;
+    
+- The FirefightersZone model has a "polygon" field. Don't hesitate to set/edit it in the Admin to 
+check GeoDjango/Postgis are functional.
+
+
+    
