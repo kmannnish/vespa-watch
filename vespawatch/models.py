@@ -4,6 +4,7 @@ from datetime import datetime
 import dateparser
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.gis.geos import Point
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -176,6 +177,23 @@ def inat_observation_comes_from_vespawatch(inat_observation_id):
     return False
 
 
+class FirefightersZone(models.Model):
+    name = models.CharField(max_length=100)
+    mpolygon = models.MultiPolygonField(null=True)
+
+    def __str__(self):
+        return self.name
+
+
+def get_zone_for_coordinates(lat, lon):
+    """Returns the Firefighters zone instance given (point) coordinates. lat/lon in EPSG4326.
+
+    :raises FirefightersZone.DoesNotExist:
+    """
+    point = Point(x=lon, y=lat)
+    return FirefightersZone.objects.get(mpolygon__intersects=point)
+
+
 class AbstractObservation(models.Model):
     originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
     species = models.ForeignKey(Species, on_delete=models.PROTECT, blank=True, null=True)  # Blank allows because some nests can't be easily identified
@@ -185,6 +203,7 @@ class AbstractObservation(models.Model):
 
     latitude = models.FloatField()
     longitude = models.FloatField()
+    zone = models.ForeignKey(FirefightersZone, blank=True, null=True, on_delete=models.PROTECT)
 
     inaturalist_id = models.BigIntegerField(blank=True, null=True)
     inaturalist_species = models.CharField(max_length=100, blank=True, null=True)
@@ -208,6 +227,17 @@ class AbstractObservation(models.Model):
     def __init__(self, *args, **kwargs):
         super(AbstractObservation, self).__init__(*args, **kwargs)
         self.__original_species = self.species
+
+    def auto_assign_zone(self):
+        """Sets the zone attribute, according to the latitude/longitude. You'll need to manually save the model instance.
+
+        !! overwrite existing values !!
+        """
+        if self.latitude and self.longitude:
+            try:
+                self.zone = get_zone_for_coordinates(self.latitude, self.longitude)
+            except FirefightersZone.DoesNotExist:
+                pass
 
     @property
     def can_be_edited_or_deleted(self):
@@ -297,9 +327,13 @@ class AbstractObservation(models.Model):
             raise ValidationError("Observation already pushed, species can't be changed anymore!")
 
     def save(self, *args, **kwargs):
-        # Let's make sure model.clean() is called on each save()
+        # Let's make sure model.clean() is called on each save(), for validation
         self.full_clean()
         self.__original_species = self.species
+
+        if not self.zone:  # Automatically sets a zone if we don't have one.
+            self.auto_assign_zone()
+
         return super(AbstractObservation, self).save(*args, **kwargs)
 
 
@@ -410,14 +444,6 @@ class ManagementAction(models.Model):
 
     def __str__(self):
         return f'{self.action_time.strftime("%Y-%m-%d")} {self.get_outcome_display()} on {self.nest}'
-
-
-class FirefightersZone(models.Model):
-    name = models.CharField(max_length=100)
-    mpolygon = models.MultiPolygonField(null=True)
-
-    def __str__(self):
-        return self.name
 
 
 class Profile(models.Model):
