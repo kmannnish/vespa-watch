@@ -6,6 +6,7 @@ import dateparser
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -14,6 +15,13 @@ from django.urls import reverse
 from django.utils.timezone import is_naive, make_aware
 from pyinaturalist.node_api import get_observation
 from pyinaturalist.rest_api import create_observations, update_observation
+
+
+def get_species_from_inat_taxon_id(inaturalist_taxon_id):
+    """ Raises Species.DoesNotExists().
+
+    Raises Species.MultipleObjectsReturned() if several matches, which shouldn't happen."""
+    return Species.objects.get(inaturalist_pull_taxon_ids__contains=[inaturalist_taxon_id])
 
 
 class Species(models.Model):
@@ -55,7 +63,9 @@ class ParseDateError(Exception):
     """Cannot parse this date"""
 
 def create_observation_from_inat_data(inaturalist_data):
-    """ Creates an observation in our local database according to the data from iNaturalist API
+    """Creates an observation in our local database according to the data from iNaturalist API.
+
+    :returns: the observation (instance of Nest or Individual) created.
 
     Raises:
         SpeciesMatchError
@@ -82,14 +92,14 @@ def create_observation_from_inat_data(inaturalist_data):
     if observation_time:
         # Reconcile the species
         try:
-            species = Species.objects.get(inaturalist_pull_taxon_ids__contains=[inaturalist_data['taxon']['id']])
+            species = get_species_from_inat_taxon_id(inaturalist_data['taxon']['id'])
         except Species.DoesNotExist:
             raise SpeciesMatchError
 
         # Check if it has the vespawatch_evidence observation field value and if it's set to "nest"
         is_nest_ofv = next((item for item in inaturalist_data['ofvs'] if item["field_id"] == settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID), None)
         if is_nest_ofv and is_nest_ofv['value'] == "nest":
-            Nest.objects.create(
+            return Nest.objects.create(
                 originates_in_vespawatch=False,
                 inaturalist_id=inaturalist_data['id'],
                 species=species,
@@ -97,7 +107,7 @@ def create_observation_from_inat_data(inaturalist_data):
                 longitude=inaturalist_data['geojson']['coordinates'][0],
                 observation_time=observation_time)  # TODO: What to do with iNat observations without (parsable) time?
         else:  # Default is specimen
-            Individual.objects.create(
+            return Individual.objects.create(
                 originates_in_vespawatch=False,
                 inaturalist_id=inaturalist_data['id'],
                 species=species,
@@ -107,10 +117,47 @@ def create_observation_from_inat_data(inaturalist_data):
     else:
         raise ParseDateError
 
+def get_local_obs_matching_inat_id(inat_id):
+    """Returns a Nest or an Individual, raise ObjectDoesNotExist if nothing is found."""
+    models_to_search = [Nest, Individual]
+    for model in models_to_search:
+        try:
+            return model.objects.get(inaturalist_id=inat_id)
+        except model.DoesNotExist:
+            pass
+
+    raise ObjectDoesNotExist
+
 def update_loc_obs_taxon_according_to_inat(inaturalist_data):
     """Takes data coming from iNaturalist about one of our local observation, and update the taxon of said local obs,
-    if necessary."""
-    pass
+    if necessary.
+
+    :returns: either
+        - 'no_community_id' (we have no community id, so we didn't change)
+        - 'matching_community_id' (the community id is agreement with our local database, we didn't change it
+        - 'updated' (we updated to match the community!)
+
+    :raises
+        - SpeciesMatchError: if we don't know this inaturalist taxon id (so nothing was updated)
+        - ObjectDoesNotExist: we can't find the local observation that match iNaturalist data
+    """
+    community_taxon_id = inaturalist_data['community_taxon_id']
+
+    # TODO: test this more (new code, some path are not frequently used)
+    if community_taxon_id is not None:
+        local_obs = get_local_obs_matching_inat_id(inaturalist_data['id'])
+        if community_taxon_id not in local_obs.species.inaturalist_pull_taxon_ids:
+            # we have to update our observation to follow the community identification
+            try:
+                local_obs.species = get_species_from_inat_taxon_id(community_taxon_id)
+                local_obs.save()
+                return 'updated'
+            except Species.DoesNotExist:
+                raise SpeciesMatchError
+        else:
+            return 'matching_community_id'
+
+    return 'no_community_id'
 
 def inat_observation_comes_from_vespawatch(inat_observation_id):
     """ Takes an observation_id from iNat API and returns True if this observation was first created from the
