@@ -417,7 +417,7 @@ class ManagementAction(models.Model):
 
 class FirefightersZone(models.Model):
     name = models.CharField(max_length=100)
-    polygon = models.PolygonField(null=True)
+    mpolygon = models.MultiPolygonField(null=True)
 
     def __str__(self):
         return self.name

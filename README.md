@@ -25,6 +25,12 @@ This directory contains the Django project for Vespa-watch.
     - tell Django to use those local settings: `$ export DJANGO_SETTINGS_MODULE=djangoproject.settings.settings_local`
 
 
+### Importing firefighters zone
+
+When deploying the application, you'll need to import the firefighters zone data:
+
+$ python manage.py import_firefighters_zones PATH_TO_VESPAWATCH/data/Brandweerzones_2019_simplified/Brandweerzones_2019_simplified.shp
+
 ### CSS/SASS
 
 We use SASS to generate our custom stylesheets, meaning:
@@ -38,18 +44,7 @@ the collectstatic command, ...)
 
 ### GeoDjango / PostGIS setup notes
 
-- Geographic libraries needed: GEOS, PROJ.4, GDAL
-- Install PostGIS on existing PosgreSQL database:
-
-    $ psql -d <db_name>
-    
-    psql (9.6.5, server 9.6.8)
-    Type "help" for help.
-
-    vespa-watch=# CREATE EXTENSION postgis;
-    
-- The FirefightersZone model has a "polygon" field. Don't hesitate to set/edit it in the Admin to 
-check GeoDjango/Postgis are functional.
+Vespa-Watch relies on GeoDjango/PostGIS. Refer to their documentation if needed.
 
 
     
