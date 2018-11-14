@@ -1,5 +1,4 @@
 import os
-import uuid
 from datetime import datetime
 
 import dateparser
@@ -15,6 +14,8 @@ from django.urls import reverse
 from django.utils.timezone import is_naive, make_aware
 from pyinaturalist.node_api import get_observation
 from pyinaturalist.rest_api import create_observations, update_observation
+
+from vespawatch.utils import make_unique_filename
 
 
 def get_species_from_inat_taxon_id(inaturalist_taxon_id):
@@ -376,9 +377,7 @@ class Individual(AbstractObservation):
 
 class IndividualPicture(models.Model):
     def get_file_path(instance, filename):
-        ext = filename.split('.')[-1]
-        filename = "%s.%s" % (uuid.uuid4(), ext)
-        return os.path.join('individual_pictures/', filename)
+        return os.path.join('individual_pictures/', make_unique_filename(filename))
 
     observation = models.ForeignKey(Individual, on_delete=models.CASCADE)
     image = models.ImageField(upload_to=get_file_path)
@@ -386,9 +385,7 @@ class IndividualPicture(models.Model):
 
 class NestPicture(models.Model):
     def get_file_path(instance, filename):
-        ext = filename.split('.')[-1]
-        filename = "%s.%s" % (uuid.uuid4(), ext)
-        return os.path.join('nest_pictures/', filename)
+        return os.path.join('nest_pictures/', make_unique_filename(filename))
 
     observation = models.ForeignKey(Nest, on_delete=models.CASCADE)
     image = models.ImageField(upload_to=get_file_path)
