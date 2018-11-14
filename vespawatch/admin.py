@@ -62,6 +62,12 @@ class NestAdmin(admin.ModelAdmin):
             return False
         return super().has_delete_permission(request, obj=obj)
 
+    def get_readonly_fields(self, request, obj=None):
+        r = super().get_readonly_fields(request, obj)
+        if obj and not obj.species_can_be_locally_changed:
+            r = r + ('species', )
+        return r
+
     list_display = ('species', 'inaturalist_id', 'observation_time', 'latitude', 'longitude')
     readonly_fields = ('originates_in_vespawatch',)
 
@@ -83,6 +89,13 @@ class IndividualAdmin(admin.ModelAdmin):
         if obj is not None and not obj.can_be_edited_or_deleted:
             return False
         return super().has_delete_permission(request, obj=obj)
+
+    def get_readonly_fields(self, request, obj=None):
+        r = super().get_readonly_fields(request, obj)
+        if obj and not obj.species_can_be_locally_changed:
+            r = r + ('species', )
+        return r
+
 
     list_display = ('species', 'inaturalist_id', 'observation_time', 'latitude', 'longitude')
     readonly_fields = ('originates_in_vespawatch',)

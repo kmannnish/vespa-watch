@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template import defaultfilters
@@ -204,10 +204,21 @@ class AbstractObservation(models.Model):
     class Meta:
         abstract = True
 
+    def __init__(self, *args, **kwargs):
+        super(AbstractObservation, self).__init__(*args, **kwargs)
+        self.__original_species = self.species
+
     @property
     def can_be_edited_or_deleted(self):
         """Return True if this observation can be edited in Vespa-Watch (admin, ...)"""
         return self.originates_in_vespawatch  # We can't edit obs that comes from iNaturalist (they're never pushed).
+
+    @property
+    def species_can_be_locally_changed(self):
+        if self.originates_in_vespawatch and self.exists_in_inaturalist:
+            return False  # Because we rely on community: info is always pulled and never pushed
+
+        return True
 
     @property
     def exists_in_inaturalist(self):
@@ -279,6 +290,16 @@ class AbstractObservation(models.Model):
     def formatted_observation_date(self):
         # We need to be aware of the timezone, hence the defaultfilter trick
         return defaultfilters.date(self.observation_time, 'Y-m-d')
+
+    def clean(self):
+        if self.species != self.__original_species and not self.species_can_be_locally_changed:
+            raise ValidationError("Observation already pushed, species can't be changed anymore!")
+
+    def save(self, *args, **kwargs):
+        # Let's make sure model.clean() is called on each save()
+        self.full_clean()
+        self.__original_species = self.species
+        return super(AbstractObservation, self).save(*args, **kwargs)
 
 
 class Nest(AbstractObservation):
