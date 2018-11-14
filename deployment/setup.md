@@ -22,9 +22,8 @@ To provide the deployment to AWS using  elastic beanstalk, the following element
 
 Next, some policies required to setup the application:
 - `ec2-trust-policy.json`: assume role of the instance profile, so policies can be linked to ec2 instances.
--  `s3-policy.json`: policy to access the vespawatch bucket, which is linked to the ec2 instances running the application
--  `s3-tags.json`: tags to indicate the bucket with, required for the admin and cost calculation
-
+- `s3-policy.json`: policy to access the vespawatch bucket, which is linked to the ec2 instances running the application
+- `s3-tags.json`: tags to indicate the bucket with, required for the admin and cost calculation
 
 ## Setup
 
@@ -191,7 +190,21 @@ TODO: https://medium.com/@nqbao/how-to-use-aws-ssm-parameter-store-easily-in-pyt
 
 ## Backups
 
-Backups of the RS are managed on organisation level of INBO.
+- All **code** is under version control and each deployment is stored in a S3 bucket managed by elastic beanstalk
+- Backups of the **RDS** are managed on organisation level of INBO.
+- Backups of the **media files** in the S3 bucket #TODO
+
+## Setup and configuration info
+
+### ... 
+
+...
+
+### Geo-django
+
+The usage of [geo-django](https://docs.djangoproject.com/en/2.1/ref/contrib/gis/) supporting geographic functionalities requires additional dependencies. On the database side, this requires the Postgis extension to Postgres, which is by default available when using the AWS postgres RDS. 
+
+On the application side, the EC2 servers need to have the `gdal/geos/proj` suite available. Installing `gdal` and `proj` using `yum` is only possible when activating the `epel`  repository. As such, these are included as the first container command in the `01_python.config` file instead of the general list of yum packages in the `02_packages.config`.
 
 ## Further info and useful links
 
