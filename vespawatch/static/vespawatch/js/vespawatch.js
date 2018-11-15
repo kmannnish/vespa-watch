@@ -13,7 +13,8 @@ var VwObservationsVizMap = {
     data: function() {
         return {
             map: undefined,
-            mapCircles: []
+            mapCircles: [],
+            observationsLayer: undefined,
         }
     },
 
@@ -41,10 +42,14 @@ var VwObservationsVizMap = {
                     fillOpacity: 0.5,
                     radius: 10,
                     className: "circle"
-                }).addTo(this.map);
+                });
                 circle.bindPopup(this.observationToHtml(obs));
                 this.mapCircles.push(circle);
             });
+            this.observationsLayer = L.featureGroup(this.mapCircles);
+            console.log(this.observationsLayer);
+            this.observationsLayer.addTo(this.map);
+            this.map.fitBounds(this.observationsLayer.getBounds());
         },
 
         // Generate a HTML string that represents the observation
@@ -82,9 +87,10 @@ var VwObservationsVizMap = {
             return html;
         },
         clearMap: function() {
-            this.mapCircles.forEach(mapCircle => {
-                this.map.removeLayer(mapCircle);
-            });
+            if (this.observationsLayer) {
+                this.observationsLayer.clearLayers();
+                this.mapCircles = [];
+            }
         },
         init: function () {
             var mapPosition = [50.85, 4.35];
@@ -209,11 +215,24 @@ var VwObservationsViz = {
     methods: {
         getData: function () {
             // Call the API to get observations
+            if (this.zone) {
+                console.log("Only requesting observations for zone " + this.zone);
+                this.observationsUrl = this.observationsUrl + '?zone=' + this.zone;
+            } else {
+                console.log("No zone set");
+            }
             axios.get(this.observationsUrl)
             .then(response => {
                 console.log(response.data);
-                this.setCrossFilter(response.data.observations);
-                this.totalObsCount = response.data.observations.length;
+                var allObservations = [];
+                if (response.data.individuals) {
+                    allObservations = allObservations.concat(response.data.individuals);
+                }
+                if (response.data.nests) {
+                    allObservations = allObservations.concat(response.data.nests);
+                }
+                this.setCrossFilter(allObservations);
+                this.totalObsCount = allObservations.length;
                 this.initTimerangeSlider();
                 this.setObservations();
             })
@@ -253,6 +272,8 @@ var VwObservationsViz = {
         // This function gets called when the component is completely loaded on the page
         this.getData();
     },
+
+    props: ['zone'],
 
     template: `
         <section>

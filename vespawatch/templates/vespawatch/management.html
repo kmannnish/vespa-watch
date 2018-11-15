@@ -11,7 +11,7 @@
     <h1>{% trans "Zone" %} {{ zone }}</h1>
     <a class="btn btn-lg btn-primary" href="{% url 'vespawatch:new' %}">{% trans 'Record an observation' %}</a>
 
-    <vw-observations-viz></vw-observations-viz>
+    <vw-observations-viz zone="{{ zone.pk }}"></vw-observations-viz>
 
 <h1>{% trans "My nests" %}</h1>
 
