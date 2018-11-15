@@ -16,7 +16,7 @@ def index(request):
 def management(request):
     profile = request.user.profile
     zone = profile.zone
-    nests = Nest.objects.filter(zone=zone)
+    nests = Nest.objects.filter(zone=zone).order_by('-observation_time')
     return render(request, 'vespawatch/management.html', {'nests': nests, 'zone': zone})
 
 
@@ -211,5 +211,5 @@ def observations_json(request):
             output[obs_type] = qs.filter(zone__pk=zone)
 
     return JsonResponse({
-        obs_type: [x.as_dict() for x in list(qs)] for obs_type, qs in output.items()
+        obs_type: [x.as_dict() for x in list(qs.order_by('observation_time'))] for obs_type, qs in output.items()
     })
