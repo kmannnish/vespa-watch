@@ -5,10 +5,10 @@ from vespawatch.models import FirefightersZone
 
 
 class Command(VespaWatchCommand):
-    help = 'Import the firefighters zone data (name + geometry) from a shapefile.'
+    help = 'Import the firefighters zone data (name + geometry) from an OGR-supported (shp, GeoJSON, ...) data source'
 
     def add_arguments(self, parser):
-        parser.add_argument('path_to_shp')
+        parser.add_argument('path_to_datasource')
         parser.add_argument(
             '--truncate',
             action='store_true',
@@ -24,8 +24,8 @@ class Command(VespaWatchCommand):
             self.w(self.style.SUCCESS('Done.'))
 
         mapping = {'name': 'BWZone',  # The 'name' model field maps to the 'BWZone' layer field.
-                   'mpolygon': 'POLYGON',  # For geometry fields use OGC name.
+                   'mpolygon': 'geometry',
         }
 
-        lm = LayerMapping(FirefightersZone, options['path_to_shp'], mapping, transaction_mode='autocommit')
+        lm = LayerMapping(FirefightersZone, options['path_to_datasource'], mapping, transaction_mode='autocommit')
         lm.save(stream=self.stdout, verbose=True)
