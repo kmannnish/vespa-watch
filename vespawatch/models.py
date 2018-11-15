@@ -383,6 +383,8 @@ class Nest(AbstractObservation):
             'imageUrls': [x.image.url for x in self.pictures.all()],
             'action': self.get_management_action_display(),
             'actionCode': self.get_management_action(),
+            'originates_in_vespawatch': self.originates_in_vespawatch,
+            'updateUrl': reverse('vespawatch:nest-update', kwargs={'pk': self.pk})
         }
 
     def __str__(self):

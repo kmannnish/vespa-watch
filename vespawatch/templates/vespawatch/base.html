@@ -30,9 +30,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/">{% trans 'Home' %}</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" href="{% url 'vespawatch:management' %}">{% trans 'Management' %}</a>
-                    </li>
+                    {% if user.profile.zone or user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link disabled" href="{% url 'vespawatch:management' %}">{% trans 'Management' %}</a>
+                        </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link disabled" href="#">{% trans 'Identification' %}</a>
                     </li>

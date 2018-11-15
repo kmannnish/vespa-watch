@@ -1,13 +1,15 @@
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ugettext as _
 from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import DeleteView, DetailView
 from django.urls import reverse_lazy
 from .forms import ManagementActionForm, ManagementFormset, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
-from .models import Individual, Nest, ManagementAction
+from .models import Individual, FirefightersZone, Nest, ManagementAction
 
 
 def index(request):
@@ -18,9 +20,22 @@ def index(request):
 def management(request):
     profile = request.user.profile
     zone = profile.zone
+    if not (zone or request.user.is_staff):
+        raise Http404()
     nests = Nest.objects.filter(zone=zone).order_by('-observation_time')
-    return render(request, 'vespawatch/management.html', {'nests': nests, 'zone': zone})
+    context = {'nests': nests, 'zone': zone}
+    if request.user.is_staff:
+        context['zones'] = FirefightersZone.objects.all().order_by('name')
 
+    return render(request, 'vespawatch/management.html', context)
+
+
+# @staff_member_required
+# def management(request):
+#     zone = request.GET.get('zone', '')
+#     nests = Nest.objects.filter(zone=zone).order_by('-observation_time')
+#     return render(request, 'vespawatch/management.html', {'nests': nests, 'zone': zone})
+#
 
 def new_observation(request):
     return render(request, 'vespawatch/new_observation.html')
@@ -226,3 +241,10 @@ def observations_json(request):
     return JsonResponse({
         obs_type: [x.as_dict() for x in list(qs.order_by('observation_time'))] for obs_type, qs in output.items()
     })
+
+@staff_member_required
+def zones_json(request):
+    """
+    Return all firefighter zones as json data
+    """
+    return JsonResponse({'zones': [{'id': x.pk, 'name': x.name} for x in list(FirefightersZone.objects.all().order_by('name'))]})
