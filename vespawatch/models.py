@@ -14,7 +14,7 @@ from django.template import defaultfilters
 from django.urls import reverse
 from django.utils.timezone import is_naive, make_aware
 from pyinaturalist.node_api import get_observation
-from pyinaturalist.rest_api import create_observations, update_observation
+from pyinaturalist.rest_api import create_observations, update_observation, add_photo_to_observation
 
 from vespawatch.utils import make_unique_filename
 
@@ -283,11 +283,10 @@ class AbstractObservation(models.Model):
         :param access_token:
         :return:
         """
-        p = { 'ignore_photos': 1,  # TODO: change that later if we decide to repush pictures in each time...
-                'observation': self._params_for_inat()
-            }
+        p = {'observation': self._params_for_inat()}  # Pictures will be removed because we don't pass ignore_photos
 
-        return update_observation(observation_id=self.inaturalist_id, params=p, access_token=access_token)
+        update_observation(observation_id=self.inaturalist_id, params=p, access_token=access_token)
+        self.push_attached_pictures_at_inaturalist(access_token=access_token)
 
     def create_at_inaturalist(self, access_token):
         """Creates a new observation at iNaturalist for this observation
@@ -310,6 +309,14 @@ class AbstractObservation(models.Model):
         r = create_observations(params=params, access_token=access_token)
         self.inaturalist_id = r[0]['id']
         self.save()
+        self.push_attached_pictures_at_inaturalist(access_token=access_token)
+
+    def push_attached_pictures_at_inaturalist(self, access_token):
+        if self.inaturalist_id:
+            for picture in self.pictures.all():
+                add_photo_to_observation(observation_id=self.inaturalist_id,
+                                         file_object=picture.image.read(),
+                                         access_token=access_token)
 
 
     def get_species_name(self):
@@ -414,7 +421,7 @@ class IndividualPicture(models.Model):
     def get_file_path(instance, filename):
         return os.path.join('individual_pictures/', make_unique_filename(filename))
 
-    observation = models.ForeignKey(Individual, on_delete=models.CASCADE)
+    observation = models.ForeignKey(Individual, on_delete=models.CASCADE, related_name='pictures')
     image = models.ImageField(upload_to=get_file_path)
 
 
@@ -422,7 +429,7 @@ class NestPicture(models.Model):
     def get_file_path(instance, filename):
         return os.path.join('nest_pictures/', make_unique_filename(filename))
 
-    observation = models.ForeignKey(Nest, on_delete=models.CASCADE)
+    observation = models.ForeignKey(Nest, on_delete=models.CASCADE, related_name='pictures')
     image = models.ImageField(upload_to=get_file_path)
 
 
