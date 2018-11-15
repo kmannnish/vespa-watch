@@ -421,9 +421,9 @@ var VwLocationSelectorCoordinates = {
                 <label for="id_longitude">{{longitudeLabel}}</label>
                 <input type="text" class="form-control numberinput" id="id_longitude" name="longitude" v-model="long">
             </div>
-            <div class="form-group col-md-6" id="div_id_address">
-                <label for="id_address">{{locationLabel}}</label>
-                <input type="text" class="form-control numberinput" id="id_address" name="address" v-model="_location">
+            <div class="form-group col-md-6" id="div_id_location">
+                <label for="id_location">{{locationLabel}}</label>
+                <input type="text" class="form-control numberinput" id="id_location" name="location" v-model="_location">
             </div>
         </div>
         `

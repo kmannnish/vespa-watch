@@ -1,6 +1,8 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404
+from django.utils.translation import ugettext as _
 from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import DeleteView, DetailView
 from django.urls import reverse_lazy
@@ -38,6 +40,7 @@ def create_individual(request):
             form.data = form_data_copy
         if form.is_valid():
             form.save()
+            messages.success(request, _("You're observation was successfully created."))
             return HttpResponseRedirect('/')
     else:
         form = IndividualForm()
@@ -61,7 +64,7 @@ def update_individual(request, pk):
                 for obj in image_formset.deleted_objects:
                     if obj.pk:
                         obj.delete()
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect(reverse_lazy('vespawatch:individual-detail', kwargs={'pk': pk}))
     elif request.method == 'GET':
         form = IndividualForm(instance=indiv)
         image_formset = IndividualImageFormset(instance=indiv)
@@ -76,7 +79,11 @@ class IndividualDetail(DetailView):
 class IndividualDelete(LoginRequiredMixin, DeleteView):
     model = Individual
     success_url = reverse_lazy('vespawatch:index')
+    success_message = "The observation was successfully deleted."
 
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, _(self.success_message))
+        return super(IndividualDelete, self).delete(request, *args, **kwargs)
 
 
 # CREATE UPDATE NEST OBSERVATIONS
@@ -95,6 +102,7 @@ def create_nest(request):
                 management_formset = ManagementFormset(request.POST, request.FILES, instance=form.instance)
                 if management_formset.is_valid():
                     management_formset.save()
+            messages.success(request, _("You're observation was successfully created."))
             return HttpResponseRedirect('/')
         else:
             management_formset = ManagementFormset()
@@ -129,7 +137,7 @@ def update_nest(request, pk):
                     for obj in management_formset.deleted_objects:
                         if obj.pk:
                             obj.delete()
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect(reverse_lazy('vespawatch:nest-detail', kwargs={'pk': pk}))
         else:
             management_formset = ManagementFormset(instance=nest)
     elif request.method == 'GET':
@@ -147,6 +155,11 @@ class NestDetail(DetailView):
 class NestDelete(LoginRequiredMixin, DeleteView):
     model = Nest
     success_url = reverse_lazy('vespawatch:index')
+    success_message = "The observation was successfully deleted."
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, _(self.success_message))
+        return super(NestDelete, self).delete(request, *args, **kwargs)
 
 
 # CREATE/UPDATE/DELETE MANAGEMENT ACTIONS

@@ -325,6 +325,10 @@ class AbstractObservation(models.Model):
         else:
             return ''
 
+    def get_observer_display(self):
+        parts = [self.observer_title, self.observer_first_name, self.observer_last_name]
+        return ' '.join([x for x in parts if x])
+
     @property
     def formatted_observation_date(self):
         # We need to be aware of the timezone, hence the defaultfilter trick

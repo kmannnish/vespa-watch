@@ -20,7 +20,7 @@
                 <dd>{{ individual.pk }}</dd>
 
                 <dt>{% trans "Location" %}</dt>
-                <dd>{{ individual.location }}</dd>
+                <dd>{{ individual.location|default_if_none:'' }}</dd>
 
                 <dt>{% trans "Latitude" %}</dt>
                 <dd>{{ individual.latitude }}</dd>
@@ -29,25 +29,25 @@
                 <dd>{{ individual.longitude }}</dd>
 
                 <dt>{% trans "iNaturalist ID" %}</dt>
-                <dd>{{ individual.inaturalist_id }}</dd>
+                <dd>{{ individual.inaturalist_id|default_if_none:'' }}</dd>
 
-                <dt>{% trans "individual time" %}</dt>
-                <dd>{{ individual.individual_time }}</dd>
+                <dt>{% trans "observation time" %}</dt>
+                <dd>{{ individual.observation_time|default_if_none:'' }}</dd>
 
                 <dt>{% trans "Observer" %}</dt>
-                <dd>{{ individual.observer_title }} {{ individual.observer_first_name }} {{ individual.observer_last_name }}</dd>
+                <dd>{{ individual.get_observer_display|default_if_none:'' }}</dd>
 
                 <dt>{% trans "Email" %}</dt>
-                <dd>{{ individual.observer_email }}</dd>
+                <dd>{{ individual.observer_email|default_if_none:'' }}</dd>
 
                 <dt>{% trans "Phone" %}</dt>
-                <dd>{{ individual.observer_phone }}</dd>
+                <dd>{{ individual.observer_phone|default_if_none:'' }}</dd>
 
                 <dt>{% trans "Is beekeper" %}</dt>
-                <dd>{{ individual.observer_is_beekeeper }}</dd>
+                <dd>{{ individual.observer_is_beekeeper|default_if_none:'' }}</dd>
 
                 <dt>{% trans "Comments" %}</dt>
-                <dd>{{ individual.comments }}</dd>
+                <dd>{{ individual.comments|default_if_none:'' }}</dd>
             </dl>
 
         {% if individual.pictures %}
