@@ -14,9 +14,9 @@ def index(request):
 
 @login_required
 def management(request):
-    nests = Nest.objects.all()
     profile = request.user.profile
     zone = profile.zone
+    nests = Nest.objects.filter(zone=zone)
     return render(request, 'vespawatch/management.html', {'nests': nests, 'zone': zone})
 
 
