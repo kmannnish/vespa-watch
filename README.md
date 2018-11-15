@@ -51,6 +51,10 @@ $ python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson
 $ python manage.py create_firefighters_accounts
 ```
 
+The final command creates accounts for each firefighters zone and generates
+a password. The passwords are returned by the command, so you might want
+to catch those.
+
 Finally, it might be good to initialize the database with observations from iNaturalist.
 
 ```
