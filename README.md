@@ -18,22 +18,30 @@ This directory contains the Django project for Vespa-watch.
 
 ### Setup
 
-- Use PostgreSQL, create the database first
+- We use PostgreSQL, create the database first. Enable PostGIS (CREATE EXTENSION postgis;).
 - Use Python 3.6
 - Simple split settings:
     - copy `djangoproject/settings/settings_local.template.py ` to `djangoproject/settings/settings_local.py`
     - tell Django to use those local settings: `$ export DJANGO_SETTINGS_MODULE=djangoproject.settings.settings_local`
+    
+$ python manage.py migrate
 
+Create a superuser, interactively if in dev:
 
-### Importing firefighters zone / creating accounts
+$ python manage.py createsuperuser
 
-When deploying the application, you'll need to import the firefighters zone data:
+But in production, do this instead:
+
+$ python manage.py create_su 
+
+Then:
 
 $ python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson
-
-Then, we'll create a user account for each of these zones:
-
 $ python manage.py create_firefighters_accounts
+
+Finally, it might be good to initialize the database with observations from iNaturalist.
+
+$ python manage.py sync_pull
 
 ### CSS/SASS
 
