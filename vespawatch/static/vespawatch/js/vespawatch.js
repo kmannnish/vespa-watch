@@ -281,7 +281,7 @@ var VwObservationsViz = {
 
     mounted: function () {
         // This function gets called when the component is completely loaded on the page
-        if (this.initWithData === "1") {
+        if (this.loadData === "1") {
             this.getData();
         }
     },
