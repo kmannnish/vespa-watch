@@ -50,8 +50,8 @@
                 <dd>{{ nest.comments|default_if_none:'' }}</dd>
             </dl>
 
-        {% if nest.nestpicture_set %}
-            {% for image in nest.nestpicture_set.all %}
+        {% if nest.pictures %}
+            {% for image in nest.pictures.all %}
                 <img src="{{ image.image.url }}">
             {% endfor %}
         {% endif %}

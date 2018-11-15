@@ -348,6 +348,12 @@ class AbstractObservation(models.Model):
 
         return super(AbstractObservation, self).save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        if self.originates_in_vespawatch and self.exists_in_inaturalist:
+            InatObsToDelete.objects.create(inaturalist_id=self.inaturalist_id)
+
+        return super(AbstractObservation, self).delete(*args, **kwargs)
+
 
 class Nest(AbstractObservation):
     duplicate_of = models.ForeignKey('self', on_delete=models.PROTECT, blank=True, null=True)
@@ -474,3 +480,12 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+
+class InatObsToDelete(models.Model):
+    """This model is used to store iNaturalist IDs for deleted observation, so they can be also deleted @inat on the
+    subsequent push operation"""
+    inaturalist_id = models.BigIntegerField()
+
+    def __str__(self):
+        return str(self.inaturalist_id)

@@ -50,8 +50,8 @@
                 <dd>{{ individual.comments|default_if_none:'' }}</dd>
             </dl>
 
-        {% if individual.individualpicture_set %}
-            {% for image in individual.individualpicture_set.all %}
+        {% if individual.pictures %}
+            {% for image in individual.pictures.all %}
                 <img src="{{ image.image.url }}">
             {% endfor %}
         {% endif %}
