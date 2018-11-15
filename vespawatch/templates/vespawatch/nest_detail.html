@@ -11,16 +11,16 @@
             <dl>
                 <dt>{% trans "Species" %}</dt>
                 <dd>{% if nest.inaturalist_species %}
-                {{ nest.inaturalist_species }}
+                {{ nest.inaturalist_species|default_if_none:'' }}
                 {% else %}
-                {{  nest.species.name }}
+                {{  nest.species.name|default_if_none:'' }}
                 {% endif %}</dd>
 
                 <dt>{% trans "ID" %}</dt>
                 <dd>{{ nest.pk }}</dd>
 
                 <dt>{% trans "Location" %}</dt>
-                <dd>{{ nest.location }}</dd>
+                <dd>{{ nest.location|default_if_none:'' }}</dd>
 
                 <dt>{% trans "Latitude" %}</dt>
                 <dd>{{ nest.latitude }}</dd>
@@ -29,25 +29,25 @@
                 <dd>{{ nest.longitude }}</dd>
 
                 <dt>{% trans "iNaturalist ID" %}</dt>
-                <dd>{{ nest.inaturalist_id }}</dd>
+                <dd>{{ nest.inaturalist_id|default_if_none:'' }}</dd>
 
                 <dt>{% trans "nest time" %}</dt>
-                <dd>{{ nest.nest_time }}</dd>
+                <dd>{{ nest.nest_time|default_if_none:'' }}</dd>
 
                 <dt>{% trans "Observer" %}</dt>
-                <dd>{{ nest.observer_title }} {{ nest.observer_first_name }} {{ nest.observer_last_name }}</dd>
+                <dd>{{ nest.get_observer_display|default_if_none:'' }}</dd>
 
                 <dt>{% trans "Email" %}</dt>
-                <dd>{{ nest.observer_email }}</dd>
+                <dd>{{ nest.observer_email|default_if_none:'' }}</dd>
 
                 <dt>{% trans "Phone" %}</dt>
-                <dd>{{ nest.observer_phone }}</dd>
+                <dd>{{ nest.observer_phone|default_if_none:'' }}</dd>
 
                 <dt>{% trans "Is beekeper" %}</dt>
-                <dd>{{ nest.observer_is_beekeeper }}</dd>
+                <dd>{{ nest.observer_is_beekeeper|default_if_none:'' }}</dd>
 
                 <dt>{% trans "Comments" %}</dt>
-                <dd>{{ nest.comments }}</dd>
+                <dd>{{ nest.comments|default_if_none:'' }}</dd>
             </dl>
 
         {% if nest.nestpicture_set %}
