@@ -11,12 +11,12 @@
     <h1>{% trans "Zone" %} {{ zone }}</h1>
     <a class="btn btn-lg btn-primary" href="{% url 'vespawatch:new' %}">{% trans 'Record an observation' %}</a>
 
-    <vw-observations-viz></vw-observations-viz>
+    <vw-observations-viz zone="{{ zone.pk }}"></vw-observations-viz>
 
 <h1>{% trans "My nests" %}</h1>
 
     <div class="row">
-        <table>
+        <table class="table">
             <thead>
                 <tr>
                     <th>{% trans "Date" %}</th>
@@ -27,7 +27,7 @@
             </thead>
 
         {% for nest in nests %}
-            <tr>
+            <tr {% if not nest.get_management_action_display %} class="table-danger" {% endif %}>
                 <td>{{ nest.observation_time }}</td>
                 <td>{{ nest.location }}</td>
                 <td>{{ nest.get_management_action_display }}</td>
@@ -36,7 +36,7 @@
 
                         <a href="{% url 'vespawatch:nest-update' nest.pk %}">edit</a>
                     {% else %}
-                        <span>{% trans "This observation was created on iNaturalist. You cannot edit it here" %}</span>
+                        <span title="{% trans 'This observation was created on iNaturalist. You cannot edit it here' %}">{% trans 'You cannot edit this observation' %}</span>
                     {% endif %}
                 </td>
             </tr>
