@@ -68,7 +68,7 @@ class NestAdmin(admin.ModelAdmin):
             r = r + ('species', )
         return r
 
-    list_display = ('species', 'inaturalist_id', 'observation_time', 'latitude', 'longitude')
+    list_display = ('species', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch')
     readonly_fields = ('originates_in_vespawatch',)
 
     list_filter = ('species', 'originates_in_vespawatch')
@@ -97,7 +97,7 @@ class IndividualAdmin(admin.ModelAdmin):
         return r
 
 
-    list_display = ('species', 'inaturalist_id', 'observation_time', 'latitude', 'longitude')
+    list_display = ('species', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch')
     readonly_fields = ('originates_in_vespawatch',)
 
     list_filter = ('species', 'originates_in_vespawatch')
