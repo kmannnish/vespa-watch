@@ -31,8 +31,8 @@
                 <dt>{% trans "iNaturalist ID" %}</dt>
                 <dd>{{ nest.inaturalist_id|default_if_none:'' }}</dd>
 
-                <dt>{% trans "nest time" %}</dt>
-                <dd>{{ nest.nest_time|default_if_none:'' }}</dd>
+                <dt>{% trans "observation time" %}</dt>
+                <dd>{{ nest.observation_time|default_if_none:'' }}</dd>
 
                 <dt>{% trans "Observer" %}</dt>
                 <dd>{{ nest.get_observer_display|default_if_none:'' }}</dd>

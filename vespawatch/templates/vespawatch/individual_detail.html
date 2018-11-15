@@ -31,8 +31,8 @@
                 <dt>{% trans "iNaturalist ID" %}</dt>
                 <dd>{{ individual.inaturalist_id|default_if_none:'' }}</dd>
 
-                <dt>{% trans "individual time" %}</dt>
-                <dd>{{ individual.individual_time|default_if_none:'' }}</dd>
+                <dt>{% trans "observation time" %}</dt>
+                <dd>{{ individual.observation_time|default_if_none:'' }}</dd>
 
                 <dt>{% trans "Observer" %}</dt>
                 <dd>{{ individual.get_observer_display|default_if_none:'' }}</dd>
