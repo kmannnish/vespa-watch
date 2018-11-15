@@ -31,6 +31,10 @@ var VwObservationsVizMap = {
                     : '#000';  // if the subject is not 'Individual' or 'Nest'
             }
 
+            function getRadius(d) {
+                return d.subject === 'individual' ? 5 : 12;
+            }
+
             this.observations.forEach(obs => {
                 var color = 'orange';
                 var circle = L.circleMarker([obs.latitude, obs.longitude], {
@@ -40,7 +44,7 @@ var VwObservationsVizMap = {
                     opacity: 0.8,  // stroke opacity
                     fillColor: getColor(obs),
                     fillOpacity: 0.5,
-                    radius: 10,
+                    radius: getRadius(obs),
                     className: "circle"
                 });
                 circle.bindPopup(this.observationToHtml(obs));
