@@ -269,6 +269,7 @@ class AbstractObservation(models.Model):
                 'description': self.comments,
                 'latitude': self.latitude,
                 'longitude': self.longitude,
+                'place_guess': self.location,
 
                 # sets vespawatch_id (an observation field whose ID is 9613)
                 'observation_field_values_attributes':
