@@ -25,6 +25,16 @@ This directory contains the Django project for Vespa-watch.
     - tell Django to use those local settings: `$ export DJANGO_SETTINGS_MODULE=djangoproject.settings.settings_local`
 
 
+### Importing firefighters zone / creating accounts
+
+When deploying the application, you'll need to import the firefighters zone data:
+
+$ python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson
+
+Then, we'll create a user account for each of these zones:
+
+$ python manage.py create_firefighters_accounts
+
 ### CSS/SASS
 
 We use SASS to generate our custom stylesheets, meaning:
@@ -35,3 +45,11 @@ will be saved under `static/vespawatch/css/` so they are made available the stan
 the collectstatic command, ...)
 - In development you can use `npm run watch:css` instead, so the SASS files are automatically compiled on save.
 - The first time, you'll need to install the dependencies for this process: ``npm install``
+
+### GeoDjango / PostGIS setup notes
+
+Vespa-Watch relies on GeoDjango/PostGIS. Refer to their documentation if needed.
+
+The initial firefighters zone data was received as an ESRI shapefile. Convert it to GeoJSON prior to use with:
+
+$ ogr2ogr -f GeoJSON -t_srs EPSG:4326 data/Brandweerzones_2019.geojson <path_to_received_shapefile>/Brandweerzones_2019.shp
