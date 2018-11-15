@@ -23,25 +23,39 @@ This directory contains the Django project for Vespa-watch.
 - Simple split settings:
     - copy `djangoproject/settings/settings_local.template.py ` to `djangoproject/settings/settings_local.py`
     - tell Django to use those local settings: `$ export DJANGO_SETTINGS_MODULE=djangoproject.settings.settings_local`
-    
+
+Apply the database migrations:
+
+```
 $ python manage.py migrate
+```
 
-Create a superuser, interactively if in dev:
+In development, you can create a superuser using the command line.
+This will prompt you for username, email address and password:
 
+```
 $ python manage.py createsuperuser
+```
 
-But in production, do this instead:
+However in production, do this instead:
 
-$ python manage.py create_su 
+```
+$ python manage.py create_su
+```
 
-Then:
+Some initial data should be loaded in order to create firefighters
+accounts with the correct polygon delineating their zone.
 
+```
 $ python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson
 $ python manage.py create_firefighters_accounts
+```
 
 Finally, it might be good to initialize the database with observations from iNaturalist.
 
+```
 $ python manage.py sync_pull
+```
 
 ### CSS/SASS
 

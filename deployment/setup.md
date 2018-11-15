@@ -3,7 +3,7 @@
 
 ## Introduction
 
-The deployment is using elastic beanstalk on AWS to setup and manage the resources (postgres database, ec2 instances,...). Using the AWS CLI and the elastic beanstalk CLI, the entire setup can be configurated.
+The deployment is using elastic beanstalk on AWS to setup and manage the resources (postgres database, ec2 instances,...). Using the AWS CLI and the elastic beanstalk CLI, the entire setup can be configured.
 
 ## Installation requirements
 
