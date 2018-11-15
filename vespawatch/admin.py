@@ -48,9 +48,13 @@ class IndividualPictureInline(admin.TabularInline):
 
     model = IndividualPicture
 
+class DeleteObjectsOneByOneMixin():
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            obj.delete()
 
 @admin.register(Nest)
-class NestAdmin(admin.ModelAdmin):
+class NestAdmin(DeleteObjectsOneByOneMixin, admin.ModelAdmin):
     # Some observations cannot be changed nor deleted
     def has_change_permission(self, request, obj=None):
         if obj is not None and not obj.can_be_edited_or_deleted:
@@ -78,7 +82,7 @@ class NestAdmin(admin.ModelAdmin):
     ]
 
 @admin.register(Individual)
-class IndividualAdmin(admin.ModelAdmin):
+class IndividualAdmin(DeleteObjectsOneByOneMixin, admin.ModelAdmin):
     # Some observations cannot be changed nor deleted
     def has_change_permission(self, request, obj=None):
         if obj is not None and not obj.can_be_edited_or_deleted:
