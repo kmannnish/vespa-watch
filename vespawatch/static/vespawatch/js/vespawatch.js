@@ -51,7 +51,6 @@ var VwObservationsVizMap = {
                 this.mapCircles.push(circle);
             });
             this.observationsLayer = L.featureGroup(this.mapCircles);
-            console.log(this.observationsLayer);
             this.observationsLayer.addTo(this.map);
             this.map.fitBounds(this.observationsLayer.getBounds());
         },
@@ -151,6 +150,13 @@ var VwObservationsVizTimeSlider = {
     methods: {
         init: function () {
             var el = document.getElementById('vw-time-slider');
+            if (el.noUiSlider != null) {
+                // Destroying the UI time slider if it already exists.
+                // This can happen when the observations viz is used and
+                // the observations loaded are updated (for instance in
+                // the management page, when the admin selects a zone.
+                el.noUiSlider.destroy();
+            }
             this.selectedTimeRange = {
                 start: this.value.start,
                 stop: this.value.stop
@@ -219,13 +225,14 @@ var VwObservationsViz = {
     methods: {
         getData: function () {
             // Call the API to get observations
-            if (this.zone) {
-                console.log("Only requesting observations for zone " + this.zone);
-                this.observationsUrl = this.observationsUrl + '?zone=' + this.zone;
+            var url = this.observationsUrl;
+            if (this.zone != null) {
+                // console.log("Only requesting observations for zone " + this.zone);
+                url += '?zone=' + this.zone.id;
             } else {
-                console.log("No zone set");
+                // console.log("No zone set");
             }
-            axios.get(this.observationsUrl)
+            axios.get(url)
             .then(response => {
                 console.log(response.data);
                 var allObservations = [];
@@ -274,15 +281,240 @@ var VwObservationsViz = {
 
     mounted: function () {
         // This function gets called when the component is completely loaded on the page
-        this.getData();
+        if (this.loadData === "1") {
+            this.getData();
+        }
     },
 
-    props: ['zone'],
+    props: ['zone', 'loadData'],
+    watch: {
+        loadData: function (n, o) {
+            if (n === "1") {
+                this.getData();
+            }
+        },
+        zone: function (n, o) {
+            console.log('new zone passed in: ');
+            console.log(n);
+            this.getData();
+        }
+    },
 
     template: `
         <section>
             <vw-observations-viz-map v-bind:observations="observations"></vw-observations-viz-map>
             <vw-observations-viz-time-slider v-on:time-updated="filterOnTimeRange" v-model="timeRange"></vw-observations-viz-time-slider>
+        </section>
+        `
+};
+
+
+// A row in the management table that displays the
+// information of a single nest.
+var VwManagmentTableNestRow = {
+    computed: {
+        cannotEditLabel: function () {
+            return gettext('You cannot edit this observation');
+        },
+        cannotEditTitle: function () {
+            return gettext('This observation was created on iNaturalist. You cannot edit it here');
+        },
+        editStr: function () {
+            return gettext('edit');
+        },
+        managementAction: function () {
+            return gettext(this.nest.action);
+        },
+        nestClass: function () {
+            if (this.nest.action) {
+                return '';
+            }
+            return 'table-danger';
+        },
+        observationTimeStr: function () {
+            return moment(this.nest.observation_time).format('lll');
+        }
+    },
+    props: ['nest'],
+    template: `
+        <tr :class="nestClass">
+            <td>{{ observationTimeStr }}</td>
+            <td>{{ nest.location }}</td>
+            <td>{{ managementAction }}</td>
+            <td>
+                    <a v-if="nest.originates_in_vespawatch" v-bind:href="nest.updateUrl">{{ editStr }}</a>
+                    <span v-if="!nest.originates_in_vespawatch" v-bind:title="cannotEditTitle">{{ cannotEditLabel }}</span>
+            </td>
+        </tr>
+        `
+};
+
+// The selector element that allows the admin user to
+// select a zone. Using a custom element here that emits
+// an event when a zone is selected.
+var VwManagementZoneSelector = {
+    computed: {
+        selectZoneLabel: function () {
+            return gettext('Select a zone');
+        }
+    },
+    props: ['zones'],
+    template: `
+        <div class="form-row">
+        <label for="id-zone-select">{{ selectZoneLabel }}</label>
+            <select class="form-control" id="id-zone-select" name="zone-select" v-on:change="$emit('zone-selected', $event.target.value)">
+                <option v-for="zone in zones" v-bind:value="zone.id">{{ zone.name }}</option>
+            </select>
+        </div>
+        `
+};
+
+// The table on the management page that lists the nests
+var VwManagementTable = {
+    components: {
+        'vw-management-table-nest-row': VwManagmentTableNestRow
+    },
+    computed: {
+        dateStr: function () {
+            return gettext('date');
+        },
+        locationStr: function () {
+            return gettext('location');
+        },
+        managementStr: function () {
+            return gettext('management');
+        },
+        nestClass: function () {
+            return "table-danger";
+        }
+    },
+    props: ['nests'],
+    template: `
+        <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{{ dateStr }}</th>
+                    <th>{{ locationStr }}</th>
+                    <th>{{ managementStr }}</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <vw-management-table-nest-row v-for="nest in nests" v-bind:nest="nest" :key="nest.id">
+            </vw-management-table-nest-row>
+        </table>
+    </div>
+    `
+};
+
+// The management page is largely a component
+// Note the following props:
+//  - admin: if the user is an admin user, the zone selector will be rendered
+//  - initZone: if the user has a zone, this zone will be set as the initial zone and hence
+//      only observations from this zone will be loaded on the map and in the table.
+//
+// The logic in this component allows us to do the following:
+// When the page loads, load the map and table based on the
+// initial zone. If no zone is set initially (for an admin user
+// for instance), load all observations.
+// When a zone is selected, update the observations on the map
+// and in the nest table.
+var VwManagementPage = {
+    components: {
+        'vw-management-table': VwManagementTable,
+        'vw-management-zone-selector': VwManagementZoneSelector,
+        'vw-observations-viz': VwObservationsViz
+    },
+    data: function () {
+        return {
+            // The map has a load-data prop to which it listens. Initially, the management page
+            // sets this prop to "0". If we would not do this and a user with a zone would load
+            // the page, the zone would be set causing the map to update which can cause a race
+            // condition with the `mounted` function from the map that loads the map without a
+            // zone filter.
+            // Therefore, we set the load-data prop to 0 by default, but we check in the `mounted`
+            // method from this component whether the user has a zone. If not, we set madLoadData
+            // to "1" tirggering the map to load data without zone filter.
+            mapLoadData: "0",
+            nests: [],
+            observationsUrl: '/api/observations',
+            zone: null,
+            allZones: [],
+            zonesUrl: '/api/zones'
+        }
+    },
+    computed: {
+        myNestsLabel: function () {
+            return gettext('My nests');
+        },
+        userIsAdmin: function () {
+            return this.admin === '1';
+        },
+        zoneLabel: function () {
+            return gettext('Zone');
+        },
+        zoneLookup: function () {
+            var lookup = {};
+            this.allZones.forEach(function (zone) {
+                lookup[zone.id] = zone.name;
+            });
+            return lookup;
+        }
+    },
+    methods: {
+        getNests: function (zone) {
+            var url = this.observationsUrl;
+            if (zone != null) {
+                url += "?zone=" + zone.id;
+            }
+            axios.get(url)
+                .then(response => {
+                    console.log(response.data);
+                    this.nests = response.data.nests;
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                });
+
+        },
+        getZones: function () {
+            axios.get(this.zonesUrl)
+                .then(response => {
+                    this.allZones = ['---'].concat(response.data.zones);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },
+        selectZone: function (zoneId) {
+            this.zone = {'id': zoneId, 'name': this.zoneLookup[zoneId]};
+            this.getNests(this.zone);
+        }
+    },
+    mounted: function () {
+        if (this.userIsAdmin) {
+            this.getZones();
+        }
+        if (this.initZone) {
+            // this.initZone is a JSON string that needs to be parsed.
+            // This may not be a best practice, but it works.
+            this.zone = JSON.parse(this.initZone);
+        } else {
+            this.mapLoadData = "1";
+        }
+        this.getNests(this.zone);
+    },
+    props: ['admin', 'initZone'],
+    template: `
+        <section>
+            <vw-management-zone-selector v-if="userIsAdmin" v-bind:zones="allZones" v-on:zone-selected="selectZone"></vw-management-zone-selector>
+            <h1 v-if="zone">{{ zoneLabel }} {{ zone.name }}</h1>
+
+            <vw-observations-viz v-bind:zone="zone" v-bind:load-data="mapLoadData"></vw-observations-viz>
+            <h1>{{ myNestsLabel }}</h1>
+            <vw-management-table v-bind:nests="nests"></vw-management-table>
         </section>
         `
 };
@@ -497,7 +729,8 @@ var VwLocationSelector = {
 var app = new Vue({
     components: {
         'vw-observations-viz': VwObservationsViz,
-        'vw-location-selector': VwLocationSelector
+        'vw-location-selector': VwLocationSelector,
+        'vw-management-page': VwManagementPage
     },
     delimiters: ['[[', ']]'],
     el: '#vw-main-app'

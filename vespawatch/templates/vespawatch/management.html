@@ -8,41 +8,13 @@
 
 <main class="container" id="vw-main-app">
 
-    <h1>{% trans "Zone" %} {{ zone }}</h1>
     <a class="btn btn-lg btn-primary" href="{% url 'vespawatch:new' %}">{% trans 'Record an observation' %}</a>
 
-    <vw-observations-viz zone="{{ zone.pk }}"></vw-observations-viz>
+    <vw-management-page admin="{% if user.is_staff %}1{% else %}0{% endif %}"
+                        init-zone='{% if user.profile.zone %}{ "id": {{ user.profile.zone.pk }}, "name": "{{ user.profile.zone.name }}" }{% endif %}'>
 
-<h1>{% trans "My nests" %}</h1>
+    </vw-management-page>
 
-    <div class="row">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>{% trans "Date" %}</th>
-                    <th>{% trans "Location" %}</th>
-                    <th>{% trans "Management" %}</th>
-                    <th></th>
-                </tr>
-            </thead>
-
-        {% for nest in nests %}
-            <tr {% if not nest.get_management_action_display %} class="table-danger" {% endif %}>
-                <td>{{ nest.observation_time }}</td>
-                <td>{{ nest.location }}</td>
-                <td>{{ nest.get_management_action_display }}</td>
-                <td>
-                    {% if nest.originates_in_vespawatch %}
-
-                        <a href="{% url 'vespawatch:nest-update' nest.pk %}">edit</a>
-                    {% else %}
-                        <span title="{% trans 'This observation was created on iNaturalist. You cannot edit it here' %}">{% trans 'You cannot edit this observation' %}</span>
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
-        </table>
-    </div>
 </main>
 {% endblock %}
 
