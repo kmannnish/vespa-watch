@@ -12,7 +12,7 @@ Django app for the monitoring and management of [_Vespa velutina_](https://www.i
 ### Define settings
 
 1. Clone this repository: `git clone https://github.com/inbo/vespa-watch`
-2. Copy `djangoproject/settings/settings_local.template.py` to `djangoproject/settings/settings_local.py`
+2. Copy [`djangoproject/settings/settings_local.template.py`](djangoproject/settings/settings_local.template.py) to `djangoproject/settings/settings_local.py`
 3. In that file, verify the database settings are correct and set `SECRET_KEY` to a non-empty value
 
 ### Setup python environment
@@ -30,35 +30,45 @@ python manage.py migrate
 
 ### Create superuser
 
-In development (this will prompt you for a username, email and password):
+* In development (this will prompt for a username, email and password):
 
-```bash
-python manage.py createsuperuser
-```
+    ```bash
+    python manage.py createsuperuser
+    ```
 
-In production use instead:
+* In production:
 
-```bash
-python manage.py create_su
-```
+    ```
+    python manage.py create_su
+    ```
 
 ### Create fire brigade users
 
-A fire brigade user is responsible for a specific zone. Import zone geospatial information:
+1. Fire brigade users are responsible for a specific geographic area (= zone). Import the polygons for those zones:
 
-```bash
-python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson
-```
+    ```bash
+    python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson
+    ```
 
-Create a fire brigade user for each zone (this will return passwords in the console, so you might want to catch those):
+    <details>
+    <summary>File source</summary>
 
-```bash
-python manage.py create_firefighters_accounts
-```
+    The initial fire brigade zone data was received as an ESRI shapefile and converted to GeoJSON with:
+
+    ```bash
+    ogr2ogr -f GeoJSON -t_srs EPSG:4326 data/Brandweerzones_2019.geojson <path_to_received_shapefile>/Brandweerzones_2019.shp
+    ```
+    </details>
+
+2. Create a fire brigade user for each zone (this will return passwords for each account, so best to catch those):
+
+    ```bash
+    python manage.py create_firefighters_accounts
+    ```
 
 ### Load data from iNaturalist
 
-Initialize the database with observations from iNaturalist:
+Initialize the database with observations from iNaturalist (optional):
 
 ```bash
 python manage.py sync_pull
@@ -72,30 +82,22 @@ In your virtual environment:
 python manage.py runserver
 ```
 
-Go to http://localhost:9000 to see the application.
+Go to http://localhost:8000 to see the application.
 
 ## Development
 
-### CSS/SASS
+### Frontend
 
-We use SASS to generate our custom stylesheets, meaning:
+CSS is managed as SCSS. You will need Node Package Manager to install dependencies (such as [Bootstrap v4.0](https://getbootstrap.com/)) and compile CSS:
 
-* Never manually edit `static/vespawatch/css/main.css`
-* Instead, make changes in `static_src/scss/*` and compile them with `npm run create:css`. The resulting files 
-will be saved under `static/vespawatch/css/` so they are made available the standard way to django (for template inclusion, `
-the collectstatic command, ...)
-* In development you can use `npm run watch:css` instead, so the SASS files are automatically compiled on save.
-* The first time, you'll need to install the dependencies for this process: ``npm install``
+1. Verify [npm](https://www.npmjs.com/get-npm) is installed: `node -v`
+2. Navigate to the project directory and install the requirements: `npm install` (will read [package.json](package.json) to create the `node_modules` directory)
 
-### GeoDjango / PostGIS setup notes
+To update the SCSS:
 
-Vespa-Watch relies on GeoDjango/PostGIS. Refer to their documentation if needed.
-
-The initial firefighters zone data was received as an ESRI shapefile. Convert it to GeoJSON prior to use with:
-
-```bash
-ogr2ogr -f GeoJSON -t_srs EPSG:4326 data/Brandweerzones_2019.geojson <path_to_received_shapefile>/Brandweerzones_2019.shp
-```
+1. Go to the [`static_src/scss/`](static_src/scss)
+2. Update the relevant `.scss` files
+3. Generate the CSS in the Django accessible folder [`vespawatch/static/vespawatch/css`](vespawatch/static/vespawatch/css) automatically on every change with `npm run watch:css` (or once with `npm run create:css`). **Important**: do not edit these files manually.
 
 ## Contributors
 
