@@ -1,8 +1,103 @@
 # Vespa-watch
 
-## Rationale
+Django app for the monitoring and management of [_Vespa velutina_](https://www.inaturalist.org/taxa/119019-Vespa-velutina), an invasive species in Belgium.
 
-This repository contains the website for the monitoring of [_Vespa velutina_](https://www.inaturalist.org/taxa/119019-Vespa-velutina), an invasive species in Belgium.
+## Installation
+
+### Setup database
+
+1. Create an empty PostgreSQL database (e.g. `vespa-watch`)
+2. Enable PostGIS: `CREATE EXTENSION postgis;`
+
+### Define settings
+
+1. Clone this repository: `git clone https://github.com/inbo/vespa-watch`
+2. Copy [`djangoproject/settings/settings_local.template.py`](djangoproject/settings/settings_local.template.py) to `djangoproject/settings/settings_local.py`
+3. In that file, verify the database settings are correct and set `SECRET_KEY` to a non-empty value
+
+### Setup python environment
+
+1. Create a virtual environment, e.g. `conda create -n vespawatch python=3.6`
+2. Activate the environment, e.g. `source activate vespawatch`
+3. Navigate to the project directory and install the requirements: `pip install -r requirements.txt`
+4. Tell Django to use the local settings: `export DJANGO_SETTINGS_MODULE=djangoproject.settings.settings_local`
+
+### Apply database migrations
+
+```bash
+python manage.py migrate
+```
+
+### Create superuser
+
+* In development (this will prompt for a username, email and password):
+
+    ```bash
+    python manage.py createsuperuser
+    ```
+
+* In production:
+
+    ```
+    python manage.py create_su
+    ```
+
+### Create fire brigade users
+
+1. Fire brigade users are responsible for a specific geographic area (= zone). Import the polygons for those zones:
+
+    ```bash
+    python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson
+    ```
+
+    <details>
+    <summary>File source</summary>
+
+    The initial fire brigade zone data was received as an ESRI shapefile and converted to GeoJSON with:
+
+    ```bash
+    ogr2ogr -f GeoJSON -t_srs EPSG:4326 data/Brandweerzones_2019.geojson <path_to_received_shapefile>/Brandweerzones_2019.shp
+    ```
+    </details>
+
+2. Create a fire brigade user for each zone (this will return passwords for each account, so best to catch those):
+
+    ```bash
+    python manage.py create_firefighters_accounts
+    ```
+
+### Load data from iNaturalist
+
+Initialize the database with observations from iNaturalist (optional):
+
+```bash
+python manage.py sync_pull
+```
+
+## Run the application
+
+In your virtual environment:
+
+```bash
+python manage.py runserver
+```
+
+Go to http://localhost:8000 to see the application.
+
+## Development
+
+### Frontend
+
+CSS is managed as SCSS. You will need Node Package Manager to install dependencies (such as [Bootstrap v4.0](https://getbootstrap.com/)) and compile CSS:
+
+1. Verify [npm](https://www.npmjs.com/get-npm) is installed: `node -v`
+2. Navigate to the project directory and install the requirements: `npm install` (will read [package.json](package.json) to create the `node_modules` directory)
+
+To update the SCSS:
+
+1. Go to the [`static_src/scss/`](static_src/scss)
+2. Update the relevant `.scss` files
+3. Generate the CSS in the Django accessible folder [`vespawatch/static/vespawatch/css`](vespawatch/static/vespawatch/css) automatically on every change with `npm run watch:css` (or once with `npm run create:css`). **Important**: do not edit these files manually.
 
 ## Contributors
 
@@ -11,71 +106,3 @@ This repository contains the website for the monitoring of [_Vespa velutina_](ht
 ## License
 
 [MIT License](https://github.com/inbo/vespa-watch/blob/master/LICENSE)
-
-## Django webapp
-
-This directory contains the Django project for Vespa-watch.
-
-### Setup
-
-- We use PostgreSQL, create the database first. Enable PostGIS (CREATE EXTENSION postgis;).
-- Use Python 3.6
-- Simple split settings:
-    - copy `djangoproject/settings/settings_local.template.py ` to `djangoproject/settings/settings_local.py`
-    - tell Django to use those local settings: `$ export DJANGO_SETTINGS_MODULE=djangoproject.settings.settings_local`
-
-Apply the database migrations:
-
-```
-$ python manage.py migrate
-```
-
-In development, you can create a superuser using the command line.
-This will prompt you for username, email address and password:
-
-```
-$ python manage.py createsuperuser
-```
-
-However in production, do this instead:
-
-```
-$ python manage.py create_su
-```
-
-Some initial data should be loaded in order to create firefighters
-accounts with the correct polygon delineating their zone.
-
-```
-$ python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson
-$ python manage.py create_firefighters_accounts
-```
-
-The final command creates accounts for each firefighters zone and generates
-a password. The passwords are returned by the command, so you might want
-to catch those.
-
-Finally, it might be good to initialize the database with observations from iNaturalist.
-
-```
-$ python manage.py sync_pull
-```
-
-### CSS/SASS
-
-We use SASS to generate our custom stylesheets, meaning:
-
-- Never manually edit `static/vespawatch/css/main.css`
-- Instead, make changes in `static_src/scss/*` and compile them with `npm run create:css`. The resulting files 
-will be saved under `static/vespawatch/css/` so they are made available the standard way to django (for template inclusion, `
-the collectstatic command, ...)
-- In development you can use `npm run watch:css` instead, so the SASS files are automatically compiled on save.
-- The first time, you'll need to install the dependencies for this process: ``npm install``
-
-### GeoDjango / PostGIS setup notes
-
-Vespa-Watch relies on GeoDjango/PostGIS. Refer to their documentation if needed.
-
-The initial firefighters zone data was received as an ESRI shapefile. Convert it to GeoJSON prior to use with:
-
-$ ogr2ogr -f GeoJSON -t_srs EPSG:4326 data/Brandweerzones_2019.geojson <path_to_received_shapefile>/Brandweerzones_2019.shp
