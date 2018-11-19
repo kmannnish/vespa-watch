@@ -12,6 +12,7 @@
 var VwObservationsVizMap = {
     data: function() {
         return {
+            initialZoomed: false,  // only allow the map to zoom and center on the data when the data is loaded for the first time.
             map: undefined,
             mapCircles: [],
             observationsLayer: undefined,
@@ -52,7 +53,10 @@ var VwObservationsVizMap = {
             });
             this.observationsLayer = L.featureGroup(this.mapCircles);
             this.observationsLayer.addTo(this.map);
-            this.map.fitBounds(this.observationsLayer.getBounds());
+            if (!this.initialZoomed) {
+                this.map.fitBounds(this.observationsLayer.getBounds());
+            }
+            this.initialZoomed = true;
         },
 
         // Generate a HTML string that represents the observation
@@ -113,7 +117,7 @@ var VwObservationsVizMap = {
         this.init();
     },
 
-    props: ['editRedirect', 'observations'],
+    props: ['autozoom', 'editRedirect', 'observations'],
     watch: {
         observations: function (newObservations, oldObservations) {
             console.log('vw-observations-viz-map: Observations got updated!');
@@ -183,6 +187,10 @@ var VwObservationsVizTimeSlider = {
                 this.selectedTimeRange.start = parseInt(values[0]);
                 this.selectedTimeRange.stop = parseInt(values[1]);
                 this.$emit('time-updated', values.map(x => parseInt(x)));
+            });
+            el.noUiSlider.on('slide', (values, handle) => {
+                this.selectedTimeRange.start = parseInt(values[0]);
+                this.selectedTimeRange.stop = parseInt(values[1]);
             });
         }
     },
