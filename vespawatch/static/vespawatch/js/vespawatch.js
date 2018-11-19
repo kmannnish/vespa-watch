@@ -85,7 +85,7 @@ var VwObservationsVizMap = {
                 });
             }
 
-            html += '<a href="/' + obs.subject + 's/' + obs.id + '/">View details</a>';
+            html += '<a href="/' + obs.subject + 's/' + obs.id + '/' + (this.editRedirect ? '?redirect_to=' + this.editRedirect : '') + '">View details</a>';
 
             return html;
         },
@@ -113,7 +113,7 @@ var VwObservationsVizMap = {
         this.init();
     },
 
-    props: ['observations'],
+    props: ['editRedirect', 'observations'],
     watch: {
         observations: function (newObservations, oldObservations) {
             console.log('vw-observations-viz-map: Observations got updated!');
@@ -286,7 +286,7 @@ var VwObservationsViz = {
         }
     },
 
-    props: ['zone', 'loadData'],
+    props: ['zone', 'loadData', 'editRedirect'],
     watch: {
         loadData: function (n, o) {
             if (n === "1") {
@@ -302,7 +302,7 @@ var VwObservationsViz = {
 
     template: `
         <section>
-            <vw-observations-viz-map v-bind:observations="observations"></vw-observations-viz-map>
+            <vw-observations-viz-map v-bind:observations="observations" v-bind:edit-redirect="editRedirect"></vw-observations-viz-map>
             <vw-observations-viz-time-slider v-on:time-updated="filterOnTimeRange" v-model="timeRange"></vw-observations-viz-time-slider>
         </section>
         `
@@ -512,7 +512,7 @@ var VwManagementPage = {
             <vw-management-zone-selector v-if="userIsAdmin" v-bind:zones="allZones" v-on:zone-selected="selectZone"></vw-management-zone-selector>
             <h1 v-if="zone">{{ zoneLabel }} {{ zone.name }}</h1>
 
-            <vw-observations-viz v-bind:zone="zone" v-bind:load-data="mapLoadData"></vw-observations-viz>
+            <vw-observations-viz v-bind:zone="zone" v-bind:load-data="mapLoadData" edit-redirect="management"></vw-observations-viz>
             <h1>{{ myNestsLabel }}</h1>
             <vw-management-table v-bind:nests="nests"></vw-management-table>
         </section>

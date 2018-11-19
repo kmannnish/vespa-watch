@@ -6,10 +6,35 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ugettext as _
 from django.http import JsonResponse, HttpResponseRedirect
-from django.views.generic import DeleteView, DetailView
+from django.views.generic import DeleteView
+from django.views.generic.base import View
+from django.views.generic.detail import BaseDetailView, SingleObjectMixin, SingleObjectTemplateResponseMixin
+from django.views.generic.edit import DeletionMixin
 from django.urls import reverse_lazy
 from .forms import ManagementActionForm, ManagementFormset, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
 from .models import Individual, FirefightersZone, Nest, ManagementAction
+
+
+class CustomBaseDetailView(SingleObjectMixin, View):
+    """Subclassing this one to pass the request parameters to the kwargs of get_context_data"""
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object, **request.GET)
+        return self.render_to_response(context)
+
+
+class CustomBaseDeleteView(DeletionMixin, BaseDetailView):
+    """Overriding the BaseDeleteView to add the redirect_to param from the request to the View object"""
+    def delete(self, request, *args, **kwargs):
+        r = request.GET.get('redirect_to', '')
+        if r:
+            self.requested_success_url = r
+        return super(CustomBaseDeleteView, self).delete(request, *args, **kwargs)
+
+
+class CustomDeleteView(SingleObjectTemplateResponseMixin, CustomBaseDeleteView):
+    """Also had to override this one for adding the redirect_to param to the View object"""
+    template_name_suffix = '_confirm_delete'
 
 
 def index(request):
@@ -31,7 +56,8 @@ def management(request):
 
 
 def new_observation(request):
-    return render(request, 'vespawatch/new_observation.html')
+    redirect_to = request.GET.get('redirect_to', 'index')
+    return render(request, 'vespawatch/new_observation.html', {'redirect_to': redirect_to})
 
 
 
@@ -40,6 +66,7 @@ def new_observation(request):
 
 def create_individual(request):
     if request.method == 'POST':
+        redirect_to = request.POST.get('redirect_to')
         form = IndividualForm(request.POST, request.FILES)
         if request.user.is_authenticated:
             # set to terms_of_service to true if the user is authenticated
@@ -49,10 +76,12 @@ def create_individual(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("You're observation was successfully created."))
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect(reverse_lazy(f'vespawatch:{redirect_to}'))
     else:
-        form = IndividualForm()
+        redirect_to = request.GET.get('redirect_to', 'index')
+        form = IndividualForm(initial={'redirect_to': redirect_to})
     return render(request, 'vespawatch/observation_create.html', {'form': form, 'type': 'individual'})
+
 
 @login_required
 def update_individual(request, pk):
@@ -80,14 +109,28 @@ def update_individual(request, pk):
                   {'form': form, 'object': indiv, 'type': 'individual', 'image_formset': image_formset})
 
 
-class IndividualDetail(DetailView):
+class IndividualDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
     model = Individual
 
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        r = kwargs.get('redirect_to', ['index'])
+        context['redirect_to'] = r[0]
+        return context
 
-class IndividualDelete(LoginRequiredMixin, DeleteView):
+
+class IndividualDelete(LoginRequiredMixin, CustomDeleteView):
     model = Individual
     success_url = reverse_lazy('vespawatch:index')
     success_message = "The observation was successfully deleted."
+    requested_success_url = None
+
+    def get_success_url(self, **kwargs):
+        if self.requested_success_url:
+            return reverse_lazy(f'vespawatch:{self.requested_success_url}').format(**self.object.__dict__)
+
+        return super(IndividualDelete, self).get_success_url()
 
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, _(self.success_message))
@@ -98,6 +141,7 @@ class IndividualDelete(LoginRequiredMixin, DeleteView):
 
 def create_nest(request):
     if request.method == 'POST':
+        redirect_to = request.POST.get('redirect_to')
         form = NestForm(request.POST, request.FILES)
         if request.user.is_authenticated:
             # set to terms_of_service to true if the user is authenticated
@@ -111,11 +155,12 @@ def create_nest(request):
                 if management_formset.is_valid():
                     management_formset.save()
             messages.success(request, _("You're observation was successfully created."))
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect(reverse_lazy(f'vespawatch:{redirect_to}'))
         else:
             management_formset = ManagementFormset()
     else:
-        form = NestForm()
+        redirect_to = request.GET.get('redirect_to', 'index')
+        form = NestForm(initial={'redirect_to': redirect_to})
         management_formset = ManagementFormset()
     return render(request, 'vespawatch/observation_create.html', {'form': form, 'management_formset': management_formset, 'type': 'nest'})
 
@@ -156,11 +201,18 @@ def update_nest(request, pk):
                   {'form': form, 'object': nest, 'type': 'nest', 'image_formset': image_formset, 'management_formset': management_formset,})
 
 
-class NestDetail(DetailView):
+class NestDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
     model = Nest
 
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        r = kwargs.get('redirect_to', ['index'])
+        context['redirect_to'] = r[0]
+        return context
 
-class NestDelete(LoginRequiredMixin, DeleteView):
+
+class NestDelete(LoginRequiredMixin, CustomDeleteView):
     model = Nest
     success_url = reverse_lazy('vespawatch:index')
     success_message = "The observation was successfully deleted."

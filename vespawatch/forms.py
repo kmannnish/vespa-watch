@@ -1,8 +1,9 @@
-from django.forms import inlineformset_factory, ModelForm, BooleanField
+from django.forms import inlineformset_factory, ModelForm, BooleanField, ChoiceField
 from .models import ManagementAction, Nest, Individual, NestPicture, IndividualPicture
 
 
 class IndividualForm(ModelForm):
+    redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     terms_of_service = BooleanField(label='Accept the terms of service', required=False)   # TODO how to translate that label?
 
     class Meta:
@@ -29,6 +30,7 @@ class IndividualForm(ModelForm):
                 IndividualPicture.objects.create(observation=observation, image=image)
 
 class NestForm(ModelForm):
+    redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     terms_of_service = BooleanField(label='Accept the terms of service', required=False)   # TODO how to translate that label?
 
     class Meta:

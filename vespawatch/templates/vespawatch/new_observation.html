@@ -11,8 +11,8 @@
             <hr class="mt-0 mb-4">
 
 
-                <a class="btn btn-lg btn-primary mr-2" href="{% url 'vespawatch:individual-add' %}">{% trans 'Individual(s)' %}</a>
-                <a class="btn btn-lg btn-primary mr-2" href="{% url 'vespawatch:nest-add' %}">{% trans 'Nest' %}</a>
+                <a class="btn btn-lg btn-primary mr-2" href="{% url 'vespawatch:individual-add' %}?redirect_to={{ redirect_to }}">{% trans 'Individual(s)' %}</a>
+                <a class="btn btn-lg btn-primary mr-2" href="{% url 'vespawatch:nest-add' %}?redirect_to={{ redirect_to }}">{% trans 'Nest' %}</a>
 
             </form>
         </div>
