@@ -661,6 +661,34 @@ var VwLocationSelectorCoordinates = {
         `
 };
 
+var VwDatetimeSelector = {
+    delimiters: ['[[', ']]'],
+    props: {
+        'isRequired': Boolean,
+        'hiddenFieldName': String,
+    },
+    data: function() {
+        return {
+            observationTime: undefined, // As ISO3166
+        }
+    },
+    computed: {
+        observationTimeLabel: function () {
+            return gettext('Observation time');
+        },
+    },
+    template: `<div class="form-group">
+                    <datetime v-model="observationTime" type="datetime" 
+                              input-class="datetimeinput form-control">
+                        <label for="startDate" slot="before">
+                            [[ observationTimeLabel ]]
+                            <span v-if="isRequired">*</span>
+                        </label>          
+                    </datetime>
+                    <input type="hidden" :name="hiddenFieldName" :value="observationTime"/>
+               </div>`
+};
+
 var VwLocationSelector = {
     data: function () {
         return {
@@ -730,6 +758,7 @@ var app = new Vue({
     components: {
         'vw-observations-viz': VwObservationsViz,
         'vw-location-selector': VwLocationSelector,
+        'vw-datetime-selector': VwDatetimeSelector,
         'vw-management-page': VwManagementPage
     },
     delimiters: ['[[', ']]'],

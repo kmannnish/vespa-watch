@@ -10,9 +10,8 @@
                       init-marker="{% if object %}true{% else %}false{% endif %}"
                       location="{% if object %}{{ object.location }}{% endif %}"></vw-location-selector>
 
+<vw-datetime-selector :is-required="true" hidden-field-name="observation_time"></vw-datetime-selector>
 
-
-{{ form.observation_time|as_crispy_field }}
 {{ form.comments|as_crispy_field }}
 {{ form.redirect_to.as_hidden }}
 {{ image_formset.management_form }}

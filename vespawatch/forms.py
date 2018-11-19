@@ -1,4 +1,5 @@
 from django.forms import inlineformset_factory, ModelForm, BooleanField, ChoiceField
+from vespawatch.fields import ISODateTimeField
 from .models import ManagementAction, Nest, Individual, NestPicture, IndividualPicture
 
 
@@ -13,6 +14,9 @@ class IndividualForm(ModelForm):
                   'observer_title', 'observer_last_name', 'observer_first_name', 'observer_email', 'observer_phone',
                   'observer_is_beekeeper'
         ]
+        field_classes = {
+            'observation_time': ISODateTimeField,
+        }
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -40,6 +44,9 @@ class NestForm(ModelForm):
                   'observer_title', 'observer_last_name', 'observer_first_name', 'observer_email', 'observer_phone',
                   'observer_is_beekeeper'
         ]
+        field_classes = {
+            'observation_time': ISODateTimeField,
+        }
 
     def clean(self):
         cleaned_data = self.cleaned_data
