@@ -30,13 +30,6 @@ def management(request):
     return render(request, 'vespawatch/management.html', context)
 
 
-# @staff_member_required
-# def management(request):
-#     zone = request.GET.get('zone', '')
-#     nests = Nest.objects.filter(zone=zone).order_by('-observation_time')
-#     return render(request, 'vespawatch/management.html', {'nests': nests, 'zone': zone})
-#
-
 def new_observation(request):
     return render(request, 'vespawatch/new_observation.html')
 
