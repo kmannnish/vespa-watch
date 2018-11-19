@@ -2,12 +2,14 @@ import os
 from datetime import datetime
 
 import dateparser
+import requests
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import Point
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.files.base import ContentFile
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template import defaultfilters
@@ -101,7 +103,7 @@ def create_observation_from_inat_data(inaturalist_data):
         # Check if it has the vespawatch_evidence observation field value and if it's set to "nest"
         is_nest_ofv = next((item for item in inaturalist_data['ofvs'] if item["field_id"] == settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID), None)
         if is_nest_ofv and is_nest_ofv['value'] == "nest":
-            return Nest.objects.create(
+            created =  Nest.objects.create(
                 originates_in_vespawatch=False,
                 inaturalist_id=inaturalist_data['id'],
                 species=species,
@@ -109,13 +111,18 @@ def create_observation_from_inat_data(inaturalist_data):
                 longitude=inaturalist_data['geojson']['coordinates'][0],
                 observation_time=observation_time)  # TODO: What to do with iNat observations without (parsable) time?
         else:  # Default is specimen
-            return Individual.objects.create(
+            created = Individual.objects.create(
                 originates_in_vespawatch=False,
                 inaturalist_id=inaturalist_data['id'],
                 species=species,
                 latitude=inaturalist_data['geojson']['coordinates'][1],
                 longitude=inaturalist_data['geojson']['coordinates'][0],
                 observation_time=observation_time)  # TODO: What to do with iNat observations without (parsable) time?
+
+        for photo in inaturalist_data['photos']:
+            created.assign_picture_from_url(photo['url'])
+
+        return created
     else:
         raise ParseDateError
 
@@ -310,6 +317,19 @@ class AbstractObservation(models.Model):
         self.inaturalist_id = r[0]['id']
         self.save()
         self.push_attached_pictures_at_inaturalist(access_token=access_token)
+
+    def assign_picture_from_url(self, photo_url):
+        if self.__class__ == Nest:
+            photo_obj = NestPicture()
+        else:
+            photo_obj = IndividualPicture()
+
+        photo_content = ContentFile(requests.get(photo_url).content)
+        photo_filename = photo_url[photo_url.rfind("/")+1:].split('?',1)[0]
+
+        photo_obj.observation = self
+        photo_obj.image.save(photo_filename, photo_content)
+        photo_obj.save()
 
     def push_attached_pictures_at_inaturalist(self, access_token):
         if self.inaturalist_id:
