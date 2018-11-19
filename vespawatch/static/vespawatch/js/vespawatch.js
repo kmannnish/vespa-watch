@@ -672,6 +672,7 @@ var VwLocationSelectorCoordinates = {
 var VwDatetimeSelector = {
     delimiters: ['[[', ']]'],
     props: {
+        'initDateTime': String,
         'isRequired': Boolean,
         'hiddenFieldName': String,
     },
@@ -684,6 +685,12 @@ var VwDatetimeSelector = {
         observationTimeLabel: function () {
             return gettext('Observation time');
         },
+    },
+
+    mounted: function () {
+        if (this.initDateTime) {
+            this.observationTime = this.initDateTime;
+        }
     },
     template: `<div class="form-group">
                     <datetime v-model="observationTime" type="datetime" 
