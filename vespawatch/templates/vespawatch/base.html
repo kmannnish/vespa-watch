@@ -83,7 +83,12 @@
         <script src="{% static 'vespawatch/libraries/leaflet/leaflet-geosearch.min.js' %}"></script>
         <script src="{% static 'vespawatch/libraries/moment/moment.min.js' %}"></script>
         <script src="{% static 'vespawatch/libraries/nouislider/nouislider.min.js' %}"></script>
-        <script src="{% static 'vespawatch/libraries/vue/vue.min.js' %}"></script>
+        {% if settings.DEBUG %}
+        {# see https://vuejs.org/v2/guide/deployment.html#Without-Build-Tools #}
+            <script src="{% static 'vespawatch/libraries/vue/vue.js' %}"></script>
+        {% else %}
+            <script src="{% static 'vespawatch/libraries/vue/vue.min.js' %}"></script>
+        {% endif %}
         <script src="{% static 'vespawatch/libraries/vue/vue-datetime.min.js' %}"></script>
         <script src="{% static 'vespawatch/libraries/vue/luxon.min.js' %}"></script>
         <script src="{% static 'vespawatch/libraries/wnumb/wnumb.js' %}"></script>
