@@ -86,18 +86,39 @@ Go to http://localhost:8000 to see the application.
 
 ## Development
 
-### Frontend
+### Update HTML
 
-CSS is managed as SCSS. You will need Node Package Manager to install dependencies (such as [Bootstrap v4.0](https://getbootstrap.com/)) and compile CSS:
+HTML is defined in [templates](https://docs.djangoproject.com/en/2.1/topics/templates/) at [`vespawatch/templates/vespawatch`](vespawatch/templates/vespawatch). `base.html` is the main template, almost all other templates build upon it. The HTML is structured around [Bootstrap v4.0](https://getbootstrap.com/docs/4.0/getting-started/introduction/) classes for layout, components and utilities: use these before writing custom html and css.
+
+### Node package manager (npm) for CSS and Javascript
+
+CSS & JS are managed in [`static_src`](static_src). **Important**: files in the Django accessible directory [`vespawatch/static/vespawatch`](vespawatch/static/vespawatch) should not be edited manually, but compiled or copied with Node Package Manager. To start:
 
 1. Verify [npm](https://www.npmjs.com/get-npm) is installed: `node -v`
-2. Navigate to the project directory and install the requirements: `npm install` (will read [package.json](package.json) to create the `node_modules` directory)
+2. Go to the root of this repository
+2. Install all dependencies with: `npm install` (will read [`package.json`](package.json) to create the `node_modules` directory)
 
-To update the SCSS:
+### Update CSS
 
-1. Go to the [`static_src/scss/`](static_src/scss)
+CSS is managed as SCSS in [`static_src/scss`](static_src/scss). The SCSS starts from Bootstrap's SCSS, with custom variable overwrites in `_variables.scss` and custom CSS in `main.scss`. These get bundled together with Bootstrap in a single `vespawatch/static/vespawatch/css/main.css`.
+
+1. Go to the [`static_src/scss`](static_src/scss)
 2. Update the relevant `.scss` files
-3. Generate the CSS in the Django accessible folder [`vespawatch/static/vespawatch/css`](vespawatch/static/vespawatch/css) automatically on every change with `npm run watch:css` (or once with `npm run create:css`). **Important**: do not edit these files manually.
+3. Generate the CSS automatically on every change with `npm run watch:css` (or once with `npm run create:css`).
+
+### Update JS libraries
+
+External JS libraries (and their CSS) are defined in [`package.json`](package.json). To add a library:
+
+1. In [`package.json`](package.json) under `dependencies` add the library and version
+2. Install the library with `npm install`
+3. In `package.json` under `scripts` create a new script to move the necessary JS & CSS files to `vespawatch/static/vespawatch/libraries` (see the other scripts for inspiration) and add your script to `copy:libraries`
+4. Move the files with `npm run copy:libraries`
+5. Link to the files in your template with:
+    ```html
+    <link rel="stylesheet" href="{% static 'vespawatch/libraries/my_library/my_library.min.css' %}">
+    <script src="{% static 'vespawatch/libraries/my_library/my_library.min.js' %}"></script>
+    ```
 
 ## Contributors
 
