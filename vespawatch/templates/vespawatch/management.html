@@ -8,7 +8,20 @@
 
 <main class="container" id="vw-main-app">
 
-    <a class="btn btn-lg btn-primary" href="{% url 'vespawatch:new' %}">{% trans 'Record an observation' %}</a>
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <a class="btn btn-lg btn-primary" href="{% url 'vespawatch:new' %}?redirect_to=management">{% trans 'Record an observation' %}</a>
 
     <vw-management-page admin="{% if user.is_staff %}1{% else %}0{% endif %}"
                         init-zone='{% if user.profile.zone %}{ "id": {{ user.profile.zone.pk }}, "name": "{{ user.profile.zone.name }}" }{% endif %}'>

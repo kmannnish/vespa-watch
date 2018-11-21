@@ -372,6 +372,11 @@ class AbstractObservation(models.Model):
         # We need to be aware of the timezone, hence the defaultfilter trick
         return defaultfilters.date(self.observation_time, 'Y-m-d')
 
+    @property
+    def observation_time_iso(self):
+        # TODO check with Nico whether this should also be a property
+        return self.observation_time.isoformat()
+
     def clean(self):
         if self.species != self.__original_species and not self.species_can_be_locally_changed:
             raise ValidationError("Observation already pushed, species can't be changed anymore!")
@@ -463,8 +468,8 @@ class Individual(AbstractObservation):
             'imageUrls': [x.image.url for x in self.pictures.all()]
         }
 
-    def __str__(self):
-        return f'Individual of {self.get_species_name()}, {self.formatted_observation_date}'
+    # def __str__(self):
+    #     return f'Individual of {self.get_species_name()}, {self.formatted_observation_date}'
 
 
 class IndividualPicture(models.Model):

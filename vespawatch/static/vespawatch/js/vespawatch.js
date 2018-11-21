@@ -12,6 +12,7 @@
 var VwObservationsVizMap = {
     data: function() {
         return {
+            initialZoomed: false,  // only allow the map to zoom and center on the data when the data is loaded for the first time.
             map: undefined,
             mapCircles: [],
             observationsLayer: undefined,
@@ -52,7 +53,10 @@ var VwObservationsVizMap = {
             });
             this.observationsLayer = L.featureGroup(this.mapCircles);
             this.observationsLayer.addTo(this.map);
-            this.map.fitBounds(this.observationsLayer.getBounds());
+            if (!this.initialZoomed) {
+                this.map.fitBounds(this.observationsLayer.getBounds());
+            }
+            this.initialZoomed = true;
         },
 
         // Generate a HTML string that represents the observation
@@ -85,7 +89,7 @@ var VwObservationsVizMap = {
                 });
             }
 
-            html += '<a href="/' + obs.subject + 's/' + obs.id + '/">View details</a>';
+            html += '<a href="/' + obs.subject + 's/' + obs.id + '/' + (this.editRedirect ? '?redirect_to=' + this.editRedirect : '') + '">View details</a>';
 
             return html;
         },
@@ -113,7 +117,7 @@ var VwObservationsVizMap = {
         this.init();
     },
 
-    props: ['observations'],
+    props: ['autozoom', 'editRedirect', 'observations'],
     watch: {
         observations: function (newObservations, oldObservations) {
             console.log('vw-observations-viz-map: Observations got updated!');
@@ -183,6 +187,10 @@ var VwObservationsVizTimeSlider = {
                 this.selectedTimeRange.start = parseInt(values[0]);
                 this.selectedTimeRange.stop = parseInt(values[1]);
                 this.$emit('time-updated', values.map(x => parseInt(x)));
+            });
+            el.noUiSlider.on('slide', (values, handle) => {
+                this.selectedTimeRange.start = parseInt(values[0]);
+                this.selectedTimeRange.stop = parseInt(values[1]);
             });
         }
     },
@@ -286,7 +294,7 @@ var VwObservationsViz = {
         }
     },
 
-    props: ['zone', 'loadData'],
+    props: ['zone', 'loadData', 'editRedirect'],
     watch: {
         loadData: function (n, o) {
             if (n === "1") {
@@ -302,7 +310,7 @@ var VwObservationsViz = {
 
     template: `
         <section>
-            <vw-observations-viz-map v-bind:observations="observations"></vw-observations-viz-map>
+            <vw-observations-viz-map v-bind:observations="observations" v-bind:edit-redirect="editRedirect"></vw-observations-viz-map>
             <vw-observations-viz-time-slider v-on:time-updated="filterOnTimeRange" v-model="timeRange"></vw-observations-viz-time-slider>
         </section>
         `
@@ -512,7 +520,7 @@ var VwManagementPage = {
             <vw-management-zone-selector v-if="userIsAdmin" v-bind:zones="allZones" v-on:zone-selected="selectZone"></vw-management-zone-selector>
             <h1 v-if="zone">{{ zoneLabel }} {{ zone.name }}</h1>
 
-            <vw-observations-viz v-bind:zone="zone" v-bind:load-data="mapLoadData"></vw-observations-viz>
+            <vw-observations-viz v-bind:zone="zone" v-bind:load-data="mapLoadData" edit-redirect="management"></vw-observations-viz>
             <h1>{{ myNestsLabel }}</h1>
             <vw-management-table v-bind:nests="nests"></vw-management-table>
         </section>
@@ -762,6 +770,7 @@ var VwSpeciesSelector = {
 var VwDatetimeSelector = {
     delimiters: ['[[', ']]'],
     props: {
+        'initDateTime': String,
         'isRequired': Boolean,
         'hiddenFieldName': String,
     },
@@ -774,6 +783,12 @@ var VwDatetimeSelector = {
         observationTimeLabel: function () {
             return gettext('Observation time');
         },
+    },
+
+    mounted: function () {
+        if (this.initDateTime) {
+            this.observationTime = this.initDateTime;
+        }
     },
     template: `<div class="form-group">
                     <datetime v-model="observationTime" type="datetime" 
