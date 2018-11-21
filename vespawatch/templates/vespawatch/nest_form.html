@@ -1,8 +1,8 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% csrf_token %}
-{{ form.species|as_crispy_field }}
 
+<vw-species-selector {% if form.instance.species %}:species-selected="{{ form.instance.species.pk }}"{% endif %} species-api-url="{% url 'vespawatch:api_species' %}" radio-name="species"></vw-species-selector>
 
 <vw-location-selector v-bind:init-coordinates="{% if object %}[{{ object.longitude }}, {{ object.latitude }}]{% else %}[4.5, 50.7]{% endif %}"
                       init-marker="{% if object %}true{% else %}false{% endif %}"

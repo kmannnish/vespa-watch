@@ -9,7 +9,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import DeleteView, DetailView
 from django.urls import reverse_lazy
 from .forms import ManagementActionForm, ManagementFormset, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
-from .models import Individual, FirefightersZone, Nest, ManagementAction
+from .models import Individual, FirefightersZone, Nest, ManagementAction, Species
 
 
 def index(request):
@@ -216,9 +216,15 @@ class ManagmentActionDelete(LoginRequiredMixin, DeleteView):
 # API methods
 # ==============
 
+def species_json(request):
+    """
+    Return all species as JSON data.
+    """
+    return JsonResponse([s.to_json() for s in Species.objects.all()], safe=False)
+
 def observations_json(request):
     """
-    Return all observations as json data
+    Return all observations as JSON data.
     """
     zone = request.GET.get('zone', '')
     obs_type = request.GET.get('type', '')

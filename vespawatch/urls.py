@@ -21,5 +21,6 @@ urlpatterns = [
 
     # API paths
     path('api/observations', views.observations_json, name='api_observations'),
+    path('api/species', views.species_json, name='api_species'),
     path('api/zones', views.zones_json, name='api_zones'),
 ]
