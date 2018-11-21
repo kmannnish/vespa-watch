@@ -12,7 +12,7 @@ from django.views.generic.detail import BaseDetailView, SingleObjectMixin, Singl
 from django.views.generic.edit import DeletionMixin
 from django.urls import reverse_lazy
 from .forms import ManagementActionForm, ManagementFormset, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
-from .models import Individual, FirefightersZone, Nest, ManagementAction
+from .models import Individual, FirefightersZone, Nest, ManagementAction, Species
 
 
 class CustomBaseDetailView(SingleObjectMixin, View):
@@ -261,9 +261,15 @@ class ManagmentActionDelete(LoginRequiredMixin, DeleteView):
 # API methods
 # ==============
 
+def species_json(request):
+    """
+    Return all species as JSON data.
+    """
+    return JsonResponse([s.to_json() for s in Species.objects.all()], safe=False)
+
 def observations_json(request):
     """
-    Return all observations as json data
+    Return all observations as JSON data.
     """
     zone = request.GET.get('zone', '')
     obs_type = request.GET.get('type', '')

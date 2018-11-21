@@ -40,8 +40,26 @@ class Species(models.Model):
                                             help_text="When pulling observations from iNaturalist, reconcile according "
                                                       "to those IDs.")
 
+    def get_file_path(instance, filename):
+        return os.path.join('species_identification_pictures/', make_unique_filename(filename))
+
+    identification_picture = models.ImageField(upload_to=get_file_path, blank=True, null=True)
+    identification_priority = models.BooleanField()  # Should appear first in the species selector
+
     def __str__(self):
         return  self.name
+
+    def to_json(self):
+        identification_picture_url = None
+        if self.identification_picture:
+            identification_picture_url = self.identification_picture.url
+
+        return {
+            'id': self.pk,
+            'name': self.name,
+            'identification_priority': self.identification_priority,
+            'identification_picture_url': identification_picture_url
+        }
 
     class Meta:
         verbose_name_plural = "species"
@@ -246,6 +264,14 @@ class AbstractObservation(models.Model):
             except FirefightersZone.DoesNotExist:
                 pass
 
+    def get_display_species_name(self):
+        if self.inaturalist_species:
+            return self.inaturalist_species
+        elif self.species:
+            return self.species.name
+        else:
+            return ''
+
     @property
     def can_be_edited_or_deleted(self):
         """Return True if this observation can be edited in Vespa-Watch (admin, ...)"""
@@ -397,7 +423,7 @@ class Nest(AbstractObservation):
     def as_dict(self):
         return {
             'id': self.pk,
-            'species': self.inaturalist_species if self.inaturalist_species else self.species.name,
+            'species': self.get_display_species_name(),
             'subject': 'nest',
             'location': self.location,
             'latitude': self.latitude,
@@ -439,7 +465,7 @@ class Individual(AbstractObservation):
     def as_dict(self):
         return {
             'id': self.pk,
-            'species': self.inaturalist_species if self.inaturalist_species else self.species.name,
+            'species': self.get_display_species_name(),
             'subject': 'individual',
             'location': self.location,
             'latitude': self.latitude,
