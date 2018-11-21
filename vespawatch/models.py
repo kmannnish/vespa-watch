@@ -264,6 +264,14 @@ class AbstractObservation(models.Model):
             except FirefightersZone.DoesNotExist:
                 pass
 
+    def get_display_species_name(self):
+        if self.inaturalist_species:
+            return self.inaturalist_species
+        elif self.species:
+            return self.species.name
+        else:
+            return ''
+
     @property
     def can_be_edited_or_deleted(self):
         """Return True if this observation can be edited in Vespa-Watch (admin, ...)"""
@@ -415,7 +423,7 @@ class Nest(AbstractObservation):
     def as_dict(self):
         return {
             'id': self.pk,
-            'species': self.inaturalist_species if self.inaturalist_species else self.species.name,
+            'species': self.get_display_species_name(),
             'subject': 'nest',
             'location': self.location,
             'latitude': self.latitude,
@@ -457,7 +465,7 @@ class Individual(AbstractObservation):
     def as_dict(self):
         return {
             'id': self.pk,
-            'species': self.inaturalist_species if self.inaturalist_species else self.species.name,
+            'species': self.get_display_species_name(),
             'subject': 'individual',
             'location': self.location,
             'latitude': self.latitude,
