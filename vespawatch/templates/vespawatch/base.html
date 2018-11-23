@@ -10,13 +10,9 @@
         <title>{{ settings.WEBSITE_NAME }}</title>
 
         <!-- CSS -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
-   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
-   crossorigin=""/>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-datetime@1.0.0-beta.8/dist/vue-datetime.css">
-        <link rel="stylesheet" href="{% static 'vespawatch/css/nouislider.min.css' %}">
+        <link rel="stylesheet" href="{% static 'vespawatch/libraries/leaflet/leaflet.css' %}"/>
+        <link rel="stylesheet" href="{% static 'vespawatch/libraries/nouislider/nouislider.min.css' %}">
+        <link rel="stylesheet" href="{% static 'vespawatch/libraries/vue/vue-datetime.min.css' %}"/>
         <link rel="stylesheet" href="{% static 'vespawatch/css/main.css' %}"/>
     </head>
     <body>
@@ -78,26 +74,29 @@
         {% endblock %}
 
         <!-- JS -->
+        <script src="{% static 'vespawatch/libraries/bootstrap/jquery.min.js' %}"></script>
+        <script src="{% static 'vespawatch/libraries/bootstrap/popper.min.js' %}"></script>
+        <script src="{% static 'vespawatch/libraries/bootstrap/bootstrap.min.js' %}"></script>
+        
         {% if settings.DEBUG %}
         {# see https://vuejs.org/v2/guide/deployment.html#Without-Build-Tools #}
-            <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+            <script src="{% static 'vespawatch/libraries/vue/vue.js' %}"></script>
         {% else %}
-            <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script>
+            <script src="{% static 'vespawatch/libraries/vue/vue.min.js' %}"></script>
         {% endif %}
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
-        <script src="{% static 'vespawatch/js/leaflet-geosearch.min.js' %}"></script>
-        <script src="{% static 'vespawatch/js/axios.min.js' %}"></script>
+        <script src="{% static 'vespawatch/libraries/vue/luxon.min.js' %}"></script>
+        <script src="{% static 'vespawatch/libraries/vue/vue-datetime.min.js' %}"></script>
+        
+        <script src="{% static 'vespawatch/libraries/axios/axios.min.js' %}"></script>
+        <script src="{% static 'vespawatch/libraries/crossfilter/crossfilter.min.js' %}"></script>
+        <script src="{% static 'vespawatch/libraries/leaflet/leaflet.js' %}"></script>
+        <script src="{% static 'vespawatch/libraries/leaflet/leaflet-geosearch.min.js' %}"></script>        
+        <script src="{% static 'vespawatch/libraries/moment/moment.min.js' %}"></script>
+        <script src="{% static 'vespawatch/libraries/nouislider/nouislider.min.js' %}"></script>
+        <script src="{% static 'vespawatch/libraries/wnumb/wnumb.js' %}"></script>
+        
         <script src="{% static 'vespawatch/js/_language_selector.js' %}"></script>
-        <script src="{% static 'vespawatch/js/moment-with-locales.js' %}"></script>
-        <script src="{% static 'vespawatch/js/crossfilter.min.js' %}"></script>
-        <script src="{% static 'vespawatch/js/nouislider.min.js' %}"></script>
-        <script src="{% static 'vespawatch/js/wNumb.js' %}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/luxon@1.7.1/build/global/luxon.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vue-datetime@1.0.0-beta.8/dist/vue-datetime.min.js"></script>
-        <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+        <script src="{% url 'javascript-catalog' %}"></script>
         <script src="{% static 'vespawatch/js/vespawatch.js' %}"></script>
 
         {% block extra_scripts %}

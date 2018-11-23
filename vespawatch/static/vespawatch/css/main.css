@@ -6334,10 +6334,6 @@ div.jumbotron {
   .container {
     max-width: 100% !important; } }
 
-@media (min-width: 768px) {
-  .container {
-    max-width: 960px !important; } }
-
 main.container,
 main.container-fluid {
   min-height: calc(100vh - 54px);
