@@ -23,12 +23,12 @@ var VwObservationsVizMap = {
         addObservationsToMap: function () {
 
             function getColor(d) {
-                return d.subject === 'individual' ? '#FF0000' :
+                return d.subject === 'individual' ? '#FD9126' :
                     d.subject === 'nest' ?
-                        d.actionCode === 'FD' ? '#0000FF' :
-                        d.actionCode === 'PD' ? '#00FF00' :
-                        d.actionCode === 'ND' ? '#0FaF00' :
-                            '#1FCFaF'
+                        d.actionCode === 'FD' ? '#3678ff' :
+                        d.actionCode === 'PD' ? '#3678ff' :
+                        d.actionCode === 'ND' ? '#3678ff' :
+                            '#3678ff'
                     : '#000';  // if the subject is not 'Individual' or 'Nest'
             }
 
@@ -64,15 +64,15 @@ var VwObservationsVizMap = {
             var html = '';
 
             if (obs.species != null) {
-                html += '<h1>' + obs.species + '</h1><br>';
+                html += '<h1>' + obs.species + '</h1>';
             }
 
             if (obs.observation_time != null) {
-                html += moment(obs.observation_time).format('lll') + '<br>';
+                html += moment(obs.observation_time).format('lll') + '';
             }
 
             if (obs.subject != null) {
-                html += '<b>subject:</b> '+ obs.subject + '<br>';
+                html += '<b>subject:</b> '+ obs.subject + '';
             }
 
             if (obs.comments != null) {
@@ -80,12 +80,12 @@ var VwObservationsVizMap = {
             }
 
             if (obs.inaturalist_id != null) {
-                html += '<a target="_blank" href="http://www.inaturalist.org/observations/' + obs.inaturalist_id + '">iNaturalist observation</a><br>';
+                html += '<a target="_blank" href="http://www.inaturalist.org/observations/' + obs.inaturalist_id + '">iNaturalist observation</a>';
             }
 
             if (obs.imageUrls.length > 0 ) {
                 obs.imageUrls.forEach(function (img) {
-                    html += '<img class="theme-img-thumb" src="' + img + '"><br>'
+                    html += '<img class="theme-img-thumb" src="' + img + '">'
                 });
             }
 

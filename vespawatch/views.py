@@ -80,7 +80,7 @@ def create_individual(request):
     else:
         redirect_to = request.GET.get('redirect_to', 'index')
         form = IndividualForm(initial={'redirect_to': redirect_to})
-    return render(request, 'vespawatch/observation_create.html', {'form': form, 'type': 'individual'})
+    return render(request, 'vespawatch/individual_create.html', {'form': form, 'type': 'individual'})
 
 
 @login_required
@@ -105,7 +105,7 @@ def update_individual(request, pk):
     elif request.method == 'GET':
         form = IndividualForm(instance=indiv)
         image_formset = IndividualImageFormset(instance=indiv)
-    return render(request, 'vespawatch/observation_update.html',
+    return render(request, 'vespawatch/individual_update.html',
                   {'form': form, 'object': indiv, 'type': 'individual', 'image_formset': image_formset})
 
 
@@ -162,7 +162,7 @@ def create_nest(request):
         redirect_to = request.GET.get('redirect_to', 'index')
         form = NestForm(initial={'redirect_to': redirect_to})
         management_formset = ManagementFormset()
-    return render(request, 'vespawatch/observation_create.html', {'form': form, 'management_formset': management_formset, 'type': 'nest'})
+    return render(request, 'vespawatch/nest_create.html', {'form': form, 'management_formset': management_formset, 'type': 'nest'})
 
 
 @login_required
@@ -197,7 +197,7 @@ def update_nest(request, pk):
         form = NestForm(instance=nest)
         image_formset = NestImageFormset(instance=nest)
         management_formset = ManagementFormset(instance=nest)
-    return render(request, 'vespawatch/observation_update.html',
+    return render(request, 'vespawatch/nest_update.html',
                   {'form': form, 'object': nest, 'type': 'nest', 'image_formset': image_formset, 'management_formset': management_formset,})
 
 

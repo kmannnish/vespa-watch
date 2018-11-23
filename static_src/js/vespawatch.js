@@ -23,12 +23,12 @@ var VwObservationsVizMap = {
         addObservationsToMap: function () {
 
             function getColor(d) {
-                return d.subject === 'individual' ? '#FF0000' :
+                return d.subject === 'individual' ? '#FD9126' :
                     d.subject === 'nest' ?
-                        d.actionCode === 'FD' ? '#0000FF' :
-                        d.actionCode === 'PD' ? '#00FF00' :
-                        d.actionCode === 'ND' ? '#0FaF00' :
-                            '#1FCFaF'
+                        d.actionCode === 'FD' ? '#3678ff' :
+                        d.actionCode === 'PD' ? '#3678ff' :
+                        d.actionCode === 'ND' ? '#3678ff' :
+                            '#3678ff'
                     : '#000';  // if the subject is not 'Individual' or 'Nest'
             }
 
@@ -64,15 +64,15 @@ var VwObservationsVizMap = {
             var html = '';
 
             if (obs.species != null) {
-                html += '<h1>' + obs.species + '</h1><br>';
+                html += '<h1>' + obs.species + '</h1>';
             }
 
             if (obs.observation_time != null) {
-                html += moment(obs.observation_time).format('lll') + '<br>';
+                html += moment(obs.observation_time).format('lll') + '';
             }
 
             if (obs.subject != null) {
-                html += '<b>subject:</b> '+ obs.subject + '<br>';
+                html += '<b>subject:</b> '+ obs.subject + '';
             }
 
             if (obs.comments != null) {
@@ -80,12 +80,12 @@ var VwObservationsVizMap = {
             }
 
             if (obs.inaturalist_id != null) {
-                html += '<a target="_blank" href="http://www.inaturalist.org/observations/' + obs.inaturalist_id + '">iNaturalist observation</a><br>';
+                html += '<a target="_blank" href="http://www.inaturalist.org/observations/' + obs.inaturalist_id + '">iNaturalist observation</a>';
             }
 
             if (obs.imageUrls.length > 0 ) {
                 obs.imageUrls.forEach(function (img) {
-                    html += '<img class="theme-img-thumb" src="' + img + '"><br>'
+                    html += '<img class="theme-img-thumb" src="' + img + '">'
                 });
             }
 
@@ -669,6 +669,104 @@ var VwLocationSelectorCoordinates = {
         `
 };
 
+var VWSpeciesSelectorEntry = {
+    delimiters: ['[[', ']]'],
+    props: {
+        'species': Object,
+        'radioName': String,
+        'selected': {
+            'type': Boolean,
+            'default': false
+        }
+    },
+    methods: {
+        getRadioId : function(species) {
+            return 'speciesRadios' + species.id;
+        },
+    },
+    template: `
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">[[ species.name ]]</h5>
+            
+                <img class="card-img-top" :src="species.identification_picture_url" style="width: 100px;">
+            
+                <input class="form-check-input" type="radio" :name="radioName" :id="getRadioId(species)" :value="species.id" :checked="selected">
+                        
+                <label class="form-check-label" :for="getRadioId(species)">
+                    [[ species.name ]]
+                </label>
+            </div>
+        </div>`
+
+};
+
+var VwSpeciesSelector = {
+    components : {
+        'vw-species-selector-entry': VWSpeciesSelectorEntry
+    },
+    delimiters: ['[[', ']]'],
+    props: {
+        'speciesApiUrl': String,
+        'radioName': String,
+        'speciesSelected': Number,
+    },
+    computed: {
+        buttonLabel: function () {
+            return gettext('Show more species');
+        },
+    },
+    data: function() {
+        return {
+            'speciesData': [],
+            'showAll': false
+        }
+    },
+    methods: {
+        showAllIfNeeded: function() {
+            if (this.speciesSelected) {
+                var that = this;
+                var found = this.speciesData.find(function(species) {
+                    return species.id === that.speciesSelected;
+                });
+
+                if (!found.identification_priority) {
+                    this.showAll = true;
+                }
+            }
+        },
+        getData: function(){
+            axios.get(this.speciesApiUrl)
+            .then(response => {
+                this.speciesData = response.data;
+                this.showAllIfNeeded();
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+            });
+        }
+    },
+    mounted: function () {
+        this.getData();
+    },
+    template: `<div class="form-group">
+                    <div v-for="species in speciesData" v-if="species.identification_priority" class="form-check-inline">
+                        <vw-species-selector-entry :species="species" :radio-name="radioName" :selected="species.id == speciesSelected"></vw-species-selector-entry>
+                    </div> 
+                    
+                    <div>
+                        <button class="btn btn-outline-primary btn-sm" v-if="!showAll" v-on:click.stop.prevent="showAll = true">[[ buttonLabel ]]</button>
+                    </div>
+                    
+                    <div v-if="showAll">
+                        <div v-for="species in speciesData" v-if="!species.identification_priority" class="form-check-inline">
+                            <vw-species-selector-entry :species="species" :radio-name="radioName" :selected="species.id == speciesSelected"></vw-species-selector-entry>
+                        </div>
+                    </div>          
+               </div>`
+};
+
 var VwDatetimeSelector = {
     delimiters: ['[[', ']]'],
     props: {
@@ -774,7 +872,8 @@ var app = new Vue({
         'vw-observations-viz': VwObservationsViz,
         'vw-location-selector': VwLocationSelector,
         'vw-datetime-selector': VwDatetimeSelector,
-        'vw-management-page': VwManagementPage
+        'vw-management-page': VwManagementPage,
+        'vw-species-selector': VwSpeciesSelector,
     },
     delimiters: ['[[', ']]'],
     el: '#vw-main-app'

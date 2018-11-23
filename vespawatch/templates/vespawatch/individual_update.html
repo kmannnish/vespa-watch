@@ -8,11 +8,7 @@
     <div class="row justify-content-center">
         <div class="col-8">
             <h1 class="mt-2">
-                {% if type == 'individual' %}
                     {% trans "Individual" %}
-                {% elif type == 'nest' %}
-                    {% trans "nest" %}
-                {% endif %}
             </h1>
             <hr class="mt-0 mb-4">
 
@@ -21,17 +17,10 @@
                 {{ form.errors }}
             {% endif %}
 
-            {% if type == 'individual' %}
                 <form method="post" action="{% url 'vespawatch:individual-update' object.pk %}" enctype='multipart/form-data' novalidate>
-                    {% include 'vespawatch/individual_form.html' %}
+                    {% include 'vespawatch/includes/individual_form.html' %}
                     <button type="submit" class="btn btn-success">{% trans "Save individual" %}</button>
                     <a href="{% url 'vespawatch:individual-delete' object.pk %}" class="btn btn-danger">{% trans "Delete" %}</a>
-            {% elif type == 'nest' %}
-                <form method="post" action="{% url 'vespawatch:nest-update' object.pk %}" enctype='multipart/form-data' novalidate>
-                    {% include 'vespawatch/nest_form.html' %}
-                    <button type="submit" class="btn btn-success">{% trans "Save nest" %}</button>
-                    <a href="{% url 'vespawatch:nest-delete' object.pk %}" class="btn btn-danger">{% trans "Delete" %}</a>
-            {% endif %}
                 <a href="{% url 'vespawatch:index' %}" class="btn btn-light">{% trans "Cancel" %}</a>
             </form>
         </div>
