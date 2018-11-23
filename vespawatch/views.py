@@ -75,12 +75,16 @@ def create_individual(request):
             form.data = form_data_copy
         if form.is_valid():
             form.save()
+            image_formset = IndividualImageFormset(request.POST, request.FILES, instance=form.instance)
+            if image_formset.is_valid():
+                instances = image_formset.save()
             messages.success(request, _("You're observation was successfully created."))
             return HttpResponseRedirect(reverse_lazy(f'vespawatch:{redirect_to}'))
     else:
         redirect_to = request.GET.get('redirect_to', 'index')
         form = IndividualForm(initial={'redirect_to': redirect_to})
-    return render(request, 'vespawatch/individual_create.html', {'form': form, 'type': 'individual'})
+        image_formset = IndividualImageFormset()
+    return render(request, 'vespawatch/individual_create.html', {'form': form, 'type': 'individual', 'image_formset': image_formset})
 
 
 @login_required
@@ -150,6 +154,9 @@ def create_nest(request):
             form.data = form_data_copy
         if form.is_valid():
             form.save()
+            image_formset = NestImageFormset(request.POST, request.FILES, instance=form.instance)
+            if image_formset.is_valid():
+                instances = image_formset.save()
             if request.user.is_authenticated:
                 management_formset = ManagementFormset(request.POST, request.FILES, instance=form.instance)
                 if management_formset.is_valid():
@@ -162,7 +169,9 @@ def create_nest(request):
         redirect_to = request.GET.get('redirect_to', 'index')
         form = NestForm(initial={'redirect_to': redirect_to})
         management_formset = ManagementFormset()
-    return render(request, 'vespawatch/nest_create.html', {'form': form, 'management_formset': management_formset, 'type': 'nest'})
+        image_formset = NestImageFormset()
+    return render(request, 'vespawatch/nest_create.html', {'form': form, 'management_formset': management_formset,
+                                                           'image_formset': image_formset, 'type': 'nest'})
 
 
 @login_required
