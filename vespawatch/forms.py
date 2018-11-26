@@ -9,9 +9,9 @@ class IndividualForm(ModelForm):
 
     class Meta:
         model = Individual
-        fields = ['species', 'individual_count', 'behaviour', 'location', 'latitude', 'longitude',
+        fields = ['taxon', 'individual_count', 'behaviour', 'location', 'latitude', 'longitude',
                   'inaturalist_id', 'observation_time', 'comments',
-                  'observer_title', 'observer_last_name', 'observer_first_name', 'observer_email', 'observer_phone',
+                  'observer_last_name', 'observer_first_name', 'observer_email', 'observer_phone',
                   'observer_is_beekeeper'
         ]
         field_classes = {
@@ -39,9 +39,9 @@ class NestForm(ModelForm):
 
     class Meta:
         model = Nest
-        fields = ['species', 'location', 'latitude', 'longitude',
+        fields = ['taxon', 'location', 'latitude', 'longitude',
                   'inaturalist_id', 'observation_time', 'comments',
-                  'observer_title', 'observer_last_name', 'observer_first_name', 'observer_email', 'observer_phone',
+                  'observer_last_name', 'observer_first_name', 'observer_email', 'observer_phone',
                   'observer_is_beekeeper'
         ]
         field_classes = {

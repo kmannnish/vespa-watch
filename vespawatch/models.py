@@ -21,14 +21,14 @@ from pyinaturalist.rest_api import create_observations, update_observation, add_
 from vespawatch.utils import make_unique_filename
 
 
-def get_species_from_inat_taxon_id(inaturalist_taxon_id):
-    """ Raises Species.DoesNotExists().
+def get_taxon_from_inat_taxon_id(inaturalist_taxon_id):
+    """ Raises Taxon.DoesNotExists().
 
-    Raises Species.MultipleObjectsReturned() if several matches, which shouldn't happen."""
-    return Species.objects.get(inaturalist_pull_taxon_ids__contains=[inaturalist_taxon_id])
+    Raises Taxon.MultipleObjectsReturned() if several matches, which shouldn't happen."""
+    return Taxon.objects.get(inaturalist_pull_taxon_ids__contains=[inaturalist_taxon_id])
 
 
-class Species(models.Model):
+class Taxon(models.Model):
     name = models.CharField(max_length=100)
 
     vernacular_name = models.CharField(max_length=100, blank=True)
@@ -41,28 +41,35 @@ class Species(models.Model):
                                                       "to those IDs.")
 
     def get_file_path(instance, filename):
-        return os.path.join('species_identification_pictures/', make_unique_filename(filename))
+        return os.path.join('taxon_identification_pictures/', make_unique_filename(filename))
 
-    identification_picture = models.ImageField(upload_to=get_file_path, blank=True, null=True)
-    identification_priority = models.BooleanField()  # Should appear first in the species selector
+    identification_picture_individual = models.ImageField(upload_to=get_file_path, blank=True, null=True)
+    identification_picture_nest = models.ImageField(upload_to=get_file_path, blank=True, null=True)
+
+    identification_priority = models.BooleanField()  # Should appear first in the taxon selector
 
     def __str__(self):
         return  self.name
 
     def to_json(self):
-        identification_picture_url = None
-        if self.identification_picture:
-            identification_picture_url = self.identification_picture.url
+        identification_picture_indiv_url = None
+        if self.identification_picture_individual:
+            identification_picture_indiv_url = self.identification_picture_individual.url
+
+        identification_picture_nest_url = None
+        if self.identification_picture_nest:
+            identification_picture_nest_url = self.identification_picture_nest.url
 
         return {
             'id': self.pk,
             'name': self.name,
             'identification_priority': self.identification_priority,
-            'identification_picture_url': identification_picture_url
+            'identification_picture_individual_url': identification_picture_indiv_url,
+            'identification_picture_nest_url': identification_picture_nest_url
         }
 
     class Meta:
-        verbose_name_plural = "species"
+        verbose_name_plural = "taxa"
 
 
 
@@ -78,8 +85,8 @@ class VespawatchCreatedObservationsManager(models.Manager):
         return super().get_queryset().filter(originates_in_vespawatch=True)
 
 
-class SpeciesMatchError(Exception):
-    """Unable to match this (iNaturalist) taxon id to our Species table"""
+class TaxonMatchError(Exception):
+    """Unable to match this (iNaturalist) taxon id to our Taxon table"""
 
 class ParseDateError(Exception):
     """Cannot parse this date"""
@@ -90,7 +97,7 @@ def create_observation_from_inat_data(inaturalist_data):
     :returns: the observation (instance of Nest or Individual) created.
 
     Raises:
-        SpeciesMatchError
+        TaxonMatchError
     """
     observation_time = dateparser.parse(inaturalist_data['observed_on_string'],
                                         settings={'TIMEZONE': inaturalist_data['observed_time_zone']})
@@ -112,11 +119,11 @@ def create_observation_from_inat_data(inaturalist_data):
         observation_time = make_aware(observation_time)
 
     if observation_time:
-        # Reconcile the species
+        # Reconcile the taxon
         try:
-            species = get_species_from_inat_taxon_id(inaturalist_data['taxon']['id'])
-        except Species.DoesNotExist:
-            raise SpeciesMatchError
+            taxon = get_taxon_from_inat_taxon_id(inaturalist_data['taxon']['id'])
+        except Taxon.DoesNotExist:
+            raise TaxonMatchError
 
         # Check if it has the vespawatch_evidence observation field value and if it's set to "nest"
         is_nest_ofv = next((item for item in inaturalist_data['ofvs'] if item["field_id"] == settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID), None)
@@ -124,7 +131,7 @@ def create_observation_from_inat_data(inaturalist_data):
             created =  Nest.objects.create(
                 originates_in_vespawatch=False,
                 inaturalist_id=inaturalist_data['id'],
-                species=species,
+                taxon=taxon,
                 latitude=inaturalist_data['geojson']['coordinates'][1],
                 longitude=inaturalist_data['geojson']['coordinates'][0],
                 observation_time=observation_time)  # TODO: What to do with iNat observations without (parsable) time?
@@ -132,7 +139,7 @@ def create_observation_from_inat_data(inaturalist_data):
             created = Individual.objects.create(
                 originates_in_vespawatch=False,
                 inaturalist_id=inaturalist_data['id'],
-                species=species,
+                taxon=taxon,
                 latitude=inaturalist_data['geojson']['coordinates'][1],
                 longitude=inaturalist_data['geojson']['coordinates'][0],
                 observation_time=observation_time)  # TODO: What to do with iNat observations without (parsable) time?
@@ -173,14 +180,14 @@ def update_loc_obs_taxon_according_to_inat(inaturalist_data):
     # TODO: test this more (new code, some path are not frequently used)
     if community_taxon_id is not None:
         local_obs = get_local_obs_matching_inat_id(inaturalist_data['id'])
-        if community_taxon_id not in local_obs.species.inaturalist_pull_taxon_ids:
+        if community_taxon_id not in local_obs.taxon.inaturalist_pull_taxon_ids:
             # we have to update our observation to follow the community identification
             try:
-                local_obs.species = get_species_from_inat_taxon_id(community_taxon_id)
+                local_obs.taxon = get_taxon_from_inat_taxon_id(community_taxon_id)
                 local_obs.save()
                 return 'updated'
-            except Species.DoesNotExist:
-                raise SpeciesMatchError
+            except Taxon.DoesNotExist:
+                raise TaxonMatchError
         else:
             return 'matching_community_id'
 
@@ -219,9 +226,12 @@ def get_zone_for_coordinates(lat, lon):
     return FirefightersZone.objects.get(mpolygon__intersects=point)
 
 
+def get_default_taxon_id():
+    return Taxon.objects.filter(name='Insecta').first().pk
+
 class AbstractObservation(models.Model):
     originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
-    species = models.ForeignKey(Species, on_delete=models.PROTECT, blank=True, null=True)  # Blank allows because some nests can't be easily identified
+    taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT, default=get_default_taxon_id)
     location = models.CharField(max_length=255, blank=True)
     observation_time = models.DateTimeField()
     comments = models.TextField(blank=True)
@@ -234,7 +244,6 @@ class AbstractObservation(models.Model):
     inaturalist_species = models.CharField(max_length=100, blank=True, null=True)
 
     # Observer info
-    observer_title = models.CharField(max_length=50, blank=True, null=True)
     observer_last_name = models.CharField(max_length=255, blank=True, null=True)
     observer_first_name = models.CharField(max_length=255, blank=True, null=True)
     observer_email = models.EmailField(blank=True, null=True)
@@ -251,7 +260,7 @@ class AbstractObservation(models.Model):
 
     def __init__(self, *args, **kwargs):
         super(AbstractObservation, self).__init__(*args, **kwargs)
-        self.__original_species = self.species
+        self.__original_taxon = self.taxon
 
     def auto_assign_zone(self):
         """Sets the zone attribute, according to the latitude/longitude. You'll need to manually save the model instance.
@@ -264,11 +273,11 @@ class AbstractObservation(models.Model):
             except FirefightersZone.DoesNotExist:
                 pass
 
-    def get_display_species_name(self):
+    def get_display_taxon_name(self):
         if self.inaturalist_species:
             return self.inaturalist_species
-        elif self.species:
-            return self.species.name
+        elif self.taxon:
+            return self.taxon.name
         else:
             return ''
 
@@ -278,7 +287,7 @@ class AbstractObservation(models.Model):
         return self.originates_in_vespawatch  # We can't edit obs that comes from iNaturalist (they're never pushed).
 
     @property
-    def species_can_be_locally_changed(self):
+    def taxon_can_be_locally_changed(self):
         if self.originates_in_vespawatch and self.exists_in_inaturalist:
             return False  # Because we rely on community: info is always pulled and never pushed
 
@@ -333,7 +342,7 @@ class AbstractObservation(models.Model):
 
         # TODO: push more fields
         # TODO: check the push works when optional fields are missing
-        params_only_for_create = {'taxon_id': self.species.inaturalist_push_taxon_id}
+        params_only_for_create = {'taxon_id': self.taxon.inaturalist_push_taxon_id}
 
         params = {
             'observation': {**params_only_for_create, **self._params_for_inat()}
@@ -365,14 +374,14 @@ class AbstractObservation(models.Model):
                                          access_token=access_token)
 
 
-    def get_species_name(self):
-        if self.species:
-            return self.species.name
+    def get_taxon_name(self):
+        if self.taxon:
+            return self.taxon.name
         else:
             return ''
 
     def get_observer_display(self):
-        parts = [self.observer_title, self.observer_first_name, self.observer_last_name]
+        parts = [self.observer_first_name, self.observer_last_name]
         return ' '.join([x for x in parts if x])
 
     @property
@@ -386,13 +395,13 @@ class AbstractObservation(models.Model):
         return self.observation_time.isoformat()
 
     def clean(self):
-        if self.species != self.__original_species and not self.species_can_be_locally_changed:
-            raise ValidationError("Observation already pushed, species can't be changed anymore!")
+        if self.taxon != self.__original_taxon and not self.taxon_can_be_locally_changed:
+            raise ValidationError("Observation already pushed, taxon can't be changed anymore!")
 
     def save(self, *args, **kwargs):
         # Let's make sure model.clean() is called on each save(), for validation
         self.full_clean()
-        self.__original_species = self.species
+        self.__original_taxon = self.taxon
 
         if not self.zone:  # Automatically sets a zone if we don't have one.
             self.auto_assign_zone()
@@ -423,7 +432,7 @@ class Nest(AbstractObservation):
     def as_dict(self):
         return {
             'id': self.pk,
-            'species': self.get_display_species_name(),
+            'taxon': self.get_display_taxon_name(),
             'subject': 'nest',
             'location': self.location,
             'latitude': self.latitude,
@@ -439,7 +448,7 @@ class Nest(AbstractObservation):
         }
 
     def __str__(self):
-        return f'Nest of {self.get_species_name()}, {self.formatted_observation_date}'
+        return f'Nest of {self.get_taxon_name()}, {self.formatted_observation_date}'
 
 
 class Individual(AbstractObservation):
@@ -465,7 +474,7 @@ class Individual(AbstractObservation):
     def as_dict(self):
         return {
             'id': self.pk,
-            'species': self.get_display_species_name(),
+            'taxon': self.get_display_taxon_name(),
             'subject': 'individual',
             'location': self.location,
             'latitude': self.latitude,
@@ -477,7 +486,7 @@ class Individual(AbstractObservation):
         }
 
     # def __str__(self):
-    #     return f'Individual of {self.get_species_name()}, {self.formatted_observation_date}'
+    #     return f'Individual of {self.get_taxon_name()}, {self.formatted_observation_date}'
 
 
 class IndividualPicture(models.Model):

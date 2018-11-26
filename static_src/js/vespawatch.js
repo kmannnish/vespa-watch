@@ -63,9 +63,7 @@ var VwObservationsVizMap = {
         observationToHtml: function (obs) {
             var html = '';
 
-            if (obs.species != null) {
-                html += '<h1>' + obs.species + '</h1>';
-            }
+            html += '<h1>' + obs.taxon + '</h1>';
 
             if (obs.observation_time != null) {
                 html += moment(obs.observation_time).format('lll') + '';
@@ -669,65 +667,73 @@ var VwLocationSelectorCoordinates = {
         `
 };
 
-var VWSpeciesSelectorEntry = {
+var VwTaxonSelectorEntry = {
     delimiters: ['[[', ']]'],
     props: {
-        'species': Object,
+        'taxon': Object,
         'radioName': String,
+        'pictureAttribute': String,
         'selected': {
             'type': Boolean,
             'default': false
         }
     },
     methods: {
-        getRadioId : function(species) {
-            return 'speciesRadios' + species.id;
+        getRadioId : function(taxon) {
+            return 'taxonRadios' + taxon.id;
         },
     },
     template: `
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">[[ species.name ]]</h5>
+                <h5 class="card-title">[[ taxon.name ]]</h5>
             
-                <img class="card-img-top" :src="species.identification_picture_url" style="width: 100px;">
+                <img class="card-img-top" :src="taxon[pictureAttribute]" style="width: 100px;">
             
-                <input class="form-check-input" type="radio" :name="radioName" :id="getRadioId(species)" :value="species.id" :checked="selected">
+                <input class="form-check-input" type="radio" :name="radioName" :id="getRadioId(taxon)" :value="taxon.id" :checked="selected">
                         
-                <label class="form-check-label" :for="getRadioId(species)">
-                    [[ species.name ]]
+                <label class="form-check-label" :for="getRadioId(taxon)">
+                    [[ taxon.name ]]
                 </label>
             </div>
         </div>`
 
 };
 
-var VwSpeciesSelector = {
+var VwTaxonSelector = {
     components : {
-        'vw-species-selector-entry': VWSpeciesSelectorEntry
+        'vw-taxon-selector-entry': VwTaxonSelectorEntry
     },
     delimiters: ['[[', ']]'],
     props: {
-        'speciesApiUrl': String,
+        'taxonApiUrl': String,
         'radioName': String,
-        'speciesSelected': Number,
+        'taxonSelected': Number,
+        'mode': String // nest | individual
     },
     computed: {
         buttonLabel: function () {
             return gettext('Show more species');
         },
+        pictureAttrName: function () {
+            switch(this.mode) {
+                case 'nest': return 'identification_picture_nest_url';
+                case 'individual': return 'identification_picture_individual_url';
+            }
+        }
     },
     data: function() {
         return {
-            'speciesData': [],
+            'taxaData': [],
             'showAll': false
         }
     },
     methods: {
         showAllIfNeeded: function() {
-            if (this.speciesSelected) {
+            if (this.taxonSelected) {
                 var that = this;
-                var found = this.speciesData.find(function(species) {
-                    return species.id === that.speciesSelected;
+                var found = this.taxaData.find(function(taxon) {
+                    return taxon.id === that.taxonSelected;
                 });
 
                 if (!found.identification_priority) {
@@ -736,9 +742,9 @@ var VwSpeciesSelector = {
             }
         },
         getData: function(){
-            axios.get(this.speciesApiUrl)
+            axios.get(this.taxonApiUrl)
             .then(response => {
-                this.speciesData = response.data;
+                this.taxaData = response.data;
                 this.showAllIfNeeded();
             })
             .catch(function (error) {
@@ -751,8 +757,8 @@ var VwSpeciesSelector = {
         this.getData();
     },
     template: `<div class="form-group">
-                    <div v-for="species in speciesData" v-if="species.identification_priority" class="form-check-inline">
-                        <vw-species-selector-entry :species="species" :radio-name="radioName" :selected="species.id == speciesSelected"></vw-species-selector-entry>
+                    <div v-for="taxon in taxaData" v-if="taxon.identification_priority" class="form-check-inline">
+                        <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
                     </div> 
                     
                     <div>
@@ -760,8 +766,8 @@ var VwSpeciesSelector = {
                     </div>
                     
                     <div v-if="showAll">
-                        <div v-for="species in speciesData" v-if="!species.identification_priority" class="form-check-inline">
-                            <vw-species-selector-entry :species="species" :radio-name="radioName" :selected="species.id == speciesSelected"></vw-species-selector-entry>
+                        <div v-for="taxon in taxaData" v-if="!taxon.identification_priority" class="form-check-inline">
+                            <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
                         </div>
                     </div>          
                </div>`
@@ -873,7 +879,7 @@ var app = new Vue({
         'vw-location-selector': VwLocationSelector,
         'vw-datetime-selector': VwDatetimeSelector,
         'vw-management-page': VwManagementPage,
-        'vw-species-selector': VwSpeciesSelector,
+        'vw-taxon-selector': VwTaxonSelector,
     },
     delimiters: ['[[', ']]'],
     el: '#vw-main-app'

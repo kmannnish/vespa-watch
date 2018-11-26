@@ -13,7 +13,7 @@
                 <dd>{% if nest.inaturalist_species %}
                 {{ nest.inaturalist_species|default_if_none:'' }}
                 {% else %}
-                {{  nest.species.name|default_if_none:'' }}
+                {{  nest.taxon.name|default_if_none:'' }}
                 {% endif %}</dd>
 
                 <dt>{% trans "ID" %}</dt>

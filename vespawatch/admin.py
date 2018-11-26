@@ -2,10 +2,10 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from .models import Species, Nest, Individual, NestPicture, IndividualPicture, ManagementAction, Profile, FirefightersZone
+from .models import Taxon, Nest, Individual, NestPicture, IndividualPicture, ManagementAction, Profile, FirefightersZone
 
-@admin.register(Species)
-class SpeciesAdmin(admin.ModelAdmin):
+@admin.register(Taxon)
+class TaxonAdmin(admin.ModelAdmin):
     readonly_fields = ('inaturalist_pull_taxon_ids', 'inaturalist_push_taxon_id')
 
 
@@ -68,14 +68,14 @@ class NestAdmin(DeleteObjectsOneByOneMixin, admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         r = super().get_readonly_fields(request, obj)
-        if obj and not obj.species_can_be_locally_changed:
-            r = r + ('species', )
+        if obj and not obj.taxon_can_be_locally_changed:
+            r = r + ('taxon', )
         return r
 
-    list_display = ('species', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch')
+    list_display = ('taxon', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch')
     readonly_fields = ('originates_in_vespawatch',)
 
-    list_filter = ('species', 'originates_in_vespawatch')
+    list_filter = ('taxon', 'originates_in_vespawatch')
 
     inlines = [
         NestPictureInline,
@@ -96,15 +96,15 @@ class IndividualAdmin(DeleteObjectsOneByOneMixin, admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         r = super().get_readonly_fields(request, obj)
-        if obj and not obj.species_can_be_locally_changed:
-            r = r + ('species', )
+        if obj and not obj.taxon_can_be_locally_changed:
+            r = r + ('taxon', )
         return r
 
 
-    list_display = ('species', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch')
+    list_display = ('taxon', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch')
     readonly_fields = ('originates_in_vespawatch',)
 
-    list_filter = ('species', 'originates_in_vespawatch')
+    list_filter = ('taxon', 'originates_in_vespawatch')
 
     inlines = [
         IndividualPictureInline,

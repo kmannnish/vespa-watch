@@ -13,7 +13,7 @@
                 <dd>{% if individual.inaturalist_species %}
                 {{ individual.inaturalist_species }}
                 {% else %}
-                {{  individual.species.name }}
+                {{  individual.taxon.name }}
                 {% endif %}</dd>
 
                 <dt>{% trans "ID" %}</dt>

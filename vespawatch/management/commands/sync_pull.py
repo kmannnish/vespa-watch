@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from pyinaturalist.node_api import get_all_observations
 
 from vespawatch.management.commands._utils import VespaWatchCommand
-from vespawatch.models import Individual, Nest, create_observation_from_inat_data, SpeciesMatchError, ParseDateError, \
+from vespawatch.models import Individual, Nest, create_observation_from_inat_data, TaxonMatchError, ParseDateError, \
     inat_observation_comes_from_vespawatch, update_loc_obs_taxon_according_to_inat
 
 PULL_CRITERIA = {
@@ -60,7 +60,7 @@ class Command(VespaWatchCommand):
                     self.w(" ");
                 except ObjectDoesNotExist:
                     self.w(self.style.ERROR("Error: can't find a local observation!!! "))
-                except SpeciesMatchError:
+                except TaxonMatchError:
                     self.w(self.style.WARNING("Error: We don't understand the community taxon id, so we ignore it "))
             else:
                 from_inat_total_count = from_inat_total_count + 1
@@ -74,11 +74,11 @@ class Command(VespaWatchCommand):
 
                     self.w(self.style.SUCCESS("OK"))
                     success_count = success_count + 1
-                except SpeciesMatchError:
+                except TaxonMatchError:
                     if inat_observation_data['taxon']['rank'] == 'genus':
                         self.w(self.style.WARNING("Observation at the Genus level, skipping."))
                     else:
-                        self.w(self.style.ERROR("Error: cannot match species, skipping: " + str(inat_observation_data)))
+                        self.w(self.style.ERROR("Error: cannot match taxon, skipping: " + str(inat_observation_data)))
                 except ParseDateError:
                     self.w(self.style.ERROR("Error: cannot parse date, skipping: " + str(inat_observation_data)))
 

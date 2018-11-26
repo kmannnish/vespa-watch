@@ -1,6 +1,6 @@
 from modeltranslation.translator import register, TranslationOptions
-from vespawatch.models import Species
+from vespawatch.models import Taxon
 
-@register(Species)
+@register(Taxon)
 class SpeciesTranslationOptions(TranslationOptions):
     fields = ('vernacular_name',)
