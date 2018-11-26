@@ -63,9 +63,7 @@ var VwObservationsVizMap = {
         observationToHtml: function (obs) {
             var html = '';
 
-            if (obs.species != null) {
-                html += '<h1>' + obs.species + '</h1>';
-            }
+            html += '<h1>' + obs.taxon + '</h1>';
 
             if (obs.observation_time != null) {
                 html += moment(obs.observation_time).format('lll') + '';

@@ -12,7 +12,7 @@ from django.views.generic.detail import BaseDetailView, SingleObjectMixin, Singl
 from django.views.generic.edit import DeletionMixin
 from django.urls import reverse_lazy
 from .forms import ManagementActionForm, ManagementFormset, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
-from .models import Individual, FirefightersZone, Nest, ManagementAction, Species
+from .models import Individual, FirefightersZone, Nest, ManagementAction, Taxon
 
 
 class CustomBaseDetailView(SingleObjectMixin, View):
@@ -274,7 +274,7 @@ def species_json(request):
     """
     Return all species as JSON data.
     """
-    return JsonResponse([s.to_json() for s in Species.objects.all()], safe=False)
+    return JsonResponse([s.to_json() for s in Taxon.objects.all()], safe=False)
 
 def observations_json(request):
     """
