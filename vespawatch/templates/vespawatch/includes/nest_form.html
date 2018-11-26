@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 {% csrf_token %}
 
-<vw-species-selector {% if form.instance.species %}:species-selected="{{ form.instance.species.pk }}"{% endif %} species-api-url="{% url 'vespawatch:api_species' %}" radio-name="species"></vw-species-selector>
+<vw-taxon-selector {% if form.instance.taxon %}:taxon-selected="{{ form.instance.taxon.pk }}"{% endif %} taxon-api-url="{% url 'vespawatch:api_taxa' %}" radio-name="taxon"></vw-taxon-selector>
 
 {% if object %}
     <vw-location-selector v-bind:init-coordinates="[{{ object.longitude }}, {{ object.latitude }}]"

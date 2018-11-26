@@ -270,9 +270,9 @@ class ManagmentActionDelete(LoginRequiredMixin, DeleteView):
 # API methods
 # ==============
 
-def species_json(request):
+def taxa_json(request):
     """
-    Return all species as JSON data.
+    Return all taxa as JSON data.
     """
     return JsonResponse([s.to_json() for s in Taxon.objects.all()], safe=False)
 
