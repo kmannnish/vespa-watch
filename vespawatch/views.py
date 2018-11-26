@@ -68,6 +68,7 @@ def create_individual(request):
     if request.method == 'POST':
         redirect_to = request.POST.get('redirect_to')
         form = IndividualForm(request.POST, request.FILES)
+        image_formset = IndividualImageFormset()
         if request.user.is_authenticated:
             # set to terms_of_service to true if the user is authenticated
             form_data_copy = form.data.copy()
@@ -147,6 +148,7 @@ def create_nest(request):
     if request.method == 'POST':
         redirect_to = request.POST.get('redirect_to')
         form = NestForm(request.POST, request.FILES)
+        image_formset = NestImageFormset()
         if request.user.is_authenticated:
             # set to terms_of_service to true if the user is authenticated
             form_data_copy = form.data.copy()
