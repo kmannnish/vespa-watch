@@ -244,7 +244,6 @@ class AbstractObservation(models.Model):
     inaturalist_species = models.CharField(max_length=100, blank=True, null=True)
 
     # Observer info
-    observer_title = models.CharField(max_length=50, blank=True, null=True)
     observer_last_name = models.CharField(max_length=255, blank=True, null=True)
     observer_first_name = models.CharField(max_length=255, blank=True, null=True)
     observer_email = models.EmailField(blank=True, null=True)
@@ -382,7 +381,7 @@ class AbstractObservation(models.Model):
             return ''
 
     def get_observer_display(self):
-        parts = [self.observer_title, self.observer_first_name, self.observer_last_name]
+        parts = [self.observer_first_name, self.observer_last_name]
         return ' '.join([x for x in parts if x])
 
     @property
