@@ -667,11 +667,12 @@ var VwLocationSelectorCoordinates = {
         `
 };
 
-var VWTaxonSelectorEntry = {
+var VwTaxonSelectorEntry = {
     delimiters: ['[[', ']]'],
     props: {
         'taxon': Object,
         'radioName': String,
+        'pictureAttribute': String,
         'selected': {
             'type': Boolean,
             'default': false
@@ -687,7 +688,7 @@ var VWTaxonSelectorEntry = {
             <div class="card-body">
                 <h5 class="card-title">[[ taxon.name ]]</h5>
             
-                <img class="card-img-top" :src="taxon.identification_picture_url" style="width: 100px;">
+                <img class="card-img-top" :src="taxon[pictureAttribute]" style="width: 100px;">
             
                 <input class="form-check-input" type="radio" :name="radioName" :id="getRadioId(taxon)" :value="taxon.id" :checked="selected">
                         
@@ -701,18 +702,25 @@ var VWTaxonSelectorEntry = {
 
 var VwTaxonSelector = {
     components : {
-        'vw-taxon-selector-entry': VWTaxonSelectorEntry
+        'vw-taxon-selector-entry': VwTaxonSelectorEntry
     },
     delimiters: ['[[', ']]'],
     props: {
         'taxonApiUrl': String,
         'radioName': String,
         'taxonSelected': Number,
+        'mode': String // nest | individual
     },
     computed: {
         buttonLabel: function () {
             return gettext('Show more species');
         },
+        pictureAttrName: function () {
+            switch(this.mode) {
+                case 'nest': return 'identification_picture_nest_url';
+                case 'individual': return 'identification_picture_individual_url';
+            }
+        }
     },
     data: function() {
         return {
@@ -750,7 +758,7 @@ var VwTaxonSelector = {
     },
     template: `<div class="form-group">
                     <div v-for="taxon in taxaData" v-if="taxon.identification_priority" class="form-check-inline">
-                        <vw-taxon-selector-entry :taxon="taxon" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
+                        <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
                     </div> 
                     
                     <div>
@@ -759,7 +767,7 @@ var VwTaxonSelector = {
                     
                     <div v-if="showAll">
                         <div v-for="taxon in taxaData" v-if="!taxon.identification_priority" class="form-check-inline">
-                            <vw-taxon-selector-entry :taxon="taxon" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
+                            <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
                         </div>
                     </div>          
                </div>`

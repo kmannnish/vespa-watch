@@ -43,22 +43,29 @@ class Taxon(models.Model):
     def get_file_path(instance, filename):
         return os.path.join('taxon_identification_pictures/', make_unique_filename(filename))
 
-    identification_picture = models.ImageField(upload_to=get_file_path, blank=True, null=True)
+    identification_picture_individual = models.ImageField(upload_to=get_file_path, blank=True, null=True)
+    identification_picture_nest = models.ImageField(upload_to=get_file_path, blank=True, null=True)
+
     identification_priority = models.BooleanField()  # Should appear first in the taxon selector
 
     def __str__(self):
         return  self.name
 
     def to_json(self):
-        identification_picture_url = None
-        if self.identification_picture:
-            identification_picture_url = self.identification_picture.url
+        identification_picture_indiv_url = None
+        if self.identification_picture_individual:
+            identification_picture_indiv_url = self.identification_picture_individual.url
+
+        identification_picture_nest_url = None
+        if self.identification_picture_nest:
+            identification_picture_nest_url = self.identification_picture_nest.url
 
         return {
             'id': self.pk,
             'name': self.name,
             'identification_priority': self.identification_priority,
-            'identification_picture_url': identification_picture_url
+            'identification_picture_individual_url': identification_picture_indiv_url,
+            'identification_picture_nest_url': identification_picture_nest_url
         }
 
     class Meta:
