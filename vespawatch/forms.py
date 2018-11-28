@@ -1,4 +1,4 @@
-from django.forms import inlineformset_factory, ModelForm, BooleanField, ChoiceField
+from django.forms import inlineformset_factory, ModelForm, BooleanField, ChoiceField, forms
 from vespawatch.fields import ISODateTimeField
 from .models import ManagementAction, Nest, Individual, NestPicture, IndividualPicture
 
@@ -34,6 +34,10 @@ class IndividualForm(ModelForm):
                 IndividualPicture.objects.create(observation=observation, image=image)
 
 class NestForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.new_nest_from_anonymous = kwargs.pop('new_nest_from_anonymous', False)
+        super().__init__(*args, **kwargs)
+
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     terms_of_service = BooleanField(label='Accept the terms of service', required=False)   # TODO how to translate that label?
 
@@ -55,6 +59,16 @@ class NestForm(ModelForm):
         if not toc:
             msg = "You must accept the terms of service."
             self.add_error('terms_of_service', msg)
+
+        # If it's for announcing a new nest from an anonymous user, we'll need some contact info
+        observer_email = cleaned_data.get('observer_email')
+        if self.new_nest_from_anonymous and not observer_email:
+            self.add_error('observer_email', 'Observer email is mandatory')
+
+        observer_phone = cleaned_data.get('observer_phone')
+        if self.new_nest_from_anonymous and not observer_phone:
+            self.add_error('observer_phone', 'Observer phone is mandatory')
+
         return cleaned_data
 
     def save(self, *args, **kwargs):

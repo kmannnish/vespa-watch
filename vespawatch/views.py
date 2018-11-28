@@ -147,7 +147,9 @@ class IndividualDelete(LoginRequiredMixin, CustomDeleteView):
 def create_nest(request):
     if request.method == 'POST':
         redirect_to = request.POST.get('redirect_to')
-        form = NestForm(request.POST, request.FILES)
+
+        new_nest_from_anonymous = not request.user.is_authenticated
+        form = NestForm(request.POST, request.FILES, new_nest_from_anonymous=new_nest_from_anonymous)
         image_formset = NestImageFormset()
         if request.user.is_authenticated:
             # set to terms_of_service to true if the user is authenticated
