@@ -227,7 +227,7 @@ def get_zone_for_coordinates(lat, lon):
 
 
 def get_default_taxon_id():
-    return Taxon.objects.filter(name='Insecta').first().pk
+    return Taxon.objects.filter(name='Vespa velutina').first().pk
 
 class AbstractObservation(models.Model):
     originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
