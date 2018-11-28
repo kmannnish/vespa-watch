@@ -784,7 +784,7 @@ var VwDatetimeSelector = {
     },
     computed: {
         observationTimeLabel: function () {
-            return gettext('Observation time');
+            return gettext('Observation date');
         },
     },
 

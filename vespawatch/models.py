@@ -234,7 +234,7 @@ class AbstractObservation(models.Model):
     originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
     taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT, default=get_default_taxon_id)
     address = models.CharField(max_length=255, blank=True)
-    observation_time = models.DateTimeField()
+    observation_time = models.DateTimeField(verbose_name=_("Observation date"))
     comments = models.TextField(blank=True)
 
     latitude = models.FloatField()
