@@ -232,7 +232,7 @@ def get_default_taxon_id():
 class AbstractObservation(models.Model):
     originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
     taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT, default=get_default_taxon_id)
-    location = models.CharField(max_length=255, blank=True)
+    address = models.CharField(max_length=255, blank=True)
     observation_time = models.DateTimeField()
     comments = models.TextField(blank=True)
 
@@ -311,7 +311,7 @@ class AbstractObservation(models.Model):
                 'description': self.comments,
                 'latitude': self.latitude,
                 'longitude': self.longitude,
-                'place_guess': self.location,
+                'place_guess': self.address,
 
                 # sets vespawatch_id (an observation field whose ID is 9613)
                 'observation_field_values_attributes':
@@ -434,7 +434,7 @@ class Nest(AbstractObservation):
             'id': self.pk,
             'taxon': self.get_display_taxon_name(),
             'subject': 'nest',
-            'location': self.location,
+            'address': self.address,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,
@@ -476,7 +476,7 @@ class Individual(AbstractObservation):
             'id': self.pk,
             'taxon': self.get_display_taxon_name(),
             'subject': 'individual',
-            'location': self.location,
+            'address': self.address,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,

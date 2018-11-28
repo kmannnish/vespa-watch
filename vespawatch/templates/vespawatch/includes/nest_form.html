@@ -7,7 +7,7 @@
 {% if object %}
     <vw-location-selector v-bind:init-coordinates="[{{ object.longitude }}, {{ object.latitude }}]"
                           init-marker="true"
-                          location="{{ object.location }}"></vw-location-selector>
+                          address="{{ object.address }}"></vw-location-selector>
     <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
                           init-date-time="{{ object.observation_time_iso }}"></vw-datetime-selector>
 {% else %}
@@ -19,7 +19,7 @@
             v-bind:init-coordinates="[4.5, 50.7]"
             init-marker="false"
         {% endif %}
-            location="{{ form.data.location|default_if_none:'' }}"
+            address="{{ form.data.address|default_if_none:'' }}"
     ></vw-location-selector>
 
     <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
