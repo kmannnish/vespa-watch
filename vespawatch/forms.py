@@ -40,7 +40,7 @@ class NestForm(ModelForm):
     class Meta:
         model = Nest
         fields = ['taxon', 'address', 'latitude', 'longitude',
-                  'inaturalist_id', 'observation_time', 'comments',
+                  'inaturalist_id', 'observation_time', 'size', 'height', 'comments',
                   'observer_last_name', 'observer_first_name', 'observer_email', 'observer_phone',
                   'observer_is_beekeeper'
         ]

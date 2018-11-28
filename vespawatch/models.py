@@ -15,6 +15,7 @@ from django.dispatch import receiver
 from django.template import defaultfilters
 from django.urls import reverse
 from django.utils.timezone import is_naive, make_aware
+from django.utils.translation import ugettext_lazy as _
 from pyinaturalist.node_api import get_observation
 from pyinaturalist.rest_api import create_observations, update_observation, add_photo_to_observation
 
@@ -417,6 +418,22 @@ class AbstractObservation(models.Model):
 
 class Nest(AbstractObservation):
     duplicate_of = models.ForeignKey('self', on_delete=models.PROTECT, blank=True, null=True)
+
+    LESS_THAN_25_CM = 'LESS_25_CM'
+    MORE_THAN_25_CM = 'MORE_25_CM'
+    SIZE_CHOICES = (
+        (LESS_THAN_25_CM, _("Less than 25cm")),
+        (MORE_THAN_25_CM, _("More than 25cm"))
+    )
+    size = models.CharField(max_length=50, choices=SIZE_CHOICES, blank=True)
+
+    BELOW_4_METER = 'BELOW_4_M'
+    ABOVE_4_METER = 'BELOW_4_M'
+    HEIGHT_CHOICES = (
+        (BELOW_4_METER, _("Below 4 meters")),
+        (ABOVE_4_METER, _("Above 4 meters"))
+    )
+    height = models.CharField(max_length=50, choices=HEIGHT_CHOICES, blank=True)
 
     def get_absolute_url(self):
         return reverse('vespawatch:nest-update', kwargs={'pk': self.pk})

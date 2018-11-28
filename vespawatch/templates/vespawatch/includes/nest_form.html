@@ -26,6 +26,9 @@
                           init-date-time="{{ form.data.observation_time|default_if_none:'' }}"></vw-datetime-selector>
 {% endif %}
 
+{{ form.size|as_crispy_field }}
+{{ form.height|as_crispy_field }}
+
 {{ form.comments|as_crispy_field }}
 {{ form.redirect_to.as_hidden }}
 {{ image_formset.management_form }}

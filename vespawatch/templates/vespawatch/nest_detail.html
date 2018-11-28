@@ -46,6 +46,13 @@
                 <dt>{% trans "Is beekeper" %}</dt>
                 <dd>{{ nest.observer_is_beekeeper|default_if_none:'' }}</dd>
 
+                <dt>{% trans "Nest size" %}</dt>
+                <dd>{{ nest.get_size_display|default_if_none:'' }}</dd>
+
+                <dt>{% trans "Nest height" %}</dt>
+                <dd>{{ nest.get_height_display|default_if_none:'' }}</dd>
+
+
                 <dt>{% trans "Comments" %}</dt>
                 <dd>{{ nest.comments|default_if_none:'' }}</dd>
             </dl>
