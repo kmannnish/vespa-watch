@@ -345,7 +345,7 @@ var VwManagmentTableNestRow = {
     template: `
         <tr :class="nestClass">
             <td>{{ observationTimeStr }}</td>
-            <td>{{ nest.location }}</td>
+            <td>{{ nest.address }}</td>
             <td>{{ managementAction }}</td>
             <td>
                     <a v-if="nest.originates_in_vespawatch" v-bind:href="nest.updateUrl">{{ editStr }}</a>
@@ -384,8 +384,8 @@ var VwManagementTable = {
         dateStr: function () {
             return gettext('date');
         },
-        locationStr: function () {
-            return gettext('location');
+        addressStr: function () {
+            return gettext('address');
         },
         managementStr: function () {
             return gettext('management');
@@ -401,7 +401,7 @@ var VwManagementTable = {
             <thead>
                 <tr>
                     <th>{{ dateStr }}</th>
-                    <th>{{ locationStr }}</th>
+                    <th>{{ addressStr }}</th>
                     <th>{{ managementStr }}</th>
                     <th></th>
                 </tr>
@@ -528,7 +528,7 @@ var VwManagementPage = {
 var VwLocationSelectorLocationInput = {
     data: function () {
         return {
-            location: this.initLocation ? '' + this.initLocation : ''
+            location: this.initAddress ? '' + this.initAddress : ''
         }
     },
     computed: {
@@ -544,7 +544,7 @@ var VwLocationSelectorLocationInput = {
             this.$emit('search', this.location);
         }
     },
-    props: ['initLocation'],
+    props: ['initAddress'],
     template: `
         <div class="form-group">
             <label for="id_position">{{positionLabel}}</label>
@@ -622,25 +622,22 @@ var VwLocationSelectorCoordinates = {
             get: function () {return this.latitude},
             set: function (v) {this.$emit("lat-updated", v);}
         },
+        long: {
+            get: function () {return this.longitude},
+            set: function (v) {this.$emit("lon-updated", v);}
+        },
         latitudeLabel: function() {
             return gettext('Latitude');
-        },
-        locationLabel: function() {
-            return gettext('Location');
-        },
-        long: {
-            get:
-                function () {
-                    return this.longitude
-                },
-            set: function (v) {this.$emit("lon-updated", v);}
         },
         longitudeLabel: function() {
             return gettext('Longitude');
         },
-        _location: {
+        addressLabel: function() {
+            return gettext('Address');
+        },
+        _address: {
             get: function () {
-                return this.location;
+                return this.address;
             },
             set: function () {
                 // do nothing
@@ -648,7 +645,7 @@ var VwLocationSelectorCoordinates = {
         }
 
     },
-    props: ['longitude', 'latitude', 'location'],
+    props: ['longitude', 'latitude', 'address'],
     template: `
         <div class="form-row">
             <div class="form-group col-md-3" id="div_id_latitude">
@@ -659,9 +656,9 @@ var VwLocationSelectorCoordinates = {
                 <label for="id_longitude">{{longitudeLabel}}</label>
                 <input type="text" class="form-control numberinput" id="id_longitude" name="longitude" v-model="long">
             </div>
-            <div class="form-group col-md-6" id="div_id_location">
-                <label for="id_location">{{locationLabel}}</label>
-                <input type="text" class="form-control numberinput" id="id_location" name="location" v-model="_location">
+            <div class="form-group col-md-6" id="div_id_address">
+                <label for="id_address">{{addressLabel}}</label>
+                <input type="text" class="form-control numberinput" id="id_address" name="address" v-model="_address">
             </div>
         </div>
         `
@@ -787,7 +784,7 @@ var VwDatetimeSelector = {
     },
     computed: {
         observationTimeLabel: function () {
-            return gettext('Observation time');
+            return gettext('Observation date');
         },
     },
 
@@ -814,7 +811,7 @@ var VwLocationSelector = {
             bbox: [[50.2, 4.4], [50.9, 4.9]],
             locationCoordinates: [this.initCoordinates[0], this.initCoordinates[1]],  // the coordinates that will be passed to the long lat fields
             markerCoordinates: [this.initCoordinates[0], this.initCoordinates[1]],  // the coordinates that will be passed to the map
-            modelLocation: this.location ? '' + this.location : '',
+            modelAddress: this.address ? '' + this.address : '',
             provider: new GeoSearch.OpenStreetMapProvider({
                 params: {
                     countrycodes: 'BE'
@@ -837,15 +834,15 @@ var VwLocationSelector = {
     },
 
     methods: {
-        getCoordinates: function (location) {
-            console.log('Location input changed to ' + location + '+\n -> get coordinates and update locationCoordinates and markerCoordinates');
-            this.provider.search({query: location})
+        getCoordinates: function (address) {
+            console.log('Address input changed to ' + address + '+\n -> get coordinates and update locationCoordinates and markerCoordinates');
+            this.provider.search({query: address})
             .then(result => {
                 var firstResult = result[0];
                 console.log(result);
                 this.locationCoordinates = [firstResult.x, firstResult.y];
                 this.markerCoordinates = [firstResult.x, firstResult.y];
-                this.modelLocation = location;
+                this.modelAddress = address;
             })
         },
         setCoordinates: function (coordinates) {
@@ -862,13 +859,13 @@ var VwLocationSelector = {
         },
     },
 
-    props: ['initCoordinates', 'initMarker', 'location'],
+    props: ['initCoordinates', 'initMarker', 'address'],
 
     template: `
         <section>
-            <vw-location-selector-location-input v-bind:init-location="location" v-on:search="getCoordinates"></vw-location-selector-location-input>
+            <vw-location-selector-location-input v-bind:init-address="address" v-on:search="getCoordinates"></vw-location-selector-location-input>
             <vw-location-selector-map v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
-            <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:location="modelLocation" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude"></vw-location-selector-coordinates>
+            <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:address="modelAddress" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude"></vw-location-selector-coordinates>
         </section>
         `
 };

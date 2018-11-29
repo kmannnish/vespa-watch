@@ -15,6 +15,7 @@ from django.dispatch import receiver
 from django.template import defaultfilters
 from django.urls import reverse
 from django.utils.timezone import is_naive, make_aware
+from django.utils.translation import ugettext_lazy as _
 from pyinaturalist.node_api import get_observation
 from pyinaturalist.rest_api import create_observations, update_observation, add_photo_to_observation
 
@@ -227,13 +228,13 @@ def get_zone_for_coordinates(lat, lon):
 
 
 def get_default_taxon_id():
-    return Taxon.objects.filter(name='Insecta').first().pk
+    return Taxon.objects.filter(name='Vespa velutina').first().pk
 
 class AbstractObservation(models.Model):
     originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
     taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT, default=get_default_taxon_id)
-    location = models.CharField(max_length=255, blank=True)
-    observation_time = models.DateTimeField()
+    address = models.CharField(max_length=255, blank=True)
+    observation_time = models.DateTimeField(verbose_name=_("Observation date"))
     comments = models.TextField(blank=True)
 
     latitude = models.FloatField()
@@ -311,7 +312,7 @@ class AbstractObservation(models.Model):
                 'description': self.comments,
                 'latitude': self.latitude,
                 'longitude': self.longitude,
-                'place_guess': self.location,
+                'place_guess': self.address,
 
                 # sets vespawatch_id (an observation field whose ID is 9613)
                 'observation_field_values_attributes':
@@ -418,6 +419,22 @@ class AbstractObservation(models.Model):
 class Nest(AbstractObservation):
     duplicate_of = models.ForeignKey('self', on_delete=models.PROTECT, blank=True, null=True)
 
+    LESS_THAN_25_CM = 'LESS_25_CM'
+    MORE_THAN_25_CM = 'MORE_25_CM'
+    SIZE_CHOICES = (
+        (LESS_THAN_25_CM, _("Less than 25cm")),
+        (MORE_THAN_25_CM, _("More than 25cm"))
+    )
+    size = models.CharField(max_length=50, choices=SIZE_CHOICES, blank=True)
+
+    BELOW_4_METER = 'BELOW_4_M'
+    ABOVE_4_METER = 'BELOW_4_M'
+    HEIGHT_CHOICES = (
+        (BELOW_4_METER, _("Below 4 meters")),
+        (ABOVE_4_METER, _("Above 4 meters"))
+    )
+    height = models.CharField(max_length=50, choices=HEIGHT_CHOICES, blank=True)
+
     def get_absolute_url(self):
         return reverse('vespawatch:nest-update', kwargs={'pk': self.pk})
 
@@ -434,7 +451,7 @@ class Nest(AbstractObservation):
             'id': self.pk,
             'taxon': self.get_display_taxon_name(),
             'subject': 'nest',
-            'location': self.location,
+            'address': self.address,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,
@@ -476,7 +493,7 @@ class Individual(AbstractObservation):
             'id': self.pk,
             'taxon': self.get_display_taxon_name(),
             'subject': 'individual',
-            'location': self.location,
+            'address': self.address,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,

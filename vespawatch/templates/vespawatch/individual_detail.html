@@ -19,8 +19,8 @@
                 <dt>{% trans "ID" %}</dt>
                 <dd>{{ individual.pk }}</dd>
 
-                <dt>{% trans "Location" %}</dt>
-                <dd>{{ individual.location|default_if_none:'' }}</dd>
+                <dt>{% trans "Address" %}</dt>
+                <dd>{{ individual.address|default_if_none:'' }}</dd>
 
                 <dt>{% trans "Latitude" %}</dt>
                 <dd>{{ individual.latitude }}</dd>
@@ -31,7 +31,7 @@
                 <dt>{% trans "iNaturalist ID" %}</dt>
                 <dd>{{ individual.inaturalist_id|default_if_none:'' }}</dd>
 
-                <dt>{% trans "observation time" %}</dt>
+                <dt>{% trans "observation date" %}</dt>
                 <dd>{{ individual.observation_time|default_if_none:'' }}</dd>
 
                 <dt>{% trans "Observer" %}</dt>

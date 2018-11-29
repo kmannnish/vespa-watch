@@ -7,7 +7,7 @@
 {% if object %}
     <vw-location-selector v-bind:init-coordinates="[{{ object.longitude }}, {{ object.latitude }}]"
                           init-marker="true"
-                          location="{{ object.location }}"></vw-location-selector>
+                          address="{{ object.address }}"></vw-location-selector>
     <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
                           init-date-time="{{ object.observation_time_iso }}"></vw-datetime-selector>
 {% else %}
@@ -19,12 +19,15 @@
             v-bind:init-coordinates="[4.5, 50.7]"
             init-marker="false"
         {% endif %}
-            location="{{ form.data.location|default_if_none:'' }}"
+            address="{{ form.data.address|default_if_none:'' }}"
     ></vw-location-selector>
 
     <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
                           init-date-time="{{ form.data.observation_time|default_if_none:'' }}"></vw-datetime-selector>
 {% endif %}
+
+{{ form.size|as_crispy_field }}
+{{ form.height|as_crispy_field }}
 
 {{ form.comments|as_crispy_field }}
 {{ form.redirect_to.as_hidden }}
@@ -45,6 +48,7 @@
 
     {{ form.observer_last_name|as_crispy_field }}
     {{ form.observer_first_name|as_crispy_field }}
+    {{ form.observer_phone|as_crispy_field }}
     {{ form.observer_email|as_crispy_field }}
     {{ form.observer_is_beekeeper|as_crispy_field }}
     <div class="form-group">
