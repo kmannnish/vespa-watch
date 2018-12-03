@@ -24,10 +24,22 @@
     <a class="btn btn-lg btn-primary mr-2" href="{% url 'vespawatch:individual-add' %}?redirect_to=management">{% trans 'Add individual' %}</a>
     <a class="btn btn-lg btn-primary mr-2" href="{% url 'vespawatch:nest-add' %}?redirect_to=management">{% trans 'Add nest' %}</a>
 
-    <vw-management-page admin="{% if user.is_staff %}1{% else %}0{% endif %}"
-                        init-zone='{% if user.profile.zone %}{ "id": {{ user.profile.zone.pk }}, "name": "{{ user.profile.zone.name }}" }{% endif %}'>
+{#    <vw-management-page admin="{% if user.is_staff %}1{% else %}0{% endif %}"#}
+{#                        init-zone='{% if user.profile.zone %}{ "id": {{ user.profile.zone.pk }}, "name": "{{ user.profile.zone.name }}" }{% endif %}'>#}
+{##}
+{#    </vw-management-page>#}
 
-    </vw-management-page>
+    {% if zone %}
+        <h1>{% trans 'Zone' %} {{ zone.name }}</h1>
+        <vw-observations-viz zone="{{ zone.pk }}" load-data="1" edit-redirect="management"></vw-observations-viz>
+        <h1>{%  trans 'My nests' %}</h1>
+        <vw-management-table v-bind:nests="nests" zone="{{ zone.pk }}"></vw-management-table>
+    {% else %}
+        <vw-observations-viz load-data=1 edit-redirect="management"></vw-observations-viz>
+        <h1>{%  trans 'My nests' %}</h1>
+        <vw-management-table v-bind:nests="nests" ></vw-management-table>
+    {% endif %}
+
 
 </main>
 {% endblock %}

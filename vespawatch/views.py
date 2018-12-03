@@ -1,3 +1,5 @@
+import json
+
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
@@ -47,10 +49,13 @@ def management(request):
     zone = profile.zone
     if not (zone or request.user.is_staff):
         raise Http404()
-    nests = Nest.objects.filter(zone=zone).order_by('-observation_time')
-    context = {'nests': nests, 'zone': zone}
-    if request.user.is_staff:
-        context['zones'] = FirefightersZone.objects.all().order_by('name')
+    print(zone)
+    if zone:
+        nests = Nest.objects.filter(zone=zone).order_by('-observation_time')
+    else:
+        nests = Nest.objects.all().order_by('-observation_time')
+    context = {'nests': json.dumps([x.as_dict() for x in nests]), 'zone': zone}
+    print(context)
 
     return render(request, 'vespawatch/management.html', context)
 
@@ -298,10 +303,10 @@ def observations_json(request):
     return JsonResponse({
         obs_type: [x.as_dict() for x in list(qs.order_by('observation_time'))] for obs_type, qs in output.items()
     })
-
-@staff_member_required
-def zones_json(request):
-    """
-    Return all firefighter zones as json data
-    """
-    return JsonResponse({'zones': [{'id': x.pk, 'name': x.name} for x in list(FirefightersZone.objects.all().order_by('name'))]})
+#
+# @staff_member_required
+# def zones_json(request):
+#     """
+#     Return all firefighter zones as json data
+#     """
+#     return JsonResponse({'zones': [{'id': x.pk, 'name': x.name} for x in list(FirefightersZone.objects.all().order_by('name'))]})
