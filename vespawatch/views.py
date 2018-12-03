@@ -77,7 +77,7 @@ def create_individual(request):
             image_formset = IndividualImageFormset(request.POST, request.FILES, instance=form.instance)
             if image_formset.is_valid():
                 instances = image_formset.save()
-            messages.success(request, _("You're observation was successfully created."))
+            messages.success(request, _("Your observation was successfully created."))
             return HttpResponseRedirect(reverse_lazy(f'vespawatch:{redirect_to}'))
     else:
         redirect_to = request.GET.get('redirect_to', 'index')
@@ -163,7 +163,7 @@ def create_nest(request):
                 management_formset = ManagementFormset(request.POST, request.FILES, instance=form.instance)
                 if management_formset.is_valid():
                     management_formset.save()
-            messages.success(request, _("You're observation was successfully created."))
+            messages.success(request, _("Your observation was successfully created."))
             return HttpResponseRedirect(reverse_lazy(f'vespawatch:{redirect_to}'))
         else:
             management_formset = ManagementFormset()
