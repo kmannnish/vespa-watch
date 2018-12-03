@@ -845,9 +845,21 @@ var VwLocationSelector = {
                 this.modelAddress = address;
             })
         },
+        reverseGeocode: function() {
+            // Updates this.modelAddress based on this.locationCoordinates
+
+            var that = this;
+            axios.get("https://nominatim.openstreetmap.org/reverse", {params: {
+                format: 'jsonv2', 'lat': that.locationCoordinates[1], 'lon': that.locationCoordinates[0]}})
+            .then(response => {
+                that.modelAddress = response.data.display_name;
+            });
+        },
+
         setCoordinates: function (coordinates) {
-            console.log('Marker moved. Set locationCoordinates');
+            console.log('Marker moved. Set locationCoordinates and update address.');
             this.locationCoordinates = coordinates;
+            this.reverseGeocode();
         },
         updateLatitude: function (lat) {
             console.log('latitude was updated');
