@@ -227,12 +227,9 @@ def get_zone_for_coordinates(lat, lon):
     return FirefightersZone.objects.get(mpolygon__intersects=point)
 
 
-def get_default_taxon_id():
-    return Taxon.objects.filter(name='Vespa velutina').first().pk
-
 class AbstractObservation(models.Model):
     originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
-    taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT, default=get_default_taxon_id)
+    taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT)
     address = models.CharField(max_length=255, blank=True)
     observation_time = models.DateTimeField(verbose_name=_("Observation date"))
     comments = models.TextField(blank=True)
@@ -258,10 +255,6 @@ class AbstractObservation(models.Model):
 
     class Meta:
         abstract = True
-
-    def __init__(self, *args, **kwargs):
-        super(AbstractObservation, self).__init__(*args, **kwargs)
-        self.__original_taxon = self.taxon
 
     def auto_assign_zone(self):
         """Sets the zone attribute, according to the latitude/longitude. You'll need to manually save the model instance.
@@ -395,14 +388,14 @@ class AbstractObservation(models.Model):
         # TODO check with Nico whether this should also be a property
         return self.observation_time.isoformat()
 
-    def clean(self):
-        if self.taxon != self.__original_taxon and not self.taxon_can_be_locally_changed:
-            raise ValidationError("Observation already pushed, taxon can't be changed anymore!")
-
     def save(self, *args, **kwargs):
         # Let's make sure model.clean() is called on each save(), for validation
         self.full_clean()
-        self.__original_taxon = self.taxon
+
+        if self.pk is not None:
+            orig = self.__class__.objects.get(pk=self.pk)
+            if orig.taxon != self.taxon and not self.taxon_can_be_locally_changed:
+                raise ValidationError(_("Observation already pushed, taxon can't be changed anymore!"))
 
         if not self.zone:  # Automatically sets a zone if we don't have one.
             self.auto_assign_zone()

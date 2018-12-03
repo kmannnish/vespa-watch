@@ -60,8 +60,6 @@ def new_observation(request):
     return render(request, 'vespawatch/new_observation.html', {'redirect_to': redirect_to})
 
 
-
-
 # CREATE UPDATE INDIVIDUAL OBSERVATIONS
 
 def create_individual(request):
