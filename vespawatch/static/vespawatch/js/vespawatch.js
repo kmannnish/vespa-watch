@@ -537,6 +537,15 @@ var VwLocationSelectorLocationInput = {
         },
         searchLabel: function() {
             return gettext('Search');
+        },
+        detectPositionLabel: function() {
+            return gettext('Detect current position');
+        },
+        orLabel: function() {
+            return gettext('or')
+        },
+        typeALocationLabel: function () {
+            return gettext('type a location here and click "Search"...')
         }
     },
     methods: {
@@ -549,9 +558,11 @@ var VwLocationSelectorLocationInput = {
         <div class="form-group">
             <label for="id_position">{{positionLabel}}</label>
             <div class="input-group">
-                <input type="text" class="form-control" id="id_position" name="position" v-model="location">
+                <button class="btn btn-secondary" v-on:click.stop.prevent="$emit('autodetect-btn')">{{ detectPositionLabel }}</button>
+                <label>{{ orLabel }}</label>
+                <input type="text" class="form-control" id="id_position" name="position" v-model="location" :placeholder="typeALocationLabel">
                 <div class="input-group-append">
-                    <button type="button" class="btn btn-secondary" v-on:click="search" >{{searchLabel}}</button>
+                    <button type="button" class="btn btn-secondary" v-on:click="search" >{{ searchLabel }}</button>
                 </div>
             </div>
         </div>
@@ -834,6 +845,13 @@ var VwLocationSelector = {
     },
 
     methods: {
+        autodetectPosition: function () {
+            var that = this;
+            navigator.geolocation.getCurrentPosition(function(position) {
+                that.setCoordinates([position.coords.longitude, position.coords.latitude]);
+                that.markerCoordinates = [position.coords.longitude, position.coords.latitude];
+            });
+        },
         getCoordinates: function (address) {
             console.log('Address input changed to ' + address + '+\n -> get coordinates and update locationCoordinates and markerCoordinates');
             this.provider.search({query: address})
@@ -875,7 +893,7 @@ var VwLocationSelector = {
 
     template: `
         <section>
-            <vw-location-selector-location-input v-bind:init-address="address" v-on:search="getCoordinates"></vw-location-selector-location-input>
+            <vw-location-selector-location-input v-bind:init-address="address" v-on:autodetect-btn="autodetectPosition" v-on:search="getCoordinates"></vw-location-selector-location-input>
             <vw-location-selector-map v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
             <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:address="modelAddress" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude"></vw-location-selector-coordinates>
         </section>
