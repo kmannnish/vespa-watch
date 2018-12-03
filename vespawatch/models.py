@@ -388,14 +388,15 @@ class AbstractObservation(models.Model):
         # TODO check with Nico whether this should also be a property
         return self.observation_time.isoformat()
 
-    def save(self, *args, **kwargs):
-        # Let's make sure model.clean() is called on each save(), for validation
-        self.full_clean()
-
+    def clean(self):
         if self.pk is not None:
             orig = self.__class__.objects.get(pk=self.pk)
             if orig.taxon != self.taxon and not self.taxon_can_be_locally_changed:
-                raise ValidationError(_("Observation already pushed, taxon can't be changed anymore!"))
+                raise ValidationError(_("Observation already pushed to iNaturalist, taxon can't be changed anymore!"))
+
+    def save(self, *args, **kwargs):
+        # Let's make sure model.clean() is called on each save(), for validation
+        self.full_clean()
 
         if not self.zone:  # Automatically sets a zone if we don't have one.
             self.auto_assign_zone()
