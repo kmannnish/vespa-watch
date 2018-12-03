@@ -13,7 +13,6 @@ urlpatterns = [
     path('individuals/<int:pk>/', views.IndividualDetail.as_view(), name='individual-detail'),
     path('individuals/<int:pk>/edit/', views.update_individual, name='individual-update'),
     path('individuals/<int:pk>/delete/', views.IndividualDelete.as_view(), name='individual-delete'),
-    path('new/', views.new_observation, name='new'),
     path('nests/add/', views.create_nest, name='nest-add'),
     path('nests/<int:pk>/', views.NestDetail.as_view(), name='nest-detail'),
     path('nests/<int:pk>/edit/', views.update_nest, name='nest-update'),
