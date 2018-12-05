@@ -1,18 +1,20 @@
 import json
 
 from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
+from django.utils.dateparse import parse_datetime
 from django.utils.translation import ugettext as _
 from django.http import JsonResponse, HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DeleteView
 from django.views.generic.base import View
 from django.views.generic.detail import BaseDetailView, SingleObjectMixin, SingleObjectTemplateResponseMixin
 from django.views.generic.edit import DeletionMixin
 from django.urls import reverse_lazy
+
 from .forms import ManagementActionForm, ManagementFormset, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
 from .models import Individual, FirefightersZone, Nest, ManagementAction, Taxon
 
@@ -310,3 +312,20 @@ def observations_json(request):
 #     Return all firefighter zones as json data
 #     """
 #     return JsonResponse({'zones': [{'id': x.pk, 'name': x.name} for x in list(FirefightersZone.objects.all().order_by('name'))]})
+
+def management_actions_outcomes_json(request):
+    #TODO: Implements sorting?
+    #TODO: Implements i18n?
+    outcomes = ManagementAction.OUTCOME_CHOICE
+    return JsonResponse([{'value': outcome[0], 'label': outcome[1]} for outcome in outcomes], safe=False)
+
+
+@csrf_exempt
+def add_management_action(request):
+    if request.method == 'POST':
+        ManagementAction.objects.create(nest_id=request.POST.get('nestId'),
+                                        outcome=request.POST.get('outcome'),
+                                        action_time=parse_datetime(request.POST.get('actionTime')),
+                                        person_name=request.POST.get('personName'),
+                                        duration=request.POST.get('duration'))
+        return JsonResponse({'result': 'OK'})

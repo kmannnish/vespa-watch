@@ -523,9 +523,9 @@ class ManagementAction(models.Model):
     EMPTY_NEST_NOTHING_DONE = 'ND'
 
     OUTCOME_CHOICE = (
-        (FULL_DESTRUCTION_NO_DEBRIS, 'Full destruction, no debris'),
-        (PARTIAL_DESTRUCTION_DEBRIS_LEFT, 'Partial destruction/debris left'),
-        (EMPTY_NEST_NOTHING_DONE, 'Empty nest, nothing done'),
+        (FULL_DESTRUCTION_NO_DEBRIS, _('Full destruction, no debris')),
+        (PARTIAL_DESTRUCTION_DEBRIS_LEFT, _('Partial destruction/debris left')),
+        (EMPTY_NEST_NOTHING_DONE, _('Empty nest, nothing done')),
     )
 
     nest = models.ForeignKey(Nest, on_delete=models.CASCADE)
