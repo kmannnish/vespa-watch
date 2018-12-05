@@ -532,6 +532,7 @@ class ManagementAction(models.Model):
     outcome = models.CharField(max_length=2, choices=OUTCOME_CHOICE)
     action_time = models.DateTimeField()
     person_name = models.CharField(max_length=255, blank=True)
+    duration = models.DurationField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.action_time.strftime("%Y-%m-%d")} {self.get_outcome_display()} on {self.nest}'
