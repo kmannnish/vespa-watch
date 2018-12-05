@@ -748,7 +748,7 @@ var VwLocationSelector = {
                 console.log(result);
                 this.locationCoordinates = [firstResult.x, firstResult.y];
                 this.markerCoordinates = [firstResult.x, firstResult.y];
-                this.modelAddress = address;
+                this.modelAddress = firstResult.label;
             })
         },
         reverseGeocode: function() {
