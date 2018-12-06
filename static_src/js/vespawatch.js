@@ -4,6 +4,12 @@
 //  * VwObservationsVizMap: The map of the VwObservationsViz component
 //  * VwObservationsVizTimeSlider: The time slider of the VwObservationsViz.
 
+// Language selector (navbar)
+$(document).ready(function () {
+    $('#lang').on('change', function () {
+        document.forms['lang-form'].submit();
+    });
+});
 
 // The map of the visualization.
 // This contains an observations prop. When this property is updated, (when data is retrieved
