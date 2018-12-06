@@ -1,10 +1,14 @@
-// This file contains vuejs components that are used in our application.
+// This file contains all our custom Javascript code, including VueJS components .
+
+// TODO: Remove all constants/config from here and move to the VWConfig object (defined in custom_tags.py)
+
+// TODO: Update comment
 //  * VwObservationsViz: This is the main visualization displayed on the home page. It consists
 //    of a time slider and a map, both of which are also components defined here.
 //  * VwObservationsVizMap: The map of the VwObservationsViz component
 //  * VwObservationsVizTimeSlider: The time slider of the VwObservationsViz.
 
-// Language selector (navbar)
+// Language selector (Naavbar)
 $(document).ready(function () {
     $('#lang').on('change', function () {
         document.forms['lang-form'].submit();
@@ -44,11 +48,11 @@ var VwObservationsVizMap = {
             this.observations.forEach(obs => {
                 var circle = L.circleMarker([obs.latitude, obs.longitude], {
                     stroke: true,  // whether to draw a stroke
-                    weight: 1, // stroke width in pixels
+                    weight: VWConfig.map.circle.stroke_width, // stroke width in pixels
                     color: getColor(obs),  // stroke color
-                    opacity: 0.8,  // stroke opacity
+                    opacity: VWConfig.map.circle.stroke_opacity,  // stroke opacity
                     fillColor: getColor(obs),
-                    fillOpacity: 0.5,
+                    fillOpacity: VWConfig.map.circle.fill_opacity,
                     radius: getRadius(obs),
                     className: "circle"
                 });
@@ -65,6 +69,7 @@ var VwObservationsVizMap = {
 
         // Generate a HTML string that represents the observation
         observationToHtml: function (obs) {
+            // TODO: Use some template system to avoid this method
             var html = '';
 
             html += '<h1>' + obs.taxon + '</h1>';
@@ -224,7 +229,7 @@ var VwObservationsViz = {
 
     data: function () {
         return {
-            observationsUrl: '/api/observations',
+            observationsUrl: VWConfig.apis.observationsUrl,
             observations: [],
             observationsCF: undefined,
             cfDimensions: {},
@@ -322,10 +327,10 @@ var VwObservationsViz = {
 };
 
 var VwManagementActionModal = {
-    data: function() {
+    data: function () {
         return {
             actionOutcomesUrl: VWConfig.apis.actionOutcomesUrl,
-            addActionUrl: 'api/add_management_action',
+            addActionUrl: VWConfig.apis.actionAddUrl,
             availabeOutcomes: [],
 
             actionTime: '',  // As ISO3166
@@ -339,20 +344,36 @@ var VwManagementActionModal = {
         nestId: Number // If mode === 'add': the nest ID
     },
     computed: {
-        modalTitle: function() {
-            return this.mode === 'add' ? gettext("New management action"): gettext("Edit management action")
+        modalTitle: function () {
+            return this.mode === 'add' ? gettext("New management action") : gettext("Edit management action")
         },
-        outcomeLabel: function() { return gettext("Outcome") },
-        saveLabel: function() { return gettext("Save") },
-        cancelLabel: function() { return gettext("Cancel") },
-        deleteLabel: function() { return gettext("Delete") },
-        nameLabel: function() { return gettext("Person name") },
-        actionTimeLabel: function() { return gettext("Action time") },
-        durationLabel: function() { return gettext("Duration")},
-        inMinutesLabel: function() { return gettext("in minutes")}
+        outcomeLabel: function () {
+            return gettext("Outcome")
+        },
+        saveLabel: function () {
+            return gettext("Save")
+        },
+        cancelLabel: function () {
+            return gettext("Cancel")
+        },
+        deleteLabel: function () {
+            return gettext("Delete")
+        },
+        nameLabel: function () {
+            return gettext("Person name")
+        },
+        actionTimeLabel: function () {
+            return gettext("Action time")
+        },
+        durationLabel: function () {
+            return gettext("Duration")
+        },
+        inMinutesLabel: function () {
+            return gettext("in minutes")
+        }
     },
     methods: {
-        saveNew: function() {
+        saveNew: function () {
             const params = new URLSearchParams();
             params.append('nestId', this.nestId);
             params.append('actionTime', this.actionTime);
@@ -371,12 +392,12 @@ var VwManagementActionModal = {
                     console.log(error);
                 });
         },
-        save: function() {
-            if (this.mode === 'add'){
+        save: function () {
+            if (this.mode === 'add') {
                 this.saveNew();
             }
         },
-        loadOutcomes: function() {
+        loadOutcomes: function () {
             axios.get(this.actionOutcomesUrl)
                 .then(response => {
                     this.availabeOutcomes = response.data;
@@ -471,16 +492,16 @@ var VwManagmentTableNestRow = {
         }
     },
     props: ['nest'],
-    data: function() {
+    data: function () {
         return {
             addActionModalOpened: false
         }
     },
     methods: {
-        showNewActionModal: function() {
+        showNewActionModal: function () {
             this.addActionModalOpened = true;
         },
-        hideNewActionModal: function() {
+        hideNewActionModal: function () {
             this.addActionModalOpened = false;
         }
     },
@@ -969,7 +990,7 @@ var app = new Vue({
     el: '#vw-main-app',
     methods: {
         loadNests: function (zone) {
-            let url = '/api/observations?type=nest';
+            let url = VWConfig.apis.observationsUrl + '?type=nest';
             if (zone != null) {
                 url = url + '&zone=' + zone;
             }

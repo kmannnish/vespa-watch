@@ -172,3 +172,7 @@ LOGOUT_REDIRECT_URL = '/'
 
 VESPAWATCH_ID_OBS_FIELD_ID = 9613 # # The identifier of the "vespawatch_id" observation field @iNaturalist
 VESPAWATCH_EVIDENCE_OBS_FIELD_ID = 9770  # The identifier of the "vespawatch_evidence" observation field @iNaturalist
+
+MAP_CIRCLE_FILL_OPACITY = 0.5
+MAP_CIRCLE_STROKE_OPACITY = 0.8
+MAP_CIRCLE_STROKE_WIDTH = 1
