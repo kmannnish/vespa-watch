@@ -324,7 +324,7 @@ var VwObservationsViz = {
 var VwManagementActionModal = {
     data: function() {
         return {
-            actionOutcomesUrl: '/api/action_outcomes',
+            actionOutcomesUrl: VWConfig.apis.actionOutcomesUrl,
             addActionUrl: 'api/add_management_action',
             availabeOutcomes: [],
 

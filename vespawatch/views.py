@@ -16,7 +16,7 @@ from django.views.generic.edit import DeletionMixin
 from django.urls import reverse_lazy
 
 from .forms import ManagementActionForm, ManagementFormset, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
-from .models import Individual, FirefightersZone, Nest, ManagementAction, Taxon
+from .models import Individual, Nest, ManagementAction, Taxon
 
 
 class CustomBaseDetailView(SingleObjectMixin, View):
