@@ -42,7 +42,6 @@ var VwObservationsVizMap = {
             }
 
             this.observations.forEach(obs => {
-                var color = 'orange';
                 var circle = L.circleMarker([obs.latitude, obs.longitude], {
                     stroke: true,  // whether to draw a stroke
                     weight: 1, // stroke width in pixels
@@ -105,14 +104,13 @@ var VwObservationsVizMap = {
         init: function () {
             var mapPosition = [50.85, 4.35];
             var mapZoom = 8;
-            this.map = L.map("vw-map-map")
-                .setView(mapPosition, mapZoom);
-            var CartoDB_Positron = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png', {
+            this.map = L.map("vw-map-map").setView(mapPosition, mapZoom);
+
+            L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://carto.com/attributions">CARTO</a>',
                 subdomains: 'abcd',
                 maxZoom: 20
-            })
-                .addTo(this.map);
+            }).addTo(this.map);
         }
     },
 
