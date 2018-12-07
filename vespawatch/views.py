@@ -15,6 +15,7 @@ from django.views.generic.detail import BaseDetailView, SingleObjectMixin, Singl
 from django.views.generic.edit import DeletionMixin
 from django.urls import reverse_lazy
 
+from vespawatch.utils import ajax_login_required
 from .forms import ManagementActionForm, ManagementFormset, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
 from .models import Individual, Nest, ManagementAction, Taxon
 
@@ -320,6 +321,7 @@ def management_actions_outcomes_json(request):
     return JsonResponse([{'value': outcome[0], 'label': outcome[1]} for outcome in outcomes], safe=False)
 
 
+@ajax_login_required
 @csrf_exempt
 def add_management_action(request):
     if request.method == 'POST':
