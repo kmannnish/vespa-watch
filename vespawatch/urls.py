@@ -23,5 +23,6 @@ urlpatterns = [
     path('api/taxa', views.taxa_json, name='api_taxa'),
     # path('api/zones', views.zones_json, name='api_zones'),
     path('api/action_outcomes', views.management_actions_outcomes_json, name='api_action_outcomes'),
-    path('api/add_management_action', views.add_management_action, name='api_action_add')
+    path('api/save_management_action', views.save_management_action, name='api_action_save'),
+    path('api/get_management_action', views.get_management_action, name='api_action_get')
 ]

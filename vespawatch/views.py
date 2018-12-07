@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
-from django.utils.dateparse import parse_datetime
 from django.utils.translation import ugettext as _
 from django.http import JsonResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
@@ -323,12 +322,27 @@ def management_actions_outcomes_json(request):
 
 @ajax_login_required
 @csrf_exempt
-def add_management_action(request):
+def save_management_action(request):
     if request.method == 'POST':
-        f = ManagementActionForm(request.POST)
+        existing_action_id = request.POST.get('action_id', None)
+
+        if existing_action_id:  # We want to update an existing action
+            form = ManagementActionForm(request.POST, instance=get_object_or_404(ManagementAction, pk=existing_action_id))
+        else:  # We want to create a new action
+            form = ManagementActionForm(request.POST)
 
         try:
-            f.save()
+            form.save()
             return JsonResponse({'result': 'OK'}, status=201)
         except ValueError:
             return JsonResponse({'result': 'NOTOK', 'errors': f.errors}, status=422)
+
+def get_management_action(request):
+    if request.method == 'GET':
+        action_id = request.GET.get('action_id')
+        action = get_object_or_404(ManagementAction, pk=action_id)
+
+        return JsonResponse({'action_time': action.action_time,
+                             'outcome':action.outcome,
+                             'duration': action.duration_in_minutes,
+                             'person_name': action.person_name})

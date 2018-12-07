@@ -440,6 +440,10 @@ class Nest(AbstractObservation):
         action = self.managementaction_set.first()
         return action.outcome if action else None
 
+    def get_management_action_id(self):
+        action = self.managementaction_set.first()
+        return action.pk if action else None
+
     def as_dict(self):
         return {
             'id': self.pk,
@@ -454,6 +458,7 @@ class Nest(AbstractObservation):
             'imageUrls': [x.image.url for x in self.pictures.all()],
             'action': self.get_management_action_display(),
             'actionCode': self.get_management_action(),
+            'actionId': self.get_management_action_id(),
             'originates_in_vespawatch': self.originates_in_vespawatch,
             'updateUrl': reverse('vespawatch:nest-update', kwargs={'pk': self.pk})
         }
@@ -533,6 +538,10 @@ class ManagementAction(models.Model):
     action_time = models.DateTimeField()
     person_name = models.CharField(max_length=255, blank=True)
     duration = models.DurationField(null=True, blank=True)
+
+    @property
+    def duration_in_minutes(self):
+        return self.duration.total_seconds()/60
 
     def __str__(self):
         return f'{self.action_time.strftime("%Y-%m-%d")} {self.get_outcome_display()} on {self.nest}'

@@ -330,7 +330,8 @@ var VwManagementActionModal = {
     data: function () {
         return {
             actionOutcomesUrl: VWConfig.apis.actionOutcomesUrl,
-            addActionUrl: VWConfig.apis.actionAddUrl,
+            saveActionUrl: VWConfig.apis.actionSaveUrl,
+            loadActionUrl: VWConfig.apis.actionLoadUrl,
             availabeOutcomes: [],
 
             errors: [],
@@ -343,7 +344,8 @@ var VwManagementActionModal = {
     },
     props: {
         mode: String, // 'add' or 'edit'
-        nestId: Number // If mode === 'add': the nest ID
+        nestId: Number, //the Nest ID for this action (!! also needed when editing)
+        actionId: Number // If mode === 'edit': the ManagementAction ID
     },
     computed: {
         modalTitle: function () {
@@ -378,7 +380,18 @@ var VwManagementActionModal = {
         }
     },
     methods: {
-        saveNew: function () {
+        populateFromServer: function () {
+            axios.get(this.loadActionUrl, {params: {'action_id': this.actionId}})
+                .then(response => {
+                    console.log("received response", response);
+                    this.actionTime = response.data.action_time;
+                    this.outcome = response.data.outcome;
+                    this.duration = response.data.duration;
+                    this.personName = response.data.person_name;
+                })
+        },
+
+        save: function () {
             const params = new URLSearchParams();
             params.append('nest', this.nestId);
             params.append('action_time', this.actionTime);
@@ -386,8 +399,13 @@ var VwManagementActionModal = {
             params.append('person_name', this.personName);
             params.append('duration', this.duration);
 
+            if (this.mode === 'edit') {
+                // We give the actionId to the server so it can perform an update
+                params.append('action_id', this.actionId);
+            }
+
             var vm = this;
-            axios.post(this.addActionUrl, params)
+            axios.post(this.saveActionUrl, params)
                 .then(function (response) {
                     if (response.data.result === 'OK') {
                         vm.$emit('close')
@@ -397,13 +415,8 @@ var VwManagementActionModal = {
                     vm.errors = error.response.data.errors;
                 });
         },
-        save: function () {
-            if (this.mode === 'add') {
-                this.saveNew();
-            }
-        },
         loadOutcomes: function () {
-            axios.get(this.actionOutcomesUrl)
+            return axios.get(this.actionOutcomesUrl)
                 .then(response => {
                     this.availabeOutcomes = response.data;
                 })
@@ -414,7 +427,8 @@ var VwManagementActionModal = {
         }
     },
     mounted: function () {
-        this.loadOutcomes();
+        // We load the "outcomes" list, and we're in edit mode, we populate the form from the server
+        this.loadOutcomes().then(() => { if(this.mode === 'edit'){this.populateFromServer()} });
     },
 
     template: `
@@ -480,6 +494,14 @@ var VwManagmentTableNestRow = {
         'vw-management-action-modal': VwManagementActionModal
     },
     computed: {
+        hasManagementAction: function () {
+            // Does this Nest has a management action?
+            return (this.nest.action !== "")
+        },
+        managementActionID: function () {
+            // If this nest has a management action, return its ID
+            return this.nest.actionId;
+        },
         cannotEditLabel: function () {
             return gettext('You cannot edit this observation');
         },
@@ -491,6 +513,9 @@ var VwManagmentTableNestRow = {
         },
         addStr: function () {
             return gettext('add');
+        },
+        editStr: function () {
+            return gettext('edit');
         },
         managementAction: function () {
             return gettext(this.nest.action);
@@ -508,7 +533,8 @@ var VwManagmentTableNestRow = {
     props: ['nest'],
     data: function () {
         return {
-            addActionModalOpened: false
+            addActionModalOpened: false,
+            editActionModalOpened: false
         }
     },
     methods: {
@@ -517,7 +543,14 @@ var VwManagmentTableNestRow = {
         },
         hideNewActionModal: function () {
             this.addActionModalOpened = false;
+        },
+        showEditActionModal: function () {
+            this.editActionModalOpened = true;
+        },
+        hideEditActionModal: function () {
+            this.editActionModalOpened = false;
         }
+
     },
     template: `
         <tr :class="nestClass">
@@ -526,8 +559,14 @@ var VwManagmentTableNestRow = {
             <td>{{ nest.address }}</td>
             
             <td>
-                {{ managementAction }}
-                <button v-on:click="showNewActionModal()" class="btn">{{ addStr }}</button>
+                <span v-if="hasManagementAction">
+                    {{ managementAction }}
+                    <button v-on:click="showEditActionModal()" class="btn btn-outline-info btn-sm">{{ editStr }}</button>
+                </span>
+                
+                <button v-else v-on:click="showNewActionModal()" class="btn btn-outline-info btn-sm">{{ addStr }}</button>
+                
+                <vw-management-action-modal v-if="editActionModalOpened" v-on:close="hideEditActionModal()" mode="edit" :nest-id="nest.id" :action-id="nest.actionId"></vw-management-action-modal>
                 <vw-management-action-modal v-if="addActionModalOpened" v-on:close="hideNewActionModal()" mode="add" :nest-id="nest.id"></vw-management-action-modal>
             </td>
             
