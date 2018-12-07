@@ -335,7 +335,7 @@ def save_management_action(request):
             form.save()
             return JsonResponse({'result': 'OK'}, status=201)
         except ValueError:
-            return JsonResponse({'result': 'NOTOK', 'errors': f.errors}, status=422)
+            return JsonResponse({'result': 'NOTOK', 'errors': form.errors}, status=422)
 
 def get_management_action(request):
     if request.method == 'GET':
