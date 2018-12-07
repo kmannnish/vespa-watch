@@ -325,9 +325,10 @@ def management_actions_outcomes_json(request):
 @csrf_exempt
 def add_management_action(request):
     if request.method == 'POST':
-        ManagementAction.objects.create(nest_id=request.POST.get('nestId'),
-                                        outcome=request.POST.get('outcome'),
-                                        action_time=parse_datetime(request.POST.get('actionTime')),
-                                        person_name=request.POST.get('personName'),
-                                        duration=request.POST.get('duration'))
-        return JsonResponse({'result': 'OK'})
+        f = ManagementActionForm(request.POST)
+
+        try:
+            f.save()
+            return JsonResponse({'result': 'OK'}, status=201)
+        except ValueError:
+            return JsonResponse({'result': 'NOTOK', 'errors': f.errors}, status=422)

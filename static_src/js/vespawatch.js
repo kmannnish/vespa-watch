@@ -333,6 +333,8 @@ var VwManagementActionModal = {
             addActionUrl: VWConfig.apis.actionAddUrl,
             availabeOutcomes: [],
 
+            errors: [],
+
             actionTime: '',  // As ISO3166
             outcome: '',
             personName: '',
@@ -370,15 +372,18 @@ var VwManagementActionModal = {
         },
         inMinutesLabel: function () {
             return gettext("in minutes")
+        },
+        errorsLabel: function () {
+            return gettext("Errors")
         }
     },
     methods: {
         saveNew: function () {
             const params = new URLSearchParams();
-            params.append('nestId', this.nestId);
-            params.append('actionTime', this.actionTime);
+            params.append('nest', this.nestId);
+            params.append('action_time', this.actionTime);
             params.append('outcome', this.outcome);
-            params.append('personName', this.personName);
+            params.append('person_name', this.personName);
             params.append('duration', this.duration);
 
             var vm = this;
@@ -389,7 +394,7 @@ var VwManagementActionModal = {
                     }
                 })
                 .catch(function (error) {
-                    console.log(error);
+                    vm.errors = error.response.data.errors;
                 });
         },
         save: function () {
@@ -426,9 +431,18 @@ var VwManagementActionModal = {
                     </button>
                 </div>
                 <div class="modal-body">
+                    <div v-if="Object.keys(errors).length !== 0">
+                        <h6>{{ errorsLabel }}</h6>
+                        <ul > 
+                            <li v-for="(errorList, fieldName) in errors">
+                                {{ fieldName }}:
+                                <span v-for="(err, index) in errorList">{{ err }} <span v-if="errorList.length-1<index">, </span> </span>
+                            </li>
+                        </ul>
+                    </div>
                     <form>
                         <div class="form-group">
-                            <label for="outcome">{{ outcomeLabel }}</label>
+                            <label for="outcome">{{ outcomeLabel }} *</label>
                             <select v-model="outcome" class="form-control" id="outcome">
                                 <option :value="outcome.value" v-for="outcome in availabeOutcomes">{{ outcome.label }}</option>
                             </select>
@@ -437,7 +451,7 @@ var VwManagementActionModal = {
                             
                             <datetime v-model="actionTime" type="datetime" 
                                 input-class="datetimeinput form-control">
-                                <label for="startDate" slot="before">{{ actionTimeLabel }}</label>          
+                                <label for="startDate" slot="before">{{ actionTimeLabel }} *</label>          
                             </datetime>
                
                             <label for="duration">{{ durationLabel }}</label>
