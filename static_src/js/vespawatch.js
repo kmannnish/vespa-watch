@@ -405,7 +405,7 @@ var VwManagementActionModal = {
             axios.delete(this.deleteActionUrl, {params: {'action_id': this.actionId}})
                 .then(response => {
                     if (response.data.result === 'OK') {
-                        vm.$emit('close');
+                        vm.$emit('close', true);
                     }
                 }, error => {
                     console.log("Error");
@@ -428,7 +428,7 @@ var VwManagementActionModal = {
             axios.post(this.saveActionUrl, params)
                 .then(function (response) {
                     if (response.data.result === 'OK') {
-                        vm.$emit('close')
+                        vm.$emit('close', true);
                     }
                 })
                 .catch(function (error) {
@@ -461,7 +461,7 @@ var VwManagementActionModal = {
                 <div class="modal-header">
                     <h5 class="modal-title">{{ modalTitle }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" @click="$emit('close')">&times;</span>
+                    <span aria-hidden="true" @click="$emit('close', false)">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -495,7 +495,7 @@ var VwManagementActionModal = {
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-dark" @click="$emit('close')">{{ cancelLabel }}</button>
+                    <button type="button" class="btn btn-dark" @click="$emit('close', false)">{{ cancelLabel }}</button>
                     <button type="button" class="btn btn-primary" @click="save()">{{ saveLabel }}</button>
                     <button v-if="mode === 'edit'" type="button" @click="deleteAction()" class="btn btn-danger">{{ deleteLabel }}</button>
                 </div>
@@ -561,14 +561,20 @@ var VwManagmentTableNestRow = {
         showNewActionModal: function () {
             this.addActionModalOpened = true;
         },
-        hideNewActionModal: function () {
+        hideNewActionModal: function (dataChanged) {
             this.addActionModalOpened = false;
+            if (dataChanged) {
+                console.log("Data has changed, must refresh...")
+            }
         },
         showEditActionModal: function () {
             this.editActionModalOpened = true;
         },
-        hideEditActionModal: function () {
+        hideEditActionModal: function (dataChanged) {
             this.editActionModalOpened = false;
+            if (dataChanged) {
+                console.log("Data has changed, must refresh...")
+            }
         }
 
     },
@@ -586,8 +592,8 @@ var VwManagmentTableNestRow = {
                 
                 <button v-else v-on:click="showNewActionModal()" class="btn btn-outline-info btn-sm">{{ addStr }}</button>
                 
-                <vw-management-action-modal v-if="editActionModalOpened" v-on:close="hideEditActionModal()" mode="edit" :nest-id="nest.id" :action-id="nest.actionId"></vw-management-action-modal>
-                <vw-management-action-modal v-if="addActionModalOpened" v-on:close="hideNewActionModal()" mode="add" :nest-id="nest.id"></vw-management-action-modal>
+                <vw-management-action-modal v-if="editActionModalOpened" v-on:close="hideEditActionModal" mode="edit" :nest-id="nest.id" :action-id="nest.actionId"></vw-management-action-modal>
+                <vw-management-action-modal v-if="addActionModalOpened" v-on:close="hideNewActionModal" mode="add" :nest-id="nest.id"></vw-management-action-modal>
             </td>
             
             <td>
