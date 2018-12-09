@@ -332,6 +332,7 @@ var VwManagementActionModal = {
             actionOutcomesUrl: VWConfig.apis.actionOutcomesUrl,
             saveActionUrl: VWConfig.apis.actionSaveUrl,
             loadActionUrl: VWConfig.apis.actionLoadUrl,
+            deleteActionUrl: VWConfig.apis.actionDeleteUrl,
             availabeOutcomes: [],
 
             errors: [],
@@ -339,7 +340,7 @@ var VwManagementActionModal = {
             actionTime: '',  // As ISO3166
             outcome: '',
             personName: '',
-            duration: ''
+            duration: ''  //in Seconds
         }
     },
     props: {
@@ -348,6 +349,15 @@ var VwManagementActionModal = {
         actionId: Number // If mode === 'edit': the ManagementAction ID
     },
     computed: {
+        durationInMinutes: {
+            get: function() {
+                return this.duration / 60;
+            },
+            set: function (newValue) {
+                this.duration = newValue * 60;
+            }
+        },
+
         modalTitle: function () {
             return this.mode === 'add' ? gettext("New management action") : gettext("Edit management action")
         },
@@ -390,7 +400,17 @@ var VwManagementActionModal = {
                     this.personName = response.data.person_name;
                 })
         },
-
+        deleteAction : function () {
+            var vm = this;
+            axios.delete(this.deleteActionUrl, {params: {'action_id': this.actionId}})
+                .then(response => {
+                    if (response.data.result === 'OK') {
+                        vm.$emit('close');
+                    }
+                }, error => {
+                    console.log("Error");
+                });
+        },
         save: function () {
             const params = new URLSearchParams();
             params.append('nest', this.nestId);
@@ -469,7 +489,7 @@ var VwManagementActionModal = {
                             </datetime>
                
                             <label for="duration">{{ durationLabel }}</label>
-                            <input v-model="duration" class="form-control" type="number" id="duration">
+                            <input v-model="durationInMinutes" class="form-control" type="number" id="duration">
                             <small class="form-text text-muted">({{ inMinutesLabel }})</small>
                         </div>
                     </form>
@@ -477,7 +497,7 @@ var VwManagementActionModal = {
                 <div class="modal-footer">
                     <button type="button" class="btn btn-dark" @click="$emit('close')">{{ cancelLabel }}</button>
                     <button type="button" class="btn btn-primary" @click="save()">{{ saveLabel }}</button>
-                    <button v-if="mode === 'edit'" type="button" class="btn btn-danger">{{ deleteLabel }}</button>
+                    <button v-if="mode === 'edit'" type="button" @click="deleteAction()" class="btn btn-danger">{{ deleteLabel }}</button>
                 </div>
             </div>
         </div>

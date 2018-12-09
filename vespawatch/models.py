@@ -540,8 +540,8 @@ class ManagementAction(models.Model):
     duration = models.DurationField(null=True, blank=True)
 
     @property
-    def duration_in_minutes(self):
-        return self.duration.total_seconds()/60
+    def duration_in_seconds(self):
+        return self.duration.total_seconds()
 
     def __str__(self):
         return f'{self.action_time.strftime("%Y-%m-%d")} {self.get_outcome_display()} on {self.nest}'

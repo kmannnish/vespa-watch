@@ -322,6 +322,13 @@ def management_actions_outcomes_json(request):
 
 @ajax_login_required
 @csrf_exempt
+def delete_management_action(request):
+    if request.method == 'DELETE':
+        ManagementAction.objects.get(pk=request.GET.get('action_id')).delete()
+        return JsonResponse({'result': 'OK'})
+
+@ajax_login_required
+@csrf_exempt
 def save_management_action(request):
     if request.method == 'POST':
         existing_action_id = request.POST.get('action_id', None)
@@ -344,5 +351,5 @@ def get_management_action(request):
 
         return JsonResponse({'action_time': action.action_time,
                              'outcome':action.outcome,
-                             'duration': action.duration_in_minutes,
+                             'duration': action.duration_in_seconds,
                              'person_name': action.person_name})
