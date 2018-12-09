@@ -564,7 +564,8 @@ var VwManagmentTableNestRow = {
         hideNewActionModal: function (dataChanged) {
             this.addActionModalOpened = false;
             if (dataChanged) {
-                console.log("Data has changed, must refresh...")
+                // Data has been changed by the modal, ask the parent for refreshed data
+                this.$emit('data-changed');
             }
         },
         showEditActionModal: function () {
@@ -573,7 +574,8 @@ var VwManagmentTableNestRow = {
         hideEditActionModal: function (dataChanged) {
             this.editActionModalOpened = false;
             if (dataChanged) {
-                console.log("Data has changed, must refresh...")
+                // Data has been changed by the modal, ask the parent for refreshed data
+                this.$emit('data-changed');
             }
         }
 
@@ -629,12 +631,17 @@ var VwManagementTable = {
             _nests: []
         }
     },
-    mounted: function () {
-        if (this.zone != null) {
-            this.$root.loadNests(this.zone);
-        } else {
-            this.$root.loadNests();
+    methods: {
+        loadData: function() {
+            if (this.zone != null) {
+                this.$root.loadNests(this.zone);
+            } else {
+                this.$root.loadNests();
+            }
         }
+    },
+    mounted: function () {
+        this.loadData();
     },
     props: ['nests', 'zone'],
     watch: {
@@ -654,7 +661,7 @@ var VwManagementTable = {
                 </tr>
             </thead>
 
-            <vw-management-table-nest-row v-for="nest in nests" v-bind:nest="nest" :key="nest.id">
+            <vw-management-table-nest-row v-for="nest in nests" :nest="nest" :key="nest.id" v-on:data-changed="loadData">
             </vw-management-table-nest-row>
         </table>
     </div>
