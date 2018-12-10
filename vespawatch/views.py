@@ -270,24 +270,25 @@ def observations_json(request):
     """
     zone = request.GET.get('zone', '')
     obs_type = request.GET.get('type', '')
+    limit = request.GET.get('limit', None)
 
-    output = {}
+    obs = []
 
-    if obs_type != 'nest':
-        # only add individuals to the output if the type is not 'nest'
-        output['individuals'] = Individual.objects.all()
-
-    if obs_type != 'individual':
-        # only add nests to the output if the type is not 'individual'
-        output['nests'] = Nest.objects.all()
+    if obs_type == 'individual' or obs_type == '':
+        obs = obs + list(Individual.objects.all())
+    if obs_type == 'nest' or obs_type == '':
+        obs = obs + list(Nest.objects.all())
 
     if zone:
         # if a zone is given, filter the observations. This works for both individuals and nests
-        for obs_type, qs in output.items():
-            output[obs_type] = qs.filter(zone__pk=zone)
+        obs = [x for x in obs if x.zone_id == zone]
+
+    obs.sort(key=lambda x: x.observation_time, reverse=True)
+    if limit:
+        obs = obs[:int(limit)]
 
     return JsonResponse({
-        obs_type: [x.as_dict() for x in list(qs.order_by('observation_time'))] for obs_type, qs in output.items()
+        'observations': [x.as_dict() for x in obs]
     })
 #
 # @staff_member_required

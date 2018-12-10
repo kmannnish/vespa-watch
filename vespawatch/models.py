@@ -498,7 +498,7 @@ class Individual(AbstractObservation):
             'inaturalist_id': self.inaturalist_id,
             'observation_time': self.observation_time.timestamp() * 1000,
             'comments': self.comments,
-            'imageUrls': [x.image.url for x in self.pictures.all()]
+            'imageUrls': [x.image.url for x in self.pictures.all()],
         }
 
     # def __str__(self):

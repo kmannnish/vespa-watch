@@ -1,6 +1,7 @@
 // This file contains all our custom Javascript code, including VueJS components .
 
 // TODO: Remove all constants/config from here and move to the VWConfig object (defined in custom_tags.py)
+// TODO: Some gettext calls/computed properties are duplicated in multiple Vue components: factorize?
 
 // TODO: Update comment
 //  * VwObservationsViz: This is the main visualization displayed on the home page. It consists
@@ -260,13 +261,7 @@ var VwObservationsViz = {
             axios.get(url)
                 .then(response => {
                     console.log(response.data);
-                    var allObservations = [];
-                    if (response.data.individuals) {
-                        allObservations = allObservations.concat(response.data.individuals);
-                    }
-                    if (response.data.nests) {
-                        allObservations = allObservations.concat(response.data.nests);
-                    }
+                    var allObservations = response.data.observations;
                     this.setCrossFilter(allObservations);
                     this.totalObsCount = allObservations.length;
                     this.initTimerangeSlider();
@@ -709,6 +704,88 @@ var VwManagementTable = {
     `
 };
 
+var VwRecentObsTableRow = {
+    props: ['observation'],
+    computed: {
+        observationTimeStr: function () {
+            return moment(this.observation.observation_time).format('lll');
+        }
+    },
+    template: `<tr>
+                    <td>{{ observationTimeStr}}</td>
+                    <td>{{ observation.subject }}</td>
+                    <td>{{ observation.address }}</td>
+               </tr>`
+};
+
+// The table of the recent observations on the home page
+var VwRecentObsTable = {
+    components: {
+        'vw-recent-obs-table-row': VwRecentObsTableRow
+    },
+    data: function() {
+        return {
+            'currentlyLoading': false,
+            'limit': 10,
+            'observations': []
+        }
+    },
+    computed: {
+        dateStr: function () {
+            return gettext('date');
+        },
+        addressStr: function () {
+            return gettext('address');
+        },
+        recentObsStr: function () {
+            return gettext('Recent observations')
+        },
+        loadingStr: function () {
+            return gettext('Loading...')
+        },
+        subjectStr: function () {
+            return gettext('subject')
+        }
+    },
+    methods: {
+        loadObs: function() {
+            this.currentlyLoading = true;
+            let url = VWConfig.apis.observationsUrl;
+
+            axios.get(url + '?limit=' + this.limit)
+                .then(response => {
+                    if (response.data.observations) {
+                        this.observations = response.data.observations;
+                    }
+                    this.currentlyLoading = false;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+    },
+    mounted: function () {
+        this.loadObs();
+    },
+    template: `
+        <div class="row">
+            <div class="col">
+                <h2>{{ recentObsStr}}</h2>
+                <span v-if="currentlyLoading">{{ loadingStr }}</span>
+                <table v-else class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ dateStr }}</th>
+                            <th>{{ subjectStr}}</th>
+                            <th>{{ addressStr }}</th>
+                        </tr>
+                    </thead>
+
+                    <vw-recent-obs-table-row v-for="observation in observations" :observation="observation" :key="observation.id"></vw-recent-obs-table-row>
+                </table>
+            </div>
+        </div>`
+};
 
 var VwLocationSelectorLocationInput = {
     data: function () {
@@ -1108,6 +1185,7 @@ var app = new Vue({
         'vw-datetime-selector': VwDatetimeSelector,
         'vw-management-table': VwManagementTable,
         'vw-taxon-selector': VwTaxonSelector,
+        'vw-recent-obs-table': VwRecentObsTable
     },
     data: {
         individuals: null,
@@ -1125,8 +1203,8 @@ var app = new Vue({
             }
             axios.get(url)
                 .then(response => {
-                    if (response.data.nests) {
-                        this.nests = response.data.nests;
+                    if (response.data.observations) {
+                        this.nests = response.data.observations;
                     }
                     this.currentlyLoading = false;
                 })
