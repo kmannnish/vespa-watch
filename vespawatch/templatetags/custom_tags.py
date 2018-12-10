@@ -10,6 +10,7 @@ register = template.Library()
 @register.simple_tag
 def js_config_object():
     conf = {
+        'debug': settings.JS_DEBUG,
         'apis': {
             'observationsUrl': reverse('vespawatch:api_observations'),
             'actionOutcomesUrl': reverse('vespawatch:api_action_outcomes'),

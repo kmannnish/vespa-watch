@@ -27,6 +27,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+JS_DEBUG = False
 
 INAT_USER_USERNAME = 'vespawatch'
 INAT_USER_PASSWORD = ''

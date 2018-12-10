@@ -8,12 +8,21 @@
 //  * VwObservationsVizMap: The map of the VwObservationsViz component
 //  * VwObservationsVizTimeSlider: The time slider of the VwObservationsViz.
 
-// Language selector (Naavbar)
+// Language selector (Navbar)
 $(document).ready(function () {
     $('#lang').on('change', function () {
         document.forms['lang-form'].submit();
     });
 });
+
+// Disable console.log() et al. if settings.JS_DEBUG = True
+if(!VWConfig.debug){
+    if(!window.console) window.console = {};
+    var methods = ["log", "debug", "warn", "info"];
+    for(var i=0;i<methods.length;i++){
+        console[methods[i]] = function(){};
+    }
+}
 
 // The map of the visualization.
 // This contains an observations prop. When this property is updated, (when data is retrieved
