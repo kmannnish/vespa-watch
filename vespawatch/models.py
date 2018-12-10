@@ -541,7 +541,10 @@ class ManagementAction(models.Model):
 
     @property
     def duration_in_seconds(self):
-        return self.duration.total_seconds()
+        try:
+            return self.duration.total_seconds()  # Positive val, but also 0!
+        except AttributeError:
+            return '' # NULL
 
     def __str__(self):
         return f'{self.action_time.strftime("%Y-%m-%d")} {self.get_outcome_display()} on {self.nest}'

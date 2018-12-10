@@ -351,10 +351,16 @@ var VwManagementActionModal = {
     computed: {
         durationInMinutes: {
             get: function() {
-                return this.duration / 60;
+                if (this.duration !== '') {
+                    return this.duration / 60;
+                }
             },
             set: function (newValue) {
-                this.duration = newValue * 60;
+                if (newValue !== '') {
+                    this.duration = newValue * 60;
+                } else {
+                    this.duration = '';
+                }
             }
         },
 
