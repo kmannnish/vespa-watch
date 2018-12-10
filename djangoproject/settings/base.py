@@ -177,5 +177,24 @@ VESPAWATCH_EVIDENCE_OBS_FIELD_ID = 9770  # The identifier of the "vespawatch_evi
 MAP_CIRCLE_FILL_OPACITY = 0.5
 MAP_CIRCLE_STROKE_OPACITY = 0.8
 MAP_CIRCLE_STROKE_WIDTH = 1
+MAP_CIRCLE_NEST_RADIUS = 12
+MAP_CIRCLE_INDIVIDUAL_RADIUS = 5
+MAP_CIRCLE_INDIVIDUAL_COLOR = '#FD9126'
+MAP_CIRCLE_NEST_COLOR = {  # This depend of the management action
+    'FD': '#3678ff',
+    'PD': '#3678ff',
+    'ND': '#3678ff',
+    'DEFAULT': '#3678ff'
+}
+MAP_CIRCLE_UNKNOWN_COLOR = '#000' # if the subject is not 'Individual' or 'Nest'
+MAP_INITIAL_POSITION = [50.85, 4.35]
+MAP_INITIAL_ZOOM = 8
+
+MAP_TILELAYER_BASE_URL = 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png'
+MAP_TILELAYER_OPTIONS = {
+    'attribution': '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://carto.com/attributions">CARTO</a>',
+    'subdomains': 'abcd',
+    'maxZoom': 20
+}
 
 JS_DEBUG = False

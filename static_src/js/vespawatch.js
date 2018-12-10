@@ -39,29 +39,30 @@ var VwObservationsVizMap = {
 
     methods: {
         addObservationsToMap: function () {
+            var conf = VWConfig.map.circle;
 
             function getColor(d) {
-                return d.subject === 'individual' ? '#FD9126' :
+                return d.subject === 'individual' ? conf.individualColor :
                     d.subject === 'nest' ?
-                        d.actionCode === 'FD' ? '#3678ff' :
-                            d.actionCode === 'PD' ? '#3678ff' :
-                                d.actionCode === 'ND' ? '#3678ff' :
-                                    '#3678ff'
-                        : '#000';  // if the subject is not 'Individual' or 'Nest'
+                        d.actionCode === 'FD' ? conf.nestColor.FD :
+                            d.actionCode === 'PD' ? conf.nestColor.PD :
+                                d.actionCode === 'ND' ? conf.nestColor.ND :
+                                    conf.nestColor.DEFAULT
+                        : conf.unknownColor;  // if the subject is not 'Individual' or 'Nest'
             }
 
             function getRadius(d) {
-                return d.subject === 'individual' ? 5 : 12;
+                return d.subject === 'individual' ? conf.individualRadius : conf.nestRadius;
             }
 
             this.observations.forEach(obs => {
                 var circle = L.circleMarker([obs.latitude, obs.longitude], {
                     stroke: true,  // whether to draw a stroke
-                    weight: VWConfig.map.circle.stroke_width, // stroke width in pixels
+                    weight: conf.strokeWidth, // stroke width in pixels
                     color: getColor(obs),  // stroke color
-                    opacity: VWConfig.map.circle.stroke_opacity,  // stroke opacity
+                    opacity: conf.strokeOpacity,  // stroke opacity
                     fillColor: getColor(obs),
-                    fillOpacity: VWConfig.map.circle.fill_opacity,
+                    fillOpacity: conf.fillOpacity,
                     radius: getRadius(obs),
                     className: "circle"
                 });
@@ -116,15 +117,13 @@ var VwObservationsVizMap = {
             }
         },
         init: function () {
-            var mapPosition = [50.85, 4.35];
-            var mapZoom = 8;
+            var conf = VWConfig.map;
+
+            var mapPosition = conf.initialPosition;
+            var mapZoom = conf.initialZoom;
             this.map = L.map("vw-map-map").setView(mapPosition, mapZoom);
 
-            L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://carto.com/attributions">CARTO</a>',
-                subdomains: 'abcd',
-                maxZoom: 20
-            }).addTo(this.map);
+            L.tileLayer(conf.tileLayerBaseUrl, conf.tileLayerOptions).addTo(this.map);
         }
     },
 

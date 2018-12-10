@@ -20,10 +20,20 @@ def js_config_object():
         },
         'map': {
             'circle': {
-                'fill_opacity': settings.MAP_CIRCLE_FILL_OPACITY,
-                'stroke_opacity': settings.MAP_CIRCLE_STROKE_OPACITY,
-                'stroke_width': settings.MAP_CIRCLE_STROKE_WIDTH
-            }
+                'fillOpacity': settings.MAP_CIRCLE_FILL_OPACITY,
+                'strokeOpacity': settings.MAP_CIRCLE_STROKE_OPACITY,
+                'strokeWidth': settings.MAP_CIRCLE_STROKE_WIDTH,
+                'nestRadius': settings.MAP_CIRCLE_NEST_RADIUS,
+                'individualRadius': settings.MAP_CIRCLE_INDIVIDUAL_RADIUS,
+                'individualColor':settings.MAP_CIRCLE_INDIVIDUAL_COLOR,
+                'nestColor': settings.MAP_CIRCLE_NEST_COLOR,
+                'unknownColor': settings.MAP_CIRCLE_UNKNOWN_COLOR
+            },
+            'initialPosition': settings.MAP_INITIAL_POSITION,
+            'initialZoom': settings.MAP_INITIAL_ZOOM,
+
+            'tileLayerBaseUrl': settings.MAP_TILELAYER_BASE_URL,
+            'tileLayerOptions': settings.MAP_TILELAYER_OPTIONS
         }
     }
     return mark_safe(json.dumps(conf))
