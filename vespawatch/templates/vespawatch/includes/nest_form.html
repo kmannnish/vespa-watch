@@ -36,15 +36,7 @@
     {{ f|crispy }}
 {% endfor %}
 
-{% if user.is_authenticated %}
-    <h3>{% trans "Management action" %}</h3>
-    {{ management_formset.management_form }}
-
-    {% for f in management_formset %}
-        {{ f|crispy }}
-    {% endfor %}
-
-{% else %}
+{% if not user.is_authenticated %}
 
     {{ form.observer_last_name|as_crispy_field }}
     {{ form.observer_first_name|as_crispy_field }}

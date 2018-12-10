@@ -15,7 +15,7 @@ from django.views.generic.edit import DeletionMixin
 from django.urls import reverse_lazy
 
 from vespawatch.utils import ajax_login_required
-from .forms import ManagementActionForm, ManagementFormset, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
+from .forms import ManagementActionForm, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
 from .models import Individual, Nest, ManagementAction, Taxon
 
 
@@ -161,21 +161,14 @@ def create_nest(request):
             image_formset = NestImageFormset(request.POST, request.FILES, instance=form.instance)
             if image_formset.is_valid():
                 instances = image_formset.save()
-            if request.user.is_authenticated:
-                management_formset = ManagementFormset(request.POST, request.FILES, instance=form.instance)
-                if management_formset.is_valid():
-                    management_formset.save()
+
             messages.success(request, _("Your observation was successfully created."))
             return HttpResponseRedirect(reverse_lazy(f'vespawatch:{redirect_to}'))
-        else:
-            management_formset = ManagementFormset()
     else:
         redirect_to = request.GET.get('redirect_to', 'index')
         form = NestForm(initial={'redirect_to': redirect_to})
-        management_formset = ManagementFormset()
         image_formset = NestImageFormset()
-    return render(request, 'vespawatch/nest_create.html', {'form': form, 'management_formset': management_formset,
-                                                           'image_formset': image_formset, 'type': 'nest'})
+    return render(request, 'vespawatch/nest_create.html', {'form': form, 'image_formset': image_formset, 'type': 'nest'})
 
 
 @login_required
@@ -183,7 +176,6 @@ def update_nest(request, pk):
     nest = get_object_or_404(Nest, pk=pk)
     if request.method == 'POST':
         image_formset = NestImageFormset(request.POST, request.FILES, instance=nest)
-        management_formset = ManagementFormset(request.POST, request.FILES, instance=nest)
         form = NestForm(request.POST, files=request.FILES, instance=nest)
         if request.user.is_authenticated:
             # set to terms_of_service to true if the user is authenticated
@@ -197,21 +189,13 @@ def update_nest(request, pk):
                 for obj in image_formset.deleted_objects:
                     if obj.pk:
                         obj.delete()
-            if request.user.is_authenticated:
-                if management_formset.is_valid():
-                    instances = management_formset.save()
-                    for obj in management_formset.deleted_objects:
-                        if obj.pk:
-                            obj.delete()
             return HttpResponseRedirect(reverse_lazy('vespawatch:nest-detail', kwargs={'pk': pk}))
-        else:
-            management_formset = ManagementFormset(instance=nest)
     elif request.method == 'GET':
         form = NestForm(instance=nest)
         image_formset = NestImageFormset(instance=nest)
-        management_formset = ManagementFormset(instance=nest)
+
     return render(request, 'vespawatch/nest_update.html',
-                  {'form': form, 'object': nest, 'type': 'nest', 'image_formset': image_formset, 'management_formset': management_formset,})
+                  {'form': form, 'object': nest, 'type': 'nest', 'image_formset': image_formset})
 
 
 class NestDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
@@ -236,7 +220,7 @@ class NestDelete(LoginRequiredMixin, CustomDeleteView):
 
 
 # CREATE/UPDATE/DELETE MANAGEMENT ACTIONS
-
+# TODO: Check if those 3 actions are still used.
 @login_required
 def create_action(request):
     if request.method == 'POST':
