@@ -16,11 +16,12 @@ $(document).ready(function () {
 });
 
 // Disable console.log() et al. if settings.JS_DEBUG = True
-if(!VWConfig.debug){
-    if(!window.console) window.console = {};
+if (!VWConfig.debug) {
+    if (!window.console) window.console = {};
     var methods = ["log", "debug", "warn", "info"];
-    for(var i=0;i<methods.length;i++){
-        console[methods[i]] = function(){};
+    for (var i = 0; i < methods.length; i++) {
+        console[methods[i]] = function () {
+        };
     }
 }
 
@@ -348,7 +349,9 @@ var VwManagementActionModal = {
             actionTime: '',  // As ISO3166
             outcome: '',
             personName: '',
-            duration: ''  //in Seconds
+            duration: '',  // In seconds
+
+            deleteConfirmation: false  // The user has asked to delete, we're asking confirmation (instead of the usual form)
         }
     },
     props: {
@@ -358,7 +361,7 @@ var VwManagementActionModal = {
     },
     computed: {
         durationInMinutes: {
-            get: function() {
+            get: function () {
                 if (this.duration !== '') {
                     return this.duration / 60;
                 }
@@ -387,6 +390,9 @@ var VwManagementActionModal = {
         deleteLabel: function () {
             return gettext("Delete")
         },
+        yesDeleteLabel: function () {
+            return gettext("Yes, delete")
+        },
         nameLabel: function () {
             return gettext("Person name")
         },
@@ -401,6 +407,9 @@ var VwManagementActionModal = {
         },
         errorsLabel: function () {
             return gettext("Errors")
+        },
+        areYouSureStr: function () {
+            return gettext("Are you sure you want to delete this action?")
         }
     },
     methods: {
@@ -414,7 +423,7 @@ var VwManagementActionModal = {
                     this.personName = response.data.person_name;
                 })
         },
-        deleteAction : function () {
+        deleteAction: function () {
             var vm = this;
             axios.delete(this.deleteActionUrl, {params: {'action_id': this.actionId}})
                 .then(response => {
@@ -462,7 +471,11 @@ var VwManagementActionModal = {
     },
     mounted: function () {
         // We load the "outcomes" list, and we're in edit mode, we populate the form from the server
-        this.loadOutcomes().then(() => { if(this.mode === 'edit'){this.populateFromServer()} });
+        this.loadOutcomes().then(() => {
+            if (this.mode === 'edit') {
+                this.populateFromServer()
+            }
+        });
     },
 
     template: `
@@ -478,40 +491,50 @@ var VwManagementActionModal = {
                     <span aria-hidden="true" @click="$emit('close', false)">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <div v-if="Object.keys(errors).length !== 0">
-                        <h6>{{ errorsLabel }}</h6>
-                        <ul > 
-                            <li v-for="(errorList, fieldName) in errors">
-                                {{ fieldName }}:
-                                <span v-for="(err, index) in errorList">{{ err }} <span v-if="errorList.length-1<index">, </span> </span>
-                            </li>
-                        </ul>
+                
+                <div v-if="deleteConfirmation">
+                    <div class="modal-body">{{ areYouSureStr }}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-dark" @click="deleteConfirmation=false">{{ cancelLabel }}</button>
+                        <button type="button" @click="deleteAction()" class="btn btn-danger">{{ yesDeleteLabel }}</button>
                     </div>
-                    <form>
-                        <div class="form-group">
-                            <label for="outcome">{{ outcomeLabel }} *</label>
-                            <select v-model="outcome" class="form-control" id="outcome">
-                                <option :value="outcome.value" v-for="outcome in availabeOutcomes">{{ outcome.label }}</option>
-                            </select>
-                            <label for="personName">{{ nameLabel }}</label>
-                            <input v-model="personName" class="form-control" type="text" id="personName">
-                            
-                            <datetime v-model="actionTime" type="datetime" 
-                                input-class="datetimeinput form-control">
-                                <label for="startDate" slot="before">{{ actionTimeLabel }} *</label>          
-                            </datetime>
-               
-                            <label for="duration">{{ durationLabel }}</label>
-                            <input v-model="durationInMinutes" class="form-control" type="number" id="duration">
-                            <small class="form-text text-muted">({{ inMinutesLabel }})</small>
-                        </div>
-                    </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-dark" @click="$emit('close', false)">{{ cancelLabel }}</button>
-                    <button type="button" class="btn btn-primary" @click="save()">{{ saveLabel }}</button>
-                    <button v-if="mode === 'edit'" type="button" @click="deleteAction()" class="btn btn-danger">{{ deleteLabel }}</button>
+                <div v-else>
+                    <div class="modal-body">
+                        <div v-if="Object.keys(errors).length !== 0">
+                            <h6>{{ errorsLabel }}</h6>
+                            <ul > 
+                                <li v-for="(errorList, fieldName) in errors">
+                                    {{ fieldName }}:
+                                    <span v-for="(err, index) in errorList">{{ err }} <span v-if="errorList.length-1<index">, </span> </span>
+                                </li>
+                            </ul>
+                        </div>
+                        <form>
+                            <div class="form-group">
+                                <label for="outcome">{{ outcomeLabel }} *</label>
+                                <select v-model="outcome" class="form-control" id="outcome">
+                                    <option :value="outcome.value" v-for="outcome in availabeOutcomes">{{ outcome.label }}</option>
+                                </select>
+                                <label for="personName">{{ nameLabel }}</label>
+                                <input v-model="personName" class="form-control" type="text" id="personName">
+                                
+                                <datetime v-model="actionTime" type="datetime" 
+                                    input-class="datetimeinput form-control">
+                                    <label for="startDate" slot="before">{{ actionTimeLabel }} *</label>          
+                                </datetime>
+                
+                                <label for="duration">{{ durationLabel }}</label>
+                                <input v-model="durationInMinutes" class="form-control" type="number" id="duration">
+                                <small class="form-text text-muted">({{ inMinutesLabel }})</small>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-dark" @click="$emit('close', false)">{{ cancelLabel }}</button>
+                        <button type="button" class="btn btn-primary" @click="save()">{{ saveLabel }}</button>
+                        <button v-if="mode === 'edit'" type="button" @click="deleteConfirmation=true" class="btn btn-danger">{{ deleteLabel }}</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -548,8 +571,8 @@ var VwManagmentTableNestRow = {
         addStr: function () {
             return gettext('add');
         },
-        editStr: function () {
-            return gettext('edit');
+        editDeleteStr: function () {
+            return gettext('edit / delete');
         },
         managementAction: function () {
             return gettext(this.nest.action);
@@ -603,7 +626,7 @@ var VwManagmentTableNestRow = {
             <td>
                 <span v-if="hasManagementAction">
                     {{ managementAction }}
-                    <button v-on:click="showEditActionModal()" class="btn btn-outline-info btn-sm">{{ editStr }}</button>
+                    <button v-on:click="showEditActionModal()" class="btn btn-outline-info btn-sm">{{ editDeleteStr }}</button>
                 </span>
                 
                 <button v-else v-on:click="showNewActionModal()" class="btn btn-outline-info btn-sm">{{ addStr }}</button>
@@ -636,6 +659,9 @@ var VwManagementTable = {
         managementStr: function () {
             return gettext('management');
         },
+        loadingStr: function () {
+            return gettext('Loading...')
+        },
         nestClass: function () {
             return "table-danger";
         }
@@ -646,7 +672,7 @@ var VwManagementTable = {
         }
     },
     methods: {
-        loadData: function() {
+        loadData: function () {
             if (this.zone != null) {
                 this.$root.loadNests(this.zone);
             } else {
@@ -665,7 +691,7 @@ var VwManagementTable = {
     },
     template: `
         <div class="row">
-        <span v-if="currentlyLoading">Loading...</span>
+        <span v-if="currentlyLoading">{{ loadingStr }}</span>
         <table v-else class="table">
             <thead>
                 <tr>
