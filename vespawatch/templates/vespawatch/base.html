@@ -83,7 +83,7 @@
         <script src="{% static 'vespawatch/libraries/bootstrap/popper.min.js' %}"></script>
         <script src="{% static 'vespawatch/libraries/bootstrap/bootstrap.min.js' %}"></script>
         
-        {% if settings.DEBUG %}
+        {% if settings.JS_DEBUG %}
         {# see https://vuejs.org/v2/guide/deployment.html#Without-Build-Tools #}
             <script src="{% static 'vespawatch/libraries/vue/vue.js' %}"></script>
         {% else %}
