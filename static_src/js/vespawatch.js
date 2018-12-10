@@ -657,7 +657,7 @@ var VwManagementTable = {
     mounted: function () {
         this.loadData();
     },
-    props: ['nests', 'zone'],
+    props: ['nests', 'zone', 'currentlyLoading'],
     watch: {
         nests: function (n, o) {
             this._nests = n;
@@ -665,7 +665,8 @@ var VwManagementTable = {
     },
     template: `
         <div class="row">
-        <table class="table">
+        <span v-if="currentlyLoading">Loading...</span>
+        <table v-else class="table">
             <thead>
                 <tr>
                     <th>{{ dateStr }}</th>
@@ -1084,12 +1085,14 @@ var app = new Vue({
     },
     data: {
         individuals: null,
-        nests: null
+        nests: null,
+        currentlyLoading: false
     },
     delimiters: ['[[', ']]'],
     el: '#vw-main-app',
     methods: {
         loadNests: function (zone) {
+            this.currentlyLoading = true;
             let url = VWConfig.apis.observationsUrl + '?type=nest';
             if (zone != null) {
                 url = url + '&zone=' + zone;
@@ -1099,6 +1102,7 @@ var app = new Vue({
                     if (response.data.nests) {
                         this.nests = response.data.nests;
                     }
+                    this.currentlyLoading = false;
                 })
                 .catch(function (error) {
                     // handle error
