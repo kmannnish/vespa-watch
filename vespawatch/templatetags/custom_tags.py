@@ -11,6 +11,7 @@ register = template.Library()
 def js_config_object():
     conf = {
         'debug': settings.JS_DEBUG,
+        'baseUrl': settings.VESPAWATCH_BASE_SITE_URL,
         'apis': {
             'observationsUrl': reverse('vespawatch:api_observations'),
             'actionOutcomesUrl': reverse('vespawatch:api_action_outcomes'),

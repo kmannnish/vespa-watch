@@ -460,7 +460,8 @@ class Nest(AbstractObservation):
             'actionCode': self.get_management_action(),
             'actionId': self.get_management_action_id(),
             'originates_in_vespawatch': self.originates_in_vespawatch,
-            'updateUrl': reverse('vespawatch:nest-update', kwargs={'pk': self.pk})
+            'updateUrl': reverse('vespawatch:nest-update', kwargs={'pk': self.pk}),
+            'detailsUrl': reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
         }
 
     def __str__(self):
@@ -499,6 +500,7 @@ class Individual(AbstractObservation):
             'observation_time': self.observation_time.timestamp() * 1000,
             'comments': self.comments,
             'imageUrls': [x.image.url for x in self.pictures.all()],
+            'detailsUrl': reverse('vespawatch:individual-detail', kwargs={'pk': self.pk})
         }
 
     # def __str__(self):

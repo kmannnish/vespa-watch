@@ -3,13 +3,9 @@
 // TODO: Remove all constants/config from here and move to the VWConfig object (defined in custom_tags.py)
 // TODO: Some gettext calls/computed properties are duplicated in multiple Vue components: factorize?
 
-// TODO: Update comment
-//  * VwObservationsViz: This is the main visualization displayed on the home page. It consists
-//    of a time slider and a map, both of which are also components defined here.
-//  * VwObservationsVizMap: The map of the VwObservationsViz component
-//  * VwObservationsVizTimeSlider: The time slider of the VwObservationsViz.
+// 1. Global stuff
 
-// Language selector (Navbar)
+// Enable the language selector (Navbar)
 $(document).ready(function () {
     $('#lang').on('change', function () {
         document.forms['lang-form'].submit();
@@ -26,10 +22,65 @@ if (!VWConfig.debug) {
     }
 }
 
+// 2. Vue.JS components
+
+var VwObservationsMapPopup = {
+    props: ["observation", "editRedirect"],
+    computed: {
+        htmlId: function() {
+            return "map-popup-" + this.observation.id;
+        },
+        observationTime: function() {
+            return  moment(this.observation.observation_time).format('lll')
+        },
+        seeOnInatStr: function() {
+            return gettext('See on iNaturalist');
+        },
+        viewDetailsStr: function() {
+            return gettext('View details');
+        },
+        inaturalistUrl: function() {
+            return "http://www.inaturalist.org/observations/" + this.observation.inaturalist_id;
+        },
+        detailsUrl: function() {
+            var url = new URL(this.observation.detailsUrl, VWConfig.baseUrl);
+
+            if (this.editRedirect) {
+                url.searchParams.append('redirect_to', this.editRedirect);
+            }
+            return url;
+        }
+    },
+    template: `
+        <div :id="htmlId">
+            <h1>{{ observation.taxon }}</h1>
+           
+            <ul>
+                <li><b>Observation time: </b> {{ observationTime }}</li> 
+                <li><b>Subject: </b> {{ observation.subject }}</li>
+                
+                <li v-if="observation.comments"><b>Comments: </b> {{ observation.comments }}</li>
+                <li v-if="observation.inaturalist_id"><a :href="inaturalistUrl" target="_blank">{{ seeOnInatStr }}</a></li>
+            </ul>
+            
+            <div v-if="observation.imageUrls.length > 0">
+                <img v-for="imageUrl in observation.imageUrls" class="theme-img-thumb" :src="imageUrl">
+            </div>
+            
+            <p>
+            <a :href="detailsUrl"> {{ viewDetailsStr }}</a>
+            </p>
+        </div>
+    `
+};
+
 // The map of the visualization.
 // This contains an observations prop. When this property is updated, (when data is retrieved
 // from the API or when the user filters the data) the map is cleared and new circles are drawn.
 var VwObservationsVizMap = {
+    components: {
+        'vw-observations-map-popup': VwObservationsMapPopup
+    },
     data: function () {
         return {
             initialZoomed: false,  // only allow the map to zoom and center on the data when the data is loaded for the first time.
@@ -68,7 +119,9 @@ var VwObservationsVizMap = {
                     radius: getRadius(obs),
                     className: "circle"
                 });
-                circle.bindPopup(this.observationToHtml(obs));
+                //circle.bindPopup(this.observationToHtml(obs));
+                console.log("Popup id: ", document.getElementById('map-popup-' + obs.id));
+                circle.bindPopup(document.getElementById('map-popup-' + obs.id));
                 this.mapCircles.push(circle);
             });
             this.observationsLayer = L.featureGroup(this.mapCircles);
@@ -138,11 +191,18 @@ var VwObservationsVizMap = {
         observations: function (newObservations, oldObservations) {
             console.log('vw-observations-viz-map: Observations got updated!');
             this.clearMap();
-            this.addObservationsToMap();
+            Vue.nextTick(() => { // !! The popups should be in the DOM before we reference them !!
+               this.addObservationsToMap();
+            });
         }
     },
 
-    template: '<div class="mb-2" id="vw-map-map" style="height: 450px;"></div>'
+    template: `<div>
+        <div class="mb-2" id="vw-map-map" style="height: 450px;"></div>
+        <div style="display: none;">
+            <vw-observations-map-popup v-for="observation in observations" :observation="observation" :edit-redirect="editRedirect" :key="observation.id"></vw-observations-map-popup>
+        </div>
+    </div>`
 };
 
 
@@ -330,6 +390,7 @@ var VwObservationsViz = {
         `
 };
 
+/// Component for the create/edit/delete Management Action modal
 var VwManagementActionModal = {
     data: function () {
         return {
@@ -704,6 +765,8 @@ var VwManagementTable = {
     `
 };
 
+
+// A row from the "Recent observations" table
 var VwRecentObsTableRow = {
     props: ['observation'],
     computed: {
@@ -948,6 +1011,7 @@ var VwLocationSelectorCoordinates = {
         `
 };
 
+// Components allowing to select a taxon (with illustrative picture) in the forms
 var VwTaxonSelectorEntry = {
     delimiters: ['[[', ']]'],
     props: {
@@ -1094,7 +1158,6 @@ var VwDatetimeSelector = {
 var VwLocationSelector = {
     data: function () {
         return {
-            bbox: [[50.2, 4.4], [50.9, 4.9]],
             locationCoordinates: [this.initCoordinates[0], this.initCoordinates[1]],  // the coordinates that will be passed to the long lat fields
             markerCoordinates: [this.initCoordinates[0], this.initCoordinates[1]],  // the coordinates that will be passed to the map
             modelAddress: this.address ? '' + this.address : '',
