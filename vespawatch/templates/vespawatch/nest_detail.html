@@ -56,6 +56,11 @@
                 <dd>{{ nest.comments|default_if_none:'' }}</dd>
             </dl>
 
+        {% if nest.managementaction_set %}
+            <dt>{% trans "Management action" %}</dt>
+            <dd>{{ nest.get_management_action_display }}</dd>
+        {% endif %}
+
         {% if nest.pictures %}
             {% for image in nest.pictures.all %}
                 <img src="{{ image.image.url }}">

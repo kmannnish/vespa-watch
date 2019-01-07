@@ -440,7 +440,7 @@ class Nest(AbstractObservation):
 
     def get_management_action_display(self):
         action = self.managementaction_set.first()
-        return action.get_outcome_display() if action else ''
+        return str(action) if action else ''
 
     def get_management_action(self):
         action = self.managementaction_set.first()
@@ -555,7 +555,7 @@ class ManagementAction(models.Model):
             return '' # NULL
 
     def __str__(self):
-        return f'{self.action_time.strftime("%Y-%m-%d")} {self.get_outcome_display()} on {self.nest}'
+        return f'{self.action_time.strftime("%Y-%m-%d")} {self.get_outcome_display()}'
 
 
 class Profile(models.Model):
