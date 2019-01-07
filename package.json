@@ -6,7 +6,6 @@
   "private": true,
   "scripts": {
     "wipe:static": "rm -rf vespawatch/static/vespawatch/*",
-
     "copy:bootstrap": "dir='vespawatch/static/vespawatch/libraries/bootstrap' && mkdir -p $dir && cp node_modules/jquery/dist/jquery.min.js $dir/jquery.min.js && cp node_modules/popper.js/dist/umd/popper.min.js $dir/popper.min.js && cp node_modules/bootstrap/dist/js/bootstrap.min.js $dir/bootstrap.min.js",
     "copy:axios": "dir='vespawatch/static/vespawatch/libraries/axios' && mkdir -p $dir && cp node_modules/axios/dist/axios.min.js $dir/axios.min.js",
     "copy:crossfilter": "dir='vespawatch/static/vespawatch/libraries/crossfilter' && mkdir -p $dir && cp node_modules/crossfilter/crossfilter.min.js $dir/crossfilter.min.js",
@@ -16,13 +15,10 @@
     "copy:vue": "dir='vespawatch/static/vespawatch/libraries/vue' && mkdir -p $dir && cp node_modules/vue/dist/vue.js $dir/vue.js && cp node_modules/vue/dist/vue.min.js $dir/vue.min.js && cp node_modules/vue-datetime/dist/vue-datetime.min.js $dir/vue-datetime.min.js && cp node_modules/vue-datetime/dist/vue-datetime.min.css $dir/vue-datetime.min.css && cp node_modules/luxon/build/global/luxon.min.js $dir/luxon.min.js",
     "copy:wnumb": "dir='vespawatch/static/vespawatch/libraries/wnumb' && mkdir -p $dir && cp node_modules/wnumb/wNumb.js $dir/wnumb.js",
     "copy:libraries": "npm run copy:bootstrap && npm run copy:axios && npm run copy:crossfilter && npm run copy:leaflet && npm run copy:moment && npm run copy:nouislider && npm run copy:vue && npm run copy:wnumb",
-    
-    "copy:custom-js": "dir='vespawatch/static/vespawatch/js/' && mkdir -p $dir && cp -r static_src/js/* $dir",
+    "copy:custom-js": "dir='vespawatch/static/vespawatch/js/' && mkdir -p $dir && uglifyjs static_src/js/vespawatch.js --compress --mangle --warn --output $dir/vespawatch.min.js",
     "copy:img": "dir='vespawatch/static/vespawatch/img/' && mkdir -p $dir && cp -r static_src/img/* $dir",
     "create:css": "dir='vespawatch/static/vespawatch/css/' && mkdir -p $dir && node-sass static_src/scss --output-style nested --source-map true --output $dir",
-
     "build:all": "npm run wipe:static && npm run copy:libraries && npm run copy:custom-js && npm run copy:img && npm run create:css",
-
     "watch:js": "onchange 'static_src/js/*.js' -- npm run copy:custom-js",
     "watch:css": "onchange 'static_src/scss/*.scss' -- npm run create:css"
   },
@@ -36,6 +32,7 @@
     "luxon": "1.7.1",
     "moment": "2.0.0",
     "nouislider": "12.0.0",
+    "npm": "^6.4.1",
     "popper.js": "1.14.3",
     "vue": "2.5.17",
     "vue-datetime": "1.0.0-beta.8",
@@ -44,6 +41,7 @@
   },
   "devDependencies": {
     "node-sass": "^4.5.3",
-    "onchange": "^3.2.1"
+    "onchange": "^3.2.1",
+    "uglify-es": "^3.3.9"
   }
 }

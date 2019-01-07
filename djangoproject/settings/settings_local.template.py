@@ -13,6 +13,9 @@ SECRET_KEY = '<SOMETHING_SECRET_TO_REDEFINE_HERE>'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+JS_DEBUG = False
+
+VESPAWATCH_BASE_SITE_URL = "http://localhost:8000"
 
 # INaturalist user information
 INAT_USER_USERNAME = 'vespawatch'

@@ -1,16 +1,87 @@
-// This file contains vuejs components that are used in our application.
-//  * VwObservationsViz: This is the main visualization displayed on the home page. It consists
-//    of a time slider and a map, both of which are also components defined here.
-//  * VwObservationsVizMap: The map of the VwObservationsViz component
-//  * VwObservationsVizTimeSlider: The time slider of the VwObservationsViz.
+// This file contains all our custom Javascript code, including VueJS components .
 
+// TODO: Remove all constants/config from here and move to the VWConfig object (defined in custom_tags.py)
+// TODO: Some gettext calls/computed properties are duplicated in multiple Vue components: factorize?
 
+// 1. Global stuff
+
+// Enable the language selector (Navbar)
+$(document).ready(function () {
+    $('#lang').on('change', function () {
+        document.forms['lang-form'].submit();
+    });
+});
+
+// Disable console.log() et al. if settings.JS_DEBUG = True
+if (!VWConfig.debug) {
+    if (!window.console) window.console = {};
+    var methods = ["log", "debug", "warn", "info"];
+    for (var i = 0; i < methods.length; i++) {
+        console[methods[i]] = function () {
+        };
+    }
+}
+
+// 2. Vue.JS components
+
+var VwObservationsMapPopup = {
+    props: ["observation", "editRedirect"],
+    computed: {
+        htmlId: function() {
+            return "map-popup-" + this.observation.id;
+        },
+        observationTime: function() {
+            return  moment(this.observation.observation_time).format('lll')
+        },
+        seeOnInatStr: function() {
+            return gettext('See on iNaturalist');
+        },
+        viewDetailsStr: function() {
+            return gettext('View details');
+        },
+        inaturalistUrl: function() {
+            return "http://www.inaturalist.org/observations/" + this.observation.inaturalist_id;
+        },
+        detailsUrl: function() {
+            var url = new URL(this.observation.detailsUrl, VWConfig.baseUrl);
+
+            if (this.editRedirect) {
+                url.searchParams.append('redirect_to', this.editRedirect);
+            }
+            return url;
+        }
+    },
+    template: `
+        <div :id="htmlId">
+            <h1>{{ observation.taxon }}</h1>
+           
+            <ul>
+                <li><b>Observation time: </b> {{ observationTime }}</li> 
+                <li><b>Subject: </b> {{ observation.subject }}</li>
+                
+                <li v-if="observation.comments"><b>Comments: </b> {{ observation.comments }}</li>
+                <li v-if="observation.inaturalist_id"><a :href="inaturalistUrl" target="_blank">{{ seeOnInatStr }}</a></li>
+            </ul>
+            
+            <div v-if="observation.imageUrls.length > 0">
+                <img v-for="imageUrl in observation.imageUrls" class="theme-img-thumb" :src="imageUrl">
+            </div>
+            
+            <p>
+            <a :href="detailsUrl"> {{ viewDetailsStr }}</a>
+            </p>
+        </div>
+    `
+};
 
 // The map of the visualization.
 // This contains an observations prop. When this property is updated, (when data is retrieved
 // from the API or when the user filters the data) the map is cleared and new circles are drawn.
 var VwObservationsVizMap = {
-    data: function() {
+    components: {
+        'vw-observations-map-popup': VwObservationsMapPopup
+    },
+    data: function () {
         return {
             initialZoomed: false,  // only allow the map to zoom and center on the data when the data is loaded for the first time.
             map: undefined,
@@ -21,38 +92,41 @@ var VwObservationsVizMap = {
 
     methods: {
         addObservationsToMap: function () {
+            var conf = VWConfig.map.circle;
 
             function getColor(d) {
-                return d.subject === 'individual' ? '#FD9126' :
+                return d.subject === 'individual' ? conf.individualColor :
                     d.subject === 'nest' ?
-                        d.actionCode === 'FD' ? '#3678ff' :
-                        d.actionCode === 'PD' ? '#3678ff' :
-                        d.actionCode === 'ND' ? '#3678ff' :
-                            '#3678ff'
-                    : '#000';  // if the subject is not 'Individual' or 'Nest'
+                        d.actionCode === 'FD' ? conf.nestColor.FD :
+                            d.actionCode === 'PD' ? conf.nestColor.PD :
+                                d.actionCode === 'ND' ? conf.nestColor.ND :
+                                    conf.nestColor.DEFAULT
+                        : conf.unknownColor;  // if the subject is not 'Individual' or 'Nest'
             }
 
             function getRadius(d) {
-                return d.subject === 'individual' ? 5 : 12;
+                return d.subject === 'individual' ? conf.individualRadius : conf.nestRadius;
             }
 
             this.observations.forEach(obs => {
-                var color = 'orange';
                 var circle = L.circleMarker([obs.latitude, obs.longitude], {
                     stroke: true,  // whether to draw a stroke
-                    weight: 1, // stroke width in pixels
+                    weight: conf.strokeWidth, // stroke width in pixels
                     color: getColor(obs),  // stroke color
-                    opacity: 0.8,  // stroke opacity
+                    opacity: conf.strokeOpacity,  // stroke opacity
                     fillColor: getColor(obs),
-                    fillOpacity: 0.5,
+                    fillOpacity: conf.fillOpacity,
                     radius: getRadius(obs),
                     className: "circle"
                 });
-                circle.bindPopup(this.observationToHtml(obs));
+                //circle.bindPopup(this.observationToHtml(obs));
+                console.log("Popup id: ", document.getElementById('map-popup-' + obs.id));
+                circle.bindPopup(document.getElementById('map-popup-' + obs.id));
                 this.mapCircles.push(circle);
             });
             this.observationsLayer = L.featureGroup(this.mapCircles);
             this.observationsLayer.addTo(this.map);
+            this.observationsLayer.bringToFront();
             if (!this.initialZoomed) {
                 this.map.fitBounds(this.observationsLayer.getBounds());
             }
@@ -61,6 +135,7 @@ var VwObservationsVizMap = {
 
         // Generate a HTML string that represents the observation
         observationToHtml: function (obs) {
+            // TODO: Use some template system to avoid this method
             var html = '';
 
             html += '<h1>' + obs.taxon + '</h1>';
@@ -70,7 +145,7 @@ var VwObservationsVizMap = {
             }
 
             if (obs.subject != null) {
-                html += '<b>subject:</b> '+ obs.subject + '';
+                html += '<b>subject:</b> ' + obs.subject + '';
             }
 
             if (obs.comments != null) {
@@ -81,7 +156,7 @@ var VwObservationsVizMap = {
                 html += '<a target="_blank" href="http://www.inaturalist.org/observations/' + obs.inaturalist_id + '">iNaturalist observation</a>';
             }
 
-            if (obs.imageUrls.length > 0 ) {
+            if (obs.imageUrls.length > 0) {
                 obs.imageUrls.forEach(function (img) {
                     html += '<img class="theme-img-thumb" src="' + img + '">'
                 });
@@ -91,23 +166,33 @@ var VwObservationsVizMap = {
 
             return html;
         },
-        clearMap: function() {
+        clearMap: function () {
             if (this.observationsLayer) {
                 this.observationsLayer.clearLayers();
                 this.mapCircles = [];
             }
         },
         init: function () {
-            var mapPosition = [50.85, 4.35];
-            var mapZoom = 8;
-            this.map = L.map("vw-map-map")
-                .setView(mapPosition, mapZoom);
-            var CartoDB_Positron = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://carto.com/attributions">CARTO</a>',
-                subdomains: 'abcd',
-                maxZoom: 20
-            })
-                .addTo(this.map);
+            var conf = VWConfig.map;
+
+            var mapPosition = conf.initialPosition;
+            var mapZoom = conf.initialZoom;
+            this.map = L.map("vw-map-map").setView(mapPosition, mapZoom);
+
+            L.tileLayer(conf.tileLayerBaseUrl, conf.tileLayerOptions).addTo(this.map);
+
+            if (this.zoneId) {
+                axios.get(VWConfig.apis.zoneUrl, {params: {zone_id: this.zoneId}})
+                .then(response => {
+                    var geoJSONLayer = L.geoJSON(response.data);
+                    geoJSONLayer.addTo(this.map);
+                    geoJSONLayer.bringToBack();
+                    this.map.fitBounds(geoJSONLayer.getBounds());
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            }
         }
     },
 
@@ -115,16 +200,23 @@ var VwObservationsVizMap = {
         this.init();
     },
 
-    props: ['autozoom', 'editRedirect', 'observations'],
+    props: ['autozoom', 'editRedirect', 'observations', 'zoneId'],
     watch: {
         observations: function (newObservations, oldObservations) {
             console.log('vw-observations-viz-map: Observations got updated!');
             this.clearMap();
-            this.addObservationsToMap();
+            Vue.nextTick(() => { // !! The popups should be in the DOM before we reference them !!
+               this.addObservationsToMap();
+            });
         }
     },
 
-    template: '<div class="mb-2" id="vw-map-map" style="height: 450px;"></div>'
+    template: `<div>
+        <div class="mb-2" id="vw-map-map" style="height: 450px;"></div>
+        <div style="display: none;">
+            <vw-observations-map-popup v-for="observation in observations" :observation="observation" :edit-redirect="editRedirect" :key="observation.id"></vw-observations-map-popup>
+        </div>
+    </div>`
 };
 
 
@@ -164,19 +256,19 @@ var VwObservationsVizTimeSlider = {
                 stop: this.value.stop
             };
             noUiSlider.create(el, {
-            // Create two timestamps to define a range.
+                // Create two timestamps to define a range.
                 range: {
                     min: this.value.start,
                     max: this.value.stop
                 },
 
-            // Steps of one week
+                // Steps of one week
                 step: 7 * 24 * 60 * 60 * 1000,
 
-            // Two more timestamps indicate the handle starting positions.
+                // Two more timestamps indicate the handle starting positions.
                 start: [this.value.start, this.value.stop],
 
-            // No decimals
+                // No decimals
                 format: wNumb({
                     decimals: 0
                 })
@@ -219,14 +311,16 @@ var VwObservationsViz = {
         'vw-observations-viz-map': VwObservationsVizMap
     },
 
-    data: function () {return {
-        observationsUrl: '/api/observations',
-        observations: [],
-        observationsCF: undefined,
-        cfDimensions: {},
-        timeRange: {start: undefined, stop: undefined},
-        totalObsCount: 0
-    }},
+    data: function () {
+        return {
+            observationsUrl: VWConfig.apis.observationsUrl,
+            observations: [],
+            observationsCF: undefined,
+            cfDimensions: {},
+            timeRange: {start: undefined, stop: undefined},
+            totalObsCount: 0
+        }
+    },
 
     methods: {
         getData: function () {
@@ -239,24 +333,18 @@ var VwObservationsViz = {
                 // console.log("No zone set");
             }
             axios.get(url)
-            .then(response => {
-                console.log(response.data);
-                var allObservations = [];
-                if (response.data.individuals) {
-                    allObservations = allObservations.concat(response.data.individuals);
-                }
-                if (response.data.nests) {
-                    allObservations = allObservations.concat(response.data.nests);
-                }
-                this.setCrossFilter(allObservations);
-                this.totalObsCount = allObservations.length;
-                this.initTimerangeSlider();
-                this.setObservations();
-            })
-            .catch(function (error) {
-                // handle error
-                console.log(error);
-            });
+                .then(response => {
+                    console.log(response.data);
+                    var allObservations = response.data.observations;
+                    this.setCrossFilter(allObservations);
+                    this.totalObsCount = allObservations.length;
+                    this.initTimerangeSlider();
+                    this.setObservations();
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                });
         },
 
         initTimerangeSlider: function () {
@@ -272,7 +360,9 @@ var VwObservationsViz = {
 
         setCrossFilter: function (observations) {
             this.observationsCF = crossfilter(observations);
-            this.cfDimensions.timeDim = this.observationsCF.dimension(function (d) {return d.observation_time;});
+            this.cfDimensions.timeDim = this.observationsCF.dimension(function (d) {
+                return d.observation_time;
+            });
         },
 
         setObservations: function () {
@@ -308,17 +398,237 @@ var VwObservationsViz = {
 
     template: `
         <section>
-            <vw-observations-viz-map v-bind:observations="observations" v-bind:edit-redirect="editRedirect"></vw-observations-viz-map>
+            <vw-observations-viz-map :observations="observations" :edit-redirect="editRedirect" :zone-id="zone"></vw-observations-viz-map>
             <vw-observations-viz-time-slider v-on:time-updated="filterOnTimeRange" v-model="timeRange"></vw-observations-viz-time-slider>
         </section>
         `
 };
 
+/// Component for the create/edit/delete Management Action modal
+var VwManagementActionModal = {
+    data: function () {
+        return {
+            actionOutcomesUrl: VWConfig.apis.actionOutcomesUrl,
+            saveActionUrl: VWConfig.apis.actionSaveUrl,
+            loadActionUrl: VWConfig.apis.actionLoadUrl,
+            deleteActionUrl: VWConfig.apis.actionDeleteUrl,
+            availabeOutcomes: [],
+
+            errors: [],
+
+            actionTime: '',  // As ISO3166
+            outcome: '',
+            personName: '',
+            duration: '',  // In seconds
+
+            deleteConfirmation: false  // The user has asked to delete, we're asking confirmation (instead of the usual form)
+        }
+    },
+    props: {
+        mode: String, // 'add' or 'edit'
+        nestId: Number, //the Nest ID for this action (!! also needed when editing)
+        actionId: Number // If mode === 'edit': the ManagementAction ID
+    },
+    computed: {
+        durationInMinutes: {
+            get: function () {
+                if (this.duration !== '') {
+                    return this.duration / 60;
+                }
+            },
+            set: function (newValue) {
+                if (newValue !== '') {
+                    this.duration = newValue * 60;
+                } else {
+                    this.duration = '';
+                }
+            }
+        },
+
+        modalTitle: function () {
+            return this.mode === 'add' ? gettext("New management action") : gettext("Edit management action")
+        },
+        outcomeLabel: function () {
+            return gettext("Outcome")
+        },
+        saveLabel: function () {
+            return gettext("Save")
+        },
+        cancelLabel: function () {
+            return gettext("Cancel")
+        },
+        deleteLabel: function () {
+            return gettext("Delete")
+        },
+        yesDeleteLabel: function () {
+            return gettext("Yes, delete")
+        },
+        nameLabel: function () {
+            return gettext("Person name")
+        },
+        actionTimeLabel: function () {
+            return gettext("Action time")
+        },
+        durationLabel: function () {
+            return gettext("Duration")
+        },
+        inMinutesLabel: function () {
+            return gettext("in minutes")
+        },
+        errorsLabel: function () {
+            return gettext("Errors")
+        },
+        areYouSureStr: function () {
+            return gettext("Are you sure you want to delete this action?")
+        }
+    },
+    methods: {
+        populateFromServer: function () {
+            axios.get(this.loadActionUrl, {params: {'action_id': this.actionId}})
+                .then(response => {
+                    console.log("received response", response);
+                    this.actionTime = response.data.action_time;
+                    this.outcome = response.data.outcome;
+                    this.duration = response.data.duration;
+                    this.personName = response.data.person_name;
+                })
+        },
+        deleteAction: function () {
+            var vm = this;
+            axios.delete(this.deleteActionUrl, {params: {'action_id': this.actionId}})
+                .then(response => {
+                    if (response.data.result === 'OK') {
+                        vm.$emit('close', true);
+                    }
+                }, error => {
+                    console.log("Error");
+                });
+        },
+        save: function () {
+            const params = new URLSearchParams();
+            params.append('nest', this.nestId);
+            params.append('action_time', this.actionTime);
+            params.append('outcome', this.outcome);
+            params.append('person_name', this.personName);
+            params.append('duration', this.duration);
+
+            if (this.mode === 'edit') {
+                // We give the actionId to the server so it can perform an update
+                params.append('action_id', this.actionId);
+            }
+
+            var vm = this;
+            axios.post(this.saveActionUrl, params)
+                .then(function (response) {
+                    if (response.data.result === 'OK') {
+                        vm.$emit('close', true);
+                    }
+                })
+                .catch(function (error) {
+                    vm.errors = error.response.data.errors;
+                });
+        },
+        loadOutcomes: function () {
+            return axios.get(this.actionOutcomesUrl)
+                .then(response => {
+                    this.availabeOutcomes = response.data;
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                });
+        }
+    },
+    mounted: function () {
+        // We load the "outcomes" list, and we're in edit mode, we populate the form from the server
+        this.loadOutcomes().then(() => {
+            if (this.mode === 'edit') {
+                this.populateFromServer()
+            }
+        });
+    },
+
+    template: `
+<transition name="modal">
+      <div class="modal-mask">
+        <div class="modal-wrapper">
+
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ modalTitle }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" @click="$emit('close', false)">&times;</span>
+                    </button>
+                </div>
+                
+                <div v-if="deleteConfirmation">
+                    <div class="modal-body">{{ areYouSureStr }}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-dark" @click="deleteConfirmation=false">{{ cancelLabel }}</button>
+                        <button type="button" @click="deleteAction()" class="btn btn-danger">{{ yesDeleteLabel }}</button>
+                    </div>
+                </div>
+                <div v-else>
+                    <div class="modal-body">
+                        <div v-if="Object.keys(errors).length !== 0">
+                            <h6>{{ errorsLabel }}</h6>
+                            <ul > 
+                                <li v-for="(errorList, fieldName) in errors">
+                                    {{ fieldName }}:
+                                    <span v-for="(err, index) in errorList">{{ err }} <span v-if="errorList.length-1<index">, </span> </span>
+                                </li>
+                            </ul>
+                        </div>
+                        <form>
+                            <div class="form-group">
+                                <label for="outcome">{{ outcomeLabel }} *</label>
+                                <select v-model="outcome" class="form-control" id="outcome">
+                                    <option :value="outcome.value" v-for="outcome in availabeOutcomes">{{ outcome.label }}</option>
+                                </select>
+                                <label for="personName">{{ nameLabel }}</label>
+                                <input v-model="personName" class="form-control" type="text" id="personName">
+                                
+                                <datetime v-model="actionTime" type="datetime" 
+                                    input-class="datetimeinput form-control">
+                                    <label for="startDate" slot="before">{{ actionTimeLabel }} *</label>          
+                                </datetime>
+                
+                                <label for="duration">{{ durationLabel }}</label>
+                                <input v-model="durationInMinutes" class="form-control" type="number" id="duration">
+                                <small class="form-text text-muted">({{ inMinutesLabel }})</small>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-dark" @click="$emit('close', false)">{{ cancelLabel }}</button>
+                        <button type="button" class="btn btn-primary" @click="save()">{{ saveLabel }}</button>
+                        <button v-if="mode === 'edit'" type="button" @click="deleteConfirmation=true" class="btn btn-danger">{{ deleteLabel }}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </div>
+      </div>
+    </transition>`
+};
 
 // A row in the management table that displays the
 // information of a single nest.
 var VwManagmentTableNestRow = {
+    components: {
+        'vw-management-action-modal': VwManagementActionModal
+    },
     computed: {
+        hasManagementAction: function () {
+            // Does this Nest has a management action?
+            return (this.nest.action !== "")
+        },
+        managementActionID: function () {
+            // If this nest has a management action, return its ID
+            return this.nest.actionId;
+        },
         cannotEditLabel: function () {
             return gettext('You cannot edit this observation');
         },
@@ -327,6 +637,12 @@ var VwManagmentTableNestRow = {
         },
         editStr: function () {
             return gettext('edit');
+        },
+        addStr: function () {
+            return gettext('add');
+        },
+        editDeleteStr: function () {
+            return gettext('edit / delete');
         },
         managementAction: function () {
             return gettext(this.nest.action);
@@ -342,11 +658,53 @@ var VwManagmentTableNestRow = {
         }
     },
     props: ['nest'],
+    data: function () {
+        return {
+            addActionModalOpened: false,
+            editActionModalOpened: false
+        }
+    },
+    methods: {
+        showNewActionModal: function () {
+            this.addActionModalOpened = true;
+        },
+        hideNewActionModal: function (dataChanged) {
+            this.addActionModalOpened = false;
+            if (dataChanged) {
+                // Data has been changed by the modal, ask the parent for refreshed data
+                this.$emit('data-changed');
+            }
+        },
+        showEditActionModal: function () {
+            this.editActionModalOpened = true;
+        },
+        hideEditActionModal: function (dataChanged) {
+            this.editActionModalOpened = false;
+            if (dataChanged) {
+                // Data has been changed by the modal, ask the parent for refreshed data
+                this.$emit('data-changed');
+            }
+        }
+
+    },
     template: `
         <tr :class="nestClass">
             <td>{{ observationTimeStr }}</td>
+            
             <td>{{ nest.address }}</td>
-            <td>{{ managementAction }}</td>
+            
+            <td>
+                <span v-if="hasManagementAction">
+                    {{ managementAction }}
+                    <button v-on:click="showEditActionModal()" class="btn btn-outline-info btn-sm">{{ editDeleteStr }}</button>
+                </span>
+                
+                <button v-else v-on:click="showNewActionModal()" class="btn btn-outline-info btn-sm">{{ addStr }}</button>
+                
+                <vw-management-action-modal v-if="editActionModalOpened" v-on:close="hideEditActionModal" mode="edit" :nest-id="nest.id" :action-id="nest.actionId"></vw-management-action-modal>
+                <vw-management-action-modal v-if="addActionModalOpened" v-on:close="hideNewActionModal" mode="add" :nest-id="nest.id"></vw-management-action-modal>
+            </td>
+            
             <td>
                     <a v-if="nest.originates_in_vespawatch" v-bind:href="nest.updateUrl">{{ editStr }}</a>
                     <span v-if="!nest.originates_in_vespawatch" v-bind:title="cannotEditTitle">{{ cannotEditLabel }}</span>
@@ -371,6 +729,12 @@ var VwManagementTable = {
         managementStr: function () {
             return gettext('management');
         },
+        loadingStr: function () {
+            return gettext('Loading...')
+        },
+        noNestsStr: function () {
+            return gettext('No nests yet!')
+        },
         nestClass: function () {
             return "table-danger";
         }
@@ -380,14 +744,19 @@ var VwManagementTable = {
             _nests: []
         }
     },
-    mounted: function () {
-        if (this.zone != null) {
-            this.$root.loadNests(this.zone);
-        } else {
-            this.$root.loadNests();
+    methods: {
+        loadData: function () {
+            if (this.zone != null) {
+                this.$root.loadNests(this.zone);
+            } else {
+                this.$root.loadNests();
+            }
         }
     },
-    props: ['nests', 'zone'],
+    mounted: function () {
+        this.loadData();
+    },
+    props: ['nests', 'zone', 'currentlyLoading'],
     watch: {
         nests: function (n, o) {
             this._nests = n;
@@ -395,23 +764,107 @@ var VwManagementTable = {
     },
     template: `
         <div class="row">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>{{ dateStr }}</th>
-                    <th>{{ addressStr }}</th>
-                    <th>{{ managementStr }}</th>
-                    <th></th>
-                </tr>
-            </thead>
+            <span v-if="currentlyLoading">{{ loadingStr }}</span>
+            <template v-else>
+                <table v-if="nests.length > 0" class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ dateStr }}</th><th>{{ addressStr }}</th><th>{{ managementStr }}</th><th></th>
+                        </tr>
+                    </thead>
 
-            <vw-management-table-nest-row v-for="nest in nests" v-bind:nest="nest" :key="nest.id">
-            </vw-management-table-nest-row>
-        </table>
+                    <vw-management-table-nest-row v-for="nest in nests" :nest="nest" :key="nest.id" v-on:data-changed="loadData"></vw-management-table-nest-row>
+                </table>
+                <div v-else>{{ noNestsStr }}</div>
+            </template>
     </div>
     `
 };
 
+
+// A row from the "Recent observations" table
+var VwRecentObsTableRow = {
+    props: ['observation'],
+    computed: {
+        observationTimeStr: function () {
+            return moment(this.observation.observation_time).format('lll');
+        }
+    },
+    template: `<tr>
+                    <td>{{ observationTimeStr}}</td>
+                    <td>{{ observation.subject }}</td>
+                    <td>{{ observation.address }}</td>
+               </tr>`
+};
+
+// The table of the recent observations on the home page
+var VwRecentObsTable = {
+    components: {
+        'vw-recent-obs-table-row': VwRecentObsTableRow
+    },
+    data: function() {
+        return {
+            'currentlyLoading': false,
+            'limit': 10,
+            'observations': []
+        }
+    },
+    computed: {
+        dateStr: function () {
+            return gettext('date');
+        },
+        addressStr: function () {
+            return gettext('address');
+        },
+        recentObsStr: function () {
+            return gettext('Recent observations')
+        },
+        loadingStr: function () {
+            return gettext('Loading...')
+        },
+        subjectStr: function () {
+            return gettext('subject')
+        }
+    },
+    methods: {
+        loadObs: function() {
+            this.currentlyLoading = true;
+            let url = VWConfig.apis.observationsUrl;
+
+            axios.get(url + '?limit=' + this.limit)
+                .then(response => {
+                    if (response.data.observations) {
+                        this.observations = response.data.observations;
+                    }
+                    this.currentlyLoading = false;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+    },
+    mounted: function () {
+        this.loadObs();
+    },
+    template: `
+        <div class="row">
+            <div class="col">
+                <h2>{{ recentObsStr}}</h2>
+                <span v-if="currentlyLoading">{{ loadingStr }}</span>
+                <table v-else class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ dateStr }}</th>
+                            <th>{{ subjectStr}}</th>
+                            <th>{{ addressStr }}</th>
+                        </tr>
+                    </thead>
+
+                    <vw-recent-obs-table-row v-for="observation in observations" :observation="observation" :key="observation.id"></vw-recent-obs-table-row>
+                </table>
+            </div>
+        </div>`
+};
 
 var VwLocationSelectorLocationInput = {
     data: function () {
@@ -420,16 +873,16 @@ var VwLocationSelectorLocationInput = {
         }
     },
     computed: {
-        positionLabel: function() {
+        positionLabel: function () {
             return gettext('Position');
         },
-        searchLabel: function() {
+        searchLabel: function () {
             return gettext('Search');
         },
-        detectPositionLabel: function() {
+        detectPositionLabel: function () {
             return gettext('Detect current position');
         },
-        orLabel: function() {
+        orLabel: function () {
             return gettext('or')
         },
         typeALocationLabel: function () {
@@ -474,9 +927,12 @@ var VwLocationSelectorMap = {
         emitLongLat: function () {
             this.$emit("marker-move", [this.marker.getLatLng().lng, this.marker.getLatLng().lat]);
         },
-        setMarker: function(lat, lng) {
+        setMarker: function (lat, lng) {
             console.log("setting marker");
-            if (this.marker != undefined) { this.map.removeLayer(this.marker); }; // Only one!
+            if (this.marker != undefined) {
+                this.map.removeLayer(this.marker);
+            }
+            ; // Only one!
 
             // Create the marker
             this.marker = L.marker([lng, lat], {
@@ -518,20 +974,28 @@ var VwLocationSelectorMap = {
 var VwLocationSelectorCoordinates = {
     computed: {
         lat: {
-            get: function () {return this.latitude},
-            set: function (v) {this.$emit("lat-updated", v);}
+            get: function () {
+                return this.latitude
+            },
+            set: function (v) {
+                this.$emit("lat-updated", v);
+            }
         },
         long: {
-            get: function () {return this.longitude},
-            set: function (v) {this.$emit("lon-updated", v);}
+            get: function () {
+                return this.longitude
+            },
+            set: function (v) {
+                this.$emit("lon-updated", v);
+            }
         },
-        latitudeLabel: function() {
+        latitudeLabel: function () {
             return gettext('Latitude');
         },
-        longitudeLabel: function() {
+        longitudeLabel: function () {
             return gettext('Longitude');
         },
-        addressLabel: function() {
+        addressLabel: function () {
             return gettext('Address');
         },
         _address: {
@@ -563,6 +1027,7 @@ var VwLocationSelectorCoordinates = {
         `
 };
 
+// Components allowing to select a taxon (with illustrative picture) in the forms
 var VwTaxonSelectorEntry = {
     delimiters: ['[[', ']]'],
     props: {
@@ -575,7 +1040,7 @@ var VwTaxonSelectorEntry = {
         }
     },
     methods: {
-        getRadioId : function(taxon) {
+        getRadioId: function (taxon) {
             return 'taxonRadios' + taxon.id;
         },
     },
@@ -597,7 +1062,7 @@ var VwTaxonSelectorEntry = {
 };
 
 var VwTaxonSelector = {
-    components : {
+    components: {
         'vw-taxon-selector-entry': VwTaxonSelectorEntry
     },
     delimiters: ['[[', ']]'],
@@ -605,30 +1070,42 @@ var VwTaxonSelector = {
         'taxonApiUrl': String,
         'radioName': String,
         'taxonSelected': Number,
-        'mode': String // nest | individual
+        'mode': String, // nest | individual
+        'cannotChangeAnymore': {
+            'type': Boolean,
+            'default': false
+        }
     },
     computed: {
         buttonLabel: function () {
             return gettext('Show more species');
         },
+        ifYouDontKnowMsg: function () {
+            return gettext("If you don't know, select 'Insecta'.");
+        },
+        taxonCannotBeChangedMsg: function () {
+            return gettext("Taxon can't be changed anymore.");
+        },
         pictureAttrName: function () {
-            switch(this.mode) {
-                case 'nest': return 'identification_picture_nest_url';
-                case 'individual': return 'identification_picture_individual_url';
+            switch (this.mode) {
+                case 'nest':
+                    return 'identification_picture_nest_url';
+                case 'individual':
+                    return 'identification_picture_individual_url';
             }
         }
     },
-    data: function() {
+    data: function () {
         return {
             'taxaData': [],
             'showAll': false
         }
     },
     methods: {
-        showAllIfNeeded: function() {
+        showAllIfNeeded: function () {
             if (this.taxonSelected) {
                 var that = this;
-                var found = this.taxaData.find(function(taxon) {
+                var found = this.taxaData.find(function (taxon) {
                     return taxon.id === that.taxonSelected;
                 });
 
@@ -637,35 +1114,47 @@ var VwTaxonSelector = {
                 }
             }
         },
-        getData: function(){
+        getData: function () {
             axios.get(this.taxonApiUrl)
-            .then(response => {
-                this.taxaData = response.data;
-                this.showAllIfNeeded();
-            })
-            .catch(function (error) {
-                // handle error
-                console.log(error);
-            });
+                .then(response => {
+                    this.taxaData = response.data;
+                    this.showAllIfNeeded();
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                });
         }
     },
     mounted: function () {
         this.getData();
     },
     template: `<div class="form-group">
-                    <div v-for="taxon in taxaData" v-if="taxon.identification_priority" class="form-check-inline">
-                        <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
-                    </div> 
-                    
-                    <div>
-                        <button class="btn btn-outline-primary btn-sm" v-if="!showAll" v-on:click.stop.prevent="showAll = true">[[ buttonLabel ]]</button>
-                    </div>
-                    
-                    <div v-if="showAll">
-                        <div v-for="taxon in taxaData" v-if="!taxon.identification_priority" class="form-check-inline">
-                            <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
+                    <template v-if="cannotChangeAnymore">
+                        <div v-for="taxon in taxaData" class="form-check-inline" v-if="taxon.id == taxonSelected">
+                            <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="true"></vw-taxon-selector-entry>
                         </div>
-                    </div>          
+                        <span class="small">[[ taxonCannotBeChangedMsg ]]</span>
+                    </template>
+                    
+                    <template v-else>
+                        <div v-for="taxon in taxaData" v-if="taxon.identification_priority" class="form-check-inline">
+                            <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
+                        </div> 
+                    
+                        <div>
+                            <button class="btn btn-outline-primary btn-sm" v-if="!showAll" v-on:click.stop.prevent="showAll = true">[[ buttonLabel ]]</button>
+                            <span class="small">[[ ifYouDontKnowMsg ]]</span>
+                        </div>
+                        
+                        
+                        <div v-if="showAll">
+                            <div v-for="taxon in taxaData" v-if="!taxon.identification_priority" class="form-check-inline">
+                                <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
+                            </div>
+                        </div>         
+                    </template>
+                    
                </div>`
 };
 
@@ -676,9 +1165,14 @@ var VwDatetimeSelector = {
         'isRequired': Boolean,
         'hiddenFieldName': String,
     },
-    data: function() {
+    data: function () {
         return {
             observationTime: undefined, // As ISO3166
+        }
+    },
+    methods: {
+        nowIsoFormat: function() {
+            return new Date().toISOString();
         }
     },
     computed: {
@@ -694,7 +1188,7 @@ var VwDatetimeSelector = {
     },
     template: `<div class="form-group">
                     <datetime v-model="observationTime" type="datetime" 
-                              input-class="datetimeinput form-control">
+                              input-class="datetimeinput form-control" :max-datetime="nowIsoFormat()">
                         <label for="startDate" slot="before">
                             [[ observationTimeLabel ]]
                             <span v-if="isRequired">*</span>
@@ -707,7 +1201,6 @@ var VwDatetimeSelector = {
 var VwLocationSelector = {
     data: function () {
         return {
-            bbox: [[50.2, 4.4], [50.9, 4.9]],
             locationCoordinates: [this.initCoordinates[0], this.initCoordinates[1]],  // the coordinates that will be passed to the long lat fields
             markerCoordinates: [this.initCoordinates[0], this.initCoordinates[1]],  // the coordinates that will be passed to the map
             modelAddress: this.address ? '' + this.address : '',
@@ -717,7 +1210,7 @@ var VwLocationSelector = {
                 }
             })
         }
-        },
+    },
     computed: {
         locationLng: function () {
             return this.locationCoordinates ? this.locationCoordinates[0] : this.initCoordinates[0];  // TODO or use startCoordinates?
@@ -735,7 +1228,7 @@ var VwLocationSelector = {
     methods: {
         autodetectPosition: function () {
             var that = this;
-            navigator.geolocation.getCurrentPosition(function(position) {
+            navigator.geolocation.getCurrentPosition(function (position) {
                 that.setCoordinates([position.coords.longitude, position.coords.latitude]);
                 that.markerCoordinates = [position.coords.longitude, position.coords.latitude];
             });
@@ -743,23 +1236,26 @@ var VwLocationSelector = {
         getCoordinates: function (address) {
             console.log('Address input changed to ' + address + '+\n -> get coordinates and update locationCoordinates and markerCoordinates');
             this.provider.search({query: address})
-            .then(result => {
-                var firstResult = result[0];
-                console.log(result);
-                this.locationCoordinates = [firstResult.x, firstResult.y];
-                this.markerCoordinates = [firstResult.x, firstResult.y];
-                this.modelAddress = address;
-            })
+                .then(result => {
+                    var firstResult = result[0];
+                    console.log(result);
+                    this.locationCoordinates = [firstResult.x, firstResult.y];
+                    this.markerCoordinates = [firstResult.x, firstResult.y];
+                    this.modelAddress = firstResult.label;
+                })
         },
-        reverseGeocode: function() {
+        reverseGeocode: function () {
             // Updates this.modelAddress based on this.locationCoordinates
 
             var that = this;
-            axios.get("https://nominatim.openstreetmap.org/reverse", {params: {
-                format: 'jsonv2', 'lat': that.locationCoordinates[1], 'lon': that.locationCoordinates[0]}})
-            .then(response => {
-                that.modelAddress = response.data.display_name;
-            });
+            axios.get("https://nominatim.openstreetmap.org/reverse", {
+                params: {
+                    format: 'jsonv2', 'lat': that.locationCoordinates[1], 'lon': that.locationCoordinates[0]
+                }
+            })
+                .then(response => {
+                    that.modelAddress = response.data.display_name;
+                });
         },
 
         setCoordinates: function (coordinates) {
@@ -795,29 +1291,33 @@ var app = new Vue({
         'vw-datetime-selector': VwDatetimeSelector,
         'vw-management-table': VwManagementTable,
         'vw-taxon-selector': VwTaxonSelector,
+        'vw-recent-obs-table': VwRecentObsTable
     },
     data: {
         individuals: null,
-        nests: null
+        nests: null,
+        currentlyLoading: false
     },
     delimiters: ['[[', ']]'],
     el: '#vw-main-app',
     methods: {
         loadNests: function (zone) {
-            let url = '/api/observations?type=nest';
+            this.currentlyLoading = true;
+            let url = VWConfig.apis.observationsUrl + '?type=nest';
             if (zone != null) {
                 url = url + '&zone=' + zone;
             }
             axios.get(url)
-            .then(response => {
-                if (response.data.nests) {
-                    this.nests = response.data.nests;
-                }
-            })
-            .catch(function (error) {
-                // handle error
-                console.log(error);
-            });
+                .then(response => {
+                    if (response.data.observations) {
+                        this.nests = response.data.observations;
+                    }
+                    this.currentlyLoading = false;
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                });
 
         }
     }

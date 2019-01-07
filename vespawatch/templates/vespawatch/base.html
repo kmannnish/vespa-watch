@@ -1,5 +1,6 @@
 {% load static %}
 {% load i18n %}
+{% load custom_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -8,6 +9,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <title>{{ settings.WEBSITE_NAME }}</title>
+
+        <script type="text/javascript">
+            var VWConfig = {% js_config_object %};
+        </script>
 
         <!-- CSS -->
         <link rel="stylesheet" href="{% static 'vespawatch/libraries/leaflet/leaflet.css' %}"/>
@@ -78,7 +83,7 @@
         <script src="{% static 'vespawatch/libraries/bootstrap/popper.min.js' %}"></script>
         <script src="{% static 'vespawatch/libraries/bootstrap/bootstrap.min.js' %}"></script>
         
-        {% if settings.DEBUG %}
+        {% if settings.JS_DEBUG %}
         {# see https://vuejs.org/v2/guide/deployment.html#Without-Build-Tools #}
             <script src="{% static 'vespawatch/libraries/vue/vue.js' %}"></script>
         {% else %}
@@ -94,10 +99,8 @@
         <script src="{% static 'vespawatch/libraries/moment/moment.min.js' %}"></script>
         <script src="{% static 'vespawatch/libraries/nouislider/nouislider.min.js' %}"></script>
         <script src="{% static 'vespawatch/libraries/wnumb/wnumb.js' %}"></script>
-        
-        <script src="{% static 'vespawatch/js/_language_selector.js' %}"></script>
         <script src="{% url 'javascript-catalog' %}"></script>
-        <script src="{% static 'vespawatch/js/vespawatch.js' %}"></script>
+        <script src="{% static 'vespawatch/js/vespawatch.min.js' %}"></script>
 
         {% block extra_scripts %}
         {% endblock %}

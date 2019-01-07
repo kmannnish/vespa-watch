@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 {% csrf_token %}
 
-<vw-taxon-selector {% if form.instance.taxon %}:taxon-selected="{{ form.instance.taxon.pk }}"{% endif %} mode="nest" taxon-api-url="{% url 'vespawatch:api_taxa' %}" radio-name="taxon"></vw-taxon-selector>
+<vw-taxon-selector {% if not form.instance.taxon_can_be_locally_changed %}cannot-change-anymore{% endif %} {% if form.instance.taxon %}:taxon-selected="{{ form.instance.taxon.pk }}"{% endif %} mode="nest" taxon-api-url="{% url 'vespawatch:api_taxa' %}" radio-name="taxon"></vw-taxon-selector>
 
 {% if object %}
     <vw-location-selector v-bind:init-coordinates="[{{ object.longitude }}, {{ object.latitude }}]"
@@ -36,15 +36,7 @@
     {{ f|crispy }}
 {% endfor %}
 
-{% if user.is_authenticated %}
-    <h3>{% trans "Management action" %}</h3>
-    {{ management_formset.management_form }}
-
-    {% for f in management_formset %}
-        {{ f|crispy }}
-    {% endfor %}
-
-{% else %}
+{% if not user.is_authenticated %}
 
     {{ form.observer_last_name|as_crispy_field }}
     {{ form.observer_first_name|as_crispy_field }}

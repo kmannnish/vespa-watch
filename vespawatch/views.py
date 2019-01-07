@@ -1,20 +1,23 @@
 import json
 
 from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
+from django.core.serializers import serialize
+from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ugettext as _
 from django.http import JsonResponse, HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DeleteView
 from django.views.generic.base import View
 from django.views.generic.detail import BaseDetailView, SingleObjectMixin, SingleObjectTemplateResponseMixin
 from django.views.generic.edit import DeletionMixin
 from django.urls import reverse_lazy
-from .forms import ManagementActionForm, ManagementFormset, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
-from .models import Individual, FirefightersZone, Nest, ManagementAction, Taxon
+
+from vespawatch.utils import ajax_login_required
+from .forms import ManagementActionForm, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
+from .models import Individual, Nest, ManagementAction, Taxon, FirefightersZone
 
 
 class CustomBaseDetailView(SingleObjectMixin, View):
@@ -159,21 +162,14 @@ def create_nest(request):
             image_formset = NestImageFormset(request.POST, request.FILES, instance=form.instance)
             if image_formset.is_valid():
                 instances = image_formset.save()
-            if request.user.is_authenticated:
-                management_formset = ManagementFormset(request.POST, request.FILES, instance=form.instance)
-                if management_formset.is_valid():
-                    management_formset.save()
+
             messages.success(request, _("Your observation was successfully created."))
             return HttpResponseRedirect(reverse_lazy(f'vespawatch:{redirect_to}'))
-        else:
-            management_formset = ManagementFormset()
     else:
         redirect_to = request.GET.get('redirect_to', 'index')
         form = NestForm(initial={'redirect_to': redirect_to})
-        management_formset = ManagementFormset()
         image_formset = NestImageFormset()
-    return render(request, 'vespawatch/nest_create.html', {'form': form, 'management_formset': management_formset,
-                                                           'image_formset': image_formset, 'type': 'nest'})
+    return render(request, 'vespawatch/nest_create.html', {'form': form, 'image_formset': image_formset, 'type': 'nest'})
 
 
 @login_required
@@ -181,7 +177,6 @@ def update_nest(request, pk):
     nest = get_object_or_404(Nest, pk=pk)
     if request.method == 'POST':
         image_formset = NestImageFormset(request.POST, request.FILES, instance=nest)
-        management_formset = ManagementFormset(request.POST, request.FILES, instance=nest)
         form = NestForm(request.POST, files=request.FILES, instance=nest)
         if request.user.is_authenticated:
             # set to terms_of_service to true if the user is authenticated
@@ -195,21 +190,13 @@ def update_nest(request, pk):
                 for obj in image_formset.deleted_objects:
                     if obj.pk:
                         obj.delete()
-            if request.user.is_authenticated:
-                if management_formset.is_valid():
-                    instances = management_formset.save()
-                    for obj in management_formset.deleted_objects:
-                        if obj.pk:
-                            obj.delete()
             return HttpResponseRedirect(reverse_lazy('vespawatch:nest-detail', kwargs={'pk': pk}))
-        else:
-            management_formset = ManagementFormset(instance=nest)
     elif request.method == 'GET':
         form = NestForm(instance=nest)
         image_formset = NestImageFormset(instance=nest)
-        management_formset = ManagementFormset(instance=nest)
+
     return render(request, 'vespawatch/nest_update.html',
-                  {'form': form, 'object': nest, 'type': 'nest', 'image_formset': image_formset, 'management_formset': management_formset,})
+                  {'form': form, 'object': nest, 'type': 'nest', 'image_formset': image_formset})
 
 
 class NestDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
@@ -234,7 +221,7 @@ class NestDelete(LoginRequiredMixin, CustomDeleteView):
 
 
 # CREATE/UPDATE/DELETE MANAGEMENT ACTIONS
-
+# TODO: Check if those 3 actions are still used.
 @login_required
 def create_action(request):
     if request.method == 'POST':
@@ -284,24 +271,25 @@ def observations_json(request):
     """
     zone = request.GET.get('zone', '')
     obs_type = request.GET.get('type', '')
+    limit = request.GET.get('limit', None)
 
-    output = {}
+    obs = []
 
-    if obs_type != 'nest':
-        # only add individuals to the output if the type is not 'nest'
-        output['individuals'] = Individual.objects.all()
-
-    if obs_type != 'individual':
-        # only add nests to the output if the type is not 'individual'
-        output['nests'] = Nest.objects.all()
+    if obs_type == 'individual' or obs_type == '':
+        obs = obs + list(Individual.objects.all())
+    if obs_type == 'nest' or obs_type == '':
+        obs = obs + list(Nest.objects.all())
 
     if zone:
         # if a zone is given, filter the observations. This works for both individuals and nests
-        for obs_type, qs in output.items():
-            output[obs_type] = qs.filter(zone__pk=zone)
+        obs = [x for x in obs if x.zone_id == int(zone)]
+
+    obs.sort(key=lambda x: x.observation_time, reverse=True)
+    if limit:
+        obs = obs[:int(limit)]
 
     return JsonResponse({
-        obs_type: [x.as_dict() for x in list(qs.order_by('observation_time'))] for obs_type, qs in output.items()
+        'observations': [x.as_dict() for x in obs]
     })
 #
 # @staff_member_required
@@ -310,3 +298,53 @@ def observations_json(request):
 #     Return all firefighter zones as json data
 #     """
 #     return JsonResponse({'zones': [{'id': x.pk, 'name': x.name} for x in list(FirefightersZone.objects.all().order_by('name'))]})
+
+def management_actions_outcomes_json(request):
+    #TODO: Implements sorting?
+    #TODO: Implements i18n?
+    outcomes = ManagementAction.OUTCOME_CHOICE
+    return JsonResponse([{'value': outcome[0], 'label': outcome[1]} for outcome in outcomes], safe=False)
+
+
+@ajax_login_required
+@csrf_exempt
+def delete_management_action(request):
+    if request.method == 'DELETE':
+        ManagementAction.objects.get(pk=request.GET.get('action_id')).delete()
+        return JsonResponse({'result': 'OK'})
+
+@ajax_login_required
+@csrf_exempt
+def save_management_action(request):
+    if request.method == 'POST':
+        existing_action_id = request.POST.get('action_id', None)
+
+        if existing_action_id:  # We want to update an existing action
+            form = ManagementActionForm(request.POST, instance=get_object_or_404(ManagementAction, pk=existing_action_id))
+        else:  # We want to create a new action
+            form = ManagementActionForm(request.POST)
+
+        try:
+            form.save()
+            return JsonResponse({'result': 'OK'}, status=201)
+        except ValueError:
+            return JsonResponse({'result': 'NOTOK', 'errors': form.errors}, status=422)
+
+def get_management_action(request):
+    if request.method == 'GET':
+        action_id = request.GET.get('action_id')
+        action = get_object_or_404(ManagementAction, pk=action_id)
+
+        return JsonResponse({'action_time': action.action_time,
+                             'outcome':action.outcome,
+                             'duration': action.duration_in_seconds,
+                             'person_name': action.person_name})
+
+def get_zone(request):
+    if request.method == 'GET':
+        zone_id = request.GET.get('zone_id')
+        zone = get_object_or_404(FirefightersZone, pk=zone_id)
+
+        return HttpResponse(serialize('geojson', [zone],
+                  geometry_field='mpolygon',
+                  fields=('pk', 'name')))

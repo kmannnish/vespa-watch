@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, date
 
 import dateparser
 import requests
@@ -227,11 +227,17 @@ def get_zone_for_coordinates(lat, lon):
     return FirefightersZone.objects.get(mpolygon__intersects=point)
 
 
+def no_future(value):
+    today = date.today()
+    if value.date() > today:
+        raise ValidationError(_('Observation date cannot be in the future.'))
+
+
 class AbstractObservation(models.Model):
     originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
     taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT)
     address = models.CharField(max_length=255, blank=True)
-    observation_time = models.DateTimeField(verbose_name=_("Observation date"))
+    observation_time = models.DateTimeField(verbose_name=_("Observation date"), validators=[no_future])
     comments = models.TextField(blank=True)
 
     latitude = models.FloatField()
@@ -440,6 +446,10 @@ class Nest(AbstractObservation):
         action = self.managementaction_set.first()
         return action.outcome if action else None
 
+    def get_management_action_id(self):
+        action = self.managementaction_set.first()
+        return action.pk if action else None
+
     def as_dict(self):
         return {
             'id': self.pk,
@@ -454,8 +464,10 @@ class Nest(AbstractObservation):
             'imageUrls': [x.image.url for x in self.pictures.all()],
             'action': self.get_management_action_display(),
             'actionCode': self.get_management_action(),
+            'actionId': self.get_management_action_id(),
             'originates_in_vespawatch': self.originates_in_vespawatch,
-            'updateUrl': reverse('vespawatch:nest-update', kwargs={'pk': self.pk})
+            'updateUrl': reverse('vespawatch:nest-update', kwargs={'pk': self.pk}),
+            'detailsUrl': reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
         }
 
     def __str__(self):
@@ -493,7 +505,8 @@ class Individual(AbstractObservation):
             'inaturalist_id': self.inaturalist_id,
             'observation_time': self.observation_time.timestamp() * 1000,
             'comments': self.comments,
-            'imageUrls': [x.image.url for x in self.pictures.all()]
+            'imageUrls': [x.image.url for x in self.pictures.all()],
+            'detailsUrl': reverse('vespawatch:individual-detail', kwargs={'pk': self.pk})
         }
 
     # def __str__(self):
@@ -523,15 +536,23 @@ class ManagementAction(models.Model):
     EMPTY_NEST_NOTHING_DONE = 'ND'
 
     OUTCOME_CHOICE = (
-        (FULL_DESTRUCTION_NO_DEBRIS, 'Full destruction, no debris'),
-        (PARTIAL_DESTRUCTION_DEBRIS_LEFT, 'Partial destruction/debris left'),
-        (EMPTY_NEST_NOTHING_DONE, 'Empty nest, nothing done'),
+        (FULL_DESTRUCTION_NO_DEBRIS, _('Full destruction, no debris')),
+        (PARTIAL_DESTRUCTION_DEBRIS_LEFT, _('Partial destruction/debris left')),
+        (EMPTY_NEST_NOTHING_DONE, _('Empty nest, nothing done')),
     )
 
     nest = models.ForeignKey(Nest, on_delete=models.CASCADE)
     outcome = models.CharField(max_length=2, choices=OUTCOME_CHOICE)
     action_time = models.DateTimeField()
     person_name = models.CharField(max_length=255, blank=True)
+    duration = models.DurationField(null=True, blank=True)
+
+    @property
+    def duration_in_seconds(self):
+        try:
+            return self.duration.total_seconds()  # Positive val, but also 0!
+        except AttributeError:
+            return '' # NULL
 
     def __str__(self):
         return f'{self.action_time.strftime("%Y-%m-%d")} {self.get_outcome_display()} on {self.nest}'
