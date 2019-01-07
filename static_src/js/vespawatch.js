@@ -732,6 +732,9 @@ var VwManagementTable = {
         loadingStr: function () {
             return gettext('Loading...')
         },
+        noNestsStr: function () {
+            return gettext('No nests yet!')
+        },
         nestClass: function () {
             return "table-danger";
         }
@@ -761,20 +764,19 @@ var VwManagementTable = {
     },
     template: `
         <div class="row">
-        <span v-if="currentlyLoading">{{ loadingStr }}</span>
-        <table v-else class="table">
-            <thead>
-                <tr>
-                    <th>{{ dateStr }}</th>
-                    <th>{{ addressStr }}</th>
-                    <th>{{ managementStr }}</th>
-                    <th></th>
-                </tr>
-            </thead>
+            <span v-if="currentlyLoading">{{ loadingStr }}</span>
+            <template v-else>
+                <table v-if="nests.length > 0" class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ dateStr }}</th><th>{{ addressStr }}</th><th>{{ managementStr }}</th><th></th>
+                        </tr>
+                    </thead>
 
-            <vw-management-table-nest-row v-for="nest in nests" :nest="nest" :key="nest.id" v-on:data-changed="loadData">
-            </vw-management-table-nest-row>
-        </table>
+                    <vw-management-table-nest-row v-for="nest in nests" :nest="nest" :key="nest.id" v-on:data-changed="loadData"></vw-management-table-nest-row>
+                </table>
+                <div v-else>{{ noNestsStr }}</div>
+            </template>
     </div>
     `
 };
