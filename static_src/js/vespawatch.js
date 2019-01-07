@@ -1054,7 +1054,11 @@ var VwTaxonSelector = {
         'taxonApiUrl': String,
         'radioName': String,
         'taxonSelected': Number,
-        'mode': String // nest | individual
+        'mode': String, // nest | individual
+        'cannotChangeAnymore': {
+            'type': Boolean,
+            'default': false
+        }
     },
     computed: {
         buttonLabel: function () {
@@ -1062,6 +1066,9 @@ var VwTaxonSelector = {
         },
         ifYouDontKnowMsg: function () {
             return gettext("If you don't know, select 'Insecta'.");
+        },
+        taxonCannotBeChangedMsg: function () {
+            return gettext("Taxon can't be changed anymore.");
         },
         pictureAttrName: function () {
             switch (this.mode) {
@@ -1107,21 +1114,31 @@ var VwTaxonSelector = {
         this.getData();
     },
     template: `<div class="form-group">
-                    <div v-for="taxon in taxaData" v-if="taxon.identification_priority" class="form-check-inline">
-                        <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
-                    </div> 
-                    
-                    <div>
-                        <button class="btn btn-outline-primary btn-sm" v-if="!showAll" v-on:click.stop.prevent="showAll = true">[[ buttonLabel ]]</button>
-                        <span class="small">[[ ifYouDontKnowMsg ]]</span>
-                    </div>
-                    
-                    
-                    <div v-if="showAll">
-                        <div v-for="taxon in taxaData" v-if="!taxon.identification_priority" class="form-check-inline">
-                            <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
+                    <template v-if="cannotChangeAnymore">
+                        <div v-for="taxon in taxaData" class="form-check-inline" v-if="taxon.id == taxonSelected">
+                            <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="true"></vw-taxon-selector-entry>
                         </div>
-                    </div>          
+                        <span class="small">[[ taxonCannotBeChangedMsg ]]</span>
+                    </template>
+                    
+                    <template v-else>
+                        <div v-for="taxon in taxaData" v-if="taxon.identification_priority" class="form-check-inline">
+                            <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
+                        </div> 
+                    
+                        <div>
+                            <button class="btn btn-outline-primary btn-sm" v-if="!showAll" v-on:click.stop.prevent="showAll = true">[[ buttonLabel ]]</button>
+                            <span class="small">[[ ifYouDontKnowMsg ]]</span>
+                        </div>
+                        
+                        
+                        <div v-if="showAll">
+                            <div v-for="taxon in taxaData" v-if="!taxon.identification_priority" class="form-check-inline">
+                                <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
+                            </div>
+                        </div>         
+                    </template>
+                    
                </div>`
 };
 
