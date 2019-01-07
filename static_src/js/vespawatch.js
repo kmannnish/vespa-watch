@@ -1060,6 +1060,9 @@ var VwTaxonSelector = {
         buttonLabel: function () {
             return gettext('Show more species');
         },
+        ifYouDontKnowMsg: function () {
+            return gettext("If you don't know, select 'Insecta'.");
+        },
         pictureAttrName: function () {
             switch (this.mode) {
                 case 'nest':
@@ -1110,7 +1113,9 @@ var VwTaxonSelector = {
                     
                     <div>
                         <button class="btn btn-outline-primary btn-sm" v-if="!showAll" v-on:click.stop.prevent="showAll = true">[[ buttonLabel ]]</button>
+                        <span class="small">[[ ifYouDontKnowMsg ]]</span>
                     </div>
+                    
                     
                     <div v-if="showAll">
                         <div v-for="taxon in taxaData" v-if="!taxon.identification_priority" class="form-check-inline">
