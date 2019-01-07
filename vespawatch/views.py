@@ -3,7 +3,8 @@ import json
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
+from django.core.serializers import serialize
+from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ugettext as _
 from django.http import JsonResponse, HttpResponseRedirect
@@ -16,7 +17,7 @@ from django.urls import reverse_lazy
 
 from vespawatch.utils import ajax_login_required
 from .forms import ManagementActionForm, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
-from .models import Individual, Nest, ManagementAction, Taxon
+from .models import Individual, Nest, ManagementAction, Taxon, FirefightersZone
 
 
 class CustomBaseDetailView(SingleObjectMixin, View):
@@ -281,7 +282,7 @@ def observations_json(request):
 
     if zone:
         # if a zone is given, filter the observations. This works for both individuals and nests
-        obs = [x for x in obs if x.zone_id == zone]
+        obs = [x for x in obs if x.zone_id == int(zone)]
 
     obs.sort(key=lambda x: x.observation_time, reverse=True)
     if limit:
@@ -338,3 +339,12 @@ def get_management_action(request):
                              'outcome':action.outcome,
                              'duration': action.duration_in_seconds,
                              'person_name': action.person_name})
+
+def get_zone(request):
+    if request.method == 'GET':
+        zone_id = request.GET.get('zone_id')
+        zone = get_object_or_404(FirefightersZone, pk=zone_id)
+
+        return HttpResponse(serialize('geojson', [zone],
+                  geometry_field='mpolygon',
+                  fields=('pk', 'name')))

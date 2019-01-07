@@ -17,7 +17,8 @@ def js_config_object():
             'actionOutcomesUrl': reverse('vespawatch:api_action_outcomes'),
             'actionSaveUrl': reverse('vespawatch:api_action_save'),
             'actionLoadUrl': reverse('vespawatch:api_action_get'),
-            'actionDeleteUrl': reverse('vespawatch:api_action_delete')
+            'actionDeleteUrl': reverse('vespawatch:api_action_delete'),
+            'zoneUrl': reverse('vespawatch:api_zone_get'),
         },
         'map': {
             'circle': {

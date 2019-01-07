@@ -35,6 +35,7 @@
         <h1>{%  trans 'My nests' %}</h1>
         <vw-management-table :currently-loading="currentlyLoading" :nests="nests" zone="{{ zone.pk }}"></vw-management-table>
     {% else %}
+        <p class="alert alert-warning">{% trans 'No zone associated to your user.' %}</p>
         <vw-observations-viz load-data=1 edit-redirect="management"></vw-observations-viz>
         <h1>{%  trans 'My nests' %}</h1>
         <vw-management-table :currently-loading="currentlyLoading" :nests="nests" ></vw-management-table>

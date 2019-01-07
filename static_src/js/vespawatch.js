@@ -126,6 +126,7 @@ var VwObservationsVizMap = {
             });
             this.observationsLayer = L.featureGroup(this.mapCircles);
             this.observationsLayer.addTo(this.map);
+            this.observationsLayer.bringToFront();
             if (!this.initialZoomed) {
                 this.map.fitBounds(this.observationsLayer.getBounds());
             }
@@ -179,6 +180,19 @@ var VwObservationsVizMap = {
             this.map = L.map("vw-map-map").setView(mapPosition, mapZoom);
 
             L.tileLayer(conf.tileLayerBaseUrl, conf.tileLayerOptions).addTo(this.map);
+
+            if (this.zoneId) {
+                axios.get(VWConfig.apis.zoneUrl, {params: {zone_id: this.zoneId}})
+                .then(response => {
+                    var geoJSONLayer = L.geoJSON(response.data);
+                    geoJSONLayer.addTo(this.map);
+                    geoJSONLayer.bringToBack();
+                    this.map.fitBounds(geoJSONLayer.getBounds());
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            }
         }
     },
 
@@ -186,7 +200,7 @@ var VwObservationsVizMap = {
         this.init();
     },
 
-    props: ['autozoom', 'editRedirect', 'observations'],
+    props: ['autozoom', 'editRedirect', 'observations', 'zoneId'],
     watch: {
         observations: function (newObservations, oldObservations) {
             console.log('vw-observations-viz-map: Observations got updated!');
@@ -384,7 +398,7 @@ var VwObservationsViz = {
 
     template: `
         <section>
-            <vw-observations-viz-map v-bind:observations="observations" v-bind:edit-redirect="editRedirect"></vw-observations-viz-map>
+            <vw-observations-viz-map :observations="observations" :edit-redirect="editRedirect" :zone-id="zone"></vw-observations-viz-map>
             <vw-observations-viz-time-slider v-on:time-updated="filterOnTimeRange" v-model="timeRange"></vw-observations-viz-time-slider>
         </section>
         `
