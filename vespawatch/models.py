@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, date
 
 import dateparser
 import requests
@@ -227,11 +227,17 @@ def get_zone_for_coordinates(lat, lon):
     return FirefightersZone.objects.get(mpolygon__intersects=point)
 
 
+def no_future(value):
+    today = date.today()
+    if value.date() > today:
+        raise ValidationError(_('Observation date cannot be in the future.'))
+
+
 class AbstractObservation(models.Model):
     originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
     taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT)
     address = models.CharField(max_length=255, blank=True)
-    observation_time = models.DateTimeField(verbose_name=_("Observation date"))
+    observation_time = models.DateTimeField(verbose_name=_("Observation date"), validators=[no_future])
     comments = models.TextField(blank=True)
 
     latitude = models.FloatField()

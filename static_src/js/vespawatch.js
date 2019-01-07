@@ -1154,6 +1154,11 @@ var VwDatetimeSelector = {
             observationTime: undefined, // As ISO3166
         }
     },
+    methods: {
+        nowIsoFormat: function() {
+            return new Date().toISOString();
+        }
+    },
     computed: {
         observationTimeLabel: function () {
             return gettext('Observation date');
@@ -1167,7 +1172,7 @@ var VwDatetimeSelector = {
     },
     template: `<div class="form-group">
                     <datetime v-model="observationTime" type="datetime" 
-                              input-class="datetimeinput form-control">
+                              input-class="datetimeinput form-control" :max-datetime="nowIsoFormat()">
                         <label for="startDate" slot="before">
                             [[ observationTimeLabel ]]
                             <span v-if="isRequired">*</span>
