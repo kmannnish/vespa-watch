@@ -10,6 +10,7 @@ from django.http import JsonResponse
 def make_unique_filename(initial_filename):
     """Add a random part to a filename so it's unique. File extension is preserved."""
     before_ext, ext = os.path.splitext(initial_filename)
+    ext = ext.replace('.', '')  # Remove the dot, if already there.
     random_part = uuid.uuid4()
     return f"{before_ext}-{random_part}.{ext}"
 
