@@ -82,7 +82,7 @@ var VwObservationsVizMap = {
         'vw-observations-map-popup': VwObservationsMapPopup
     },
     computed: {
-        'managementMap': this.zoneId != null
+        'managementMap': function () {return this.zoneId != null}
     },
     data: function () {
         return {
