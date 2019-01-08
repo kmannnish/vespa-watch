@@ -101,10 +101,8 @@ var VwObservationsVizMap = {
                 if (this.type === 'management') {
                     return d.subject === 'individual' ? conf.individualColor :
                         d.subject === 'nest' ?
-                            d.actionCode === 'FD' ? conf.nestColor.FD :
-                                d.actionCode === 'PD' ? conf.nestColor.PD :
-                                    d.actionCode === 'ND' ? conf.nestColor.ND :
-                                        conf.nestColor.DEFAULT
+                            d.actionFinished ? conf.nestColor.finished :
+                                        conf.nestColor.unfinished
                             : conf.unknownColor;  // if the subject is not 'Individual' or 'Nest'
 
                 } else {

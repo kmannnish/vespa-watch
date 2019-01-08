@@ -181,9 +181,8 @@ MAP_CIRCLE_NEST_RADIUS = 12
 MAP_CIRCLE_INDIVIDUAL_RADIUS = 5
 MAP_CIRCLE_INDIVIDUAL_COLOR = '#FD9126'
 MAP_CIRCLE_NEST_COLOR = {  # This depend of the management action
-    'FD': '#3678ff',
-    'PD': '#3678ff',
-    'ND': '#3678ff',
+    'finished': '#9CCB19',
+    'unfinished': '#EE4000',
     'DEFAULT': '#3678ff'
 }
 MAP_CIRCLE_UNKNOWN_COLOR = '#000' # if the subject is not 'Individual' or 'Nest'
