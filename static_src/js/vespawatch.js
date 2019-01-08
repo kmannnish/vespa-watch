@@ -798,9 +798,13 @@ var VwRecentObsTableRow = {
     computed: {
         observationTimeStr: function () {
             return moment(this.observation.observation_time).format('lll');
+        },
+        observationDetailsUrl: function () {
+            return new URL(this.observation.detailsUrl, VWConfig.baseUrl);
         }
     },
-    template: `<tr>
+    template: `<tr> 
+                    <td><a :href="observationDetailsUrl">{{ observation.id }}</a></td>
                     <td>{{ observationTimeStr}}</td>
                     <td>{{ observation.subject }}</td>
                     <td>{{ observation.address }}</td>
@@ -864,6 +868,7 @@ var VwRecentObsTable = {
                 <table v-else class="table">
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>{{ dateStr }}</th>
                             <th>{{ subjectStr}}</th>
                             <th>{{ addressStr }}</th>
