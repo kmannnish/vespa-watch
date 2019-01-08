@@ -440,7 +440,7 @@ class Nest(AbstractObservation):
 
     def get_management_action_finished(self):
         action = self.managementaction_set.first()
-        return action.finished if action else None
+        return action.finished if action else False
 
     def get_management_action_display(self):
         action = self.managementaction_set.first()

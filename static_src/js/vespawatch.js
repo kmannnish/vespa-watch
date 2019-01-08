@@ -12,7 +12,7 @@ $(document).ready(function () {
     });
 });
 
-// Disable console.log() et al. if settings.JS_DEBUG = True
+// Disable console.log() et al. if settings.JS_DEBUG != True
 if (!VWConfig.debug) {
     if (!window.console) window.console = {};
     var methods = ["log", "debug", "warn", "info"];
@@ -759,6 +759,7 @@ var VwManagementTable = {
             } else {
                 this.$root.loadNests();
             }
+            this.$emit('data-changed');
         }
     },
     mounted: function () {
@@ -1315,7 +1316,9 @@ var app = new Vue({
     el: '#vw-main-app',
     methods: {
         loadNests: function (zone) {
+            this.$refs.viz.getData();  // call getData on the ObservationViz component
             this.currentlyLoading = true;
+            this.nests = [];
             let url = VWConfig.apis.observationsUrl + '?type=nest';
             if (zone != null) {
                 url = url + '&zone=' + zone;
@@ -1324,6 +1327,7 @@ var app = new Vue({
                 .then(response => {
                     if (response.data.observations) {
                         this.nests = response.data.observations;
+                        this.$emit('nests updated', 1);
                     }
                     this.currentlyLoading = false;
                 })
