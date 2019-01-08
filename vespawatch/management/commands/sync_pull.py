@@ -34,7 +34,7 @@ class Command(VespaWatchCommand):
         Nest.from_inat_objects.all().delete()
         self.w(self.style.SUCCESS("OK"))
 
-        self.w(f"Step 2: Will parse the {total_count} matching observations reveived from iNaturalist.")
+        self.w(f"Step 2: Will parse the {total_count} matching observations received from iNaturalist.")
         for inat_observation_data in observations:
             inat_id = inat_observation_data['id']
 
