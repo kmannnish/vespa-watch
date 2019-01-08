@@ -128,4 +128,4 @@ settings.py
 
 # custom ignores
 start
-
+vespawatch/static/
