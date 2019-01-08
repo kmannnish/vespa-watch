@@ -22,6 +22,11 @@ Django app for the monitoring and management of [_Vespa velutina_](https://www.i
 3. Navigate to the project directory and install the requirements: `pip install -r requirements.txt`
 4. Tell Django to use the local settings: `export DJANGO_SETTINGS_MODULE=djangoproject.settings.settings_local`
 
+### Node package manager
+
+Make sure you have npm installed. You'll need to run an npm script to build
+all static files.
+
 ### Apply database migrations
 
 ```bash
@@ -72,6 +77,15 @@ Initialize the database with observations from iNaturalist (optional):
 
 ```bash
 python manage.py sync_pull
+```
+
+## Generate static files
+
+The repository contains a number of raw static files that need to be processed
+before deployment. You can build all static files with an npm script:
+
+```bash
+npm run build:all
 ```
 
 ## Run the application
