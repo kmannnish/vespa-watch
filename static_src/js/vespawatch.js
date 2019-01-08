@@ -81,6 +81,9 @@ var VwObservationsVizMap = {
     components: {
         'vw-observations-map-popup': VwObservationsMapPopup
     },
+    computed: {
+        'managementMap': this.zoneId != null
+    },
     data: function () {
         return {
             initialZoomed: false,  // only allow the map to zoom and center on the data when the data is loaded for the first time.
@@ -94,15 +97,22 @@ var VwObservationsVizMap = {
         addObservationsToMap: function () {
             var conf = VWConfig.map.circle;
 
-            function getColor(d) {
-                return d.subject === 'individual' ? conf.individualColor :
-                    d.subject === 'nest' ?
-                        d.actionCode === 'FD' ? conf.nestColor.FD :
-                            d.actionCode === 'PD' ? conf.nestColor.PD :
-                                d.actionCode === 'ND' ? conf.nestColor.ND :
-                                    conf.nestColor.DEFAULT
-                        : conf.unknownColor;  // if the subject is not 'Individual' or 'Nest'
-            }
+            var getColor = d => {
+                if (this.type === 'management') {
+                    return d.subject === 'individual' ? conf.individualColor :
+                        d.subject === 'nest' ?
+                            d.actionCode === 'FD' ? conf.nestColor.FD :
+                                d.actionCode === 'PD' ? conf.nestColor.PD :
+                                    d.actionCode === 'ND' ? conf.nestColor.ND :
+                                        conf.nestColor.DEFAULT
+                            : conf.unknownColor;  // if the subject is not 'Individual' or 'Nest'
+
+                } else {
+                    return d.subject === 'individual' ? conf.individualColor :
+                        d.subject === 'nest' ? conf.nestColor.DEFAULT
+                            : conf.unknownColor;  // if the subject is not 'Individual' or 'Nest'
+                }
+            };
 
             function getRadius(d) {
                 return d.subject === 'individual' ? conf.individualRadius : conf.nestRadius;
@@ -200,7 +210,7 @@ var VwObservationsVizMap = {
         this.init();
     },
 
-    props: ['autozoom', 'editRedirect', 'observations', 'zoneId'],
+    props: ['autozoom', 'editRedirect', 'observations', 'type', 'zoneId'],
     watch: {
         observations: function (newObservations, oldObservations) {
             console.log('vw-observations-viz-map: Observations got updated!');
@@ -328,7 +338,7 @@ var VwObservationsViz = {
             var url = this.observationsUrl;
             if (this.zone != null) {
                 // console.log("Only requesting observations for zone " + this.zone);
-                url += '?zone=' + this.zone;
+                url += '?zone=' + this.zone + '&type=nest';
             } else {
                 // console.log("No zone set");
             }
@@ -382,7 +392,7 @@ var VwObservationsViz = {
         }
     },
 
-    props: ['zone', 'loadData', 'editRedirect'],
+    props: ['zone', 'loadData', 'editRedirect', 'type'],
     watch: {
         loadData: function (n, o) {
             if (n === "1") {
@@ -398,7 +408,7 @@ var VwObservationsViz = {
 
     template: `
         <section>
-            <vw-observations-viz-map :observations="observations" :edit-redirect="editRedirect" :zone-id="zone"></vw-observations-viz-map>
+            <vw-observations-viz-map :observations="observations" :edit-redirect="editRedirect" :zone-id="zone" :type="type"></vw-observations-viz-map>
             <vw-observations-viz-time-slider v-on:time-updated="filterOnTimeRange" v-model="timeRange"></vw-observations-viz-time-slider>
         </section>
         `
@@ -616,7 +626,7 @@ var VwManagementActionModal = {
 
 // A row in the management table that displays the
 // information of a single nest.
-var VwManagmentTableNestRow = {
+var VwManagementTableNestRow = {
     components: {
         'vw-management-action-modal': VwManagementActionModal
     },
@@ -717,7 +727,7 @@ var VwManagmentTableNestRow = {
 // The table on the management page that lists the nests
 var VwManagementTable = {
     components: {
-        'vw-management-table-nest-row': VwManagmentTableNestRow
+        'vw-management-table-nest-row': VwManagementTableNestRow
     },
     computed: {
         dateStr: function () {
@@ -766,7 +776,7 @@ var VwManagementTable = {
         <div class="row">
             <span v-if="currentlyLoading">{{ loadingStr }}</span>
             <template v-else>
-                <table v-if="nests.length > 0" class="table">
+                <table v-if="nests && nests.length > 0" class="table">
                     <thead>
                         <tr>
                             <th>{{ dateStr }}</th><th>{{ addressStr }}</th><th>{{ managementStr }}</th><th></th>

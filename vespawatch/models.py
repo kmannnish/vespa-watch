@@ -438,11 +438,15 @@ class Nest(AbstractObservation):
     def get_absolute_url(self):
         return reverse('vespawatch:nest-update', kwargs={'pk': self.pk})
 
+    def get_management_action_finished(self):
+        action = self.managementaction_set.first()
+        return action.finished if action else None
+
     def get_management_action_display(self):
         action = self.managementaction_set.first()
         return str(action) if action else ''
 
-    def get_management_action(self):
+    def get_management_action_code(self):
         action = self.managementaction_set.first()
         return action.outcome if action else None
 
@@ -463,8 +467,9 @@ class Nest(AbstractObservation):
             'comments': self.comments,
             'imageUrls': [x.image.url for x in self.pictures.all()],
             'action': self.get_management_action_display(),
-            'actionCode': self.get_management_action(),
+            'actionCode': self.get_management_action_code(),
             'actionId': self.get_management_action_id(),
+            'actionFinished': self.get_management_action_finished(),
             'originates_in_vespawatch': self.originates_in_vespawatch,
             'updateUrl': reverse('vespawatch:nest-update', kwargs={'pk': self.pk}),
             'detailsUrl': reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
@@ -553,6 +558,10 @@ class ManagementAction(models.Model):
             return self.duration.total_seconds()  # Positive val, but also 0!
         except AttributeError:
             return '' # NULL
+
+    @property
+    def finished(self):
+        return self.outcome in (self.FULL_DESTRUCTION_NO_DEBRIS, self.EMPTY_NEST_NOTHING_DONE)
 
     def __str__(self):
         return f'{self.action_time.strftime("%Y-%m-%d")} {self.get_outcome_display()}'
