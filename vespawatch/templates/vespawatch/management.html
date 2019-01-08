@@ -31,7 +31,7 @@
 
     {% if zone %}
         <h1>{% trans 'Zone' %} {{ zone.name }}</h1>
-        <vw-observations-viz zone="{{ zone.pk }}" load-data="1" edit-redirect="management"></vw-observations-viz>
+        <vw-observations-viz zone="{{ zone.pk }}" load-data="1" edit-redirect="management" type="management"></vw-observations-viz>
         <h1>{%  trans 'My nests' %}</h1>
         <vw-management-table :currently-loading="currentlyLoading" :nests="nests" zone="{{ zone.pk }}"></vw-management-table>
     {% else %}
