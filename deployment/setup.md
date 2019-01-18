@@ -122,6 +122,27 @@ eb create
 --keyname LW-INBO-VESPAWATCH-DEV
 --tags APPLICATION=VESPAWATCH,ENVIRONMENT=DEV,OWNER=LIFEWATCH-VESPAWATCH,BUSINESS_UNIT=LIFEWATCH,COST_CENTER=EVINBO,RUNDECK=TRUE
 ```
+For *uat*, the environment creation is done with the following command:
+eb create
+--cname vespawatch-uat
+--database --database.username $DB_USER --database.password $DB_PWD
+--database.size 5
+--database.engine postgres
+--elb-type classic
+--envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD
+--region eu-west-1
+--vpc
+--vpc.dbsubnets subnet-f54dfcad,subnet-f54dfcad,subnet-e7fc9f91
+--vpc.ec2subnets subnet-c8fc9fbe,subnet-c8fc9fbe,subnet-c8fc9fbe
+--vpc.elbsubnets subnet-c8fc9fbe,subnet-c8fc9fbe,subnet-c8fc9fbe
+--vpc.id vpc-a58610c1
+--vpc.securitygroups sg-cf47ddb7,sg-8a9346ec
+--instance_profile aws-elasticbeanstalk-ec2-role-vespawatch
+--keyname LW-INBO-VESPAWATCH-UAT
+--tags APPLICATION=VESPAWATCH,ENVIRONMENT=UAT,OWNER=LIFEWATCH-VESPAWATCH,BUSINESS_UNIT=LIFEWATCH,COST_CENTER=EVINBO,RUNDECK=TRUE
+
+
+
 
 For *production*, the environment creation is done with the following command:
 ```
