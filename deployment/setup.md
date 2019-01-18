@@ -134,8 +134,8 @@ eb create
 --region eu-west-1
 --vpc
 --vpc.dbsubnets subnet-f54dfcad,subnet-f54dfcad,subnet-e7fc9f91
---vpc.ec2subnets subnet-c8fc9fbe,subnet-c8fc9fbe,subnet-c8fc9fbe
---vpc.elbsubnets subnet-c8fc9fbe,subnet-c8fc9fbe,subnet-c8fc9fbe
+--vpc.ec2subnets subnet-994afbc1,subnet-994afbc1,subnet-2efc9f58
+--vpc.elbsubnets subnet-994afbc1,subnet-994afbc1,subnet-2efc9f58
 --vpc.id vpc-a58610c1
 --vpc.securitygroups sg-cf47ddb7,sg-8a9346ec
 --instance_profile aws-elasticbeanstalk-ec2-role-vespawatch
