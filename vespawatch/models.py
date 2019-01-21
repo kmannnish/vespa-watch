@@ -616,3 +616,22 @@ class InatObsToDelete(models.Model):
 
     def __str__(self):
         return str(self.inaturalist_id)
+
+
+def get_recent_observations(include_individuals=True, include_nests=True, zone_id=None, limit=10):
+    obs = []
+
+    if include_individuals:
+        obs = obs + list(Individual.objects.all())
+    if include_nests:
+        obs = obs + list(Nest.objects.all())
+
+    if zone_id is not None:
+        # if a zone is given, filter the observations. This works for both individuals and nests
+        obs = [x for x in obs if x.zone_id == zone_id]
+
+    obs.sort(key=lambda x: x.observation_time, reverse=True)
+
+    obs = obs[:limit]
+
+    return obs

@@ -17,7 +17,8 @@ from django.urls import reverse_lazy
 
 from vespawatch.utils import ajax_login_required
 from .forms import ManagementActionForm, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
-from .models import Individual, Nest, ManagementAction, Taxon, FirefightersZone, IdentificationCard
+from .models import Individual, Nest, ManagementAction, Taxon, FirefightersZone, IdentificationCard, \
+    get_recent_observations
 
 
 class CustomBaseDetailView(SingleObjectMixin, View):
@@ -43,7 +44,7 @@ class CustomDeleteView(SingleObjectTemplateResponseMixin, CustomBaseDeleteView):
 
 
 def index(request):
-    return render(request, 'vespawatch/index.html')
+    return render(request, 'vespawatch/index.html', {'recent_observations': get_recent_observations(limit=10)})
 
 
 @login_required
@@ -272,6 +273,7 @@ def taxa_json(request):
     return JsonResponse([s.to_json() for s in Taxon.objects.all()], safe=False)
 
 def observations_json(request):
+    # TODO: refactor to use models.get_recent_observations() (except if this is not needed anymore -> delete)
     """
     Return all observations as JSON data.
     """
