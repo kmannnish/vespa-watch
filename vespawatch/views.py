@@ -17,7 +17,7 @@ from django.urls import reverse_lazy
 
 from vespawatch.utils import ajax_login_required
 from .forms import ManagementActionForm, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
-from .models import Individual, Nest, ManagementAction, Taxon, FirefightersZone
+from .models import Individual, Nest, ManagementAction, Taxon, FirefightersZone, IdentificationCard
 
 
 class CustomBaseDetailView(SingleObjectMixin, View):
@@ -254,6 +254,12 @@ class ManagmentActionDelete(LoginRequiredMixin, DeleteView):
     model = ManagementAction
     success_url = reverse_lazy('vespawatch:index')
 
+
+def create_obs_step_1(request):
+    # This is the step where the user select the species and type (nest/individual)
+    cards = IdentificationCard.objects.all()
+
+    return render(request, 'vespawatch/create_obs_step_1.html', {'cards': cards})
 
 # ==============
 # API methods

@@ -1,0 +1,22 @@
+{% extends 'vespawatch/base.html' %}
+
+{% load i18n %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <h1>{% trans "What have you observed?" %}</h1>
+
+        <div class="card-deck">
+            {% for card in cards %}
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ card.represented_taxon.name }}
+                        {% if card.represents_nest %}({% trans "nest"%}){% endif %}
+                        </h5>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

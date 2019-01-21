@@ -16,6 +16,7 @@ from django.template import defaultfilters
 from django.urls import reverse
 from django.utils.timezone import is_naive, make_aware
 from django.utils.translation import ugettext_lazy as _
+from markdownx.models import MarkdownxField
 from pyinaturalist.node_api import get_observation
 from pyinaturalist.rest_api import create_observations, update_observation, add_photo_to_observation
 
@@ -41,6 +42,8 @@ class Taxon(models.Model):
                                             help_text="When pulling observations from iNaturalist, reconcile according "
                                                       "to those IDs.")
 
+    # TODO: get_file_path and identification_* should be removed after we fully migrated to the new identification card/
+    # TODO: two page submission form
     def get_file_path(instance, filename):
         return os.path.join('taxon_identification_pictures/', make_unique_filename(filename))
 
@@ -72,6 +75,27 @@ class Taxon(models.Model):
     class Meta:
         verbose_name_plural = "taxa"
 
+
+class IdentificationCard(models.Model):
+    represented_taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT)
+    represents_nest = models.BooleanField()
+
+    def get_file_path(instance, filename):
+        return os.path.join('taxon_identification_pictures/', make_unique_filename(filename))
+
+    identification_picture = models.ImageField(upload_to=get_file_path, blank=True, null=True)
+
+    description_nl = MarkdownxField(blank=True)
+    description_en = MarkdownxField(blank=True)
+
+    order = models.IntegerField(unique=True)  # The order in which the cards are shown
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        card_type = 'nest' if self.represents_nest else 'individual'
+        return f'Card for {self.represented_taxon.name} ({card_type})'
 
 
 class InatCreatedObservationsManager(models.Manager):
