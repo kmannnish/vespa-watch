@@ -52,6 +52,10 @@ class Taxon(models.Model):
 
     identification_priority = models.BooleanField()  # Should appear first in the taxon selector
 
+    @property
+    def inat_pictures_link(self):
+        return f'https://www.inaturalist.org/taxa/{self.inaturalist_push_taxon_id}/browse_photos?quality_grade=research'
+
     def __str__(self):
         return  self.name
 
@@ -85,10 +89,9 @@ class IdentificationCard(models.Model):
 
     identification_picture = models.ImageField(upload_to=get_file_path, blank=True, null=True)
 
-    description_nl = MarkdownxField(blank=True)
-    description_en = MarkdownxField(blank=True)
-
     order = models.IntegerField(unique=True)  # The order in which the cards are shown
+
+    description = MarkdownxField(blank=True)
 
     class Meta:
         ordering = ['order']
