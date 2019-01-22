@@ -26,6 +26,7 @@ SECRET_KEY = '<SOMETHING_SECRET_TO_REDEFINE_HERE>'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+JS_DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -135,27 +136,23 @@ LANGUAGES = [
     ('en', _('English')),
 ]
 
-LANGUAGES_AVAILABLE_IN_SELECTOR = [
-    ('nl', _('Dutch')),
-    ('en', _('English')),
-]
-
 PAGE_FRAGMENTS_FALLBACK_LANGUAGE = 'nl'
 
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'), )
 
 
-# Local paths/URLs
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
 MEDIA_URL = '/img/'
 STATIC_URL = '/static/'
 
 
+# ---------- Custom settings ----------
+
 # Logging
 
-JS_DEBUG = False
+LOG_FILE_PATH = os.path.join(BASE_DIR, 'django.log')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -163,7 +160,7 @@ LOGGING = {
         'file': {
             'level': 'WARNING',
             'class': 'logging.FileHandler',
-            'filename': '/opt/python/log/django.log',
+            'filename': LOG_FILE_PATH,
         },
     },
     'loggers': {
@@ -176,7 +173,7 @@ LOGGING = {
 }
 
 
-# CSS/design for JS
+# Map
 
 MAP_CIRCLE_FILL_OPACITY = 0.5
 MAP_CIRCLE_STROKE_OPACITY = 0.8
@@ -201,9 +198,25 @@ MAP_TILELAYER_OPTIONS = {
 }
 
 
-# Other settings
+# iNaturalist
 
-WEBSITE_NAME = "Vespa-Watch"
+INAT_USER_USERNAME = 'vespawatch'
+INAT_USER_PASSWORD = ''
+INAT_APP_ID = 'd1d0f541791be42e234ce82a5bb8332ab816ff7ab35c6e27b12c0455939a5ea8'
+INAT_APP_SECRET = ''
+
+
+# Other
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+LANGUAGES_AVAILABLE_IN_SELECTOR = [
+    ('nl', _('Dutch')),
+    ('en', _('English')),
+]
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 VESPAWATCH_EVIDENCE_OBS_FIELD_ID = 9770  # The identifier of the "vespawatch_evidence" observation field @iNaturalist
 VESPAWATCH_ID_OBS_FIELD_ID = 9613 # # The identifier of the "vespawatch_id" observation field @iNaturalist
@@ -211,10 +224,10 @@ VESPAWATCH_PROJECT_ID = 22865  # vespawatch project ID @ iNaturalist
 VESPAWATCH_PROJECT_URL = f"https://inaturalist.org/projects/{VESPAWATCH_PROJECT_ID}"
 VESPAWATCH_USER_ID = 1263313  # vespawatch user ID @ iNaturalist
 
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
+WEBSITE_NAME = "Vespa-Watch"
 
 
-# Settings that should be available in the templates
+# Exported to templates
 
 SETTINGS_EXPORT = [
     'DEBUG',
