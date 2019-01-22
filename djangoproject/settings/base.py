@@ -26,6 +26,7 @@ SECRET_KEY = '<SOMETHING_SECRET_TO_REDEFINE_HERE>'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+JS_DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -39,10 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
     'django.contrib.gis',
+    'django.contrib.humanize',
+    'django.contrib.messages',
+    'django.contrib.sessions',
+    'django.contrib.staticfiles',
 
     # From others
     'crispy_forms',
@@ -124,13 +126,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'Europe/Brussels'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 LANGUAGES = [
@@ -138,43 +136,44 @@ LANGUAGES = [
     ('en', _('English')),
 ]
 
-LANGUAGES_AVAILABLE_IN_SELECTOR = [
-    ('nl', _('Dutch')),
-    ('en', _('English')),
-]
+PAGE_FRAGMENTS_FALLBACK_LANGUAGE = 'nl'
 
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'), )
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = '/static/'
 MEDIA_URL = '/img/'
+STATIC_URL = '/static/'
 
-VESPAWATCH_PROJECT_ID = 22865  # Vespa-Watch project ID @ iNaturalist
-VESPAWATCH_USER_ID = 1263313  # vespawatch user ID @ iNaturalist
 
-WEBSITE_NAME = "Vespa-Watch"
+# ---------- Custom settings ----------
 
-SETTINGS_EXPORT = [
-    'DEBUG',
-    'JS_DEBUG',
-    'WEBSITE_NAME',
-    'LANGUAGES',
-    'LANGUAGES_AVAILABLE_IN_SELECTOR',
-    'VESPAWATCH_ID_OBS_FIELD_ID',
-    'VESPAWATCH_EVIDENCE_OBS_FIELD_ID'
-]
+# Logging
 
-PAGE_FRAGMENTS_FALLBACK_LANGUAGE = 'nl'
+LOG_FILE_PATH = os.path.join(BASE_DIR, 'django.log')
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': LOG_FILE_PATH,
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+    },
+}
 
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
-
-VESPAWATCH_ID_OBS_FIELD_ID = 9613 # # The identifier of the "vespawatch_id" observation field @iNaturalist
-VESPAWATCH_EVIDENCE_OBS_FIELD_ID = 9770  # The identifier of the "vespawatch_evidence" observation field @iNaturalist
+# Map
 
 MAP_CIRCLE_FILL_OPACITY = 0.5
 MAP_CIRCLE_STROKE_OPACITY = 0.8
@@ -198,24 +197,45 @@ MAP_TILELAYER_OPTIONS = {
     'maxZoom': 20
 }
 
-JS_DEBUG = False
+
+# iNaturalist
+
+INAT_USER_USERNAME = 'vespawatch'
+INAT_USER_PASSWORD = ''
+INAT_APP_ID = 'd1d0f541791be42e234ce82a5bb8332ab816ff7ab35c6e27b12c0455939a5ea8'
+INAT_APP_SECRET = ''
 
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'WARNING',
-            'class': 'logging.FileHandler',
-            'filename': '/opt/python/log/django.log',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'WARNING',
-            'propagate': True,
-        },
-    },
-}
+# Other
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+LANGUAGES_AVAILABLE_IN_SELECTOR = [
+    ('nl', _('Dutch')),
+    ('en', _('English')),
+]
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+VESPAWATCH_EVIDENCE_OBS_FIELD_ID = 9770  # The identifier of the "vespawatch_evidence" observation field @iNaturalist
+VESPAWATCH_ID_OBS_FIELD_ID = 9613 # # The identifier of the "vespawatch_id" observation field @iNaturalist
+VESPAWATCH_PROJECT_ID = 22865  # vespawatch project ID @ iNaturalist
+VESPAWATCH_PROJECT_URL = f"https://inaturalist.org/projects/{VESPAWATCH_PROJECT_ID}"
+VESPAWATCH_USER_ID = 1263313  # vespawatch user ID @ iNaturalist
+
+WEBSITE_NAME = "Vespa-Watch"
+
+
+# Exported to templates
+
+SETTINGS_EXPORT = [
+    'DEBUG',
+    'JS_DEBUG',
+    'LANGUAGES',
+    'LANGUAGES_AVAILABLE_IN_SELECTOR',
+    'VESPAWATCH_EVIDENCE_OBS_FIELD_ID',
+    'VESPAWATCH_ID_OBS_FIELD_ID',
+    'VESPAWATCH_PROJECT_URL',
+    'WEBSITE_NAME'
+]

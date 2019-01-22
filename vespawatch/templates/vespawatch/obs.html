@@ -3,7 +3,25 @@
 {% load i18n %}
 
 {% block content %}
-{% for observation in observations %}
-    <p>{{ observation.taxon.name }} - {{ observation.observation_time }}</p>
-{% endfor %}
+<main class="container">
+    <h2>{% trans 'Latest observations' %}</h2>
+
+    <div class="row theme-card-deck">
+    {% for obs in observations %}
+        <div class="col-md-3">
+            {% include 'vespawatch/includes/obs_card.html' %}
+        </div>
+        {% if forloop.counter|divisibleby:4 %}
+    </div>
+    <div class="row theme-card-deck">
+        {% endif %}
+    {% endfor %}
+    </div>
+
+    <p>
+    {% blocktrans %}
+        For more observations, see the <a href="{{ settings.VESPAWATCH_PROJECT_URL }}">Vespa-Watch project on iNaturalist</a>.
+    {% endblocktrans %}
+    </p>
+</main>
 {% endblock %}
