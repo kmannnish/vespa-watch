@@ -2,7 +2,6 @@
 
 {% load static %}
 {% load i18n %}
-{% load humanize %}
 {% load page_fragments %}
 
 {% block content %}
@@ -51,14 +50,15 @@
     <section>
         <h2>{% trans 'Latest observations' %}</h2>
 
-        <div class="card-deck">
         {% for obs in recent_observations %}
+        <div class="row theme-card-deck">
+            <div class="col-md-3">
                 {% include 'vespawatch/includes/obs_card.html' %}
             </div>
         {% endfor %}
         </div>
 
-        <p class="text-right mt-2"><a href="{{ settings.VESPAWATCH_PROJECT_URL }}">See all observations</a></p>
+        <p class="text-right"><a href="{% url 'vespawatch:latest-observations' %}">See more observations</a></p>
     </section>
 </main>
 {% endblock %}
