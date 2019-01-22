@@ -628,7 +628,7 @@ class InatObsToDelete(models.Model):
         return str(self.inaturalist_id)
 
 
-def get_recent_observations(include_individuals=True, include_nests=True, zone_id=None, limit=10):
+def get_recent_observations(include_individuals=True, include_nests=True, zone_id=None, limit=None):
     obs = []
 
     if include_individuals:

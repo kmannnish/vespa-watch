@@ -18,6 +18,7 @@ urlpatterns = [
     path('nests/<int:pk>/edit/', views.update_nest, name='nest-update'),
     path('nests/<int:pk>/delete/', views.NestDelete.as_view(), name='nest-delete'),
 
+    path('obs/', views.latest_observations, name='latest-observations'),
     path('observations/add', views.create_obs_step_1, name='observation-add'),
 
     # API paths

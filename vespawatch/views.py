@@ -46,6 +46,8 @@ class CustomDeleteView(SingleObjectTemplateResponseMixin, CustomBaseDeleteView):
 def index(request):
     return render(request, 'vespawatch/index.html', {'recent_observations': get_recent_observations(limit=10)})
 
+def latest_observations(request):
+    return render(request, 'vespawatch/obs.html', {'observations': get_recent_observations()})
 
 @login_required
 def management(request):
