@@ -5,19 +5,21 @@
 {% load page_fragments %}
 
 {% block content %}
-<div class="jumbotron jumbotron-fluid" style="background-image: url('{% static 'vespawatch/img/cover.jpg' %}')">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <h1>{% trans 'Monitor the invasion of the Asian hornet'%}</h1>
-                <a class="btn btn-lg btn-primary mr-2" href="{% url 'vespawatch:individual-add' %}?redirect_to=index">{% trans 'Add individual' %}</a>
-                <a class="btn btn-lg btn-primary mr-2" href="{% url 'vespawatch:nest-add' %}?redirect_to=index">{% trans 'Add nest' %}</a>
-
-                <a class="btn btn-lg btn-primary mr-2" href="{% url 'vespawatch:observation-add' %}?redirect_to=index">{% trans 'Add observation' %}</a>
+<figure>
+    <div class="jumbotron jumbotron-fluid" style="background-image: linear-gradient(to right, rgba(62, 96, 16, 0.75), rgba(0, 0, 0, 0)), url('{% static 'vespawatch/img/cover.jpg' %}')">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h1>{% trans 'Monitor the invasion of the Asian hornet'%}</h1>
+                    <a class="btn btn-lg btn-primary" href="{% url 'vespawatch:observation-add' %}?redirect_to=index">{% trans 'Add observation' %}</a>
+                </div>
             </div>
         </div>
     </div>
-</div>
+    <figcaption>
+        {% trans 'Image by' %} <a href="https://www.inaturalist.org/observations/17322380">Karel Schoonvaere</a>
+    </figcaption>
+</figure>
 
 <main class="container" id="vw-main-app">
     {% if messages %}

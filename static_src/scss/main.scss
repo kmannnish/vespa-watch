@@ -10,6 +10,22 @@
 
 // GENERAL
 
+body {
+    // Customize some Bootstrap classes
+
+    .btn {
+        white-space: normal; // Wrap button within container
+    }
+}
+
+
+// COVER IMAGE
+
+figure {
+    margin-bottom: 0;
+    position: relative;
+}
+
 div.jumbotron {
     // background-image: applied in template
     background-position: center;
@@ -23,8 +39,22 @@ div.jumbotron {
             color: $white;
             font-size: 3rem;
             margin-bottom: 2rem;
-            text-shadow: 0.5px 0.5px 5px rgba(theme-color("secondary"), 0.75);
+            text-shadow: 0.5px 0.5px 2px rgba(theme-color("dark"), 0.75);
         }
+    }
+}
+
+figcaption {
+    background-color: rgba($white, 0.75);
+    bottom: 0;
+    color: $body-color;
+    font-size: $small-font-size;
+    padding: 0 0.5rem;
+    position: absolute;
+    right: 0;
+
+    a {
+        color: $body-color;
     }
 }
 
