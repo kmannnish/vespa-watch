@@ -258,11 +258,11 @@ class ManagmentActionDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('vespawatch:index')
 
 
-def create_obs_step_1(request):
+def obs_create(request):
     # This is the step where the user select the species and type (nest/individual)
     cards = IdentificationCard.objects.all()
 
-    return render(request, 'vespawatch/create_obs_step_1.html', {'identification_cards': cards})
+    return render(request, 'vespawatch/obs_create.html', {'identification_cards': cards})
 
 # ==============
 # API methods
