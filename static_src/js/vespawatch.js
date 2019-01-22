@@ -129,7 +129,6 @@ var VwObservationsVizMap = {
                     className: "circle"
                 });
                 //circle.bindPopup(this.observationToHtml(obs));
-                console.log("Popup id: ", document.getElementById('map-popup-' + obs.id));
                 circle.bindPopup(document.getElementById('map-popup-' + obs.id));
                 this.mapCircles.push(circle);
             });
@@ -223,7 +222,7 @@ var VwObservationsVizMap = {
     template: `<div>
         <div class="mb-2" id="vw-map-map" style="height: 450px;"></div>
         <div style="display: none;">
-            <vw-observations-map-popup v-for="observation in observations" :observation="observation" :edit-redirect="editRedirect" :key="observation.id"></vw-observations-map-popup>
+            <vw-observations-map-popup v-for="observation in observations" :observation="observation" :edit-redirect="editRedirect" :key="observation.key"></vw-observations-map-popup>
         </div>
     </div>`
 };
@@ -243,9 +242,6 @@ var VwObservationsVizTimeSlider = {
     },
     props: ['value'],
     computed: {
-        startStr: function () {
-            return moment(this.selectedTimeRange.start).format('D MMM YYYY');
-        },
         stopStr: function () {
             return moment(this.selectedTimeRange.stop).format('D MMM YYYY');
         }
@@ -275,7 +271,7 @@ var VwObservationsVizTimeSlider = {
                 step: 7 * 24 * 60 * 60 * 1000,
 
                 // Two more timestamps indicate the handle starting positions.
-                start: [this.value.start, this.value.stop],
+                start: [this.value.stop],
 
                 // No decimals
                 format: wNumb({
@@ -283,13 +279,14 @@ var VwObservationsVizTimeSlider = {
                 })
             });
             el.noUiSlider.on('set', (values, handle) => {
-                this.selectedTimeRange.start = parseInt(values[0]);
-                this.selectedTimeRange.stop = parseInt(values[1]);
-                this.$emit('time-updated', values.map(x => parseInt(x)));
+                //this.selectedTimeRange.start = parseInt(values[0]);
+                this.selectedTimeRange.start = this.value.start;
+                this.selectedTimeRange.stop = parseInt(values[0]);
+                this.$emit('time-updated', [parseInt(this.selectedTimeRange.start), parseInt(this.selectedTimeRange.stop)]);
             });
             el.noUiSlider.on('slide', (values, handle) => {
-                this.selectedTimeRange.start = parseInt(values[0]);
-                this.selectedTimeRange.stop = parseInt(values[1]);
+                this.selectedTimeRange.start = this.value.start;
+                this.selectedTimeRange.stop = parseInt(values[0]);
             });
         }
     },
@@ -302,7 +299,6 @@ var VwObservationsVizTimeSlider = {
     },
     template: `
         <div class="row align-items-center py-2 mb-2">
-            <div class="col-2">{{ startStr }}</div>
             <div class="col"><div id="vw-time-slider"></div></div>
             <div class="col-2 text-right">{{ stopStr }}</div>
         </div>
@@ -875,7 +871,7 @@ var VwRecentObsTable = {
                         </tr>
                     </thead>
 
-                    <vw-recent-obs-table-row v-for="observation in observations" :observation="observation" :key="observation.id"></vw-recent-obs-table-row>
+                    <vw-recent-obs-table-row v-for="observation in observations" :observation="observation" :key="observation.key"></vw-recent-obs-table-row>
                 </table>
             </div>
         </div>`

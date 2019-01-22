@@ -493,6 +493,7 @@ class Nest(AbstractObservation):
     def as_dict(self):
         return {
             'id': self.pk,
+            'key': f'nest-{self.pk}',  # Handy when you need a unique key in a batch of Observations (nests and individuals)
             'taxon': self.get_display_taxon_name(),
             'subject': 'nest',
             'address': self.address,
@@ -538,6 +539,7 @@ class Individual(AbstractObservation):
     def as_dict(self):
         return {
             'id': self.pk,
+            'key': f'individual-{self.pk}',  # Handy when you need a unique key in a batch of Observations (nests and individuals)
             'taxon': self.get_display_taxon_name(),
             'subject': 'individual',
             'address': self.address,
