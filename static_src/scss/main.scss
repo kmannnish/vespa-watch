@@ -32,6 +32,14 @@ div.jumbotron {
 // NAVBAR
 
 .navbar-dark {
+    .navbar-brand img {
+        border: 2px solid $white;
+        border-radius: 30px;
+        height: 30px;
+        margin-right: 5px;
+        width: 30px;
+    }
+
     select,
     select:focus {
         background-color: $dark;

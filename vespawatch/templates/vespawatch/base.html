@@ -22,7 +22,10 @@
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a class="navbar-brand" href="/">{{ settings.WEBSITE_NAME }}</a>
+            <a class="navbar-brand" href="/">
+                <img src="{% static 'vespawatch/img/avatar.jpg' %}" class="d-inline-block align-top" alt="">
+                {{ settings.WEBSITE_NAME }}
+            </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-content">
                 <span class="navbar-toggler-icon"></span>
             </button>
