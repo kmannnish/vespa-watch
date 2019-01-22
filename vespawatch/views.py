@@ -275,28 +275,23 @@ def taxa_json(request):
     return JsonResponse([s.to_json() for s in Taxon.objects.all()], safe=False)
 
 def observations_json(request):
-    # TODO: refactor to use models.get_recent_observations() (except if this is not needed anymore -> delete)
     """
     Return all observations as JSON data.
     """
     zone = request.GET.get('zone', '')
-    obs_type = request.GET.get('type', '')
+    zone_id = int(zone) if zone else None
+
+    obs_type = request.GET.get('type', None)
+    include_individuals = (obs_type == 'individual' or obs_type is None)
+    include_nests = (obs_type == 'nest' or obs_type is None)
+
     limit = request.GET.get('limit', None)
+    limit = int(limit) if limit is not None else None
 
-    obs = []
-
-    if obs_type == 'individual' or obs_type == '':
-        obs = obs + list(Individual.objects.all())
-    if obs_type == 'nest' or obs_type == '':
-        obs = obs + list(Nest.objects.all())
-
-    if zone:
-        # if a zone is given, filter the observations. This works for both individuals and nests
-        obs = [x for x in obs if x.zone_id == int(zone)]
-
-    obs.sort(key=lambda x: x.observation_time, reverse=True)
-    if limit:
-        obs = obs[:int(limit)]
+    obs = get_recent_observations(include_individuals=include_individuals,
+                                  include_nests=include_nests,
+                                  zone_id=zone_id,
+                                  limit=limit)
 
     return JsonResponse({
         'observations': [x.as_dict() for x in obs]

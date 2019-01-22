@@ -5,6 +5,8 @@ from . import views
 
 app_name = 'vespawatch'
 
+#TODO: Review this file to make sure all those URLs / views are still in use (management actions for example).
+
 urlpatterns = [
     path('', views.index, name='index'),
     path('management', views.management, name='management'),
