@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     # From others
     'crispy_forms',
     'markdownx',
+    'imagekit',
 
     # Local helpers
     'page_fragments',
