@@ -15,7 +15,7 @@ urlpatterns = [
     path('actions/<int:pk>/delete/', views.ManagmentActionDelete.as_view(), name='action-delete'),
 
     path('obs/', views.latest_observations, name='latest-observations'),
-    path('obs/add', views.create_obs_step_1, name='observation-add'),
+    path('obs/add', views.obs_create, name='observation-add'),
 
     path('obs/individual/', RedirectView.as_view(pattern_name='vespawatch:individual-add')),
     path('obs/individual/add/', views.create_individual, name='individual-add'),
