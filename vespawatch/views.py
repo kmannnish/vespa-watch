@@ -288,7 +288,7 @@ def observations_json(request):
     limit = request.GET.get('limit', None)
     limit = int(limit) if limit is not None else None
 
-    obs = get_recent_observations(include_individuals=include_individuals,
+    obs = get_observations(include_individuals=include_individuals,
                                   include_nests=include_nests,
                                   zone_id=zone_id,
                                   limit=limit)
