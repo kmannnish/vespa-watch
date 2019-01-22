@@ -11,11 +11,5 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-if os.environ['ENVIRONMENT'] == "dev":
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'djangoproject.settings.settings_dev'
-elif os.environ['ENVIRONMENT'] == "prd":
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'djangoproject.settings.settings_prd'
-else:
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'djangoproject.settings.settings_local'
-
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'djangoproject.settings')
 application = get_wsgi_application()
