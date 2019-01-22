@@ -102,6 +102,10 @@ main.container-fluid {
 
     // Non-Bootstrap elements
 
+    h2 {
+        margin-bottom: 1rem;
+    } 
+
     .theme-card-deck {
         // Apply to .row: mimics Bootstrap .card-deck, stretching cards to equal height, but without
         // stretching width when there are fewer cards on one row (cards remain equal width).
