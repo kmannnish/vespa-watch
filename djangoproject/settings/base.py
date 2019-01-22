@@ -181,6 +181,7 @@ WEBSITE_NAME = "Vespa-Watch"
 VESPAWATCH_EVIDENCE_OBS_FIELD_ID = 9770  # The identifier of the "vespawatch_evidence" observation field @iNaturalist
 VESPAWATCH_ID_OBS_FIELD_ID = 9613 # # The identifier of the "vespawatch_id" observation field @iNaturalist
 VESPAWATCH_PROJECT_ID = 22865  # vespawatch project ID @ iNaturalist
+VESPAWATCH_PROJECT_URL = f"https://inaturalist.org/projects/{VESPAWATCH_PROJECT_ID}"
 VESPAWATCH_USER_ID = 1263313  # vespawatch user ID @ iNaturalist
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -195,5 +196,6 @@ SETTINGS_EXPORT = [
     'LANGUAGES_AVAILABLE_IN_SELECTOR',
     'VESPAWATCH_EVIDENCE_OBS_FIELD_ID',
     'VESPAWATCH_ID_OBS_FIELD_ID',
+    'VESPAWATCH_PROJECT_URL',
     'WEBSITE_NAME'
 ]
