@@ -34,12 +34,19 @@
             {% endfor %}
         </div>
     {% endif %}
-    <div>
-    {% get_page_fragment 'welcome' %}
-    </div>
 
-    <vw-observations-viz load-data="1"></vw-observations-viz>
-    <vw-recent-obs-table></vw-recent-obs-table>
+    <section>
+        <div class="row">
+            <div class="col-md-4">
+                {% get_page_fragment 'welcome' %}
+            </div>
+
+            <div class="col-md-8">
+                <vw-observations-viz load-data="1"></vw-observations-viz>
+            </div>
+        </div>
+    </section>
+
 
 </main>
 {% endblock %}
