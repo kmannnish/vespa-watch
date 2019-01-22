@@ -395,6 +395,13 @@ class AbstractObservation(models.Model):
         else:
             photo_obj = IndividualPicture()
 
+        # TODO: Find a cleaner solution to this
+        # It seems the iNaturalist only returns small thumbnails such as
+        # 'https://static.inaturalist.org/photos/1960816/square.jpg?1444437211'
+        # We can circumvent the issue by hacking the URL...
+        photo_url = photo_url.replace('square.jpg', 'large.jpg')
+        photo_url = photo_url.replace('square.jpeg', 'large.jpeg')
+
         photo_content = ContentFile(requests.get(photo_url).content)
         photo_filename = photo_url[photo_url.rfind("/")+1:].split('?',1)[0]
 
