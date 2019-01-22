@@ -146,6 +146,22 @@ External Javascript libraries (and their CSS) are defined in [`package.json`](pa
 2. Add or update the relevant image files
 3. Copy the files with `npm run copy:img`
 
+### Translations
+
+1. Extract the translations from the code to .po files
+
+   ```bash
+   $ python manage.py makemessages -l nl
+   $ python manage.py makemessages -d djangojs -l nl
+   ```
+2. Complete the translations in `locale/nl/LC_MESSAGES/django.po` and `locale/nl/LC_MESSAGES/djangojs.po`. A simple text editor is enough, but more advanced tools such as Qt Linguist can more convenient.
+
+3. Compile .po => .mo
+    ```bash
+    $ python manage.py compilemessages
+    ```
+4. Rince and repeat.    
+
 ## Contributors
 
 [List of contributors](https://github.com/inbo/vespa-watch/contributors)
