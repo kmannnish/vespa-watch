@@ -572,7 +572,7 @@ class IndividualPicture(models.Model):
     observation = models.ForeignKey(Individual, on_delete=models.CASCADE, related_name='pictures')
     image = models.ImageField(upload_to=get_file_path)
     thumbnail = ImageSpecField(source='image',
-                               processors=[SmartResize(400, 400)],
+                               processors=[SmartResize(400, 200)],
                                format='JPEG',
                                options={'quality': 90})
 
@@ -584,7 +584,7 @@ class NestPicture(models.Model):
     observation = models.ForeignKey(Nest, on_delete=models.CASCADE, related_name='pictures')
     image = models.ImageField(upload_to=get_file_path)
     thumbnail = ImageSpecField(source='image',
-                               processors=[SmartResize(400, 400)],
+                               processors=[SmartResize(400, 200)],
                                format='JPEG',
                                options={'quality': 90})
 
