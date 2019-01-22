@@ -31,10 +31,7 @@ var VwObservationsMapPopup = {
             return "map-popup-" + this.observation.id;
         },
         observationTime: function() {
-            return  moment(this.observation.observation_time).format('lll')
-        },
-        seeOnInatStr: function() {
-            return gettext('See on iNaturalist');
+            return  moment(this.observation.observation_time).format('D MMMM YYYY')
         },
         viewDetailsStr: function() {
             return gettext('View details');
@@ -53,24 +50,25 @@ var VwObservationsMapPopup = {
         }
     },
     template: `
-        <div :id="htmlId">
-            <h1>{{ observation.taxon }}</h1>
-           
-            <ul>
-                <li><b>Observation time: </b> {{ observationTime }}</li> 
-                <li><b>Subject: </b> {{ observation.subject }}</li>
-                
-                <li v-if="observation.comments"><b>Comments: </b> {{ observation.comments }}</li>
-                <li v-if="observation.inaturalist_id"><a :href="inaturalistUrl" target="_blank">{{ seeOnInatStr }}</a></li>
-            </ul>
-            
-            <div v-if="observation.imageUrls.length > 0">
-                <img v-for="imageUrl in observation.imageUrls" class="theme-img-thumb" :src="imageUrl">
+        <div :id="htmlId" class="card">
+            <a :href="detailsUrl">
+                <img class="card-img-top" :src="observation.thumbnails[0]">
+            </a>
+            <div class="card-body">
+                <h5 class="card-title">Vernacular name</h5>
+                <h6 class="card-subtitle text-muted mb-2"><em>{{ observation.taxon }}</em></h6>
+                <p class="card-text">
+                    <span class="badge badge-secondary">{{ observation.subject }}</span>
+                    <span class="badge badge-success">validated</span>
+                </p>
+                <p class="card-text">
+                    <a class="card-link" :href="detailsUrl">{{ viewDetailsStr }}</a>
+                    <a class="card-link" v-if="observation.inaturalist_id" :href="inaturalistUrl" target="_blank">iNaturalist</a>
+                </p>
             </div>
-            
-            <p>
-            <a :href="detailsUrl"> {{ viewDetailsStr }}</a>
-            </p>
+            <div class="card-footer text-muted">
+                <small>{{ observationTime }}</small>
+            </div>
         </div>
     `
 };
