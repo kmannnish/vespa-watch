@@ -15,6 +15,11 @@ SECRET_KEY = '<SOMETHING_SECRET_TO_REDEFINE_HERE>'
 DEBUG = True
 JS_DEBUG = False
 
+# Add the following block if you want django-debug-toolbar
+INSTALLED_APPS.extend(['debug_toolbar',])
+MIDDLEWARE.extend(['debug_toolbar.middleware.DebugToolbarMiddleware'])
+INTERNAL_IPS = ['127.0.0.1']
+
 VESPAWATCH_BASE_SITE_URL = "http://localhost:8000"
 
 # INaturalist user information
