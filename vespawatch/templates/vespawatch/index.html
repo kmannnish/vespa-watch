@@ -22,7 +22,7 @@
     </figcaption>
 </figure>
 
-<main class="container" id="vw-main-app">
+<main class="container">
     {% if messages %}
         <div class="messages">
             {% for message in messages %}
@@ -36,7 +36,7 @@
         </div>
     {% endif %}
 
-    <section>
+    <section id="vw-main-app">
         <div class="row">
             <div class="col-md-4">
                 {% get_page_fragment 'welcome' %}
