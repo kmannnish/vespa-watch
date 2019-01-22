@@ -50,8 +50,8 @@
     <section>
         <h2>{% trans 'Latest observations' %}</h2>
 
-        {% for obs in recent_observations %}
         <div class="row theme-card-deck">
+        {% for obs in observations %}
             <div class="col-md-3">
                 {% include 'vespawatch/includes/obs_card.html' %}
             </div>
