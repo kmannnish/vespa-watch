@@ -40,6 +40,7 @@ var VwObservationsMapPopup = {
             return gettext('View details');
         },
         inaturalistUrl: function() {
+            // TODO: duplication: get data from obs.inaturalist_obs_url instead of reinventing the wheel here
             return "http://www.inaturalist.org/observations/" + this.observation.inaturalist_id;
         },
         detailsUrl: function() {

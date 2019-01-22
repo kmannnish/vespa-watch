@@ -46,6 +46,8 @@ class CustomDeleteView(SingleObjectTemplateResponseMixin, CustomBaseDeleteView):
 def index(request):
     return render(request, 'vespawatch/index.html', {'recent_observations': get_recent_observations(limit=4)})
 
+def latest_observations(request):
+    return render(request, 'vespawatch/obs.html', {'observations': get_recent_observations()})
 
 @login_required
 def management(request):
@@ -260,7 +262,7 @@ def create_obs_step_1(request):
     # This is the step where the user select the species and type (nest/individual)
     cards = IdentificationCard.objects.all()
 
-    return render(request, 'vespawatch/create_obs_step_1.html', {'cards': cards})
+    return render(request, 'vespawatch/create_obs_step_1.html', {'identification_cards': cards})
 
 # ==============
 # API methods

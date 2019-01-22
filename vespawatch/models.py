@@ -52,6 +52,10 @@ class Taxon(models.Model):
 
     identification_priority = models.BooleanField()  # Should appear first in the taxon selector
 
+    @property
+    def inat_pictures_link(self):
+        return f'https://www.inaturalist.org/taxa/{self.inaturalist_push_taxon_id}/browse_photos?quality_grade=research'
+
     def __str__(self):
         return  self.name
 
@@ -85,10 +89,9 @@ class IdentificationCard(models.Model):
 
     identification_picture = models.ImageField(upload_to=get_file_path, blank=True, null=True)
 
-    description_nl = MarkdownxField(blank=True)
-    description_en = MarkdownxField(blank=True)
-
     order = models.IntegerField(unique=True)  # The order in which the cards are shown
+
+    description = MarkdownxField(blank=True)
 
     class Meta:
         ordering = ['order']
@@ -320,6 +323,13 @@ class AbstractObservation(models.Model):
     @property
     def exists_in_inaturalist(self):
         return self.inaturalist_id is not None
+
+    @property
+    def inaturalist_obs_url(self):
+        if self.exists_in_inaturalist:
+            return f'https://www.inaturalist.org/observations/{self.inaturalist_id}'
+
+        return None
 
     def _params_for_inat(self):
         """(Create/update): Common ground for the pushed data to iNaturalist.
@@ -618,7 +628,7 @@ class InatObsToDelete(models.Model):
         return str(self.inaturalist_id)
 
 
-def get_recent_observations(include_individuals=True, include_nests=True, zone_id=None, limit=10):
+def get_recent_observations(include_individuals=True, include_nests=True, zone_id=None, limit=None):
     obs = []
 
     if include_individuals:

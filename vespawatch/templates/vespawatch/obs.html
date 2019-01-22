@@ -1,0 +1,9 @@
+{% extends 'vespawatch/base.html' %}
+
+{% load i18n %}
+
+{% block content %}
+{% for observation in observations %}
+    <p>{{ observation.taxon.name }} - {{ observation.observation_time }}</p>
+{% endfor %}
+{% endblock %}

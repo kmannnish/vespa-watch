@@ -33,6 +33,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'modeltranslation',  # MUST be before Admin, see https://github.com/deschler/django-modeltranslation/issues/408
+
     # From Django
     'django.contrib.admin',
     'django.contrib.auth',
@@ -46,7 +48,6 @@ INSTALLED_APPS = [
     # From others
     'crispy_forms',
     'markdownx',
-    'modeltranslation',
 
     # Local helpers
     'page_fragments',
