@@ -47,7 +47,35 @@
         </div>
     </section>
 
+    <section>
+        <h2>{% trans 'Latest observations' %}</h2>
 
+        <div class="card-deck">
+        {% for obs in recent_observations %}
+            <div class="card">
+                {% for picture in obs.pictures.all|slice:":1" %}
+                    <a href="{% url 'vespawatch:individual-detail' obs.pk %}">
+                        <img class="card-img-top" src="{{ picture.image.url }}">
+                    </a>
+                {% endfor %}
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ obs.taxon.vernacular_name }}</h5>
+                    <h6 class="card-subtitle text-muted mb-2"><em>{{ obs.taxon.name }}</em></h6>
+                    <p class="card-text">
+                        <span class="badge badge-secondary">nest</span>
+                        <span class="badge badge-success">validated</span>
+                    </p>
+                </div>
+                <div class="card-footer text-muted">
+                    <small>{{ obs.observation_time }}</small>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+
+        <p class="text-right mt-2"><a href="https://inaturalist.org/projects/vespa-watch">See all observations</a></p>
+    </section>
 </main>
 {% endblock %}
 
