@@ -3,7 +3,7 @@
 <div class="card">
     {% for picture in obs.pictures.all|slice:":1" %}
         <a href="{% url 'vespawatch:individual-detail' obs.pk %}">
-            <img class="card-img-top" src="{{ picture.image.url }}">
+            <img class="card-img-top" src="{{ picture.thumbnail.url }}">
         </a>
     {% endfor %}
 
