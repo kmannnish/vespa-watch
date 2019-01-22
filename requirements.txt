@@ -3,13 +3,16 @@ certifi==2018.8.24
 chardet==3.0.4
 dateparser==0.7.0
 Django==2.1.2
+django-appconf==1.0.2
 django-crispy-forms==1.7.2
+django-imagekit==4.0.2
 django-markdownx==2.0.24
 django-modeltranslation==0.13b1
 django-settings-export==1.2.1
 django-storages==1.7.1
 idna==2.7
 Markdown==3.0.1
+pilkit==2.0
 Pillow==5.2.0
 psycopg2-binary==2.7.5
 pyinaturalist==0.6.0
@@ -20,4 +23,3 @@ requests==2.20.0
 six==1.11.0
 tzlocal==1.5.1
 urllib3==1.23
-

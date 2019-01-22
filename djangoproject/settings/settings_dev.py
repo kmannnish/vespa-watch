@@ -27,6 +27,9 @@ SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+JS_DEBUG = False
+
+VESPAWATCH_BASE_SITE_URL = "http://vespawatch-dev.eu-west-1.elasticbeanstalk.com/"
 
 INAT_USER_USERNAME = 'vespawatch'
 INAT_USER_PASSWORD = ''

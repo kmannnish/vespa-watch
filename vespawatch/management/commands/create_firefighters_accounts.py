@@ -15,11 +15,14 @@ class Command(VespaWatchCommand):
             username = slugify(zone.name)
             password = make_password()
 
-            user = User.objects.create_user(username=username,
-                                            password=password)
-            user.profile.zone = zone
-            user.save()
+            if User.objects.filter(username=username).exists():
+                self.w(f"{username} already exists (for {zone.name})")
+            else:
+                user = User.objects.create_user(username=username,
+                                                password=password)
+                user.profile.zone = zone
+                user.save()
 
-            self.w(f"Created {username} / {password} (for {zone.name})")
+                self.w(f"Created {username} / {password} (for {zone.name})")
 
         self.w("OK")

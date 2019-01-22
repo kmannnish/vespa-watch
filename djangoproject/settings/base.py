@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     # From others
     'crispy_forms',
     'markdownx',
+    'imagekit',
 
     # Local helpers
     'page_fragments',
@@ -143,7 +144,39 @@ PAGE_FRAGMENTS_FALLBACK_LANGUAGE = 'nl'
 
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'), )
 
-# Design for JS
+
+# Local paths/URLs
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+MEDIA_URL = '/img/'
+STATIC_URL = '/static/'
+
+
+# Logging
+
+JS_DEBUG = False
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': '/opt/python/log/django.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+    },
+}
+
+
+# CSS/design for JS
 
 MAP_CIRCLE_FILL_OPACITY = 0.5
 MAP_CIRCLE_STROKE_OPACITY = 0.8
@@ -167,12 +200,6 @@ MAP_TILELAYER_OPTIONS = {
     'maxZoom': 20
 }
 
-# Local paths/URLs
-
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
-MEDIA_URL = '/img/'
-STATIC_URL = '/static/'
 
 # Other settings
 
@@ -185,7 +212,7 @@ VESPAWATCH_PROJECT_URL = f"https://inaturalist.org/projects/{VESPAWATCH_PROJECT_
 VESPAWATCH_USER_ID = 1263313  # vespawatch user ID @ iNaturalist
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
-JS_DEBUG = False
+
 
 # Settings that should be available in the templates
 

@@ -16,7 +16,9 @@ from django.template import defaultfilters
 from django.urls import reverse
 from django.utils.timezone import is_naive, make_aware
 from django.utils.translation import ugettext_lazy as _
+from imagekit.models import ImageSpecField
 from markdownx.models import MarkdownxField
+from pilkit.processors import SmartResize
 from pyinaturalist.node_api import get_observation
 from pyinaturalist.rest_api import create_observations, update_observation, add_photo_to_observation
 
@@ -558,6 +560,10 @@ class IndividualPicture(models.Model):
 
     observation = models.ForeignKey(Individual, on_delete=models.CASCADE, related_name='pictures')
     image = models.ImageField(upload_to=get_file_path)
+    thumbnail = ImageSpecField(source='image',
+                               processors=[SmartResize(400, 400)],
+                               format='JPEG',
+                               options={'quality': 90})
 
 
 class NestPicture(models.Model):
