@@ -42,7 +42,7 @@ eb deploy --message  "informative message..."
 ### Key-pair combination
 
 It is straightforward to create a new key-pair combination using the AWS Console > EC2 > Key Pairs > `Create Key Pair`.
-For development, the key-pair combination is called `LW-INBO-VESPAWATCH-DEV`, in production this is `LW-INBO-VESPAWATCH-PRD`.
+For development, the key-pair combination is called `LW-INBO-VESPAWATCH`, which can be used as name both in DEV and PRD.
 
 Do not forget to put the key-pair combination in the team-folder location.
 
@@ -79,8 +79,6 @@ aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --p
 
 # add the required elasticbeanstalk policies (taken from aws-elasticbeanstalk-ec2-role)
 aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-arn arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier
-aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-arn arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker
-aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-arn arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier
 aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-arn arn:aws:iam::226308051916:policy/AWS-Beanstalk-Volumes
 
 # attach the custom vespawatch aws-elasticbeanstalk-ec2-role
@@ -107,10 +105,8 @@ For *development*, the environment creation is done with the following command:
 eb create
 --cname vespawatch-dev
 --database --database.username $DB_USER --database.password $DB_PWD
---database.size 5
---database.engine postgres
 --elb-type classic
---envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD
+--envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,ENVIRONMENT=$ENVIRONMENT
 --region eu-west-1
 --vpc
 --vpc.dbsubnets subnet-2b338273,subnet-2ce39448,subnet-d0c6a5a6
@@ -118,8 +114,6 @@ eb create
 --vpc.elbsubnets subnet-8c4dfcd4,subnet-fef98e9a,subnet-c8fc9fbe
 --vpc.id vpc-cc8610a8
 --vpc.securitygroups sg-ca7ae0b2,sg-4b8f442d
---instance_profile aws-elasticbeanstalk-ec2-role-vespawatch
---keyname LW-INBO-VESPAWATCH-DEV
 --tags APPLICATION=VESPAWATCH,ENVIRONMENT=DEV,OWNER=LIFEWATCH-VESPAWATCH,BUSINESS_UNIT=LIFEWATCH,COST_CENTER=EVINBO,RUNDECK=TRUE
 ```
 For *uat*, the environment creation is done with the following command:
@@ -148,10 +142,8 @@ For *production*, the environment creation is done with the following command:
 eb create
 --cname vespawatch-prd
 --database --database.username $DB_USER --database.password $DB_PWD
---database.size 5
---database.engine postgres
 --elb-type classic
---envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,DB_USER=$DB_USER,DB_PWD=$DB_PWD
+--envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,DB_USER=$DB_USER,DB_PWD=$DB_PWD,ENVIRONMENT=$ENVIRONMENT
 --region eu-west-1
 --vpc
 --vpc.dbsubnets subnet-7a763f23,subnet-c4f6ffa1,subnet-9a0a3bed
@@ -159,8 +151,6 @@ eb create
 --vpc.elbsubnets subnet-78763f21,subnet-c5f6ffa0,subnet-9c0a3beb
 --vpc.id vpc-79d0f71c
 --vpc.securitygroups sg-ce6ff5b6,sg-35d5ed51
---instance_profile aws-elasticbeanstalk-ec2-role-vespawatch
---keyname LW-INBO-VESPAWATCH-PRD
 --tags APPLICATION=VESPAWATCH,ENVIRONMENT=PRD,OWNER=LIFEWATCH-VESPAWATCH,BUSINESS_UNIT=LIFEWATCH,COST_CENTER=EVINBO,RUNDECK=TRUE
 ```
 
@@ -191,6 +181,36 @@ When the environment works, the deployment of the application is done by:
 eb deploy --message "your informatice message"
 ```
 
+## Setup the firefighters polygons and accounts
+
+With the proper authentification rights enabled, we can appply some additional steps during the first requirement. These commands are not included as container commands, as they only need to be configured during the first deployment, whereas the steps in the `01_python_config` file will run each new deployment
+
+```
+eb ssh --command "source /opt/python/run/venv/bin/activate && python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson"
+eb ssh --command "source /opt/python/run/venv/bin/activate && python manage.py create_firefighters_accounts"
+```
+
+## Setup the data syncronization with iNaturalist
+
+First of all, make sure an initial set of data is available by syncronizing the observations in iNaturalist to the vespawatch application
+
+```
+eb ssh --command "source /opt/python/run/venv/bin/activate && python manage.py sync_pull"
+```
+
+Next, we need a cron job to regularly syncronize the iNaturalist data with the vespawatch application data.
+
+TODO!
+
+## Adapt the security group excluding inbound rule
+
+Check the group-id of the security group, e.g. `g-0ed982b15ae8893ef` and revoke the ssh inbound rule on this security group:
+
+```
+aws ec2 revoke-security-group-ingress --group-id sg-0ed982b15ae8893ef --protocol tcp --port 22 --cidr 0.0.0.0/0
+```
+
+
 ## Bash script for deployment
 
 A small deployment bash script has been prepared to to the entire setup. To execute the setup, make sure your aws profile is set correctly (dev or prd) and execute the script (adapt the capital arguments with more useful names and store these securely)::
@@ -200,6 +220,7 @@ A small deployment bash script has been prepared to to the entire setup. To exec
 ```
 
 Variables:
+* `$ENVIRONMENT` e.g. 'dev'
 * `$DB_USER` RDS database user
 * `$DB_PWD`   RDS database pwd
 * `$DJANGO_SECRET_KEY`   django app secret key
@@ -216,13 +237,13 @@ TODO: https://medium.com/@nqbao/how-to-use-aws-ssm-parameter-store-easily-in-pyt
 
 ## Setup and configuration info
 
-### ... 
+### ...
 
 ...
 
 ### Geo-django
 
-The usage of [geo-django](https://docs.djangoproject.com/en/2.1/ref/contrib/gis/) supporting geographic functionalities requires additional dependencies. On the database side, this requires the Postgis extension to Postgres, which is by default available when using the AWS postgres RDS. 
+The usage of [geo-django](https://docs.djangoproject.com/en/2.1/ref/contrib/gis/) supporting geographic functionalities requires additional dependencies. On the database side, this requires the Postgis extension to Postgres, which is by default available when using the AWS postgres RDS.
 
 On the application side, the EC2 servers need to have the `gdal/geos/proj` suite available. Installing `gdal` and `proj` using `yum` is only possible when activating the `epel`  repository. As such, these are included as the first container command in the `01_python.config` file instead of the general list of yum packages in the `02_packages.config`.
 
