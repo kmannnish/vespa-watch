@@ -16,7 +16,9 @@
         </p>
         <p class="card-text">
             <a href="{% url 'vespawatch:individual-detail' obs.pk %}" class="card-link">View</a>
-            <a href="https://inaturalist.org/observations/{{ obs.inaturalist_id }}" class="card-link">iNaturalist</a>
+            {% if obs.inaturalist_obs_url %}
+                <a href="{{ obs.inaturalist_obs_url }}" class="card-link">iNaturalist</a>
+            {% endif %}
         </p>
     </div>
     <div class="card-footer text-muted">
