@@ -324,6 +324,13 @@ class AbstractObservation(models.Model):
     def exists_in_inaturalist(self):
         return self.inaturalist_id is not None
 
+    @property
+    def inaturalist_obs_url(self):
+        if self.exists_in_inaturalist:
+            return f'https://www.inaturalist.org/observations/{self.inaturalist_id}'
+
+        return None
+
     def _params_for_inat(self):
         """(Create/update): Common ground for the pushed data to iNaturalist.
 
