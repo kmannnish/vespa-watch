@@ -4,7 +4,10 @@
 
 {% block content %}
 <main class="container">
-    <h2>{% trans 'Latest observations' %}</h2>
+    <h2>
+        {% trans 'Latest observations' %}
+        <a class="btn btn-primary float-right" href="{% url 'vespawatch:observation-add' %}">{% trans 'Add your observation' %}</a>
+    </h2>
 
     <div class="row theme-card-deck">
     {% for obs in observations %}
