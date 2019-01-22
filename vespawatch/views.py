@@ -260,7 +260,7 @@ def create_obs_step_1(request):
     # This is the step where the user select the species and type (nest/individual)
     cards = IdentificationCard.objects.all()
 
-    return render(request, 'vespawatch/create_obs_step_1.html', {'cards': cards})
+    return render(request, 'vespawatch/create_obs_step_1.html', {'identification_cards': cards})
 
 # ==============
 # API methods
