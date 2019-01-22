@@ -502,14 +502,15 @@ class Nest(AbstractObservation):
             'inaturalist_id': self.inaturalist_id,
             'observation_time': self.observation_time.timestamp() * 1000,
             'comments': self.comments,
-            'imageUrls': [x.image.url for x in self.pictures.all()],
+            'images': [x.image.url for x in self.pictures.all()],
+            'thumbnails': [x.thumbnail.url for x in self.pictures.all()],
             'action': self.get_management_action_display(),
             'actionCode': self.get_management_action_code(),
             'actionId': self.get_management_action_id(),
             'actionFinished': self.get_management_action_finished(),
             'originates_in_vespawatch': self.originates_in_vespawatch,
             'updateUrl': reverse('vespawatch:nest-update', kwargs={'pk': self.pk}),
-            'detailsUrl': reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
+            'detailsUrl': reverse('vespawatch:nest-detail', kwargs={'pk': self.pk}),
         }
 
     def __str__(self):
@@ -548,7 +549,8 @@ class Individual(AbstractObservation):
             'inaturalist_id': self.inaturalist_id,
             'observation_time': self.observation_time.timestamp() * 1000,
             'comments': self.comments,
-            'imageUrls': [x.image.url for x in self.pictures.all()],
+            'images': [x.image.url for x in self.pictures.all()],
+            'thumbnails': [x.thumbnail.url for x in self.pictures.all()],
             'detailsUrl': reverse('vespawatch:individual-detail', kwargs={'pk': self.pk})
         }
 
@@ -574,6 +576,10 @@ class NestPicture(models.Model):
 
     observation = models.ForeignKey(Nest, on_delete=models.CASCADE, related_name='pictures')
     image = models.ImageField(upload_to=get_file_path)
+    thumbnail = ImageSpecField(source='image',
+                               processors=[SmartResize(400, 400)],
+                               format='JPEG',
+                               options={'quality': 90})
 
 
 
