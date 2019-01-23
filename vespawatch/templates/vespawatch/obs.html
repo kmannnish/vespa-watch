@@ -11,7 +11,7 @@
 
     <div class="row theme-card-deck">
     {% for obs in observations %}
-        <div class="col-md-3">
+        <div class="col-lg-3 col-sm-6">
             {% include 'vespawatch/includes/obs_card.html' %}
         </div>
         {% if forloop.counter|divisibleby:4 %}
