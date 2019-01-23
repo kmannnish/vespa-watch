@@ -22,8 +22,8 @@
     </div>
 
     <p>
-    {% blocktrans %}
-        For more observations, see the <a href="{{ settings.VESPAWATCH_PROJECT_URL }}">Vespa-Watch project on iNaturalist</a>.
+    {% blocktrans with project_url=settings.VESPAWATCH_PROJECT_URL %}
+        For more observations, see the <a href="{{ project_url }}">Vespa-Watch project on iNaturalist</a>.
     {% endblocktrans %}
     </p>
 </main>
