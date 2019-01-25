@@ -30,6 +30,40 @@ JS_DEBUG = False
 
 ALLOWED_HOSTS = []
 
+# add private ip from AWS
+# cfr. https://hashedin.com/blog/5-gotchas-with-elastic-beanstalk-and-django/
+def is_ec2_linux():
+    """Detect if we are running on an EC2 Linux Instance
+
+       See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
+    """
+    if os.path.isfile("/sys/hypervisor/uuid"):
+        with open("/sys/hypervisor/uuid") as f:
+            uuid = f.read()
+            return uuid.startswith("ec2")
+    return False
+
+def get_linux_ec2_private_ip():
+    """Get the private IP Address of the machine if running
+    on an EC2 linux server
+    """
+    from urllib import request
+    if not is_ec2_linux():
+        return None
+    try:
+        response = request.urlopen('http://169.254.169.254/latest/meta-data/local-ipv4')
+        return response.read()
+    except:
+        return None
+    finally:
+        if response:
+            response.close()
+# ElasticBeanstalk healthcheck sends requests with host header = internal ip
+# So we detect if we are in elastic beanstalk, and add the instances private ip address
+private_ip = get_linux_ec2_private_ip()
+if private_ip:
+    ALLOWED_HOSTS.append(private_ip)
+
 
 # Application definition
 
@@ -148,29 +182,6 @@ STATIC_URL = '/static/'
 
 
 # ---------- Custom settings ----------
-
-# Logging
-
-LOG_FILE_PATH = os.path.join(BASE_DIR, 'django.log')
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'WARNING',
-            'class': 'logging.FileHandler',
-            'filename': LOG_FILE_PATH,
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'WARNING',
-            'propagate': True,
-        },
-    },
-}
-
 
 # Map
 

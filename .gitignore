@@ -124,7 +124,7 @@ nest_pictures
 !.elasticbeanstalk/*.global.yml
 
 # elastic beanstalk general setting (created from either dev or prd)
-settings.py
+# settings.py
 
 # custom ignores
 start

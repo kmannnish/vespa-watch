@@ -39,9 +39,28 @@ STATIC_URL = '/static/'
 
 # ---------- Custom settings ----------
 
-# Logging
+# Logging aws eb
 
 LOG_FILE_PATH = '/opt/python/log/django.log'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': LOG_FILE_PATH,
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+    },
+}
 
 
 # S3 static storage for media files

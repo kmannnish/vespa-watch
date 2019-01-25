@@ -4,16 +4,15 @@ from .base import *
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 JS_DEBUG = False
 
 ALLOWED_HOSTS = [
     '.elasticbeanstalk.com',
     '.eu-west-1.elb.amazonaws.com',
-    '.vespawatch-prd.eu-west-1.elasticbeanstalk.com',
+    '.vespawatch-dev.eu-west-1.elasticbeanstalk.com',
     '.localhost',
 ]
-
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -39,28 +38,9 @@ STATIC_URL = '/static/'
 
 # ---------- Custom settings ----------
 
-# Logging aws eb
+# Logging
 
 LOG_FILE_PATH = '/opt/python/log/django.log'
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'WARNING',
-            'class': 'logging.FileHandler',
-            'filename': LOG_FILE_PATH,
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'WARNING',
-            'propagate': True,
-        },
-    },
-}
 
 
 # S3 static storage for media files
@@ -79,4 +59,4 @@ AWS_LOCATION = 'media'
 
 # Other
 
-VESPAWATCH_BASE_SITE_URL = "TOADAPT!"
+VESPAWATCH_BASE_SITE_URL = "http://vespawatch-dev.eu-west-1.elasticbeanstalk.com/"
