@@ -502,12 +502,16 @@ class Nest(AbstractObservation):
         action = self.managementaction_set.first()
         return action.pk if action else None
 
+    @property
+    def subject(self):
+        return 'nest'
+
     def as_dict(self):
         return {
             'id': self.pk,
             'key': f'nest-{self.pk}',  # Handy when you need a unique key in a batch of Observations (nests and individuals)
             'taxon': self.get_display_taxon_name(),
-            'subject': 'nest',
+            'subject': self.subject,
             'address': self.address,
             'latitude': self.latitude,
             'longitude': self.longitude,
@@ -554,12 +558,16 @@ class Individual(AbstractObservation):
         # for the update page. Should it be updated/fixed?
         return reverse('vespawatch:individual-detail', kwargs={'pk': self.pk})
 
+    @property
+    def subject(self):
+        return 'individual'
+
     def as_dict(self):
         return {
             'id': self.pk,
             'key': f'individual-{self.pk}',  # Handy when you need a unique key in a batch of Observations (nests and individuals)
             'taxon': self.get_display_taxon_name(),
-            'subject': 'individual',
+            'subject': self.subject,
             'address': self.address,
             'latitude': self.latitude,
             'longitude': self.longitude,
