@@ -478,6 +478,11 @@ class Nest(AbstractObservation):
     )
     height = models.CharField(max_length=50, choices=HEIGHT_CHOICES, blank=True)
 
+    def get_detail_page_url(self):
+        # FIXME: I wanted to implement this as the (Django standard) get_absolute_url, but this one was already taken
+        # for the update page. Should it be updated/fixed?
+        return reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
+
     def get_absolute_url(self):
         return reverse('vespawatch:nest-update', kwargs={'pk': self.pk})
 
@@ -543,6 +548,11 @@ class Individual(AbstractObservation):
 
     def get_absolute_url(self):
         return reverse('vespawatch:individual-update', kwargs={'pk': self.pk})
+
+    def get_detail_page_url(self):
+        # FIXME: I wanted to implement this as the (Django standard) get_absolute_url, but this one was already taken
+        # for the update page. Should it be updated/fixed?
+        return reverse('vespawatch:individual-detail', kwargs={'pk': self.pk})
 
     def as_dict(self):
         return {
