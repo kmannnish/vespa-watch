@@ -113,8 +113,7 @@ node_modules
 djangoproject/settings/settings_local.py
 .idea/
 testbed_inat_interactions.py
-individual_pictures
-nest_pictures
+pictures/
 
 # deployment exclusions
 

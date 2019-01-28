@@ -87,7 +87,7 @@ class IdentificationCard(models.Model):
     represents_nest = models.BooleanField()
 
     def get_file_path(instance, filename):
-        return os.path.join('taxon_identification_pictures/', make_unique_filename(filename))
+        return os.path.join('pictures/identification_cards/', make_unique_filename(filename))
 
     identification_picture = models.ImageField(upload_to=get_file_path, blank=True, null=True)
 
@@ -567,7 +567,7 @@ class Individual(AbstractObservation):
 
 class IndividualPicture(models.Model):
     def get_file_path(instance, filename):
-        return os.path.join('individual_pictures/', make_unique_filename(filename))
+        return os.path.join('pictures/individuals/', make_unique_filename(filename))
 
     observation = models.ForeignKey(Individual, on_delete=models.CASCADE, related_name='pictures')
     image = models.ImageField(upload_to=get_file_path)
@@ -579,7 +579,7 @@ class IndividualPicture(models.Model):
 
 class NestPicture(models.Model):
     def get_file_path(instance, filename):
-        return os.path.join('nest_pictures/', make_unique_filename(filename))
+        return os.path.join('pictures/nests/', make_unique_filename(filename))
 
     observation = models.ForeignKey(Nest, on_delete=models.CASCADE, related_name='pictures')
     image = models.ImageField(upload_to=get_file_path)
