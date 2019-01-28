@@ -1,0 +1,10 @@
+{% extends 'vespawatch/base.html' %}
+{% load page_fragments %}
+
+{% block content %}
+    <div class="row">
+        <div class="col">
+          {% get_page_fragment 'about_page' %}
+        </div>
+    </div>
+{% endblock %}
