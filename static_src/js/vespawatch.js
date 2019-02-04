@@ -27,20 +27,20 @@ if (!VWConfig.debug) {
 var VwObservationsMapPopup = {
     props: ["observation", "editRedirect"],
     computed: {
-        htmlId: function() {
+        htmlId: function () {
             return "map-popup-" + this.observation.id;
         },
-        observationTime: function() {
-            return  moment(this.observation.observation_time).format('D MMMM YYYY')
+        observationTime: function () {
+            return moment(this.observation.observation_time).format('D MMMM YYYY')
         },
-        viewDetailsStr: function() {
+        viewDetailsStr: function () {
             return gettext('View details');
         },
-        inaturalistUrl: function() {
+        inaturalistUrl: function () {
             // TODO: duplication: get data from obs.inaturalist_obs_url instead of reinventing the wheel here
             return "http://www.inaturalist.org/observations/" + this.observation.inaturalist_id;
         },
-        detailsUrl: function() {
+        detailsUrl: function () {
             var url = new URL(this.observation.detailsUrl, VWConfig.baseUrl);
 
             if (this.editRedirect) {
@@ -81,7 +81,9 @@ var VwObservationsVizMap = {
         'vw-observations-map-popup': VwObservationsMapPopup
     },
     computed: {
-        'managementMap': function () {return this.zoneId != null}
+        'managementMap': function () {
+            return this.zoneId != null
+        }
     },
     data: function () {
         return {
@@ -101,7 +103,7 @@ var VwObservationsVizMap = {
                     return d.subject === 'individual' ? conf.individualColor :
                         d.subject === 'nest' ?
                             d.actionFinished ? conf.nestColor.finished :
-                                        conf.nestColor.unfinished
+                                conf.nestColor.unfinished
                             : conf.unknownColor;  // if the subject is not 'Individual' or 'Nest'
 
                 } else {
@@ -134,7 +136,7 @@ var VwObservationsVizMap = {
             this.observationsLayer.addTo(this.map);
             this.observationsLayer.bringToFront();
             if (!this.initialZoomed) {
-                this.map.fitBounds(this.observationsLayer.getBounds());
+                //this.map.fitBounds(this.observationsLayer.getBounds());
             }
             this.initialZoomed = true;
         },
@@ -189,15 +191,15 @@ var VwObservationsVizMap = {
 
             if (this.zoneId) {
                 axios.get(VWConfig.apis.zoneUrl, {params: {zone_id: this.zoneId}})
-                .then(response => {
-                    var geoJSONLayer = L.geoJSON(response.data);
-                    geoJSONLayer.addTo(this.map);
-                    geoJSONLayer.bringToBack();
-                    this.map.fitBounds(geoJSONLayer.getBounds());
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+                    .then(response => {
+                        var geoJSONLayer = L.geoJSON(response.data);
+                        geoJSONLayer.addTo(this.map);
+                        geoJSONLayer.bringToBack();
+                        this.map.fitBounds(geoJSONLayer.getBounds());
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
             }
         }
     },
@@ -209,10 +211,9 @@ var VwObservationsVizMap = {
     props: ['autozoom', 'editRedirect', 'observations', 'type', 'zoneId'],
     watch: {
         observations: function (newObservations, oldObservations) {
-            console.log('vw-observations-viz-map: Observations got updated!');
             this.clearMap();
             Vue.nextTick(() => { // !! The popups should be in the DOM before we reference them !!
-               this.addObservationsToMap();
+                this.addObservationsToMap();
             });
         }
     },
@@ -226,82 +227,134 @@ var VwObservationsVizMap = {
 };
 
 
-// Time slider
-// Has a prop 'value' which is used for binding data with the v-model directive.
-// This should be an object with properties 'start' and 'stop' to indicate the total
-// range of the slider.
-// The time slider will also emit an 'time-updated' event when the user changes the
-// selected range.
 var VwObservationsVizTimeSlider = {
-    data: function () {
-        return {
-            selectedTimeRange: {}
+    props: {
+        observationsTimeRange: Object,
+        autoPlay: {
+            type: Boolean,
+            default: true
+        },
+        animationSpeed: {
+            type: Number,
+            default: 70 // milliseconds between steps
+        },
+        loop: {
+            type: Boolean,
+            default: true
         }
     },
-    props: ['value'],
+
+    data: function () {
+        return {
+            selectedTimeRange: {
+                'start': 0,
+                'stop': 0
+            },
+            oneWeek: 7 * 24 * 60 * 60 * 1000,
+            dataReady: false,
+            playing: false,
+
+            intervalId: 0, // Don't touch, managed by playAnimation() / stopAnimation()
+        }
+    },
+
+    methods: {
+        nextIncrementWillOverrun: function (duration) {
+            if (this.selectedTimeRange.stop + duration >= this.observationsTimeRange.stop) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+
+        incrementRangeEnd: function (duration) {
+            if (this.selectedTimeRange.stop >= this.observationsTimeRange.stop) {
+                this.selectedTimeRange.stop = this.selectedTimeRange.start;
+            }
+
+            this.selectedTimeRange.stop = this.selectedTimeRange.stop + duration;
+        },
+
+        stopAnimationIfRunning: function() {
+            if (this.playing) {
+                this.stopAnimation();
+            }
+        },
+
+        toggleAnimation: function () {
+            this.playing ? this.stopAnimation() : this.startAnimation();
+        },
+
+        startAnimation: function () {
+            this.intervalId = window.setInterval(this.animation, this.animationSpeed);
+        },
+
+        animation: function () {
+            if (this.dataReady) {
+                this.playing = true;
+
+                if (this.nextIncrementWillOverrun(this.oneWeek)) {
+                    // We've reached the last observation...
+                    if (!this.loop) {
+                         this.stopAnimation()
+                    }
+                }
+                this.incrementRangeEnd(this.oneWeek);
+            }
+        },
+
+        stopAnimation: function () {
+            window.clearInterval(this.intervalId);
+            this.playing = false;
+        }
+    },
+
+    watch: {
+        observationsTimeRange: function (newRange, oldRange) {
+            // Only when data is loaded from the API, the range of the slider can be set. Therefore,
+            // watch the 'observationsTimeRange' prop to set the data initial value.
+            this.selectedTimeRange.start = this.observationsTimeRange.start;
+            this.selectedTimeRange.stop = this.observationsTimeRange.start;
+
+            this.dataReady = true;
+        },
+        selectedTimeRange: {
+            handler: function () {
+                this.$emit('time-updated', [this.selectedTimeRange.start, this.selectedTimeRange.stop]);
+            },
+            deep: true
+        }
+    },
+
     computed: {
         stopStr: function () {
             return moment(this.selectedTimeRange.stop).format('D MMM YYYY');
+        },
+        buttonLabel: function () {
+            return (this.playing ? gettext("Pause") : gettext("Play"));
         }
     },
-    methods: {
-        init: function () {
-            var el = document.getElementById('vw-time-slider');
-            if (el.noUiSlider != null) {
-                // Destroying the UI time slider if it already exists.
-                // This can happen when the observations viz is used and
-                // the observations loaded are updated (for instance in
-                // the management page, when the admin selects a zone.
-                el.noUiSlider.destroy();
+
+    mounted: function () {
+        this.$nextTick(function () {
+            if (this.autoPlay) {
+                this.startAnimation();
             }
-            this.selectedTimeRange = {
-                start: this.value.start,
-                stop: this.value.stop
-            };
-            noUiSlider.create(el, {
-                // Create two timestamps to define a range.
-                range: {
-                    min: this.value.start,
-                    max: this.value.stop
-                },
-
-                // Steps of one week
-                step: 7 * 24 * 60 * 60 * 1000,
-
-                // Two more timestamps indicate the handle starting positions.
-                start: [this.value.stop],
-
-                // No decimals
-                format: wNumb({
-                    decimals: 0
-                })
-            });
-            el.noUiSlider.on('set', (values, handle) => {
-                //this.selectedTimeRange.start = parseInt(values[0]);
-                this.selectedTimeRange.start = this.value.start;
-                this.selectedTimeRange.stop = parseInt(values[0]);
-                this.$emit('time-updated', [parseInt(this.selectedTimeRange.start), parseInt(this.selectedTimeRange.stop)]);
-            });
-            el.noUiSlider.on('slide', (values, handle) => {
-                this.selectedTimeRange.start = this.value.start;
-                this.selectedTimeRange.stop = parseInt(values[0]);
-            });
-        }
+        })
     },
-    watch: {
-        value: function (newRange, oldRange) {
-            // when data is loaded from the API, the range of the slider can be set. Therefore,
-            // watch the 'value' prop and call init() when that prop is changed.
-            this.init();
-        }
-    },
+
     template: `
         <div class="row align-items-center py-2 mb-2">
-            <div class="col"><div id="vw-time-slider"></div></div>
+            <div class="col">
+                <div id="vw-time-slider">
+                    <button type="button" class="btn btn-success" @click="toggleAnimation"> {{ buttonLabel }}</button>
+                    <input type="range" class="form-control-range" v-model.number="selectedTimeRange.stop" v-on:input="stopAnimationIfRunning" v-on:change="stopAnimationIfRunning" :min="observationsTimeRange.start" :max="observationsTimeRange.stop" :step="oneWeek" >
+                </div>
+            </div>
             <div class="col-2 text-right">{{ stopStr }}</div>
         </div>
         `
-};
+}
 
 // The VwObservationsViz consists of 2 child components: the time slider (VwObservationsVizTimeSlider)
 // and the map (VwObservationsVizMap).
@@ -402,7 +455,7 @@ var VwObservationsViz = {
     template: `
         <section>
             <vw-observations-viz-map :observations="observations" :edit-redirect="editRedirect" :zone-id="zone" :type="type"></vw-observations-viz-map>
-            <vw-observations-viz-time-slider v-on:time-updated="filterOnTimeRange" v-model="timeRange"></vw-observations-viz-time-slider>
+            <vw-observations-viz-time-slider v-on:time-updated="filterOnTimeRange" :observations-time-range="timeRange"></vw-observations-viz-time-slider>
         </section>
         `
 };
@@ -810,7 +863,7 @@ var VwRecentObsTable = {
     components: {
         'vw-recent-obs-table-row': VwRecentObsTableRow
     },
-    data: function() {
+    data: function () {
         return {
             'currentlyLoading': false,
             'limit': 10,
@@ -835,7 +888,7 @@ var VwRecentObsTable = {
         }
     },
     methods: {
-        loadObs: function() {
+        loadObs: function () {
             this.currentlyLoading = true;
             let url = VWConfig.apis.observationsUrl;
 
@@ -1180,7 +1233,7 @@ var VwDatetimeSelector = {
         }
     },
     methods: {
-        nowIsoFormat: function() {
+        nowIsoFormat: function () {
             return new Date().toISOString();
         }
     },
