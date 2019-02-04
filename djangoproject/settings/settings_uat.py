@@ -10,6 +10,7 @@ JS_DEBUG = False
 ALLOWED_HOSTS = [
     '.elasticbeanstalk.com',
     '.eu-west-1.elb.amazonaws.com',
+    '.uat.vespawatch.be',
     '.vespawatch-uat.eu-west-1.elasticbeanstalk.com',
     '.localhost',
 ]
