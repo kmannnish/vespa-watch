@@ -1,5 +1,4 @@
 {% extends 'vespawatch/base.html' %}
-
 {% load i18n %}
 {% load custom_tags %}
 
@@ -33,9 +32,9 @@
                 </div>
                 <div class="card-footer text-center">
                 {% if card.represents_nest %}
-                    <a class="btn btn-primary" href="{% url 'vespawatch:nest-add' %}?taxon={{ card.represented_taxon.inaturalist_push_taxon_id }}&subject=nest&redirect_to=index">{% trans 'Select this nest' %}</a>
+                    <a class="btn btn-primary" href="{% url 'vespawatch:nest-add' %}?taxon={{ card.represented_taxon.inaturalist_push_taxon_id }}&subject=nest&redirect_to=index">{% trans 'Report this nest' %}</a>
                 {% else %}
-                    <a class="btn btn-secondary" href="{% url 'vespawatch:observation-add' %}?taxon={{ card.represented_taxon.inaturalist_push_taxon_id }}&subject=individual&redirect_to=index">{% trans 'Select this individual' %}</a>
+                    <a class="btn btn-secondary" href="{% url 'vespawatch:observation-add' %}?taxon={{ card.represented_taxon.inaturalist_push_taxon_id }}&subject=individual&redirect_to=index">{% trans 'Report this individual' %}</a>
                 {% endif %}
                 </div>
             </div>
