@@ -10,6 +10,10 @@
         {% trans 'Note: you will have to upload a photo in the next step, so your observation can be verified.' %}
     </p>
 
+    {% if identification_cards|length == 0 %}
+        {% trans 'No identification cards defined. Create these in the admin interface.' %}
+    {% endif %}
+
     <div class="row theme-card-deck">
     {% for card in identification_cards %}
         <div class="col-lg-3 col-sm-6">
