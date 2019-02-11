@@ -33,9 +33,6 @@
 
                 <div class="collapse navbar-collapse" id="navbar-content">
                     <ul class="navbar-nav mr-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/">{% trans 'Home' %}</a>
-                        </li>
                         {% if user.profile.zone or user.is_staff %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'vespawatch:management' %}">{% trans 'Management' %}</a>
