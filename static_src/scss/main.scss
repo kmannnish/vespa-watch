@@ -122,7 +122,15 @@ main.container-fluid {
             }
         }
     }
+}
 
+// FOOTER
+
+body > footer {
+    background-color: theme-color("dark");
+    color: $white;
+    font-size: 0.95rem;
+    padding: $grid-gutter-width / 2 0;
 }
 
 // OTHER
