@@ -2,8 +2,7 @@
 {% load crispy_forms_tags %}
 {% csrf_token %}
 
-<vw-taxon-selector {% if not form.instance.taxon_can_be_locally_changed %}cannot-change-anymore{% endif %} {% if form.instance.taxon %}:taxon-selected="{{ form.instance.taxon.pk }}"{% endif %} mode="nest" taxon-api-url="{% url 'vespawatch:api_taxa' %}" radio-name="taxon"></vw-taxon-selector>
-
+{{ form.redirect_to.as_hidden }}
 {% if object %}
     <vw-location-selector v-bind:init-coordinates="[{{ object.longitude }}, {{ object.latitude }}]"
                           init-marker="true"
@@ -28,21 +27,18 @@
 
 {{ form.size|as_crispy_field }}
 {{ form.height|as_crispy_field }}
-
 {{ form.comments|as_crispy_field }}
-{{ form.redirect_to.as_hidden }}
+
 {{ image_formset.management_form }}
 {% for f in image_formset %}
     {{ f|crispy }}
 {% endfor %}
 
 {% if not user.is_authenticated %}
-
     {{ form.observer_last_name|as_crispy_field }}
     {{ form.observer_first_name|as_crispy_field }}
     {{ form.observer_phone|as_crispy_field }}
     {{ form.observer_email|as_crispy_field }}
-    {{ form.observer_is_beekeeper|as_crispy_field }}
     <div class="form-group">
         <div id="div_id_terms_of_service" class="form-check">
             <label for="id_terms_of_service" class="form-check-label">
