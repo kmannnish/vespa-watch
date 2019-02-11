@@ -6,7 +6,9 @@
 {% block content %}
 <main class="container">
     <h1>{% trans 'What did you see?' %}</h1>
-    <p class="alert alert-warning">{% trans 'Note: you will have to upload a photo in the next step, so your observation can be verified.' %}</p>
+    <p class="alert alert-warning">
+        {% trans 'Note: you will have to upload a photo in the next step, so your observation can be verified.' %}
+    </p>
 
     <div class="row theme-card-deck">
     {% for card in identification_cards %}
@@ -22,7 +24,7 @@
                         {{ card.description|markdown }}
                     </div>
                     <p class="card-text">
-                        <a class="card-link" href="{{ card.represented_taxon.inat_pictures_link }}" target="_blank">{% trans "More pictures" %}</a>
+                        <a class="card-link" href="{{ card.represented_taxon.inat_pictures_link }}" target="_blank">{% trans 'More pictures' %}</a>
                     </p>
                 </div>
                 <div class="card-footer text-center">

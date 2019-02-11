@@ -1,13 +1,10 @@
 {% extends 'vespawatch/base.html' %}
-
 {% load static %}
 {% load i18n %}
 {% load page_fragments %}
 
 {% block content %}
-
 <main class="container" id="vw-main-app">
-
     {% if messages %}
         <div class="messages">
             {% for message in messages %}
@@ -40,8 +37,6 @@
         <h1>{%  trans 'My nests' %}</h1>
         <vw-management-table :currently-loading="currentlyLoading" :nests="nests" v-on:data-changed="loadNests"></vw-management-table>
     {% endif %}
-
-
 </main>
 {% endblock %}
 
