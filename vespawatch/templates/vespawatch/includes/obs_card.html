@@ -3,7 +3,7 @@
 
 <div class="card">
     {% for picture in obs.pictures.all|slice:":1" %}
-        <a href="{% url 'vespawatch:individual-detail' obs.pk %}">
+        <a href="{{ obs.get_detail_page_url }}">
             <img class="card-img-top" src="{{ picture.thumbnail.url }}">
         </a>
     {% endfor %}
@@ -11,11 +11,11 @@
         <h5 class="card-title">{{ obs.taxon.vernacular_name }}</h5>
         <h6 class="card-subtitle text-muted mb-2"><em>{{ obs.taxon.name }}</em></h6>
         <p class="card-text">
-            <span class="badge badge-secondary">nest</span>
+            <span class="badge badge-secondary">{{ obs.subject }}</span>
             <span class="badge badge-success">validated</span>
         </p>
         <p class="card-text">
-            <a class="card-link" href="{% url 'vespawatch:individual-detail' obs.pk %}" >{% trans 'View details' %}</a>
+            <a class="card-link" href="{{ obs.get_detail_page_url }}" >{% trans 'View details' %}</a>
             {% if obs.inaturalist_obs_url %}
                 <a class="card-link" href="{{ obs.inaturalist_obs_url }}">iNaturalist</a>
             {% endif %}
