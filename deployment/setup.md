@@ -77,6 +77,12 @@ aws iam create-role --role-name aws-elasticbeanstalk-ec2-role-vespawatch --assum
 # add the S3 access rule
 aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-name lw-vespawatch-s3 --policy-document file://s3-policy.json
 
+# add custom rule to allow ec2 tag info, used to subselect a single instance to apply cron job to
+aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-name lw-vespawatch-ec2tags --policy-document file://deployment/ec2-describetags.json
+
+# add custom rule to allow ec2 SES sending of mails
+aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-name lw-vespawatch-ec2ses --policy-document file://deployment/ses-sendmailing.json
+
 # add the required elasticbeanstalk policies (taken from aws-elasticbeanstalk-ec2-role)
 aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-arn arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier
 aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-arn arn:aws:iam::226308051916:policy/AWS-Beanstalk-Volumes
@@ -133,9 +139,9 @@ eb create
 --vpc.elbsubnets subnet-994afbc1,subnet-5cf98e38,subnet-2efc9f58
 --vpc.id vpc-a58610c1
 --vpc.securitygroups sg-cf47ddb7,sg-8a9346ec
---instance_profile aws-elasticbeanstalk-ec2-role-vespawatch
 --keyname LW-INBO-VESPAWATCH-UAT
 --tags APPLICATION=VESPAWATCH,ENVIRONMENT=UAT,OWNER=LIFEWATCH-VESPAWATCH,BUSINESS_UNIT=LIFEWATCH,COST_CENTER=EVINBO,RUNDECK=TRUE
+--instance_profile aws-elasticbeanstalk-ec2-role-vespawatch
 ```
 
 For *production*, the environment creation is done with the following command:
@@ -238,7 +244,7 @@ modify-db-instance --db-instance-identifier aa6isov6zpwhro --backup-retention-pe
 A small deployment bash script has been prepared to to the entire setup. To execute the setup, make sure your aws profile is set correctly (dev or prd) and execute the script (adapt the capital arguments with more useful names and store these securely)::
 
 ```
-./setup.sh dev DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD
+./deployment/setup.sh dev DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD
 ```
 
 Variables:
