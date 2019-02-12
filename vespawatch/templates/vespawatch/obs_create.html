@@ -26,10 +26,11 @@
                     <div class="card-text">
                         {{ card.description|markdown }}
                     </div>
-                    <p class="card-text">
-                        <a class="card-link" href="{{ card.represented_taxon.inat_pictures_link }}" target="_blank">{% trans 'More pictures' %}</a>
-                    </p>
                 </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><a href="{{ card.represented_taxon.inat_pictures_link }}">{% trans 'More pictures' %}</a></li>
+                    <li class="list-group-item"><a href="{% url 'vespawatch:identification' %}">{% trans 'More characteristics' %}</a></li>
+                </ul>
                 <div class="card-footer text-center">
                 {% if card.represents_nest %}
                     <a class="btn btn-primary" href="{% url 'vespawatch:nest-add' %}?taxon={{ card.represented_taxon.inaturalist_push_taxon_id }}&subject=nest&redirect_to=index">{% trans 'Report this nest' %}</a>
