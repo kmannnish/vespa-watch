@@ -10,7 +10,14 @@ app_name = 'vespawatch'
 urlpatterns = [
     path('', views.index, name='index'),
     path('identification', views.identification, name='identification'),
-    path('about', views.about, name='about'),
+    path('about/', views.about, name='about'),
+    path('about/project/', views.about_project, name='about_project'),
+    path('about/activities/', views.about_activities, name='about_activities'),
+    path('about/vespa-velutina/', views.about_vespavelutina, name='about_vespavelutina'),
+    path('about/management/', views.about_management, name='about_management'),
+    path('about/privacy-policy/', views.about_privacypolicy, name='about_privacypolicy'),
+    path('about/links/', views.about_links, name='about_links'),
+
     path('management', views.management, name='management'),
     path('actions/add/', views.create_action, name='action-add'),
     path('actions/<int:pk>/', views.update_action, name='action-update'),
