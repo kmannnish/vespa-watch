@@ -328,7 +328,7 @@ var VwObservationsVizTimeSlider = {
 
     computed: {
         stopStr: function () {
-            return moment(this.selectedTimeRange.stop).format('D MMM YYYY');
+            return moment(this.selectedTimeRange.stop).format('YYYY MMM');
         },
         buttonLabel: function () {
             return (this.playing ? gettext("Pause") : gettext("Play"));
@@ -344,14 +344,10 @@ var VwObservationsVizTimeSlider = {
     },
 
     template: `
-        <div class="row align-items-center py-2 mb-2">
-            <div class="col">
-                <div id="vw-time-slider">
-                    <button type="button" class="btn btn-success" @click="toggleAnimation"> {{ buttonLabel }}</button>
-                    <input type="range" class="form-control-range" v-model.number="selectedTimeRange.stop" v-on:input="stopAnimationIfRunning" v-on:change="stopAnimationIfRunning" :min="observationsTimeRange.start" :max="observationsTimeRange.stop" :step="oneWeek" >
-                </div>
-            </div>
-            <div class="col-2 text-right">{{ stopStr }}</div>
+        <div id="vw-time-slider" class="d-flex align-items-center">
+            <div style="width:120px;">{{ stopStr }}</div>
+            <input class="form-control-range mr-4" type="range" v-model.number="selectedTimeRange.stop" v-on:input="stopAnimationIfRunning" v-on:change="stopAnimationIfRunning" :min="observationsTimeRange.start" :max="observationsTimeRange.stop" :step="oneWeek">
+            <button style="width:120px;" class="btn btn-sm btn-secondary" type="button" @click="toggleAnimation"> {{ buttonLabel }}</button>
         </div>
         `
 }
