@@ -50,7 +50,26 @@ def identification(request):
     return render(request, 'vespawatch/identification.html')
 
 def about(request):
-    return render(request, 'vespawatch/about.html')
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_page'})
+
+def about_project(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_project_page'})
+
+def about_activities(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_activities_page'})
+
+def about_vespavelutina(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_vespavelutina_page'})
+
+def about_management(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_management_page'})
+
+def about_privacypolicy(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_privacypolicy_page'})
+
+def about_links(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_links_page'})
+
 
 def latest_observations(request):
     return render(request, 'vespawatch/obs.html', {'observations': get_observations(limit=40)})
@@ -302,13 +321,6 @@ def observations_json(request):
     return JsonResponse({
         'observations': [x.as_dict() for x in obs]
     })
-#
-# @staff_member_required
-# def zones_json(request):
-#     """
-#     Return all firefighter zones as json data
-#     """
-#     return JsonResponse({'zones': [{'id': x.pk, 'name': x.name} for x in list(FirefightersZone.objects.all().order_by('name'))]})
 
 def management_actions_outcomes_json(request):
     #TODO: Implements sorting?
