@@ -10,6 +10,8 @@ Hoornaars zijn bijna dubbel zo groot als een wesp of honingbij. Als eenvoudig tr
 
 In België komen twee hoornaarsoorten voor: de **Aziatische hoornaar** en de **Europese hoornaar**. De Aziatische hoornaar is net iets kleiner dan de Europese hoornaar. De koningin van de Aziatische hoornaar meet 3,5 centimeter van kop tot angel. Ze is iets kleiner dan de Europese hoornaar koningin, die een lengte van 4 cm haalt. De werksters en darren, of mannetjes, zijn kleiner dan de koningin. Aziatische hoornaar werksters en darren worden gemiddeld 2.5 - 3 cm groot, Europese hoornaars weerom iets groter met 3 tot 3.5 cm. Je zal natuurlijk de kans niet krijgen om een levende hoornaar nauwkeurig te meten. Gebruik eerder het kleurpatroon om Aziatische van Europese hoornaars te onderscheiden. 
 
+![hoornaars_vergelijken](../images/HoornaarsVergelijken.jpg)
+
 ## Zwart met lichtgele pootjes
 
 Met 3 eenvoudige kleurkenmerken kan je de Aziatische hoornaar onderscheiden van de Europese hoornaar. In tegenstelling tot de structuur van lichaamsdelen kan de kleur soms variabel zijn. Bijvoorbeeld worden Aziatische hoornaars bleker naarmate ze langer vliegen. Of zijn de pootjes van Europese hoornaars soms geel in plaats van roodbruin gekleurd.  Houd daarom altijd rekening met mogelijke afwijkingen!
