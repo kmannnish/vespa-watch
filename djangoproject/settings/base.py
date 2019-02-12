@@ -28,7 +28,7 @@ SECRET_KEY = '<SOMETHING_SECRET_TO_REDEFINE_HERE>'
 DEBUG = True
 JS_DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.localhost']
 
 # add private ip from AWS
 # cfr. https://hashedin.com/blog/5-gotchas-with-elastic-beanstalk-and-django/
