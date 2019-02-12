@@ -11,8 +11,8 @@
         <h5 class="card-title">{{ obs.taxon.vernacular_name }}</h5>
         <h6 class="card-subtitle text-muted mb-2"><em>{{ obs.taxon.name }}</em></h6>
         <p class="card-text">
-            <span class="badge badge-secondary">{{ obs.subject }}</span>
-            <span class="badge badge-success">validated</span>
+            <span class="badge badge-secondary text-lowercase">{% if obs.subject == 'nest' %}{% trans 'Nest' %}{% else %}{% trans 'Individual' %}{% endif %}</span>
+            <span class="badge badge-success text-lowercase">{% trans 'Validated' %}</span>
         </p>
         <p class="card-text">
             <a class="card-link" href="{{ obs.get_detail_page_url }}" >{% trans 'Details' %}</a>

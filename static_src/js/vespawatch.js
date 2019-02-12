@@ -31,10 +31,10 @@ var VwObservationsMapPopup = {
             return "map-popup-" + this.observation.id;
         },
         observationTime: function () {
-            return moment(this.observation.observation_time).format('D MMMM YYYY')
+            return moment(this.observation.observation_time).format('D MMMM YYYY');
         },
-        viewDetailsStr: function () {
-            return gettext('View details');
+        detailsStr: function () {
+            return gettext('Details');
         },
         inaturalistUrl: function () {
             // TODO: duplication: get data from obs.inaturalist_obs_url instead of reinventing the wheel here
@@ -55,14 +55,14 @@ var VwObservationsMapPopup = {
                 <img class="card-img-top" :src="observation.thumbnails[0]">
             </a>
             <div class="card-body">
-                <h5 class="card-title">Vernacular name</h5>
+                <!--<h5 class="card-title">Vernacular name</h5>-->
                 <h6 class="card-subtitle text-muted mb-2"><em>{{ observation.taxon }}</em></h6>
                 <p class="card-text">
-                    <span class="badge badge-secondary">{{ observation.subject }}</span>
-                    <span class="badge badge-success">validated</span>
+                    <span class="badge badge-secondary text-lowercase">{{ observation.subject }}</span>
+                    <span class="badge badge-success text-lowercase">validated</span>
                 </p>
                 <p class="card-text">
-                    <a class="card-link" :href="detailsUrl">{{ viewDetailsStr }}</a>
+                    <a class="card-link" :href="detailsUrl" target="_blank">{{ detailsStr }}</a>
                     <a class="card-link" v-if="observation.inaturalist_id" :href="inaturalistUrl" target="_blank">iNaturalist</a>
                 </p>
             </div>
