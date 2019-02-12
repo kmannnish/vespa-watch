@@ -115,6 +115,7 @@ eb create
 --vpc.id vpc-cc8610a8
 --vpc.securitygroups sg-ca7ae0b2,sg-4b8f442d
 --tags APPLICATION=VESPAWATCH,ENVIRONMENT=DEV,OWNER=LIFEWATCH-VESPAWATCH,BUSINESS_UNIT=LIFEWATCH,COST_CENTER=EVINBO,RUNDECK=TRUE
+--instance_profile aws-elasticbeanstalk-ec2-role-vespawatch
 ```
 For *uat*, the environment creation is done with the following command:
 ```
@@ -152,6 +153,7 @@ eb create
 --vpc.id vpc-79d0f71c
 --vpc.securitygroups sg-ce6ff5b6,sg-35d5ed51
 --tags APPLICATION=VESPAWATCH,ENVIRONMENT=PRD,OWNER=LIFEWATCH-VESPAWATCH,BUSINESS_UNIT=LIFEWATCH,COST_CENTER=EVINBO,RUNDECK=TRUE
+--instance_profile aws-elasticbeanstalk-ec2-role-vespawatch
 ```
 
 Prompt will provide some additional questions:
@@ -190,6 +192,19 @@ eb ssh --command "source /opt/python/run/venv/bin/activate && python manage.py i
 eb ssh --command "source /opt/python/run/venv/bin/activate && python manage.py create_firefighters_accounts"
 ```
 
+If those commands would not work as such, they can be executed from any instance as well after ssh to the instance. In order to run the django manage commands, the proper environment and sudo rights should be provided:
+
+```
+sudo su
+source /opt/python/run/venv/bin/activate
+source /opt/python/current/env
+cd /opt/python/current/app
+python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson
+python manage.py create_firefighters_accounts
+```
+
+Optional -> python manage.py generateimages
+
 ## Setup the data syncronization with iNaturalist
 
 First of all, make sure an initial set of data is available by syncronizing the observations in iNaturalist to the vespawatch application
@@ -210,6 +225,13 @@ Check the group-id of the security group, e.g. `g-0ed982b15ae8893ef` and revoke 
 aws ec2 revoke-security-group-ingress --group-id sg-0ed982b15ae8893ef --protocol tcp --port 22 --cidr 0.0.0.0/0
 ```
 
+## Extend the database backup period
+
+So, if the identifier of the created database is `aa6isov6zpwhro`, the extension to 7 days is achieved by:
+
+```
+modify-db-instance --db-instance-identifier aa6isov6zpwhro --backup-retention-period 7
+```
 
 ## Bash script for deployment
 
@@ -234,6 +256,22 @@ TODO: https://medium.com/@nqbao/how-to-use-aws-ssm-parameter-store-easily-in-pyt
 - All **code** is under version control and each deployment is stored in a S3 bucket managed by elastic beanstalk
 - Backups of the **RDS** are managed on organisation level of INBO.
 - Backups of the **media files** in the S3 bucket #TODO
+
+## Troubleshooting
+
+When troubleshooting, there are a few directories you should be aware of:
+
+* `/opt/python`: Root of where you application will end up.
+* `/opt/python/current/app`: The current application that is hosted in the environment.
+* `/opt/python/on-deck/app`: The app is initially put in on-deck and then, after all the deployment is complete, it will be moved to current. If you are getting failures in your container_commands, check out out the on-deck folder and not the current folder.
+* `/opt/python/current/env`: All the env variables that eb will set up for you. If you are trying to reproduce an error, you may first need to source `/opt/python/current/env` to get things set up as they would be when eb deploy is running.
+* `opt/python/run/venv`: The virtual env used by your application; you will also need to run source `/opt/python/run/venv/bin/activate` if you are trying to reproduce an error.
+
+Hence, the log files to screen:
+* The `/opt/python/log/django.log` file contains the django warning and error information and will be your first entry point for app related information
+* `var/log` contains the general logging files, e.g. the access and erro logs in the `httpd` folder.
+
+Notice that the logs (also `django.log`) are accessible using the AWS eb console as well by requestin the logs (all or last 100 lines).
 
 ## Setup and configuration info
 

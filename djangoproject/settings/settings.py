@@ -7,12 +7,11 @@ SECRET_KEY = os.environ['SECRET_KEY']
 DEBUG = True
 JS_DEBUG = False
 
-ALLOWED_HOSTS = [
+ALLOWED_HOSTS.extend([
     '.elasticbeanstalk.com',
     '.eu-west-1.elb.amazonaws.com',
-    '.vespawatch-dev.eu-west-1.elasticbeanstalk.com',
-    '.localhost',
-]
+    '.vespawatch-dev.eu-west-1.elasticbeanstalk.com'
+])
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -38,16 +37,35 @@ STATIC_URL = '/static/'
 
 # ---------- Custom settings ----------
 
-# Logging
+# Logging aws eb
 
 LOG_FILE_PATH = '/opt/python/log/django.log'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': LOG_FILE_PATH,
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
 
 
 # S3 static storage for media files
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 AWS_ACCESS_KEY_ID = None # None to use AWS internal role/permissions
-AWS_STORAGE_BUCKET_NAME = 'lw-vespawatch'
+AWS_STORAGE_BUCKET_NAME = 'lw-vespawatch-dev'
 AWS_DEFAULT_ACL = None
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',  # 1 day

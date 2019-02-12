@@ -7,14 +7,13 @@ SECRET_KEY = os.environ['SECRET_KEY']
 DEBUG = False
 JS_DEBUG = False
 
-ALLOWED_HOSTS = [
+ALLOWED_HOSTS.extend([
     '.elasticbeanstalk.com',
     '.eu-west-1.elb.amazonaws.com',
     '.uat.vespawatch.be',
     '.vespawatch-uat.eu-west-1.elasticbeanstalk.com',
     '.localhost',
-]
-
+])
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -68,7 +67,7 @@ LOGGING = {
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 AWS_ACCESS_KEY_ID = None # None to use AWS internal role/permissions
-AWS_STORAGE_BUCKET_NAME = 'lw-vespawatch'
+AWS_STORAGE_BUCKET_NAME = 'lw-vespawatch-uat'
 AWS_DEFAULT_ACL = None
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',  # 1 day
@@ -80,4 +79,4 @@ AWS_LOCATION = 'media'
 
 # Other
 
-VESPAWATCH_BASE_SITE_URL = "TOADAPT!"
+VESPAWATCH_BASE_SITE_URL = "http://vespawatch-uat.eu-west-1.elasticbeanstalk.com/"
