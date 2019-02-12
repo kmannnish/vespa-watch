@@ -17,9 +17,11 @@ Omwille van haar impact op de biodiversiteit, is de Aziatische hoornaar opgenome
 Net zoals andere angeldragende insecten kunnen Aziatische hoornaars pijnlijk steken. Dit is het natuurlijk verdedigingsmechanisme wanneer ze gestoord worden op het nest of in het nauw gedreven worden. Verstoor hoornaren dan ook zo weinig mogelijk. Een steek van Aziatische hoornaar is vergelijkbaar met een steek van andere wespen. De angel van de soort is niet langer dan die van een Europese hoornaar (3 mm) en de hoeveelheid gif is niet groter dan die van een honingbij (15 microliter). Problematische situaties zijn dan ook zeldzaam en gelinkt met de hoeveelheid steken en hypersensitiviteit. In Frankrijk is 0.3-7.5% van de mensen allergisch. Voor mensen met een gevoeligheid aan wespensteken is extra waakzaamheid geboden. Zorg dat er altijd iemand in de buurt blijft nadat je gestoken bent. Wordt je plots onwel of misselijk, bel dan zo snel mogelijk het noodnummer 112. 
 
 Gevaarlijke situaties:
-scheren van een haag waarin een nest zit
-wandelroutes dicht tegen een hoornaarsnest
-Het verdelgen van nesten is specialistenwerk. Door het werken op hoogte en de agressiviteit van de wespen bij verstoring van het nest, is dit een gevaarlijk werkje. Probeer daarom nooit zelf Aziatische hoornaar te bestrijden maar laat dit over aan professionelen zoals de brandweer.
+
+- scheren van een haag waarin een nest zit
+- wandelroutes dicht tegen een hoornaarsnest
+
+Het verdelgen van nesten is specialistenwerk. Door het werken op hoogte en de agressiviteit van de wespen bij verstoring van het nest, is dit een gevaarlijk werkje. **Probeer daarom nooit zelf Aziatische hoornaar te bestrijden** maar laat dit over aan professionelen zoals de brandweer.
 
 ## Beheer op maat
 
