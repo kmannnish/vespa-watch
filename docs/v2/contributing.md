@@ -61,7 +61,7 @@ Hoornaars vliegen niet uit noch gaan ze jagen als het regent. Ook op een bewolkt
 
 # Get involved
 
-Everyone can help tracking the Asian hornet invasion. Here’s a list of things you can do to get involved:
+Everyone can help track the Asian hornet invasion. Here’s a list of things you can do to get involved:
 
 - Learn to [recognize](../identification/) Asian hornet
 - [Report](../obs/add/) observations of hornets and nests
