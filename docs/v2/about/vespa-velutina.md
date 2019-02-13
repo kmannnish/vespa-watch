@@ -31,8 +31,6 @@ Het verdelgen van nesten is specialistenwerk. Door het werken op hoogte en de ag
 
 ## Beheer op maat
 
-Tegenwoordig is de Aziatische hoornaar in Frankrijk al niet meer weg te denken. Sommige streken rapporteren cijfers tot 12 nesten per km². De impact op de natuur en vooral de imkerij is dan zeer groot. Maar hoe is het zo ver kunnen komen? Hebben de Fransen dan niets gedaan om de soort in te perken?
-
 Denk je een nest van Aziatische hoornaar gevonden te hebben? [Meld](../obs/add/) het dan via de Vespawatch website of via [iNaturalist](https://www.inaturalist.org/projects/vespa-watch) en vermeld zoveel mogelijk details over je waarneming. Op die manier kunnen experten vaststellen of het wel degelijk om Aziatische hoornaar gaat en kan een verdelging gepland worden. De brandweer is het eerste aanspreekpunt voor nestverdelging. Dit is gespecialiseerd werk dat een opleiding en geschikt materiaal (wespenpak, oogbescherming, verstuiver, telescopische lans, brandladder) vereist. Vermeld indien mogelijk details over de locatie (adres), de toegankelijkheid van het nest, de hoogte, en laat je gsm nummer achter zodat het wespenteam van de brandweer makkelijker en sneller een actie kan plannen. Verdelging van de Aziatische hoornaar wordt gratis uitgevoerd en enkel als het nest is gevonden. De brandweer helpt niet om nesten te zoeken.
 
 ----------------------------------------------
@@ -53,4 +51,17 @@ The Asian hornet hunts in groups on honeybees in front of the beehive. They are 
 ![beehive](../docs/images/Asian hornet on beehive 2_S. Lioy, Life Stopvespa.jpg)
 Asian hornets hunt in groups in front of the beehive and can sometimes be very numerous (Photo: S. Lioy, Life Stopvespa).
 
+Because of its impact on biodiversity, the Asian hornet is included on the list of invasive species of Union Concern of the EU [IAS Regulation](http://ec.europa.eu/environment/nature/invasivealien/index_en.htm). Belgium has to organize surveillance and must carry out a control programme for this wasp. Vespa-Watch is an important part of this programme. The invasion of the species is monitored and managed. In case of attacks on beehives the nest is detected and destroyed by competent services. The species nests mainly in (peri-) urban and agricultural areas but also in forest areas. Targeted (beekeepers) and general surveillance should be organized as area-wide as possible.
 
+# Are Asian hornets dangerous?
+
+As with other bees and wasps, the sting of an Asian hornet is painful. Stinging is the natural defense mechanism in case hornets or their nests are disturbed. Therefore, disturb hornets as little as possible. A sting of Asian hornet is similar to a sting of other wasps. Its sting is not longer than that of a European hornet (3 mm) and the amount of poison is no greater than that of a honey bee (15 microliters). Problematic situations are therefore rare and linked with the amount of stings and hypersensitivity. In France, 0.3-7.5% of people are allergic. Additional vigilance is advised for people with a sensitivity to wasp stings. Make sure that someone always stays nearby after you have been stabbed. If you become unwell or sick, call the emergency number 112 as soon as possible. Dangerous situations:
+
+- cutting a hedge with a nest in it
+- hiking close to a hornet nest
+
+Nest destruction is a specialist job. Working at height and the aggressiveness of the wasps in case of disturbance of the nest, represent particular health and safety hazards. Therefore, **never treat Asian hornet nests yourself**, but leave this to trained professionals such as the fire department.
+
+## Customized management
+
+Do you think you found a nest of Asian hornet? [Report](../obs/add/) it via the Vespawatch website or via [iNaturalist](https://www.inaturalist.org/projects/vespa-watch) and provide details about your observation. This way, experts can determine whether it is really an Asian hornet nest and a destruction can be planned. The fire department is the first point of contact for nest destruction and will be alerted through the vespawatch website of any validated nest observation. Destruction is specialized work that requires training and materials (wasp suit, eye protection, atomizer, telescopic lance, fire ladder). If possible, state details about the location (address), the accessibility of the nest, the height, and leave your mobile phone number so that the wasp team of the fire brigade can plan an action more easily and quickly. Destruction of an Asian hornet nest is performed free of charge and only when the nest is found. The fire department does not help to search for nests.
