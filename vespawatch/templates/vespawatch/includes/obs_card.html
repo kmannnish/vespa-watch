@@ -1,12 +1,15 @@
 {% load humanize %}
+{% load static %}
 {% load i18n %}
 
 <div class="card">
-    {% for picture in obs.pictures.all|slice:":1" %}
-        <a href="{{ obs.get_detail_page_url }}">
-            <img class="card-img-top" src="{{ picture.thumbnail.url }}">
-        </a>
-    {% endfor %}
+    <a href="{{ obs.get_detail_page_url }}">
+        {% if obs.pictures.all|length != 0 %}
+            <img class="card-img-top" src="{{ obs.pictures.all.0.thumbnail.url }}">
+        {% else %}
+            <img class="card-img-top" src="{% static 'vespawatch/img/no_image.png' %}">
+        {% endif %}
+    </a>
     <div class="card-body">
         <h5 class="card-title">{{ obs.taxon.vernacular_name }}</h5>
         <h6 class="card-subtitle text-muted mb-2"><em>{{ obs.taxon.name }}</em></h6>
