@@ -35,10 +35,22 @@ Tegenwoordig is de Aziatische hoornaar in Frankrijk al niet meer weg te denken. 
 
 Denk je een nest van Aziatische hoornaar gevonden te hebben? [Meld](../obs/add/) het dan via de Vespawatch website of via [iNaturalist](https://www.inaturalist.org/projects/vespa-watch) en vermeld zoveel mogelijk details over je waarneming. Op die manier kunnen experten vaststellen of het wel degelijk om Aziatische hoornaar gaat en kan een verdelging gepland worden. De brandweer is het eerste aanspreekpunt voor nestverdelging. Dit is gespecialiseerd werk dat een opleiding en geschikt materiaal (wespenpak, oogbescherming, verstuiver, telescopische lans, brandladder) vereist. Vermeld indien mogelijk details over de locatie (adres), de toegankelijkheid van het nest, de hoogte, en laat je gsm nummer achter zodat het wespenteam van de brandweer makkelijker en sneller een actie kan plannen. Verdelging van de Aziatische hoornaar wordt gratis uitgevoerd en enkel als het nest is gevonden. De brandweer helpt niet om nesten te zoeken.
 
----
+----------------------------------------------
 
-# Title
+# What's the problem
 
-## Subtitle
+# Invasive Species
 
-Text
+The Asian hornet was accidentally transported on a shipment of Chinese materials and settled in 2004 in southern France. From there, the species expanded at 60-100 km per year. Meanwhile, it is already established in Portugal, Italy and Belgium and nests have been found and removed in several other European countries. For Belgium, a first observation was done in 2011 in Flobecq. In November 2016, a first nest was found in rural Guignies by school children. This nest was removed but probably some of the fertilized queens could escape. In France, the invasion front reached Picardy and Nord-Pas-de-Calais as early as 2011. The first nest in Flanders was destroyed in the autumn of 2017, in Poperinge. Meanwhile, the species is widely distributed in Flanders.
+
+![removal](./images/20171122_VespaVelutina_Poperinge_DriesLaget_HBV_13.JPG)
+Specialist removes the first nest of Asian hornet in Poperinge, Flanders (22/11/2018) (Photo: HBV)
+
+# Impact on honeybees and biodiversity
+
+The Asian hornet hunts in groups on honeybees in front of the beehive. They are opportunistic feeders and also use other insects as food. Honeybees have little defense against this new invader. They are not adapted to this new non-native predator. The less honeybees in the landscape, the more the Asian hornets predate on wild pollinators and other insects. In French urban areas the proportion of honeybees in the diet is 66%, and lower (35%) in agricultural and forest areas.
+
+![beehive](../docs/images/Asian hornet on beehive 2_S. Lioy, Life Stopvespa.jpg)
+Asian hornets hunt in groups in front of the beehive and can sometimes be very numerous (Photo: S. Lioy, Life Stopvespa).
+
+
