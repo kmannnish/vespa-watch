@@ -62,6 +62,6 @@ As with other bees and wasps, the sting of an Asian hornet is painful. Stinging 
 
 Nest destruction is a specialist job. Working at height and the aggressiveness of the wasps in case of disturbance of the nest, represent particular health and safety hazards. Therefore, **never treat Asian hornet nests yourself**, but leave this to trained professionals such as the fire department.
 
-## Customized management
+## Asian hornet management
 
 Do you think you found a nest of Asian hornet? [Report](../obs/add/) it via the Vespawatch website or via [iNaturalist](https://www.inaturalist.org/projects/vespa-watch) and provide details about your observation. This way, experts can determine whether it is really an Asian hornet nest and a destruction can be planned. The fire department is the first point of contact for nest destruction and will be alerted through the vespawatch website of any validated nest observation. Destruction is specialized work that requires training and materials (wasp suit, eye protection, atomizer, telescopic lance, fire ladder). If possible, state details about the location (address), the accessibility of the nest, the height, and leave your mobile phone number so that the wasp team of the fire brigade can plan an action more easily and quickly. Destruction of an Asian hornet nest is performed free of charge and only when the nest is found. The fire department does not help to search for nests.
