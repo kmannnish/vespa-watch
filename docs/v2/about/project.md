@@ -1,9 +1,3 @@
-# Titel
-
-## Ondertitel
-
-Tekst
-
 # Vespa-Watch
 
 ## Over het project
@@ -28,10 +22,28 @@ Het laten participeren van het publiek bij onderzoek naar de natuur heeft in ons
 
 INBO en Honeybee Valley (Ugent) coördineren het project en kregen hiervoor projectsteun van de Vlaamse Overheid (Departement Economie, Wetenschap en Innovatie). In 2017 werd een taskforce Vespa velutina in het leven geroepen naar aanleiding van de vondst van het eerste nest. Deze taskforce bestaat uit 8 partners: Honeybee Valley, INBO, Natuurpunt, het Agentschap voor Natuur en Bos (ANB), De Lieteberg, het Instituut voor Landbouw- en Visserijonderzoek (ILVO) en de brandweer. Deze partners werken samen rond monitoring van de soort en het uittekenen van beheer.
 
----
+-------------------
 
-# Title
+# Vespa-Watch
 
-## Subtitle
+## About the project
 
-Text
+The Vespawatch project (Invasion monitoring of Asian hornet with beekeepers and the public) is a joint project of the Institute for Nature and Forest Research (INBO) and Honeybee Valley (UGent) in the context of the 'Citizen Science' call of the Flemish Government Department of Economy, Science and Innovation of 11/12/2017.
+
+## Goals
+
+Vespawatch wants to track the Asian hornet invasion and map its management. The data collected with the help of beekeepers, naturalist volunteers and the public are used to organize management, to perform research into the invasion (invasion speed, invaded areas, management evaluation, impact research) and can also be used for European reporting within the framework of the [EU Regulation](http://ec.europa.eu/environment/nature/invasivealien/index_en.htm) (Regulation EU 1143/2014) on the prevention of the introduction and spread of Invasive Alien Species. Proper follow-up of the Asian hornet invasion consists of various components:
+
+- **General passive surveillance**: Collecting observations from the naturalist community, beekeepers and the general public through a central reporting portal. Observations are validated and inform control actions.
+
+- **Specific active surveillance**: Beekeepers, fire fighters and entomologists are on the front row to make reliable observations. Their knowledge of bees and insects, and the greater opportunity they have to observe Asian hornet (at beehives, during wasp nest destruction or during inventories of nature reserves) make them the ideal recording community.
+
+- **Registration and management evaluation**: Management actions must be registered for research and evaluation. This is a requirement of the [EU Regulation](http://ec.europa.eu/environment/nature/invasivealien/index_en.htm). These data will be used to evaluate the effectiveness of management actions.
+
+## Citizen Science
+
+Participation of the public in biodiversity research has a long tradition in Belgium. Citizen science increases the transparency, the legitimacy of research for society and provides great economies of scale. For the surveillance and detection of invasive species, citizen science provides an important added value in terms of awareness raising and increased invasion literacy. After all, an effective approach to tackle invasive species requires knowledge about this environmental problem and a general sensiticity towards biological invasions in all sectors of society. Specific [activities] of Vespawatch contribute to keeping the network alive, such as ivy blitzes (after the "bioblitz" model) and organised hornets hunts. Checking flowering ivy or snowberry in autumn, where Asian hornet come to hunt bees, is a good method to actively search for Asian hornets and locate their nests.
+
+## Partners
+
+[INBO](www.inbo.be) and [Honeybee Valley](https://www.honeybeevalley.eu/) coordinate the project and received project support from the Flemish Government (Department of Economy, Science and Innovation). In 2017 INBO created a task force _Vespa velutina_ following the discovery of the first nest. This task force consists of 8 partners: Honeybee Valley, INBO, Natuurpunt, the Agency for Nature and Forest (ANB), De Lieteberg, the Institute for Agricultural and Fisheries Research (ILVO) and the fire brigade. These partners work together on monitoring the species and organising its management.
