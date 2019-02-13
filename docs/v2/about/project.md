@@ -20,7 +20,7 @@ Het laten participeren van het publiek bij onderzoek naar de natuur heeft in ons
 
 ## Partners
 
-INBO en Honeybee Valley (Ugent) coördineren het project en kregen hiervoor projectsteun van de Vlaamse Overheid (Departement Economie, Wetenschap en Innovatie). In 2017 werd een taskforce Vespa velutina in het leven geroepen naar aanleiding van de vondst van het eerste nest. Deze taskforce bestaat uit 8 partners: Honeybee Valley, INBO, Natuurpunt, het Agentschap voor Natuur en Bos (ANB), De Lieteberg, het Instituut voor Landbouw- en Visserijonderzoek (ILVO) en de brandweer. Deze partners werken samen rond monitoring van de soort en het uittekenen van beheer.
+[INBO](www.inbo.be) and [Honeybee Valley](https://www.honeybeevalley.eu/) coördineren het project en kregen hiervoor projectsteun van de Vlaamse Overheid (Departement Economie, Wetenschap en Innovatie). In 2017 werd een taskforce _Vespa velutina_ in het leven geroepen naar aanleiding van de vondst van het eerste nest. Deze taskforce bestaat uit 8 partners: [Honeybee Valley](https://www.honeybeevalley.eu/), [INBO](www.inbo.be), [Natuurpunt](www.natuurpunt.be), het [Agentschap voor Natuur en Bos](https://www.natuurenbos.be/) (ANB), [De Lieteberg](www.lieteberg.be), het [Instituut voor Landbouw- en Visserijonderzoek](https://www.ilvo.vlaanderen.be/) (ILVO) en de [brandweer](www.brandweervlaanderen.be). Deze partners werken samen rond monitoring van de soort en het uittekenen van beheer.
 
 -------------------
 
@@ -46,4 +46,4 @@ Participation of the public in biodiversity research has a long tradition in Bel
 
 ## Partners
 
-[INBO](www.inbo.be) and [Honeybee Valley](https://www.honeybeevalley.eu/) coordinate the project and received project support from the Flemish Government (Department of Economy, Science and Innovation). In 2017 INBO created a task force _Vespa velutina_ following the discovery of the first nest. This task force consists of 8 partners: Honeybee Valley, INBO, Natuurpunt, the Agency for Nature and Forest (ANB), De Lieteberg, the Institute for Agricultural and Fisheries Research (ILVO) and the fire brigade. These partners work together on monitoring the species and organising its management.
+[INBO](www.inbo.be) and [Honeybee Valley](https://www.honeybeevalley.eu/) coordinate the project and received project support from the Flemish Government (Department of Economy, Science and Innovation). In 2017 INBO created a task force _Vespa velutina_ following the discovery of the first nest. This task force consists of 8 partners: [Honeybee Valley](https://www.honeybeevalley.eu/), [INBO](www.inbo.be), [Natuurpunt](www.natuurpunt.be), [Agency for Nature and Forest](https://www.natuurenbos.be/) (ANB), [De Lieteberg](www.lieteberg.be), the [Institute for Agricultural and Fisheries Research](https://www.ilvo.vlaanderen.be/) (ILVO) and the [fire brigade](www.brandweervlaanderen.be). These partners work together on monitoring the species and organising its management.
