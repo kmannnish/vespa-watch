@@ -12,7 +12,7 @@ De Vespawatch website vereist in principe geen registratie om een waarneming van
 
 ## Hoelang worden mijn data bewaard
 
-De waarnemingen die u indient, met uw persoonsgegevens, worden opgeslagen voor de duur van het Vespawatch project en worden enkel gebruikt in functie van de doelstellingen van het project. Alle verzamelde gegevens worden opgeslagen op een beveiligde server van het INBO. Gevalideerde gegevens worden doorgegeven aan iNaturalist en GBIF.
+De observaties die je via Vespawatch doorstuurt worden permanent bewaard voor natuurbeleid, natuurbescherming en onderzoek. Alle verzamelde gegevens worden opgeslagen op een beveiligde server van het INBO. Gevalideerde gegevens worden doorgegeven aan iNaturalist en GBIF.
 
 ## Wie heeft toegang tot mijn persoonlijke gegevens?
 
@@ -21,8 +21,22 @@ Niemand buiten het Vespawatch project zal toegang krijgen tot uw persoonlijke ge
 
 ---
 
-# Title
+# Privacy and copyright
 
-## Subtitle
+Thank you for your interest in the Vespawatch project and for your help in gathering information about Asian hornet. On this page we explain how we handle your personal information and the data collected through the website.
 
-Text
+## What happens with my data
+
+The Vespawatch website is managed by the [Institute for Nature and Forest Research](www.inbo.be) (INBO). To protect the environment, for scientific purposes and in line with the open data policy of INBO, all data submitted through the Vespawatch portal are made available under [creative commons license CC0](https://wiki.creativecommons.org/wiki/CC0). This is done through a live link to [iNaturalist](https://www.inaturalist.org/projects/vespa-watch), a global recording platform for biodiversity observations. Data entered through our website are visible on iNaturalist under a general Vespawatch profile. Likewise, data entered on iNaturalist are harvested by Vespawatch. After validation, the data are openly published on [GBIF](http://www.gbif.org), a global aggregator for biodiversity data. This way, Vespawatch data can be used worldwide for policy, management and research. They can also be displayed on other websites, such as www.waarnemingen.be and www.observation.org.
+
+## Name and e-mail address
+
+The Vespawatch website does not require registration to report an observation of Asian hornet. This keeps the threshold for engagement low and the speed of reporting high. However, when you report, we collect your name and e-mail address. These are only visible to experts in case they want to contact you about your observations in relation to the project (e.g. for validation purposes). Your personal data are in no case shared with third parties and are not made visible on the website. When publishing observations on iNaturalist, your data are visible under a general project profile and your name will not be shown. Of course you can choose to create your own profile on [iNaturalist](www.inaturalist.org), after which Vespawatch can also use your data. 
+
+## How long will my data be stored
+
+Your submitted records are stored permanently and are used to inform the conservation and study of the recorded species in the future. All collected data is stored on a secure server of INBO. Validated data is passed on to iNaturalist and GBIF.
+
+## Who has access to my personal data
+
+No one outside the Vespawatch project will have access to your personal data. Unless required by law, your data will not be made available to third parties (including researchers from outside the project) unless they are directly related to the project and we first obtained your permission to do so. If you share your telephone number in case of reporting a nest, this number can be used by the fire brigade to collect additional relevant information (accessibility, appointment) for planning and performing nest removal. Your personal data will not be used for other applications, will not be shared with third parties and are not shown on the website.
