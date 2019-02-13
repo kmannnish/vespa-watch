@@ -94,7 +94,7 @@ To find hornets, you must be aware of their way of life. Hornets actively hunt f
 -	Late flowering plants: common ivy (Hedera helix) and snowberry (Symphoricarpos) offer a treat from September for many insects
 -	Lumber or other wooden objects
 
-## Clue 3: Observe the flight direction of hornets returning with with prey
+## Clue 3: Observe the flight direction of hornets
 
 Hornets return to the nest with their prey. First, the hornet will hang upside down on a twig as it dissects its prey. Then, the insect will clamp the meatball between thorax and legs, and flies with it to the nest. If there are many trees or houses around, the hornet can first make a turn. Keep following the hornet until it is out of sight (+ - 30 meters). Hornets take a certain flight altitude to fly on average at 30 km/h.
 
@@ -118,6 +118,6 @@ Tracking an Asian hornet’s nest requires a solid plan of action. Group searche
 -	Organize nest searches in groups of 3 or more people
 -	Inform people at strategic places such as beekeepers, the bakery, the local firefighter,...
 
-## Clue 8: time of day and weather conditions
+## Clue 8: Time of day and weather conditions
 
 European hornets, like Asian hornets, hunts small insects. However, one important difference is European hornets hunt day and night. Asian hornets only hunts during the day. If you observe a hornet at dusk against an outside light or window, this is more likely a European hornet and not an Asian hornet. Hornets are not active when it rains and are less active on cloudy days. The average temperature is also important. In summer, hornets are active from one hour after sunrise to one hour before sunset, but they have an activity peak around noon. 
