@@ -293,12 +293,6 @@ def obs_create(request):
 # API methods
 # ==============
 
-def taxa_json(request):
-    """
-    Return all taxa as JSON data.
-    """
-    return JsonResponse([s.to_json() for s in Taxon.objects.all()], safe=False)
-
 def observations_json(request):
     """
     Return all observations as JSON data.
