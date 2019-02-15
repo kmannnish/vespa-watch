@@ -737,9 +737,8 @@ var VwManagementTableNestRow = {
                 this.$emit('data-changed');
             }
         }
-
     },
-    template: `
+    template: ` 
         <tr :class="nestClass">
             <td>{{ observationTimeStr }}</td>
             
@@ -758,7 +757,6 @@ var VwManagementTableNestRow = {
             </td>
             
             <td>
-                    <a v-if="nest.originates_in_vespawatch" v-bind:href="nest.updateUrl">{{ editStr }}</a>
                     <span v-if="!nest.originates_in_vespawatch" v-bind:title="cannotEditTitle">{{ cannotEditLabel }}</span>
             </td>
         </tr>

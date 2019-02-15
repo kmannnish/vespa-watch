@@ -29,13 +29,11 @@ urlpatterns = [
     path('obs/individual/', RedirectView.as_view(pattern_name='vespawatch:individual-add')),
     path('obs/individual/add/', views.create_individual, name='individual-add'),
     path('obs/individual/<int:pk>/', views.IndividualDetail.as_view(), name='individual-detail'),
-    path('obs/individual/<int:pk>/edit/', views.update_individual, name='individual-update'),
     path('obs/individual/<int:pk>/delete/', views.IndividualDelete.as_view(), name='individual-delete'),
 
     path('obs/nest/', RedirectView.as_view(pattern_name='vespawatch:nest-add')),
     path('obs/nest/add/', views.create_nest, name='nest-add'),
     path('obs/nest/<int:pk>/', views.NestDetail.as_view(), name='nest-detail'),
-    path('obs/nest/<int:pk>/edit/', views.update_nest, name='nest-update'),
     path('obs/nest/<int:pk>/delete/', views.NestDelete.as_view(), name='nest-delete'),
 
     # API paths

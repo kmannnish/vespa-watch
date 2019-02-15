@@ -480,11 +480,10 @@ class Nest(AbstractObservation):
 
     def get_detail_page_url(self):
         # FIXME: I wanted to implement this as the (Django standard) get_absolute_url, but this one was already taken
-        # for the update page. Should it be updated/fixed?
+        #   for the update page. Should it be updated/fixed?
+        # FIXME update: the old get_absolute_url() was removed because edition is not possible anymore, so we can
+        #   use it for this one
         return reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
-
-    def get_absolute_url(self):
-        return reverse('vespawatch:nest-update', kwargs={'pk': self.pk})
 
     def get_management_action_finished(self):
         action = self.managementaction_set.first()
@@ -525,7 +524,6 @@ class Nest(AbstractObservation):
             'actionId': self.get_management_action_id(),
             'actionFinished': self.get_management_action_finished(),
             'originates_in_vespawatch': self.originates_in_vespawatch,
-            'updateUrl': reverse('vespawatch:nest-update', kwargs={'pk': self.pk}),
             'detailsUrl': reverse('vespawatch:nest-detail', kwargs={'pk': self.pk}),
         }
 
@@ -550,12 +548,11 @@ class Individual(AbstractObservation):
     behaviour = models.CharField(max_length=2, choices=BEHAVIOUR_CHOICES, blank=True, null=True)
     nest = models.ForeignKey(Nest, on_delete=models.CASCADE, blank=True, null=True)
 
-    def get_absolute_url(self):
-        return reverse('vespawatch:individual-update', kwargs={'pk': self.pk})
-
     def get_detail_page_url(self):
         # FIXME: I wanted to implement this as the (Django standard) get_absolute_url, but this one was already taken
-        # for the update page. Should it be updated/fixed?
+        #   for the update page. Should it be updated/fixed?
+        # FIXME update: the old get_absolute_url() was removed because edition is not possible anymore, so we can
+        #   use it for this one
         return reverse('vespawatch:individual-detail', kwargs={'pk': self.pk})
 
     @property

@@ -117,32 +117,6 @@ def create_individual(request):
     return render(request, 'vespawatch/individual_create.html', {'form': form, 'type': 'individual', 'image_formset': image_formset})
 
 
-@login_required
-def update_individual(request, pk):
-    indiv = get_object_or_404(Individual, pk=pk)
-    if request.method == 'POST':
-        image_formset = IndividualImageFormset(request.POST, request.FILES, instance=indiv)
-        form = IndividualForm(request.POST, files=request.FILES, instance=indiv)
-        if request.user.is_authenticated:
-            # set to terms_of_service to true if the user is authenticated
-            form_data_copy = form.data.copy()
-            form_data_copy['terms_of_service'] = True
-            form.data = form_data_copy
-        if form.is_valid():
-            form.save()
-            if image_formset.is_valid():
-                instances = image_formset.save()
-                for obj in image_formset.deleted_objects:
-                    if obj.pk:
-                        obj.delete()
-            return HttpResponseRedirect(reverse_lazy('vespawatch:individual-detail', kwargs={'pk': pk}))
-    elif request.method == 'GET':
-        form = IndividualForm(instance=indiv)
-        image_formset = IndividualImageFormset(instance=indiv)
-    return render(request, 'vespawatch/individual_update.html',
-                  {'form': form, 'object': indiv, 'type': 'individual', 'image_formset': image_formset})
-
-
 class IndividualDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
     model = Individual
 
@@ -198,33 +172,6 @@ def create_nest(request):
         form = NestForm(initial={'redirect_to': redirect_to})
         image_formset = NestImageFormset()
     return render(request, 'vespawatch/nest_create.html', {'form': form, 'image_formset': image_formset, 'type': 'nest'})
-
-
-@login_required
-def update_nest(request, pk):
-    nest = get_object_or_404(Nest, pk=pk)
-    if request.method == 'POST':
-        image_formset = NestImageFormset(request.POST, request.FILES, instance=nest)
-        form = NestForm(request.POST, files=request.FILES, instance=nest)
-        if request.user.is_authenticated:
-            # set to terms_of_service to true if the user is authenticated
-            form_data_copy = form.data.copy()
-            form_data_copy['terms_of_service'] = True
-            form.data = form_data_copy
-        if form.is_valid():
-            form.save()
-            if image_formset.is_valid():
-                instances = image_formset.save()
-                for obj in image_formset.deleted_objects:
-                    if obj.pk:
-                        obj.delete()
-            return HttpResponseRedirect(reverse_lazy('vespawatch:nest-detail', kwargs={'pk': pk}))
-    elif request.method == 'GET':
-        form = NestForm(instance=nest)
-        image_formset = NestImageFormset(instance=nest)
-
-    return render(request, 'vespawatch/nest_update.html',
-                  {'form': form, 'object': nest, 'type': 'nest', 'image_formset': image_formset})
 
 
 class NestDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
