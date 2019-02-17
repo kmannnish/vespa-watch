@@ -1,12 +1,21 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+from modeltranslation.admin import TranslationAdmin, TranslationTabularInline
 
-from .models import Taxon, Nest, Individual, NestPicture, IndividualPicture, ManagementAction, Profile, FirefightersZone
+from .models import Taxon, Nest, Individual, NestPicture, IndividualPicture, ManagementAction, Profile, \
+    FirefightersZone, IdentificationCard
+
+
+class IdentificationCardInline(TranslationTabularInline):
+    model = IdentificationCard
+    max_num = 2
 
 @admin.register(Taxon)
 class TaxonAdmin(admin.ModelAdmin):
     readonly_fields = ('inaturalist_pull_taxon_ids', 'inaturalist_push_taxon_id')
+
+    inlines = (IdentificationCardInline, )
 
 
 class NestPictureInline(admin.TabularInline):
@@ -141,6 +150,10 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
+
+@admin.register(IdentificationCard)
+class IdentificationCardAdmin(TranslationAdmin):
+    list_display = ('order', 'represented_taxon', 'represents_nest')
 
 @admin.register(FirefightersZone)
 class ZoneAdmin(admin.ModelAdmin):

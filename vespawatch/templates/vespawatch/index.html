@@ -1,23 +1,26 @@
 {% extends 'vespawatch/base.html' %}
-
 {% load static %}
 {% load i18n %}
 {% load page_fragments %}
 
 {% block content %}
-<div class="jumbotron jumbotron-fluid" style="background-image: url('{% static 'vespawatch/img/cover.jpg' %}')">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <h1>{% trans 'Monitor the invasion of the Asian hornet'%}</h1>
-                <a class="btn btn-lg btn-primary mr-2" href="{% url 'vespawatch:individual-add' %}?redirect_to=index">{% trans 'Add individual' %}</a>
-                <a class="btn btn-lg btn-primary mr-2" href="{% url 'vespawatch:nest-add' %}?redirect_to=index">{% trans 'Add nest' %}</a>
+<figure>
+    <div class="jumbotron jumbotron-fluid" style="background-image: linear-gradient(to right, rgba(62, 96, 16, 0.75), rgba(0, 0, 0, 0)), url('{% static 'vespawatch/img/cover.jpg' %}')">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h1>{% trans 'Monitor the invasion of Asian hornet'%}</h1>
+                    <a class="btn btn-lg btn-primary" href="{% url 'vespawatch:observation-add' %}">{% trans 'Report a hornet' %}</a>
+                </div>
             </div>
         </div>
     </div>
-</div>
+    <figcaption>
+        {% trans 'Photo by' %} <a href="https://www.inaturalist.org/observations/17322380">Karel Schoonvaere</a>
+    </figcaption>
+</figure>
 
-<main class="container" id="vw-main-app">
+<main class="container">
     {% if messages %}
         <div class="messages">
             {% for message in messages %}
@@ -30,13 +33,32 @@
             {% endfor %}
         </div>
     {% endif %}
-    <div>
-    {% get_page_fragment 'welcome' %}
-    </div>
 
-    <vw-observations-viz load-data="1"></vw-observations-viz>
-    <vw-recent-obs-table></vw-recent-obs-table>
+    <section id="vw-main-app">
+        <div class="row">
+            <div class="col-md-4">
+                {% get_page_fragment 'welcome' %}
+            </div>
 
+            <div class="col-md-8">
+                <vw-observations-viz load-data="1"></vw-observations-viz>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>{% trans 'Latest observations' %}</h2>
+
+        <div class="row theme-card-deck">
+        {% for obs in observations %}
+            <div class="col-lg-3 col-sm-6">
+                {% include 'vespawatch/includes/obs_card.html' %}
+            </div>
+        {% endfor %}
+        </div>
+
+        <p class="text-right"><a href="{% url 'vespawatch:latest-observations' %}">{% trans 'See more observations' %} »</a></p>
+    </section>
 </main>
 {% endblock %}
 

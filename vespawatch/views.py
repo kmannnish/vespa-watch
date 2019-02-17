@@ -17,7 +17,8 @@ from django.urls import reverse_lazy
 
 from vespawatch.utils import ajax_login_required
 from .forms import ManagementActionForm, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
-from .models import Individual, Nest, ManagementAction, Taxon, FirefightersZone
+from .models import Individual, Nest, ManagementAction, Taxon, FirefightersZone, IdentificationCard, \
+    get_observations
 
 
 class CustomBaseDetailView(SingleObjectMixin, View):
@@ -43,8 +44,35 @@ class CustomDeleteView(SingleObjectTemplateResponseMixin, CustomBaseDeleteView):
 
 
 def index(request):
-    return render(request, 'vespawatch/index.html')
+    return render(request, 'vespawatch/index.html', {'observations': get_observations(limit=4)})
 
+def identification(request):
+    return render(request, 'vespawatch/identification.html')
+
+def about(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_page'})
+
+def about_project(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_project_page'})
+
+def about_activities(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_activities_page'})
+
+def about_vespavelutina(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_vespavelutina_page'})
+
+def about_management(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_management_page'})
+
+def about_privacypolicy(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_privacypolicy_page'})
+
+def about_links(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_links_page'})
+
+
+def latest_observations(request):
+    return render(request, 'vespawatch/obs.html', {'observations': get_observations(limit=40)})
 
 @login_required
 def management(request):
@@ -87,32 +115,6 @@ def create_individual(request):
         form = IndividualForm(initial={'redirect_to': redirect_to})
         image_formset = IndividualImageFormset()
     return render(request, 'vespawatch/individual_create.html', {'form': form, 'type': 'individual', 'image_formset': image_formset})
-
-
-@login_required
-def update_individual(request, pk):
-    indiv = get_object_or_404(Individual, pk=pk)
-    if request.method == 'POST':
-        image_formset = IndividualImageFormset(request.POST, request.FILES, instance=indiv)
-        form = IndividualForm(request.POST, files=request.FILES, instance=indiv)
-        if request.user.is_authenticated:
-            # set to terms_of_service to true if the user is authenticated
-            form_data_copy = form.data.copy()
-            form_data_copy['terms_of_service'] = True
-            form.data = form_data_copy
-        if form.is_valid():
-            form.save()
-            if image_formset.is_valid():
-                instances = image_formset.save()
-                for obj in image_formset.deleted_objects:
-                    if obj.pk:
-                        obj.delete()
-            return HttpResponseRedirect(reverse_lazy('vespawatch:individual-detail', kwargs={'pk': pk}))
-    elif request.method == 'GET':
-        form = IndividualForm(instance=indiv)
-        image_formset = IndividualImageFormset(instance=indiv)
-    return render(request, 'vespawatch/individual_update.html',
-                  {'form': form, 'object': indiv, 'type': 'individual', 'image_formset': image_formset})
 
 
 class IndividualDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
@@ -172,33 +174,6 @@ def create_nest(request):
     return render(request, 'vespawatch/nest_create.html', {'form': form, 'image_formset': image_formset, 'type': 'nest'})
 
 
-@login_required
-def update_nest(request, pk):
-    nest = get_object_or_404(Nest, pk=pk)
-    if request.method == 'POST':
-        image_formset = NestImageFormset(request.POST, request.FILES, instance=nest)
-        form = NestForm(request.POST, files=request.FILES, instance=nest)
-        if request.user.is_authenticated:
-            # set to terms_of_service to true if the user is authenticated
-            form_data_copy = form.data.copy()
-            form_data_copy['terms_of_service'] = True
-            form.data = form_data_copy
-        if form.is_valid():
-            form.save()
-            if image_formset.is_valid():
-                instances = image_formset.save()
-                for obj in image_formset.deleted_objects:
-                    if obj.pk:
-                        obj.delete()
-            return HttpResponseRedirect(reverse_lazy('vespawatch:nest-detail', kwargs={'pk': pk}))
-    elif request.method == 'GET':
-        form = NestForm(instance=nest)
-        image_formset = NestImageFormset(instance=nest)
-
-    return render(request, 'vespawatch/nest_update.html',
-                  {'form': form, 'object': nest, 'type': 'nest', 'image_formset': image_formset})
-
-
 class NestDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
     model = Nest
 
@@ -255,49 +230,38 @@ class ManagmentActionDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('vespawatch:index')
 
 
+def obs_create(request):
+    # This is the step where the user select the species and type (nest/individual)
+    cards = IdentificationCard.objects.all()
+
+    return render(request, 'vespawatch/obs_create.html', {'identification_cards': cards})
+
 # ==============
 # API methods
 # ==============
-
-def taxa_json(request):
-    """
-    Return all taxa as JSON data.
-    """
-    return JsonResponse([s.to_json() for s in Taxon.objects.all()], safe=False)
 
 def observations_json(request):
     """
     Return all observations as JSON data.
     """
     zone = request.GET.get('zone', '')
-    obs_type = request.GET.get('type', '')
+    zone_id = int(zone) if zone else None
+
+    obs_type = request.GET.get('type', None)
+    include_individuals = (obs_type == 'individual' or obs_type is None)
+    include_nests = (obs_type == 'nest' or obs_type is None)
+
     limit = request.GET.get('limit', None)
+    limit = int(limit) if limit is not None else None
 
-    obs = []
-
-    if obs_type == 'individual' or obs_type == '':
-        obs = obs + list(Individual.objects.all())
-    if obs_type == 'nest' or obs_type == '':
-        obs = obs + list(Nest.objects.all())
-
-    if zone:
-        # if a zone is given, filter the observations. This works for both individuals and nests
-        obs = [x for x in obs if x.zone_id == int(zone)]
-
-    obs.sort(key=lambda x: x.observation_time, reverse=True)
-    if limit:
-        obs = obs[:int(limit)]
+    obs = get_observations(include_individuals=include_individuals,
+                           include_nests=include_nests,
+                           zone_id=zone_id,
+                           limit=limit)
 
     return JsonResponse({
         'observations': [x.as_dict() for x in obs]
     })
-#
-# @staff_member_required
-# def zones_json(request):
-#     """
-#     Return all firefighter zones as json data
-#     """
-#     return JsonResponse({'zones': [{'id': x.pk, 'name': x.name} for x in list(FirefightersZone.objects.all().order_by('name'))]})
 
 def management_actions_outcomes_json(request):
     #TODO: Implements sorting?

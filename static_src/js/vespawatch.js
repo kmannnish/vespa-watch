@@ -27,22 +27,20 @@ if (!VWConfig.debug) {
 var VwObservationsMapPopup = {
     props: ["observation", "editRedirect"],
     computed: {
-        htmlId: function() {
+        htmlId: function () {
             return "map-popup-" + this.observation.id;
         },
-        observationTime: function() {
-            return  moment(this.observation.observation_time).format('lll')
+        observationTime: function () {
+            return moment(this.observation.observation_time).format('D MMMM YYYY');
         },
-        seeOnInatStr: function() {
-            return gettext('See on iNaturalist');
+        detailsStr: function () {
+            return gettext('Details');
         },
-        viewDetailsStr: function() {
-            return gettext('View details');
-        },
-        inaturalistUrl: function() {
+        inaturalistUrl: function () {
+            // TODO: duplication: get data from obs.inaturalist_obs_url instead of reinventing the wheel here
             return "http://www.inaturalist.org/observations/" + this.observation.inaturalist_id;
         },
-        detailsUrl: function() {
+        detailsUrl: function () {
             var url = new URL(this.observation.detailsUrl, VWConfig.baseUrl);
 
             if (this.editRedirect) {
@@ -52,24 +50,25 @@ var VwObservationsMapPopup = {
         }
     },
     template: `
-        <div :id="htmlId">
-            <h1>{{ observation.taxon }}</h1>
-           
-            <ul>
-                <li><b>Observation time: </b> {{ observationTime }}</li> 
-                <li><b>Subject: </b> {{ observation.subject }}</li>
-                
-                <li v-if="observation.comments"><b>Comments: </b> {{ observation.comments }}</li>
-                <li v-if="observation.inaturalist_id"><a :href="inaturalistUrl" target="_blank">{{ seeOnInatStr }}</a></li>
-            </ul>
-            
-            <div v-if="observation.imageUrls.length > 0">
-                <img v-for="imageUrl in observation.imageUrls" class="theme-img-thumb" :src="imageUrl">
+        <div :id="htmlId" class="card">
+            <a :href="detailsUrl">
+                <img class="card-img-top" :src="observation.thumbnails[0]">
+            </a>
+            <div class="card-body">
+                <!--<h5 class="card-title">Vernacular name</h5>-->
+                <h6 class="card-subtitle text-muted mb-2"><em>{{ observation.taxon }}</em></h6>
+                <p class="card-text">
+                    <span class="badge badge-secondary text-lowercase">{{ observation.subject }}</span>
+                    <span class="badge badge-success text-lowercase">validated</span>
+                </p>
+                <p class="card-text">
+                    <a class="card-link" :href="detailsUrl" target="_blank">{{ detailsStr }}</a>
+                    <a class="card-link" v-if="observation.inaturalist_id" :href="inaturalistUrl" target="_blank">iNaturalist</a>
+                </p>
             </div>
-            
-            <p>
-            <a :href="detailsUrl"> {{ viewDetailsStr }}</a>
-            </p>
+            <div class="card-footer text-muted">
+                <small>{{ observationTime }}</small>
+            </div>
         </div>
     `
 };
@@ -82,7 +81,9 @@ var VwObservationsVizMap = {
         'vw-observations-map-popup': VwObservationsMapPopup
     },
     computed: {
-        'managementMap': function () {return this.zoneId != null}
+        'managementMap': function () {
+            return this.zoneId != null
+        }
     },
     data: function () {
         return {
@@ -102,7 +103,7 @@ var VwObservationsVizMap = {
                     return d.subject === 'individual' ? conf.individualColor :
                         d.subject === 'nest' ?
                             d.actionFinished ? conf.nestColor.finished :
-                                        conf.nestColor.unfinished
+                                conf.nestColor.unfinished
                             : conf.unknownColor;  // if the subject is not 'Individual' or 'Nest'
 
                 } else {
@@ -128,7 +129,6 @@ var VwObservationsVizMap = {
                     className: "circle"
                 });
                 //circle.bindPopup(this.observationToHtml(obs));
-                console.log("Popup id: ", document.getElementById('map-popup-' + obs.id));
                 circle.bindPopup(document.getElementById('map-popup-' + obs.id));
                 this.mapCircles.push(circle);
             });
@@ -136,7 +136,7 @@ var VwObservationsVizMap = {
             this.observationsLayer.addTo(this.map);
             this.observationsLayer.bringToFront();
             if (!this.initialZoomed) {
-                this.map.fitBounds(this.observationsLayer.getBounds());
+                //this.map.fitBounds(this.observationsLayer.getBounds());
             }
             this.initialZoomed = true;
         },
@@ -191,15 +191,15 @@ var VwObservationsVizMap = {
 
             if (this.zoneId) {
                 axios.get(VWConfig.apis.zoneUrl, {params: {zone_id: this.zoneId}})
-                .then(response => {
-                    var geoJSONLayer = L.geoJSON(response.data);
-                    geoJSONLayer.addTo(this.map);
-                    geoJSONLayer.bringToBack();
-                    this.map.fitBounds(geoJSONLayer.getBounds());
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+                    .then(response => {
+                        var geoJSONLayer = L.geoJSON(response.data);
+                        geoJSONLayer.addTo(this.map);
+                        geoJSONLayer.bringToBack();
+                        this.map.fitBounds(geoJSONLayer.getBounds());
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
             }
         }
     },
@@ -211,10 +211,9 @@ var VwObservationsVizMap = {
     props: ['autozoom', 'editRedirect', 'observations', 'type', 'zoneId'],
     watch: {
         observations: function (newObservations, oldObservations) {
-            console.log('vw-observations-viz-map: Observations got updated!');
             this.clearMap();
             Vue.nextTick(() => { // !! The popups should be in the DOM before we reference them !!
-               this.addObservationsToMap();
+                this.addObservationsToMap();
             });
         }
     },
@@ -222,91 +221,136 @@ var VwObservationsVizMap = {
     template: `<div>
         <div class="mb-2" id="vw-map-map" style="height: 450px;"></div>
         <div style="display: none;">
-            <vw-observations-map-popup v-for="observation in observations" :observation="observation" :edit-redirect="editRedirect" :key="observation.id"></vw-observations-map-popup>
+            <vw-observations-map-popup v-for="observation in observations" :observation="observation" :edit-redirect="editRedirect" :key="observation.key"></vw-observations-map-popup>
         </div>
     </div>`
 };
 
 
-// Time slider
-// Has a prop 'value' which is used for binding data with the v-model directive.
-// This should be an object with properties 'start' and 'stop' to indicate the total
-// range of the slider.
-// The time slider will also emit an 'time-updated' event when the user changes the
-// selected range.
 var VwObservationsVizTimeSlider = {
+    props: {
+        observationsTimeRange: Object,
+        autoPlay: {
+            type: Boolean,
+            default: true
+        },
+        animationSpeed: {
+            type: Number,
+            default: 70 // milliseconds between steps
+        },
+        loop: {
+            type: Boolean,
+            default: true
+        }
+    },
+
     data: function () {
         return {
-            selectedTimeRange: {}
+            selectedTimeRange: {
+                'start': 0,
+                'stop': 0
+            },
+            oneWeek: 7 * 24 * 60 * 60 * 1000,
+            dataReady: false,
+            playing: false,
+
+            intervalId: 0, // Don't touch, managed by playAnimation() / stopAnimation()
         }
     },
-    props: ['value'],
-    computed: {
-        startStr: function () {
-            return moment(this.selectedTimeRange.start).format('D MMM YYYY');
-        },
-        stopStr: function () {
-            return moment(this.selectedTimeRange.stop).format('D MMM YYYY');
-        }
-    },
+
     methods: {
-        init: function () {
-            var el = document.getElementById('vw-time-slider');
-            if (el.noUiSlider != null) {
-                // Destroying the UI time slider if it already exists.
-                // This can happen when the observations viz is used and
-                // the observations loaded are updated (for instance in
-                // the management page, when the admin selects a zone.
-                el.noUiSlider.destroy();
+        nextIncrementWillOverrun: function (duration) {
+            if (this.selectedTimeRange.stop + duration >= this.observationsTimeRange.stop) {
+                return true;
+            } else {
+                return false;
             }
-            this.selectedTimeRange = {
-                start: this.value.start,
-                stop: this.value.stop
-            };
-            noUiSlider.create(el, {
-                // Create two timestamps to define a range.
-                range: {
-                    min: this.value.start,
-                    max: this.value.stop
-                },
+        },
 
-                // Steps of one week
-                step: 7 * 24 * 60 * 60 * 1000,
+        incrementRangeEnd: function (duration) {
+            if (this.selectedTimeRange.stop >= this.observationsTimeRange.stop) {
+                this.selectedTimeRange.stop = this.selectedTimeRange.start;
+            }
 
-                // Two more timestamps indicate the handle starting positions.
-                start: [this.value.start, this.value.stop],
+            this.selectedTimeRange.stop = this.selectedTimeRange.stop + duration;
+        },
 
-                // No decimals
-                format: wNumb({
-                    decimals: 0
-                })
-            });
-            el.noUiSlider.on('set', (values, handle) => {
-                this.selectedTimeRange.start = parseInt(values[0]);
-                this.selectedTimeRange.stop = parseInt(values[1]);
-                this.$emit('time-updated', values.map(x => parseInt(x)));
-            });
-            el.noUiSlider.on('slide', (values, handle) => {
-                this.selectedTimeRange.start = parseInt(values[0]);
-                this.selectedTimeRange.stop = parseInt(values[1]);
-            });
+        stopAnimationIfRunning: function() {
+            if (this.playing) {
+                this.stopAnimation();
+            }
+        },
+
+        toggleAnimation: function () {
+            this.playing ? this.stopAnimation() : this.startAnimation();
+        },
+
+        startAnimation: function () {
+            this.intervalId = window.setInterval(this.animation, this.animationSpeed);
+        },
+
+        animation: function () {
+            if (this.dataReady) {
+                this.playing = true;
+
+                if (this.nextIncrementWillOverrun(this.oneWeek)) {
+                    // We've reached the last observation...
+                    if (!this.loop) {
+                         this.stopAnimation()
+                    }
+                }
+                this.incrementRangeEnd(this.oneWeek);
+            }
+        },
+
+        stopAnimation: function () {
+            window.clearInterval(this.intervalId);
+            this.playing = false;
         }
     },
+
     watch: {
-        value: function (newRange, oldRange) {
-            // when data is loaded from the API, the range of the slider can be set. Therefore,
-            // watch the 'value' prop and call init() when that prop is changed.
-            this.init();
+        observationsTimeRange: function (newRange, oldRange) {
+            // Only when data is loaded from the API, the range of the slider can be set. Therefore,
+            // watch the 'observationsTimeRange' prop to set the data initial value.
+            this.selectedTimeRange.start = this.observationsTimeRange.start;
+            this.selectedTimeRange.stop = this.observationsTimeRange.start;
+
+            this.dataReady = true;
+        },
+        selectedTimeRange: {
+            handler: function () {
+                this.$emit('time-updated', [this.selectedTimeRange.start, this.selectedTimeRange.stop]);
+            },
+            deep: true
         }
     },
+
+    computed: {
+        stopStr: function () {
+            return moment(this.selectedTimeRange.stop).format('YYYY MMM');
+        },
+        buttonLabel: function () {
+            return (this.playing ? gettext("Pause") : gettext("Play"));
+        }
+    },
+
+    mounted: function () {
+        this.$nextTick(function () {
+            if (this.autoPlay) {
+                this.startAnimation();
+            }
+        })
+    },
+
     template: `
-        <div class="row align-items-center py-2 mb-2">
-            <div class="col-2">{{ startStr }}</div>
-            <div class="col"><div id="vw-time-slider"></div></div>
-            <div class="col-2 text-right">{{ stopStr }}</div>
+        <div id="vw-time-slider" class="d-flex align-items-center">
+            <button style="width:120px;" class="btn btn-sm btn-secondary" type="button" @click="toggleAnimation"> {{ buttonLabel }}</button>
+            <input class="form-control-range mx-4" type="range" v-model.number="selectedTimeRange.stop" v-on:input="stopAnimationIfRunning" v-on:change="stopAnimationIfRunning" :min="observationsTimeRange.start" :max="observationsTimeRange.stop" :step="oneWeek">
+            <div v-if="dataReady" style="width:120px;">{{ stopStr }}</div>
         </div>
         `
-};
+}
 
 // The VwObservationsViz consists of 2 child components: the time slider (VwObservationsVizTimeSlider)
 // and the map (VwObservationsVizMap).
@@ -407,7 +451,7 @@ var VwObservationsViz = {
     template: `
         <section>
             <vw-observations-viz-map :observations="observations" :edit-redirect="editRedirect" :zone-id="zone" :type="type"></vw-observations-viz-map>
-            <vw-observations-viz-time-slider v-on:time-updated="filterOnTimeRange" v-model="timeRange"></vw-observations-viz-time-slider>
+            <vw-observations-viz-time-slider v-on:time-updated="filterOnTimeRange" :observations-time-range="timeRange"></vw-observations-viz-time-slider>
         </section>
         `
 };
@@ -693,9 +737,8 @@ var VwManagementTableNestRow = {
                 this.$emit('data-changed');
             }
         }
-
     },
-    template: `
+    template: ` 
         <tr :class="nestClass">
             <td>{{ observationTimeStr }}</td>
             
@@ -714,7 +757,6 @@ var VwManagementTableNestRow = {
             </td>
             
             <td>
-                    <a v-if="nest.originates_in_vespawatch" v-bind:href="nest.updateUrl">{{ editStr }}</a>
                     <span v-if="!nest.originates_in_vespawatch" v-bind:title="cannotEditTitle">{{ cannotEditLabel }}</span>
             </td>
         </tr>
@@ -815,7 +857,7 @@ var VwRecentObsTable = {
     components: {
         'vw-recent-obs-table-row': VwRecentObsTableRow
     },
-    data: function() {
+    data: function () {
         return {
             'currentlyLoading': false,
             'limit': 10,
@@ -840,7 +882,7 @@ var VwRecentObsTable = {
         }
     },
     methods: {
-        loadObs: function() {
+        loadObs: function () {
             this.currentlyLoading = true;
             let url = VWConfig.apis.observationsUrl;
 
@@ -874,7 +916,7 @@ var VwRecentObsTable = {
                         </tr>
                     </thead>
 
-                    <vw-recent-obs-table-row v-for="observation in observations" :observation="observation" :key="observation.id"></vw-recent-obs-table-row>
+                    <vw-recent-obs-table-row v-for="observation in observations" :observation="observation" :key="observation.key"></vw-recent-obs-table-row>
                 </table>
             </div>
         </div>`
@@ -1041,137 +1083,6 @@ var VwLocationSelectorCoordinates = {
         `
 };
 
-// Components allowing to select a taxon (with illustrative picture) in the forms
-var VwTaxonSelectorEntry = {
-    delimiters: ['[[', ']]'],
-    props: {
-        'taxon': Object,
-        'radioName': String,
-        'pictureAttribute': String,
-        'selected': {
-            'type': Boolean,
-            'default': false
-        }
-    },
-    methods: {
-        getRadioId: function (taxon) {
-            return 'taxonRadios' + taxon.id;
-        },
-    },
-    template: `
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">[[ taxon.name ]]</h5>
-            
-                <img class="card-img-top" :src="taxon[pictureAttribute]" style="width: 100px;">
-            
-                <input class="form-check-input" type="radio" :name="radioName" :id="getRadioId(taxon)" :value="taxon.id" :checked="selected">
-                        
-                <label class="form-check-label" :for="getRadioId(taxon)">
-                    [[ taxon.name ]]
-                </label>
-            </div>
-        </div>`
-
-};
-
-var VwTaxonSelector = {
-    components: {
-        'vw-taxon-selector-entry': VwTaxonSelectorEntry
-    },
-    delimiters: ['[[', ']]'],
-    props: {
-        'taxonApiUrl': String,
-        'radioName': String,
-        'taxonSelected': Number,
-        'mode': String, // nest | individual
-        'cannotChangeAnymore': {
-            'type': Boolean,
-            'default': false
-        }
-    },
-    computed: {
-        buttonLabel: function () {
-            return gettext('Show more species');
-        },
-        ifYouDontKnowMsg: function () {
-            return gettext("If you don't know, select 'Insecta'.");
-        },
-        taxonCannotBeChangedMsg: function () {
-            return gettext("Taxon can't be changed anymore.");
-        },
-        pictureAttrName: function () {
-            switch (this.mode) {
-                case 'nest':
-                    return 'identification_picture_nest_url';
-                case 'individual':
-                    return 'identification_picture_individual_url';
-            }
-        }
-    },
-    data: function () {
-        return {
-            'taxaData': [],
-            'showAll': false
-        }
-    },
-    methods: {
-        showAllIfNeeded: function () {
-            if (this.taxonSelected) {
-                var that = this;
-                var found = this.taxaData.find(function (taxon) {
-                    return taxon.id === that.taxonSelected;
-                });
-
-                if (!found.identification_priority) {
-                    this.showAll = true;
-                }
-            }
-        },
-        getData: function () {
-            axios.get(this.taxonApiUrl)
-                .then(response => {
-                    this.taxaData = response.data;
-                    this.showAllIfNeeded();
-                })
-                .catch(function (error) {
-                    // handle error
-                    console.log(error);
-                });
-        }
-    },
-    mounted: function () {
-        this.getData();
-    },
-    template: `<div class="form-group">
-                    <template v-if="cannotChangeAnymore">
-                        <div v-for="taxon in taxaData" class="form-check-inline" v-if="taxon.id == taxonSelected">
-                            <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="true"></vw-taxon-selector-entry>
-                        </div>
-                        <span class="small">[[ taxonCannotBeChangedMsg ]]</span>
-                    </template>
-                    
-                    <template v-else>
-                        <div v-for="taxon in taxaData" v-if="taxon.identification_priority" class="form-check-inline">
-                            <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
-                        </div> 
-                    
-                        <div>
-                            <button class="btn btn-outline-primary btn-sm" v-if="!showAll" v-on:click.stop.prevent="showAll = true">[[ buttonLabel ]]</button>
-                            <span class="small">[[ ifYouDontKnowMsg ]]</span>
-                        </div>
-                        
-                        
-                        <div v-if="showAll">
-                            <div v-for="taxon in taxaData" v-if="!taxon.identification_priority" class="form-check-inline">
-                                <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
-                            </div>
-                        </div>         
-                    </template>
-                    
-               </div>`
-};
-
 var VwDatetimeSelector = {
     delimiters: ['[[', ']]'],
     props: {
@@ -1185,7 +1096,7 @@ var VwDatetimeSelector = {
         }
     },
     methods: {
-        nowIsoFormat: function() {
+        nowIsoFormat: function () {
             return new Date().toISOString();
         }
     },
@@ -1304,7 +1215,6 @@ var app = new Vue({
         'vw-location-selector': VwLocationSelector,
         'vw-datetime-selector': VwDatetimeSelector,
         'vw-management-table': VwManagementTable,
-        'vw-taxon-selector': VwTaxonSelector,
         'vw-recent-obs-table': VwRecentObsTable
     },
     data: {

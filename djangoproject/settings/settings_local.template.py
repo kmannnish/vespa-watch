@@ -1,5 +1,21 @@
 from .base import *
 
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = '<SOMETHING_SECRET_TO_REDEFINE_HERE>'
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+JS_DEBUG = True
+
+# Add the following block if you want django-debug-toolbar
+INSTALLED_APPS.extend(['debug_toolbar',])
+MIDDLEWARE.extend(['debug_toolbar.middleware.DebugToolbarMiddleware'])
+INTERNAL_IPS = ['127.0.0.1']
+
+
+# Database
+# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
@@ -8,20 +24,11 @@ DATABASES = {
     }
 }
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '<SOMETHING_SECRET_TO_REDEFINE_HERE>'
+# ---------- Custom settings ----------
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-JS_DEBUG = False
+# Other
 
 VESPAWATCH_BASE_SITE_URL = "http://localhost:8000"
-
-# INaturalist user information
-INAT_USER_USERNAME = 'vespawatch'
-INAT_USER_PASSWORD = ''
-INAT_APP_ID = 'd1d0f541791be42e234ce82a5bb8332ab816ff7ab35c6e27b12c0455939a5ea8'
-INAT_APP_SECRET = ''
 
 # ALL BELOW IS AWS/S3-SPECIFIC, AND SHOULD BE COMMENTED IF YOU WANT TO MANAGE STATIC FILES
 # AND UPLOADS LOCALLY (DJANGO DEFAULT)

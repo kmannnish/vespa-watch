@@ -4,6 +4,7 @@ from django import template
 from django.conf import settings
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from markdownx.utils import markdownify
 
 register = template.Library()
 
@@ -39,3 +40,7 @@ def js_config_object():
         }
     }
     return mark_safe(json.dumps(conf))
+
+@register.filter
+def markdown(value, arg=None):
+    return mark_safe(markdownify(value))

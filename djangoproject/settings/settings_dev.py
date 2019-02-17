@@ -1,5 +1,21 @@
 from .base import *
 
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ['SECRET_KEY']
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+JS_DEBUG = False
+
+ALLOWED_HOSTS.extend([
+    '.elasticbeanstalk.com',
+    '.eu-west-1.elb.amazonaws.com',
+    '.vespawatch-dev.eu-west-1.elasticbeanstalk.com'
+])
+
+# Database
+# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
@@ -11,33 +27,45 @@ DATABASES = {
     }
 }
 
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.1/howto/static-files/
+
 STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
 STATIC_URL = '/static/'
 
-# Allowed hosts
-ALLOWED_HOSTS = [
-    '.elasticbeanstalk.com',
-    '.eu-west-1.elb.amazonaws.com',
-    '.vespawatch-dev.eu-west-1.elasticbeanstalk.com',
-    '.localhost',
-]
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']
+# ---------- Custom settings ----------
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Logging aws eb
 
-INAT_USER_USERNAME = 'vespawatch'
-INAT_USER_PASSWORD = ''
-INAT_APP_ID = 'd1d0f541791be42e234ce82a5bb8332ab816ff7ab35c6e27b12c0455939a5ea8'
-INAT_APP_SECRET = ''
+LOG_FILE_PATH = '/opt/python/log/django.log'
 
-# media file S3 static storage
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': LOG_FILE_PATH,
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
+
+
+# S3 static storage for media files
+
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 AWS_ACCESS_KEY_ID = None # None to use AWS internal role/permissions
-AWS_ACCESS_KEY_ID = None
-AWS_STORAGE_BUCKET_NAME = 'lw-vespawatch'
+AWS_STORAGE_BUCKET_NAME = 'lw-vespawatch-dev'
 AWS_DEFAULT_ACL = None
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',  # 1 day
@@ -45,3 +73,8 @@ AWS_S3_OBJECT_PARAMETERS = {
 AWS_S3_FILE_OVERWRITE = True
 AWS_S3_REGION_NAME = 'eu-west-1'
 AWS_LOCATION = 'media'
+
+
+# Other
+
+VESPAWATCH_BASE_SITE_URL = "http://vespawatch-dev.eu-west-1.elasticbeanstalk.com/"

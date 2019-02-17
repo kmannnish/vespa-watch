@@ -71,7 +71,6 @@
 
             {% if user.is_authenticated %}
                 {% if nest.originates_in_vespawatch %}
-                    <a href="{% url 'vespawatch:nest-update' nest.pk %}" class="btn btn-success"> {% trans "Edit" %}</a>
                     <a href="{% url 'vespawatch:nest-delete' nest.pk %}?redirect_to={{ redirect_to }}" class="btn btn-danger"> {% trans "Delete" %}</a>
                 {% else %}
                     <span>{% trans "This nest was created on iNaturalist. You cannot edit it here" %}</span>

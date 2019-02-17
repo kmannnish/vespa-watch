@@ -26,26 +26,64 @@ SECRET_KEY = '<SOMETHING_SECRET_TO_REDEFINE_HERE>'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+JS_DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.localhost']
+
+# add private ip from AWS
+# cfr. https://hashedin.com/blog/5-gotchas-with-elastic-beanstalk-and-django/
+def is_ec2_linux():
+    """Detect if we are running on an EC2 Linux Instance
+
+       See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
+    """
+    if os.path.isfile("/sys/hypervisor/uuid"):
+        with open("/sys/hypervisor/uuid") as f:
+            uuid = f.read()
+            return uuid.startswith("ec2")
+    return False
+
+def get_linux_ec2_private_ip():
+    """Get the private IP Address of the machine if running
+    on an EC2 linux server
+    """
+    from urllib import request
+    if not is_ec2_linux():
+        return None
+    try:
+        response = request.urlopen('http://169.254.169.254/latest/meta-data/local-ipv4')
+        return response.read()
+    except:
+        return None
+    finally:
+        if response:
+            response.close()
+# ElasticBeanstalk healthcheck sends requests with host header = internal ip
+# So we detect if we are in elastic beanstalk, and add the instances private ip address
+private_ip = get_linux_ec2_private_ip()
+if private_ip:
+    ALLOWED_HOSTS.append(private_ip)
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'modeltranslation',  # MUST be before Admin, see https://github.com/deschler/django-modeltranslation/issues/408
+
     # From Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
     'django.contrib.gis',
+    'django.contrib.humanize',
+    'django.contrib.messages',
+    'django.contrib.sessions',
+    'django.contrib.staticfiles',
 
     # From others
     'crispy_forms',
     'markdownx',
-    'modeltranslation',
+    'imagekit',
 
     # Local helpers
     'page_fragments',
@@ -122,13 +160,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'Europe/Brussels'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 LANGUAGES = [
@@ -136,43 +170,20 @@ LANGUAGES = [
     ('en', _('English')),
 ]
 
-LANGUAGES_AVAILABLE_IN_SELECTOR = [
-    ('nl', _('Dutch')),
-    ('en', _('English')),
-]
+PAGE_FRAGMENTS_FALLBACK_LANGUAGE = 'nl'
 
-LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'), )
+LOCALE_PATHS = (os.path.join(BASE_DIR, os.pardir, 'locale'), os.path.join(BASE_DIR, 'locale'), )
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = '/static/'
 MEDIA_URL = '/img/'
+STATIC_URL = '/static/'
 
-VESPAWATCH_PROJECT_ID = 22865  # Vespa-Watch project ID @ iNaturalist
-VESPAWATCH_USER_ID = 1263313  # vespawatch user ID @ iNaturalist
 
-WEBSITE_NAME = "Vespa-Watch"
+# ---------- Custom settings ----------
 
-SETTINGS_EXPORT = [
-    'DEBUG',
-    'JS_DEBUG',
-    'WEBSITE_NAME',
-    'LANGUAGES',
-    'LANGUAGES_AVAILABLE_IN_SELECTOR',
-    'VESPAWATCH_ID_OBS_FIELD_ID',
-    'VESPAWATCH_EVIDENCE_OBS_FIELD_ID'
-]
-
-PAGE_FRAGMENTS_FALLBACK_LANGUAGE = 'nl'
-
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
-
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
-
-VESPAWATCH_ID_OBS_FIELD_ID = 9613 # # The identifier of the "vespawatch_id" observation field @iNaturalist
-VESPAWATCH_EVIDENCE_OBS_FIELD_ID = 9770  # The identifier of the "vespawatch_evidence" observation field @iNaturalist
+# Map
 
 MAP_CIRCLE_FILL_OPACITY = 0.5
 MAP_CIRCLE_STROKE_OPACITY = 0.8
@@ -196,4 +207,45 @@ MAP_TILELAYER_OPTIONS = {
     'maxZoom': 20
 }
 
-JS_DEBUG = False
+
+# iNaturalist
+
+INAT_USER_USERNAME = 'vespawatch'
+INAT_USER_PASSWORD = ''
+INAT_APP_ID = 'd1d0f541791be42e234ce82a5bb8332ab816ff7ab35c6e27b12c0455939a5ea8'
+INAT_APP_SECRET = ''
+
+
+# Other
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+LANGUAGES_AVAILABLE_IN_SELECTOR = [
+    ('nl', _('Dutch')),
+    ('en', _('English')),
+]
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+VESPAWATCH_EVIDENCE_OBS_FIELD_ID = 9770  # The identifier of the "vespawatch_evidence" observation field @iNaturalist
+VESPAWATCH_ID_OBS_FIELD_ID = 9613 # # The identifier of the "vespawatch_id" observation field @iNaturalist
+VESPAWATCH_PROJECT_ID = 22865  # vespawatch project ID @ iNaturalist
+VESPAWATCH_PROJECT_URL = f"https://inaturalist.org/projects/{VESPAWATCH_PROJECT_ID}"
+VESPAWATCH_USER_ID = 1263313  # vespawatch user ID @ iNaturalist
+
+WEBSITE_NAME = "Vespa-Watch"
+
+
+# Exported to templates
+
+SETTINGS_EXPORT = [
+    'DEBUG',
+    'JS_DEBUG',
+    'LANGUAGES',
+    'LANGUAGES_AVAILABLE_IN_SELECTOR',
+    'VESPAWATCH_EVIDENCE_OBS_FIELD_ID',
+    'VESPAWATCH_ID_OBS_FIELD_ID',
+    'VESPAWATCH_PROJECT_URL',
+    'WEBSITE_NAME'
+]

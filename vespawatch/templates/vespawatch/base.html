@@ -1,9 +1,10 @@
 {% load static %}
 {% load i18n %}
 {% load custom_tags %}
+{% get_current_language as LANGUAGE_CODE %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -15,68 +16,77 @@
         </script>
 
         <!-- CSS -->
-        <link rel="stylesheet" href="{% static 'vespawatch/libraries/leaflet/leaflet.css' %}"/>
-        <link rel="stylesheet" href="{% static 'vespawatch/libraries/nouislider/nouislider.min.css' %}">
-        <link rel="stylesheet" href="{% static 'vespawatch/libraries/vue/vue-datetime.min.css' %}"/>
-        <link rel="stylesheet" href="{% static 'vespawatch/css/main.css' %}"/>
+        <link rel="stylesheet" href="{% static 'vespawatch/libraries/leaflet/leaflet.css' %}">
+        <link rel="stylesheet" href="{% static 'vespawatch/libraries/vue/vue-datetime.min.css' %}">
+        <link rel="stylesheet" href="{% static 'vespawatch/css/main.css' %}">
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a class="navbar-brand" href="/">{{ settings.WEBSITE_NAME }}</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-content">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'vespawatch:index' %}">
+                    <img src="{% static 'vespawatch/img/avatar.jpg' %}" class="d-inline-block align-top" alt="">
+                    {{ settings.WEBSITE_NAME }}
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-content">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-            <div class="collapse navbar-collapse" id="navbar-content">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">{% trans 'Home' %}</a>
-                    </li>
-                    {% if user.profile.zone or user.is_staff %}
+                <div class="collapse navbar-collapse" id="navbar-content">
+                    <ul class="navbar-nav mr-auto">
+                        {% if user.profile.zone or user.is_staff %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'vespawatch:management' %}">{% trans 'Management' %}</a>
+                            </li>
+                        {% endif %}
                         <li class="nav-item">
-                            <a class="nav-link disabled" href="{% url 'vespawatch:management' %}">{% trans 'Management' %}</a>
+                            <a class="nav-link" href="{% url 'vespawatch:observation-add' %}">{% trans 'Report' %}</a>
                         </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link disabled" href="#">{% trans 'Identification' %}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" href="#">{% trans 'About' %}</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav mr-3">
-                    {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="user-dropdown" role="button" data-toggle="dropdown">{{ user.first_name }} {{ user.last_name }} ({{ user.username }})</a>
-                        <div class="dropdown-menu" aria-labelledby="user-dropdown">
-                            <a class="dropdown-item" href="{% url 'logout' %}">{% trans 'Log out' %}</a>
-                        </div>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="btn btn-primary btn-sm" href="{% url 'login' %}">{% trans 'Log in' %}</a>
-                    </li>
-                    {% endif %}
-                </ul>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'vespawatch:identification' %}">{% trans 'Identification' %}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'vespawatch:about' %}">{% trans 'About' %}</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav mr-3">
+                        {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="user-dropdown" role="button" data-toggle="dropdown">{{ user.first_name }} {{ user.last_name }} ({{ user.username }})</a>
+                            <div class="dropdown-menu" aria-labelledby="user-dropdown">
+                                <a class="dropdown-item" href="{% url 'logout' %}">{% trans 'Log out' %}</a>
+                            </div>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="btn btn-primary btn-sm" href="{% url 'login' %}">{% trans 'Log in' %}</a>
+                        </li>
+                        {% endif %}
+                    </ul>
 
-                <ul class="navbar-nav">
-                    <form class="form-inline" action="{% url 'set_language' %}" method="post" id="lang-form">
-                    {% csrf_token %}
-                        <input name="next" type="hidden" value="{{ redirect_to }}">
-                        <select class="form-control form-control-sm" name="language" id="lang">
-                        {% get_current_language as LANGUAGE_CODE %}
-                        {% get_language_info_list for settings.LANGUAGES_AVAILABLE_IN_SELECTOR as languages %}
-                        {% for language in languages %}
-                            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>{{ language.name_local }}</option>
-                        {% endfor %}
-                        </select>
-                    </form>
-                </ul>
+                    <ul class="navbar-nav">
+                        <form class="form-inline" action="{% url 'set_language' %}" method="post" id="lang-form">
+                        {% csrf_token %}
+                            <input name="next" type="hidden" value="{{ redirect_to }}">
+                            <select class="form-control form-control-sm" name="language" id="lang">
+                            {% get_current_language as LANGUAGE_CODE %}
+                            {% get_language_info_list for settings.LANGUAGES_AVAILABLE_IN_SELECTOR as languages %}
+                            {% for language in languages %}
+                                <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>{{ language.name_local }}</option>
+                            {% endfor %}
+                            </select>
+                        </form>
+                    </ul>
+                </div>
             </div>
         </nav>
 
         {% block content %}
         {% endblock %}
+
+        <footer>
+            <div class="container">
+            </div>
+        </footer>
 
         <!-- JS -->
         <script src="{% static 'vespawatch/libraries/bootstrap/jquery.min.js' %}"></script>
@@ -97,10 +107,9 @@
         <script src="{% static 'vespawatch/libraries/leaflet/leaflet.js' %}"></script>
         <script src="{% static 'vespawatch/libraries/leaflet/leaflet-geosearch.min.js' %}"></script>        
         <script src="{% static 'vespawatch/libraries/moment/moment.min.js' %}"></script>
-        <script src="{% static 'vespawatch/libraries/nouislider/nouislider.min.js' %}"></script>
         <script src="{% static 'vespawatch/libraries/wnumb/wnumb.js' %}"></script>
         <script src="{% url 'javascript-catalog' %}"></script>
-        <script src="{% static 'vespawatch/js/vespawatch.min.js' %}"></script>
+        <script src="{% static 'vespawatch/js/app.min.js' %}"></script>
 
         {% block extra_scripts %}
         {% endblock %}

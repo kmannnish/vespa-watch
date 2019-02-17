@@ -52,7 +52,8 @@
 
         {% if individual.pictures %}
             {% for image in individual.pictures.all %}
-                <img src="{{ image.image.url }}">
+                <img src="{{ image.image.url }}"> {# The full size image #}
+                <img src="{{ image.thumbnail.url }}"> {# The thumbnail #}
             {% endfor %}
         {% endif %}
 
@@ -60,7 +61,6 @@
 
             {% if user.is_authenticated %}
                 {% if individual.originates_in_vespawatch %}
-                    <a href="{% url 'vespawatch:individual-update' individual.pk %}" class="btn btn-success"> {% trans "Edit" %}</a>
                     <a href="{% url 'vespawatch:individual-delete' individual.pk %}?redirect_to={{ redirect_to }}" class="btn btn-danger"> {% trans "Delete" %}</a>
                 {% else %}
                     <span>{% trans "This observation was created on iNaturalist. You cannot edit it here" %}</span>

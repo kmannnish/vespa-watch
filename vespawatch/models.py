@@ -16,6 +16,9 @@ from django.template import defaultfilters
 from django.urls import reverse
 from django.utils.timezone import is_naive, make_aware
 from django.utils.translation import ugettext_lazy as _
+from imagekit.models import ImageSpecField
+from markdownx.models import MarkdownxField
+from pilkit.processors import SmartResize
 from pyinaturalist.node_api import get_observation
 from pyinaturalist.rest_api import create_observations, update_observation, add_photo_to_observation
 
@@ -41,6 +44,8 @@ class Taxon(models.Model):
                                             help_text="When pulling observations from iNaturalist, reconcile according "
                                                       "to those IDs.")
 
+    # TODO: get_file_path and identification_* should be removed after we fully migrated to the new identification card/
+    # TODO: two page submission form
     def get_file_path(instance, filename):
         return os.path.join('taxon_identification_pictures/', make_unique_filename(filename))
 
@@ -48,6 +53,10 @@ class Taxon(models.Model):
     identification_picture_nest = models.ImageField(upload_to=get_file_path, blank=True, null=True)
 
     identification_priority = models.BooleanField()  # Should appear first in the taxon selector
+
+    @property
+    def inat_pictures_link(self):
+        return f'https://www.inaturalist.org/taxa/{self.inaturalist_push_taxon_id}/browse_photos?quality_grade=research'
 
     def __str__(self):
         return  self.name
@@ -72,6 +81,26 @@ class Taxon(models.Model):
     class Meta:
         verbose_name_plural = "taxa"
 
+
+class IdentificationCard(models.Model):
+    represented_taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT)
+    represents_nest = models.BooleanField()
+
+    def get_file_path(instance, filename):
+        return os.path.join('pictures/identification_cards/', make_unique_filename(filename))
+
+    identification_picture = models.ImageField(upload_to=get_file_path, blank=True, null=True)
+
+    order = models.IntegerField(unique=True)  # The order in which the cards are shown
+
+    description = MarkdownxField(blank=True)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        card_type = 'nest' if self.represents_nest else 'individual'
+        return f'Card for {self.represented_taxon.name} ({card_type})'
 
 
 class InatCreatedObservationsManager(models.Manager):
@@ -297,6 +326,13 @@ class AbstractObservation(models.Model):
     def exists_in_inaturalist(self):
         return self.inaturalist_id is not None
 
+    @property
+    def inaturalist_obs_url(self):
+        if self.exists_in_inaturalist:
+            return f'https://www.inaturalist.org/observations/{self.inaturalist_id}'
+
+        return None
+
     def _params_for_inat(self):
         """(Create/update): Common ground for the pushed data to iNaturalist.
 
@@ -358,6 +394,13 @@ class AbstractObservation(models.Model):
             photo_obj = NestPicture()
         else:
             photo_obj = IndividualPicture()
+
+        # TODO: Find a cleaner solution to this
+        # It seems the iNaturalist only returns small thumbnails such as
+        # 'https://static.inaturalist.org/photos/1960816/square.jpg?1444437211'
+        # We can circumvent the issue by hacking the URL...
+        photo_url = photo_url.replace('square.jpg', 'large.jpg')
+        photo_url = photo_url.replace('square.jpeg', 'large.jpeg')
 
         photo_content = ContentFile(requests.get(photo_url).content)
         photo_filename = photo_url[photo_url.rfind("/")+1:].split('?',1)[0]
@@ -435,8 +478,12 @@ class Nest(AbstractObservation):
     )
     height = models.CharField(max_length=50, choices=HEIGHT_CHOICES, blank=True)
 
-    def get_absolute_url(self):
-        return reverse('vespawatch:nest-update', kwargs={'pk': self.pk})
+    def get_detail_page_url(self):
+        # FIXME: I wanted to implement this as the (Django standard) get_absolute_url, but this one was already taken
+        #   for the update page. Should it be updated/fixed?
+        # FIXME update: the old get_absolute_url() was removed because edition is not possible anymore, so we can
+        #   use it for this one
+        return reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
 
     def get_management_action_finished(self):
         action = self.managementaction_set.first()
@@ -454,25 +501,30 @@ class Nest(AbstractObservation):
         action = self.managementaction_set.first()
         return action.pk if action else None
 
+    @property
+    def subject(self):
+        return 'nest'
+
     def as_dict(self):
         return {
             'id': self.pk,
+            'key': f'nest-{self.pk}',  # Handy when you need a unique key in a batch of Observations (nests and individuals)
             'taxon': self.get_display_taxon_name(),
-            'subject': 'nest',
+            'subject': self.subject,
             'address': self.address,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,
             'observation_time': self.observation_time.timestamp() * 1000,
             'comments': self.comments,
-            'imageUrls': [x.image.url for x in self.pictures.all()],
+            'images': [x.image.url for x in self.pictures.all()],
+            'thumbnails': [x.thumbnail.url for x in self.pictures.all()],
             'action': self.get_management_action_display(),
             'actionCode': self.get_management_action_code(),
             'actionId': self.get_management_action_id(),
             'actionFinished': self.get_management_action_finished(),
             'originates_in_vespawatch': self.originates_in_vespawatch,
-            'updateUrl': reverse('vespawatch:nest-update', kwargs={'pk': self.pk}),
-            'detailsUrl': reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
+            'detailsUrl': reverse('vespawatch:nest-detail', kwargs={'pk': self.pk}),
         }
 
     def __str__(self):
@@ -496,21 +548,31 @@ class Individual(AbstractObservation):
     behaviour = models.CharField(max_length=2, choices=BEHAVIOUR_CHOICES, blank=True, null=True)
     nest = models.ForeignKey(Nest, on_delete=models.CASCADE, blank=True, null=True)
 
-    def get_absolute_url(self):
-        return reverse('vespawatch:individual-update', kwargs={'pk': self.pk})
+    def get_detail_page_url(self):
+        # FIXME: I wanted to implement this as the (Django standard) get_absolute_url, but this one was already taken
+        #   for the update page. Should it be updated/fixed?
+        # FIXME update: the old get_absolute_url() was removed because edition is not possible anymore, so we can
+        #   use it for this one
+        return reverse('vespawatch:individual-detail', kwargs={'pk': self.pk})
+
+    @property
+    def subject(self):
+        return 'individual'
 
     def as_dict(self):
         return {
             'id': self.pk,
+            'key': f'individual-{self.pk}',  # Handy when you need a unique key in a batch of Observations (nests and individuals)
             'taxon': self.get_display_taxon_name(),
-            'subject': 'individual',
+            'subject': self.subject,
             'address': self.address,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,
             'observation_time': self.observation_time.timestamp() * 1000,
             'comments': self.comments,
-            'imageUrls': [x.image.url for x in self.pictures.all()],
+            'images': [x.image.url for x in self.pictures.all()],
+            'thumbnails': [x.thumbnail.url for x in self.pictures.all()],
             'detailsUrl': reverse('vespawatch:individual-detail', kwargs={'pk': self.pk})
         }
 
@@ -520,18 +582,26 @@ class Individual(AbstractObservation):
 
 class IndividualPicture(models.Model):
     def get_file_path(instance, filename):
-        return os.path.join('individual_pictures/', make_unique_filename(filename))
+        return os.path.join('pictures/individuals/', make_unique_filename(filename))
 
     observation = models.ForeignKey(Individual, on_delete=models.CASCADE, related_name='pictures')
     image = models.ImageField(upload_to=get_file_path)
+    thumbnail = ImageSpecField(source='image',
+                               processors=[SmartResize(600, 300)],
+                               format='JPEG',
+                               options={'quality': 90})
 
 
 class NestPicture(models.Model):
     def get_file_path(instance, filename):
-        return os.path.join('nest_pictures/', make_unique_filename(filename))
+        return os.path.join('pictures/nests/', make_unique_filename(filename))
 
     observation = models.ForeignKey(Nest, on_delete=models.CASCADE, related_name='pictures')
     image = models.ImageField(upload_to=get_file_path)
+    thumbnail = ImageSpecField(source='image',
+                               processors=[SmartResize(600, 300)],
+                               format='JPEG',
+                               options={'quality': 90})
 
 
 
@@ -592,3 +662,22 @@ class InatObsToDelete(models.Model):
 
     def __str__(self):
         return str(self.inaturalist_id)
+
+
+def get_observations(include_individuals=True, include_nests=True, zone_id=None, limit=None):
+    obs = []
+
+    if include_individuals:
+        obs = obs + list(Individual.objects.all())
+    if include_nests:
+        obs = obs + list(Nest.objects.all())
+
+    if zone_id is not None:
+        # if a zone is given, filter the observations. This works for both individuals and nests
+        obs = [x for x in obs if x.zone_id == zone_id]
+
+    obs.sort(key=lambda x: x.observation_time, reverse=True)
+
+    obs = obs[:limit]
+
+    return obs
