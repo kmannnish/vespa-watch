@@ -3,7 +3,7 @@
 {% load i18n %}
 
 <div class="card">
-    <a href="{{ obs.get_detail_page_url }}">
+    <a href="{{ obs.get_absolute_url }}">
         {% if obs.pictures.all|length != 0 %}
             <img class="card-img-top" src="{{ obs.pictures.all.0.thumbnail.url }}">
         {% else %}
@@ -18,7 +18,7 @@
             <span class="badge badge-success text-lowercase">{% trans 'Validated' %}</span>
         </p>
         <p class="card-text">
-            <a class="card-link" href="{{ obs.get_detail_page_url }}" >{% trans 'Details' %}</a>
+            <a class="card-link" href="{{ obs.get_absolute_url }}" >{% trans 'Details' %}</a>
             {% if obs.inaturalist_obs_url %}
                 <a class="card-link" href="{{ obs.inaturalist_obs_url }}">iNaturalist</a>
             {% endif %}
