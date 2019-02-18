@@ -56,7 +56,7 @@ var VwObservationsMapPopup = {
             </a>
             <div class="card-body">
                 <!--<h5 class="card-title">Vernacular name</h5>-->
-                <h6 class="card-subtitle text-muted mb-2"><em>{{ observation.taxon }}</em></h6>
+                <h6 class="card-subtitle text-muted mb-2"><em>{{ observation.taxon.scientific_name }}</em></h6>
                 <p class="card-text">
                     <span class="badge badge-secondary text-lowercase">{{ observation.subject }}</span>
                     <span class="badge badge-success text-lowercase">validated</span>
@@ -147,7 +147,7 @@ var VwObservationsVizMap = {
             // TODO: Use some template system to avoid this method
             var html = '';
 
-            html += '<h1>' + obs.taxon + '</h1>';
+            html += '<h1>' + obs.taxon.scientific_name + '</h1>';
 
             if (obs.observation_time != null) {
                 html += moment(obs.observation_time).format('lll') + '';

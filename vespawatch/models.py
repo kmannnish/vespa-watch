@@ -302,13 +302,14 @@ class AbstractObservation(models.Model):
             except FirefightersZone.DoesNotExist:
                 pass
 
-    def get_display_taxon_name(self):
-        if self.inaturalist_species:
-            return self.inaturalist_species
-        elif self.taxon:
-            return self.taxon.name
-        else:
-            return ''
+    @property
+    def vernacular_names_in_all_languages(self):
+        """Returns a dict such as: {'en': XXXX, 'nl': YYYY}"""
+        vn = {}
+        for lang in settings.LANGUAGES:
+            code = lang[0]
+            vn[code] = getattr(self.taxon, f'vernacular_name_{code}')
+        return vn
 
     @property
     def can_be_edited_or_deleted(self):
@@ -509,7 +510,10 @@ class Nest(AbstractObservation):
         return {
             'id': self.pk,
             'key': f'nest-{self.pk}',  # Handy when you need a unique key in a batch of Observations (nests and individuals)
-            'taxon': self.get_display_taxon_name(),
+            'taxon': {
+                'scientific_name': self.taxon.name,
+                'vernacular_name': self.vernacular_names_in_all_languages
+            },
             'subject': self.subject,
             'address': self.address,
             'latitude': self.latitude,
@@ -563,7 +567,10 @@ class Individual(AbstractObservation):
         return {
             'id': self.pk,
             'key': f'individual-{self.pk}',  # Handy when you need a unique key in a batch of Observations (nests and individuals)
-            'taxon': self.get_display_taxon_name(),
+            'taxon': {
+                'scientific_name': self.taxon.name,
+                'vernacular_name': self.vernacular_names_in_all_languages
+            },
             'subject': self.subject,
             'address': self.address,
             'latitude': self.latitude,
@@ -668,9 +675,9 @@ def get_observations(include_individuals=True, include_nests=True, zone_id=None,
     obs = []
 
     if include_individuals:
-        obs = obs + list(Individual.objects.all())
+        obs = obs + list(Individual.objects.select_related('taxon').all())
     if include_nests:
-        obs = obs + list(Nest.objects.all())
+        obs = obs + list(Nest.objects.select_related('taxon').all())
 
     if zone_id is not None:
         # if a zone is given, filter the observations. This works for both individuals and nests
