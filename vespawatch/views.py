@@ -112,9 +112,11 @@ def create_individual(request):
             return HttpResponseRedirect(reverse_lazy(f'vespawatch:{redirect_to}'))
     else:
         redirect_to = request.GET.get('redirect_to', 'index')
+        taxon_id = request.GET.get('taxon')
+        identif_card = IdentificationCard.objects.filter(taxon=taxon_id)
         form = IndividualForm(initial={'redirect_to': redirect_to})
         image_formset = IndividualImageFormset()
-    return render(request, 'vespawatch/individual_create.html', {'form': form, 'type': 'individual', 'image_formset': image_formset})
+    return render(request, 'vespawatch/individual_create.html', {'form': form, 'type': 'individual', 'image_formset': image_formset, 'identif_card': identif_card})
 
 
 class IndividualDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
@@ -169,9 +171,11 @@ def create_nest(request):
             return HttpResponseRedirect(reverse_lazy(f'vespawatch:{redirect_to}'))
     else:
         redirect_to = request.GET.get('redirect_to', 'index')
+        taxon_id = request.GET.get('taxon')
+        identif_card = IdentificationCard.objects.filter(taxon=taxon_id)
         form = NestForm(initial={'redirect_to': redirect_to})
         image_formset = NestImageFormset()
-    return render(request, 'vespawatch/nest_create.html', {'form': form, 'image_formset': image_formset, 'type': 'nest'})
+    return render(request, 'vespawatch/nest_create.html', {'form': form, 'image_formset': image_formset, 'type': 'nest', 'identif_card': identif_card})
 
 
 class NestDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
