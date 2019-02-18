@@ -96,6 +96,7 @@ def management(request):
 def create_individual(request):
     if request.method == 'POST':
         redirect_to = request.POST.get('redirect_to')
+        identif_card = None
         form = IndividualForm(request.POST, request.FILES)
         image_formset = IndividualImageFormset()
         if request.user.is_authenticated:
@@ -152,6 +153,7 @@ class IndividualDelete(LoginRequiredMixin, CustomDeleteView):
 def create_nest(request):
     if request.method == 'POST':
         redirect_to = request.POST.get('redirect_to')
+        identif_card = None
 
         new_nest_from_anonymous = not request.user.is_authenticated
         form = NestForm(request.POST, request.FILES, new_nest_from_anonymous=new_nest_from_anonymous)
