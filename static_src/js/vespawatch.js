@@ -139,6 +139,7 @@ var VwObservationsVizMap = {
                 //this.map.fitBounds(this.observationsLayer.getBounds());
             }
             this.initialZoomed = true;
+            this.map.spin(false);
         },
 
         // Generate a HTML string that represents the observation
@@ -186,6 +187,8 @@ var VwObservationsVizMap = {
             var mapPosition = conf.initialPosition;
             var mapZoom = conf.initialZoom;
             this.map = L.map("vw-map-map").setView(mapPosition, mapZoom);
+
+            this.map.spin(true);
 
             L.tileLayer(conf.tileLayerBaseUrl, conf.tileLayerOptions).addTo(this.map);
 
