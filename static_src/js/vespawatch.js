@@ -54,21 +54,15 @@ var VwObservationsMapPopup = {
     },
     template: `
         <div :id="htmlId" class="card">
-            <a :href="detailsUrl">
-                <img class="card-img-top" :src="observation.thumbnails[0]">
-            </a>
+            <img class="card-img-top" :src="observation.thumbnails[0]">
             <div class="card-body">
-                <!--<h5 class="card-title">Vernacular name</h5>-->
+                <h5 class="card-title">{{ localizedVernacularName }}</h5>
                 <h6 class="card-subtitle text-muted mb-2"><em>{{ observation.taxon.scientific_name }}</em></h6>
-                <h6 class="card-subtitle text-muted mb-2"><em>{{ localizedVernacularName }}</em></h6>
                 <p class="card-text">
                     <span class="badge badge-secondary text-lowercase">{{ observation.subject }}</span>
                     <span class="badge badge-success text-lowercase">validated</span>
                 </p>
-                <p class="card-text">
-                    <a class="card-link" :href="detailsUrl" target="_blank">{{ detailsStr }}</a>
-                    <a class="card-link" v-if="observation.inaturalist_id" :href="inaturalistUrl" target="_blank">iNaturalist</a>
-                </p>
+                <a class="card-link" v-if="observation.inaturalist_id" :href="inaturalistUrl" target="_blank">iNaturalist</a>
             </div>
             <div class="card-footer text-muted">
                 <small>{{ observationTime }}</small>
