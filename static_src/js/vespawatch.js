@@ -62,7 +62,7 @@ var VwObservationsMapPopup = {
                     <span class="badge badge-secondary text-lowercase">{{ observation.subject }}</span>
                     <span class="badge badge-success text-lowercase">validated</span>
                 </p>
-                <a class="card-link" v-if="observation.inaturalist_id" :href="inaturalistUrl" target="_blank">iNaturalist</a>
+                <a class="card-link stretched-link" v-if="observation.inaturalist_id" :href="inaturalistUrl" target="_blank">iNaturalist</a>
             </div>
             <div class="card-footer text-muted">
                 <small>{{ observationTime }}</small>

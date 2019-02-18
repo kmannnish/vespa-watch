@@ -16,7 +16,7 @@
             <span class="badge badge-success text-lowercase">{% trans 'Validated' %}</span>
         </p>
         {% if obs.inaturalist_obs_url %}
-            <a class="card-link" href="{{ obs.inaturalist_obs_url }}" target="_blank">{% trans 'iNaturalist' %}</a>
+            <a class="card-link stretched-link" href="{{ obs.inaturalist_obs_url }}" target="_blank">{% trans 'iNaturalist' %}</a>
         {% else %}
             <span class="card-link">{% trans 'To be synchronized' %}</span>
         {% endif %}
