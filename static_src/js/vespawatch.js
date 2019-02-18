@@ -47,6 +47,9 @@ var VwObservationsMapPopup = {
                 url.searchParams.append('redirect_to', this.editRedirect);
             }
             return url;
+        },
+        localizedVernacularName: function () {
+            return this.observation.taxon.vernacular_name[VWConfig.currentLanguageCode]
         }
     },
     template: `
@@ -57,6 +60,7 @@ var VwObservationsMapPopup = {
             <div class="card-body">
                 <!--<h5 class="card-title">Vernacular name</h5>-->
                 <h6 class="card-subtitle text-muted mb-2"><em>{{ observation.taxon.scientific_name }}</em></h6>
+                <h6 class="card-subtitle text-muted mb-2"><em>{{ localizedVernacularName }}</em></h6>
                 <p class="card-text">
                     <span class="badge badge-secondary text-lowercase">{{ observation.subject }}</span>
                     <span class="badge badge-success text-lowercase">validated</span>
@@ -128,7 +132,6 @@ var VwObservationsVizMap = {
                     radius: getRadius(obs),
                     className: "circle"
                 });
-                //circle.bindPopup(this.observationToHtml(obs));
                 circle.bindPopup(document.getElementById('map-popup-' + obs.id));
                 this.mapCircles.push(circle);
             });
@@ -142,39 +145,6 @@ var VwObservationsVizMap = {
             this.map.spin(false);
         },
 
-        // Generate a HTML string that represents the observation
-        observationToHtml: function (obs) {
-            // TODO: Use some template system to avoid this method
-            var html = '';
-
-            html += '<h1>' + obs.taxon.scientific_name + '</h1>';
-
-            if (obs.observation_time != null) {
-                html += moment(obs.observation_time).format('lll') + '';
-            }
-
-            if (obs.subject != null) {
-                html += '<b>subject:</b> ' + obs.subject + '';
-            }
-
-            if (obs.comments != null) {
-                html += '<p>' + obs.comments + '</p>';
-            }
-
-            if (obs.inaturalist_id != null) {
-                html += '<a target="_blank" href="http://www.inaturalist.org/observations/' + obs.inaturalist_id + '">iNaturalist observation</a>';
-            }
-
-            if (obs.imageUrls.length > 0) {
-                obs.imageUrls.forEach(function (img) {
-                    html += '<img class="theme-img-thumb" src="' + img + '">'
-                });
-            }
-
-            html += '<a href="/' + obs.subject + 's/' + obs.id + '/' + (this.editRedirect ? '?redirect_to=' + this.editRedirect : '') + '">View details</a>';
-
-            return html;
-        },
         clearMap: function () {
             if (this.observationsLayer) {
                 this.observationsLayer.clearLayers();

@@ -8,9 +8,10 @@ from markdownx.utils import markdownify
 
 register = template.Library()
 
-@register.simple_tag
-def js_config_object():
+@register.simple_tag(takes_context=True)
+def js_config_object(context):
     conf = {
+        'currentLanguageCode': context.request.LANGUAGE_CODE,
         'debug': settings.JS_DEBUG,
         'baseUrl': settings.VESPAWATCH_BASE_SITE_URL,
         'apis': {

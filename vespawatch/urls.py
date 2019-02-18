@@ -38,7 +38,6 @@ urlpatterns = [
 
     # API paths
     path('api/observations', views.observations_json, name='api_observations'),
-    # path('api/zones', views.zones_json, name='api_zones'),
     path('api/action_outcomes', views.management_actions_outcomes_json, name='api_action_outcomes'),
     path('api/save_management_action', views.save_management_action, name='api_action_save'),
     path('api/get_management_action', views.get_management_action, name='api_action_get'),
