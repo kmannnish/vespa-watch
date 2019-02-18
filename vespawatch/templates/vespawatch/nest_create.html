@@ -2,6 +2,7 @@
 {% load crispy_forms_tags %}
 {% load static %}
 {% load i18n %}
+{% load custom_tags %}
 
 {% block content %}
 <main id="vw-main-app" class="container">
@@ -11,16 +12,16 @@
         <div class="col-lg-3 mb-4 order-lg-2">
             <div class="card d-none d-lg-block">
                 <a href="#">
-                    <img class="card-img-top img-fluid" src="#">
+                    <img class="card-img-top img-fluid" src="{{ identif_card.identification_picture.url }}">
                 </a>
                 <div class="card-body">
-                    <h5 class="card-title">!!Scientific name</h5>
-                    <h6 class="card-subtitle text-muted mb-2"><em>!!Vernacular name</em></h6>
+                    <h5 class="card-title">{{ identif_card.represented_taxon.name }}</h5>
+                    <h6 class="card-subtitle text-muted mb-2"><em>{{ identif_card.represented_taxon.vernacular_name }}</em></h6>
                     <div class="card-text">
-                        <p>!!Description</p>
+                        {{ identif_card.description|markdown }}
                     </div>
                     <p class="card-text">
-                        <a class="card-link" href="#" target="_blank">!! More pictures</a>
+                        <a class="card-link" href="{{ identif_card.represented_taxon.inat_pictures_link }}" target="_blank">More pictures</a>
                     </p>
                 </div>
                 <div class="card-footer text-center">

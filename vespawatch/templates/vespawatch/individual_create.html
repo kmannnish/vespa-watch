@@ -14,6 +14,9 @@
         {{ form.errors }}
     {% endif %}
 
+    <h2>Identification card</h2>
+    Represented taxon: {{ identif_card.represented_taxon }}
+
     <form method="post" action="{% url 'vespawatch:individual-add' %}"enctype='multipart/form-data' novalidate>
         {% include 'vespawatch/includes/individual_form.html' %}
         <button type="submit" class="btn btn-success">{% trans "Save individual" %}</button>
