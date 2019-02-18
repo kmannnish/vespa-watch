@@ -675,9 +675,9 @@ def get_observations(include_individuals=True, include_nests=True, zone_id=None,
     obs = []
 
     if include_individuals:
-        obs = obs + list(Individual.objects.select_related('taxon', 'pictures').all())
+        obs = obs + list(Individual.objects.select_related('taxon').all())
     if include_nests:
-        obs = obs + list(Nest.objects.select_related('taxon', 'pictures').all())
+        obs = obs + list(Nest.objects.select_related('taxon').all())
 
     if zone_id is not None:
         # if a zone is given, filter the observations. This works for both individuals and nests
