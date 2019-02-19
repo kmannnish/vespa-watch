@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.serializers import serialize
+from django.forms.models import model_to_dict
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ugettext as _
@@ -18,7 +19,7 @@ from django.urls import reverse_lazy
 from vespawatch.utils import ajax_login_required
 from .forms import ManagementActionForm, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
 from .models import Individual, Nest, ManagementAction, Taxon, FirefightersZone, IdentificationCard, \
-    get_observations
+    get_observations, get_individuals, get_nests
 
 
 class CustomBaseDetailView(SingleObjectMixin, View):
@@ -265,9 +266,78 @@ def observations_json(request):
                            zone_id=zone_id,
                            limit=limit)
 
-    return JsonResponse({
-        'observations': [x.as_dict() for x in obs]
-    })
+    light = request.GET.get('light', None)
+
+    if light:
+        response = JsonResponse({
+            'observations': [model_to_dict(x) for x in obs]
+        })
+    else:
+        response = JsonResponse({
+            'observations': [x.as_dict() for x in obs]
+        })
+
+    return response
+
+def individuals_json(request):
+    """
+    Return all individuals as JSON data.
+    """
+    limit = request.GET.get('limit', None)
+    limit = int(limit) if limit is not None else None
+
+    obs = get_individuals(limit=limit)
+
+    light = request.GET.get('light', None)
+
+    if light:
+        response = JsonResponse({
+            'individuals': [model_to_dict(x) for x in obs]
+        })
+    else:
+        response = JsonResponse({
+            'individuals': [x.as_dict() for x in obs]
+        })
+
+    return response
+
+
+def single_individual_json(request, pk=None):
+    """
+    Get a single individual and return it as JSON
+    """
+    return JsonResponse(get_object_or_404(Individual, pk=pk).as_dict())
+
+
+def single_nest_json(request, pk=None):
+    """
+    Get a single nest and return it as JSON
+    """
+    return JsonResponse(get_object_or_404(Nest, pk=pk).as_dict())
+
+
+def nests_json(request):
+    """
+    Return all nests as JSON data.
+    """
+    limit = request.GET.get('limit', None)
+    limit = int(limit) if limit is not None else None
+
+    obs = get_nests(limit=limit)
+
+    light = request.GET.get('light', None)
+
+    if light:
+        response = JsonResponse({
+            'nests': [model_to_dict(x) for x in obs]
+        })
+    else:
+        response = JsonResponse({
+            'nests': [x.as_dict() for x in obs]
+        })
+
+    return response
+
 
 def management_actions_outcomes_json(request):
     #TODO: Implements sorting?

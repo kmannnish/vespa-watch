@@ -24,66 +24,11 @@ if (!VWConfig.debug) {
 
 // 2. Vue.JS components
 
-var VwObservationsMapPopup = {
-    props: ["observation", "editRedirect"],
-    computed: {
-        htmlId: function () {
-            return "map-popup-" + this.observation.id;
-        },
-        observationTime: function () {
-            return moment(this.observation.observation_time).format('D MMMM YYYY');
-        },
-        detailsStr: function () {
-            return gettext('Details');
-        },
-        inaturalistUrl: function () {
-            // TODO: duplication: get data from obs.inaturalist_obs_url instead of reinventing the wheel here
-            return "http://www.inaturalist.org/observations/" + this.observation.inaturalist_id;
-        },
-        detailsUrl: function () {
-            var url = new URL(this.observation.detailsUrl, VWConfig.baseUrl);
-
-            if (this.editRedirect) {
-                url.searchParams.append('redirect_to', this.editRedirect);
-            }
-            return url;
-        },
-        localizedVernacularName: function () {
-            return this.observation.taxon.vernacular_name[VWConfig.currentLanguageCode]
-        }
-    },
-    template: `
-        <div :id="htmlId" class="card">
-            <a :href="detailsUrl">
-                <img class="card-img-top" :src="observation.thumbnails[0]">
-            </a>
-            <div class="card-body">
-                <!--<h5 class="card-title">Vernacular name</h5>-->
-                <h6 class="card-subtitle text-muted mb-2"><em>{{ observation.taxon.scientific_name }}</em></h6>
-                <h6 class="card-subtitle text-muted mb-2"><em>{{ localizedVernacularName }}</em></h6>
-                <p class="card-text">
-                    <span class="badge badge-secondary text-lowercase">{{ observation.subject }}</span>
-                    <span class="badge badge-success text-lowercase">validated</span>
-                </p>
-                <p class="card-text">
-                    <a class="card-link" :href="detailsUrl" target="_blank">{{ detailsStr }}</a>
-                    <a class="card-link" v-if="observation.inaturalist_id" :href="inaturalistUrl" target="_blank">iNaturalist</a>
-                </p>
-            </div>
-            <div class="card-footer text-muted">
-                <small>{{ observationTime }}</small>
-            </div>
-        </div>
-    `
-};
 
 // The map of the visualization.
 // This contains an observations prop. When this property is updated, (when data is retrieved
 // from the API or when the user filters the data) the map is cleared and new circles are drawn.
 var VwObservationsVizMap = {
-    components: {
-        'vw-observations-map-popup': VwObservationsMapPopup
-    },
     computed: {
         'managementMap': function () {
             return this.zoneId != null
@@ -95,6 +40,7 @@ var VwObservationsVizMap = {
             map: undefined,
             mapCircles: [],
             observationsLayer: undefined,
+            selectedObservation: undefined
         }
     },
 
@@ -130,9 +76,18 @@ var VwObservationsVizMap = {
                     fillColor: getColor(obs),
                     fillOpacity: conf.fillOpacity,
                     radius: getRadius(obs),
-                    className: "circle"
+                    className: "circle",
+                    subject: obs.subject,
+                    id: obs.id
                 });
-                circle.bindPopup(document.getElementById('map-popup-' + obs.id));
+
+                circle.on('click', () => {
+                    var popup = new L.Popup();
+                    popup.setLatLng([obs.latitude, obs.longitude]);
+                    popup.setContent('loading...');    // Set the popup content to "loading" while the observation data is requested from the API
+                    this.map.openPopup(popup);
+                    this.fillPopupWithObsData(obs, popup);
+                });
                 this.mapCircles.push(circle);
             });
             this.observationsLayer = L.featureGroup(this.mapCircles);
@@ -143,6 +98,52 @@ var VwObservationsVizMap = {
             }
             this.initialZoomed = true;
             this.map.spin(false);
+        },
+
+        fillPopupWithObsData: function (obs, popup) {
+
+            // Get observation data from the API
+            var url = obs.subject === "individual" ? VWConfig.apis.individualsUrl : VWConfig.apis.nestsUrl;
+            axios.get(url + '/' + obs.id)
+                .then(response => {
+                    // console.log('fetched individual data');
+                    // console.log(response);
+                    var obsData = response.data;
+                    var url = new URL(obsData.detailsUrl, VWConfig.baseUrl);
+
+                    if (this.editRedirect) {
+                        url.searchParams.append('redirect_to', this.editRedirect);
+                    }
+                    var str = `
+                        <div id="`+ "map-popup-" + obs.id + `" class="card">
+                            <a href="detailsUrl">
+                                <img class="card-img-top" src="` + obsData.thumbnails[0] + `">
+                            </a>
+                            <div class="card-body">
+                                <!--<h5 class="card-title">` + gettext('Vernacular name') + `</h5>-->
+                                <h6 class="card-subtitle text-muted mb-2"><em>` + obsData.taxon.scientific_name + `</em></h6>
+                                <h6 class="card-subtitle text-muted mb-2"><em>` + obsData.taxon.vernacular_name[VWConfig.currentLanguageCode] + `</em></h6>
+                                <p class="card-text">
+                                    <span class="badge badge-secondary text-lowercase">` + obsData.subject + `</span>
+                                    <span class="badge badge-success text-lowercase">validated</span>
+                                </p>
+                                <p class="card-text">
+                                    <a class="card-link" href="` + obsData.detailsUrl + `" target="_blank">` + gettext('Details') + `</a>
+                                    <a class="card-link" v-if="observation.inaturalist_id" :href="inaturalistUrl" target="_blank">iNaturalist</a>
+                                </p>
+                            </div>
+                            <div class="card-footer text-muted">
+                                <small>` + moment(obsData.observation_time).format('D MMMM YYYY') + `</small>
+                            </div>
+                        </div>
+                    `;
+                    popup.setContent(str);
+
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+
         },
 
         clearMap: function () {
@@ -193,9 +194,6 @@ var VwObservationsVizMap = {
 
     template: `<div>
         <div class="mb-2" id="vw-map-map" style="height: 450px;"></div>
-        <div style="display: none;">
-            <vw-observations-map-popup v-for="observation in observations" :observation="observation" :edit-redirect="editRedirect" :key="observation.key"></vw-observations-map-popup>
-        </div>
     </div>`
 };
 
@@ -286,6 +284,8 @@ var VwObservationsVizTimeSlider = {
         observationsTimeRange: function (newRange, oldRange) {
             // Only when data is loaded from the API, the range of the slider can be set. Therefore,
             // watch the 'observationsTimeRange' prop to set the data initial value.
+            console.log('new time range received');
+            console.log(newRange);
             this.selectedTimeRange.start = this.observationsTimeRange.start;
             this.selectedTimeRange.stop = this.observationsTimeRange.start;
 
@@ -338,6 +338,8 @@ var VwObservationsViz = {
 
     data: function () {
         return {
+            individualsUrl: VWConfig.apis.individualsUrl,
+            nestsUrl: VWConfig.apis.nestsUrl,
             observationsUrl: VWConfig.apis.observationsUrl,
             observations: [],
             observationsCF: undefined,
@@ -350,37 +352,54 @@ var VwObservationsViz = {
     methods: {
         getData: function () {
             // Call the API to get observations
-            var url = this.observationsUrl;
+            var urls = [];
+
             if (this.zone != null) {
                 // console.log("Only requesting observations for zone " + this.zone);
-                url += '?zone=' + this.zone + '&type=nest';
+                urls.push(axios.get(this.observationsUrl + '&zone=' + this.zone + '&type=nest'));
             } else {
+                urls.push(axios.get(this.individualsUrl + '?light=true'));
+                urls.push(axios.get(this.nestsUrl + '?light=true'));
                 // console.log("No zone set");
             }
-            axios.get(url)
-                .then(response => {
-                    console.log(response.data);
-                    var allObservations = response.data.observations;
+            axios.all(urls)
+              .then(axios.spread((indivRes, nestRes) => {
+                    console.log(indivRes.data);
+                    console.log(nestRes.data);
+                    this.setSubject(indivRes.data.individuals, 'individual');
+                    this.setSubject(nestRes.data.nests, 'nest');
+                    var allObservations = indivRes.data.individuals.concat(nestRes.data.nests);
+                    this.parseDates(allObservations);
                     this.setCrossFilter(allObservations);
                     this.totalObsCount = allObservations.length;
                     this.initTimerangeSlider();
                     this.setObservations();
-                })
+
+              }))
                 .catch(function (error) {
                     // handle error
                     console.log(error);
                 });
         },
 
+        setSubject: function (observations, subj) {
+            observations.forEach(obs => obs.subject = subj);
+        },
+
         initTimerangeSlider: function () {
             var latestObs = this.cfDimensions.timeDim.top(1);
             var earliestObs = this.cfDimensions.timeDim.bottom(1);
+            console.log(earliestObs);
             var start = earliestObs[0].observation_time;
             var stop = latestObs[0].observation_time;
             if (start === stop) {
                 stop++;
             }
             this.timeRange = {start: start, stop: stop};
+        },
+
+        parseDates: function (observations) {
+            observations.forEach(obs => obs.observation_time = moment(obs.observation_time).valueOf())
         },
 
         setCrossFilter: function (observations) {

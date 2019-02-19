@@ -10,6 +10,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.base import ContentFile
+from django.forms import model_to_dict
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template import defaultfilters
@@ -688,3 +689,18 @@ def get_observations(include_individuals=True, include_nests=True, zone_id=None,
     obs = obs[:limit]
 
     return obs
+
+
+def get_individuals(limit=None):
+    obs = list(Individual.objects.select_related('taxon').prefetch_related('pictures').all())
+    obs.sort(key=lambda x: x.observation_time, reverse=True)
+    obs = obs[:limit]
+    return obs
+
+
+def get_nests(limit=None):
+    obs = list(Nest.objects.select_related('taxon').prefetch_related('pictures').all())
+    obs.sort(key=lambda x: x.observation_time, reverse=True)
+    obs = obs[:limit]
+    return obs
+
