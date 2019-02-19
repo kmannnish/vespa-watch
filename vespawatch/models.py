@@ -480,11 +480,7 @@ class Nest(AbstractObservation):
     )
     height = models.CharField(max_length=50, choices=HEIGHT_CHOICES, blank=True)
 
-    def get_detail_page_url(self):
-        # FIXME: I wanted to implement this as the (Django standard) get_absolute_url, but this one was already taken
-        #   for the update page. Should it be updated/fixed?
-        # FIXME update: the old get_absolute_url() was removed because edition is not possible anymore, so we can
-        #   use it for this one
+    def get_absolute_url(self):
         return reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
 
     def get_management_action_finished(self):
@@ -553,11 +549,7 @@ class Individual(AbstractObservation):
     behaviour = models.CharField(max_length=2, choices=BEHAVIOUR_CHOICES, blank=True, null=True)
     nest = models.ForeignKey(Nest, on_delete=models.CASCADE, blank=True, null=True)
 
-    def get_detail_page_url(self):
-        # FIXME: I wanted to implement this as the (Django standard) get_absolute_url, but this one was already taken
-        #   for the update page. Should it be updated/fixed?
-        # FIXME update: the old get_absolute_url() was removed because edition is not possible anymore, so we can
-        #   use it for this one
+    def get_absolute_url(self):
         return reverse('vespawatch:individual-detail', kwargs={'pk': self.pk})
 
     @property

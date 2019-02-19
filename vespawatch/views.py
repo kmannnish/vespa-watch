@@ -97,7 +97,6 @@ def management(request):
 def create_individual(request):
     if request.method == 'POST':
         redirect_to = request.POST.get('redirect_to')
-        identif_card = None
         form = IndividualForm(request.POST, request.FILES)
         image_formset = IndividualImageFormset()
         if request.user.is_authenticated:
@@ -115,7 +114,7 @@ def create_individual(request):
     else:
         redirect_to = request.GET.get('redirect_to', 'index')
         taxon_id = request.GET.get('taxon')
-        identif_card = IdentificationCard.objects.filter(taxon=taxon_id)
+        identif_card = IdentificationCard.objects.get(pk=request.GET.get('card_id'))
         form = IndividualForm(initial={'redirect_to': redirect_to})
         image_formset = IndividualImageFormset()
     return render(request, 'vespawatch/individual_create.html', {'form': form, 'type': 'individual', 'image_formset': image_formset, 'identif_card': identif_card})
@@ -175,7 +174,7 @@ def create_nest(request):
     else:
         redirect_to = request.GET.get('redirect_to', 'index')
         taxon_id = request.GET.get('taxon')
-        identif_card = IdentificationCard.objects.filter(taxon=taxon_id)
+        identif_card = IdentificationCard.objects.get(pk=request.GET.get('card_id'))
         form = NestForm(initial={'redirect_to': redirect_to})
         image_formset = NestImageFormset()
     return render(request, 'vespawatch/nest_create.html', {'form': form, 'image_formset': image_formset, 'type': 'nest', 'identif_card': identif_card})

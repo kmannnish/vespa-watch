@@ -116,21 +116,14 @@ var VwObservationsVizMap = {
                     }
                     var str = `
                         <div id="`+ "map-popup-" + obs.id + `" class="card">
-                            <a href="detailsUrl">
-                                <img class="card-img-top" src="` + obsData.thumbnails[0] + `">
-                            </a>
+                            <img class="card-img-top" src="` + obsData.thumbnails[0] + `">
                             <div class="card-body">
-                                <!--<h5 class="card-title">` + gettext('Vernacular name') + `</h5>-->
+                                <h5 class="card-title">` + obsData.taxon.vernacular_name[VWConfig.currentLanguageCode] + `</h5>
                                 <h6 class="card-subtitle text-muted mb-2"><em>` + obsData.taxon.scientific_name + `</em></h6>
-                                <h6 class="card-subtitle text-muted mb-2"><em>` + obsData.taxon.vernacular_name[VWConfig.currentLanguageCode] + `</em></h6>
                                 <p class="card-text">
                                     <span class="badge badge-secondary text-lowercase">` + obsData.subject + `</span>
-                                    <span class="badge badge-success text-lowercase">validated</span>
-                                </p>
-                                <p class="card-text">
-                                    <a class="card-link" href="` + obsData.detailsUrl + `" target="_blank">` + gettext('Details') + `</a>
-                                    <a class="card-link" v-if="observation.inaturalist_id" :href="inaturalistUrl" target="_blank">iNaturalist</a>
-                                </p>
+                                    <!-- <span class="badge badge-success text-lowercase">validated</span> -->
+                                </p>` + (obsData.inaturalist_id ? `<a class="card-link stretched-link" href="http://www.inaturalist.org/observations/` + obsData.inaturalist_id + `" target="_blank">iNaturalist</a>` : "") + `
                             </div>
                             <div class="card-footer text-muted">
                                 <small>` + moment(obsData.observation_time).format('D MMMM YYYY') + `</small>
