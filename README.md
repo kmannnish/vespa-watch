@@ -2,7 +2,9 @@
 
 Django app for the monitoring and management of [_Vespa velutina_](https://www.inaturalist.org/taxa/119019-Vespa-velutina), an invasive species in Belgium.
 
-## Installation
+## Installation (local development)
+
+_Note: deployment instructions of applciation are provided in [deployment dir](https://github.com/inbo/vespa-watch/blob/master/deployment/setup.md)_
 
 ### Setup database
 
@@ -15,7 +17,7 @@ Django app for the monitoring and management of [_Vespa velutina_](https://www.i
 2. Copy [`djangoproject/settings/settings_local.template.py`](djangoproject/settings/settings_local.template.py) to `djangoproject/settings/settings_local.py`
 3. In that file, verify the database settings are correct and set `SECRET_KEY` to a non-empty value
 
-### Setup python environment
+### Setup Python environment
 
 1. Create a virtual environment, e.g. `conda create -n vespawatch python=3.6`
 2. Activate the environment, e.g. `source activate vespawatch`
@@ -79,7 +81,7 @@ Initialize the database with observations from iNaturalist (optional):
 python manage.py sync_pull
 ```
 
-## Generate static files
+### Generate static files
 
 The repository contains a number of raw static files that need to be processed
 before deployment. You can build all static files with an npm script:
@@ -88,7 +90,7 @@ before deployment. You can build all static files with an npm script:
 npm run build:all
 ```
 
-## Run the application
+### Run the application
 
 In your virtual environment:
 
@@ -98,7 +100,7 @@ python manage.py runserver
 
 Go to http://localhost:8000 to see the application.
 
-## Development
+## Development tips
 
 ### Update HTML
 
@@ -133,7 +135,7 @@ External Javascript libraries (and their CSS) are defined in [`package.json`](pa
     <link rel="stylesheet" href="{% static 'vespawatch/libraries/my_library/my_library.min.css' %}">
     <script src="{% static 'vespawatch/libraries/my_library/my_library.min.js' %}"></script>
     ```
-
+    
 ### Update Javascript
 
 1. Go to [`static_src/js`](static_src/js)
