@@ -130,5 +130,5 @@ start
 vespawatch/static/
 
 # exclude from elastic beanstalk
-docs/*
-.git/*
+docs/
+.git/
