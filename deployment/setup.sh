@@ -4,7 +4,7 @@
 ENVIRONMENT=$1
 # EB environment
 DB_USER=$2                # RDS database user
-DB_PWD=$43                # RDS database pwd
+DB_PWD=$3                # RDS database pwd
 # vespa-app specific
 DJANGO_SECRET_KEY=$4      # django app secret key
 VESPA_SU_NAME=$5          # user name vespawatch applicatie superuser
@@ -27,6 +27,7 @@ aws iam create-instance-profile --instance-profile-name aws-elasticbeanstalk-ec2
 aws iam create-role --role-name aws-elasticbeanstalk-ec2-role-vespawatch --assume-role-policy-document file://deployment/ec2-trust-policy.json --description 'vespawatch application role'
 aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-name lw-vespawatch-s3 --policy-document file://deployment/s3-policy.json
 aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-name lw-vespawatch-ec2tags --policy-document file://deployment/ec2-describetags.json
+aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-name lw-vespawatch-write-cloudwatch --policy-document file://deployment/cloudwatch-write-logs.json
 aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-arn arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier
 aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-arn arn:aws:iam::226308051916:policy/AWS-Beanstalk-Volumes
 aws iam add-role-to-instance-profile --instance-profile-name aws-elasticbeanstalk-ec2-role-vespawatch --role-name aws-elasticbeanstalk-ec2-role-vespawatch
@@ -52,10 +53,5 @@ eb deploy --message "Initiate Django app first deployment"
 eb ssh --command "source /opt/python/run/venv/bin/activate && python ./manage.py import_firefighters_zones ./data/Brandweerzones_2019.geojson"
 eb ssh --command "source /opt/python/run/venv/bin/activate && python ./manage.py create_firefighters_accounts"
 
-# execute a first syncronization with iNaturalist to collect the ifirst set of data
-eb ssh --command "source /opt/python/run/venv/bin/activate && python ./manage.py sync_pull"
-
-# remove the inbound rule for ssh on port 22 (just an example)
-# aws ec2 revoke-security-group-ingress --group-id sg-0ed982b15ae8893ef --protocol tcp --port 22 --cidr 0.0.0.0/0
-
-# extend the backup period of the RDS
+#
+echo "Check the setup.md file to adapt the security group settings and adjust database backup..."
