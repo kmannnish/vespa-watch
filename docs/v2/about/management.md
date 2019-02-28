@@ -1,9 +1,3 @@
-# Titel
-
-## Ondertitel
-
-Tekst
-
 # Beheer
 
 ## Een uitdaging
@@ -24,8 +18,20 @@ Denk je een nest van Aziatische hoornaar gevonden te hebben? Meld het dan via de
 
 ---
 
-# Title
+# Management
 
-## Subtitle
+## The hornet challenge
 
-Text
+Researchers assessed the feasibility of eradicating or limiting further spread of Asian hornet in Belgium very low. This is mainly due to the limited effectiveness of the currently available management measures, the high cost, the short timeframe required for intervention, and the high probability of reintroduction from abroad. A realistic management strategy is therefore aimed at **mitigating the impact of Asian hornets through population management**. Possible measures to achieve this are destruction of nests, impact-mitigating measures at beehives and awareness raising.
+
+## Management methods
+
+Ill-considered management can have counterproductive effects on population development of Asian hornet. The following recommendations can be made based on research and experiences abroad:
+
+- **Only the destruction of nests is efficient**: The only efficient method for management of Asian hornet is the destruction of summer nests. This way, the formation of new queens is prevented. Sometimes a nest can easily be removed in its entirety, but nest destruction is usually performed by injecting insecticide as with classical wasp control. This should preferably happen when as many wasps as possible are present on the nest.
+- **Avoid spring trapping of queens**: An Asian hornet colony produces a lot of founder queens (up to 500 per nest) but only a fraction survive the winter and succeeds in starting a new nest in spring, mainly because of competition. Hornet trapping, for example with a butterfly net or with hornet traps, lowers the degree of competition and thus increases the survival and the chances of a new nest. There are currently no selective traps on the market, and as a consequence many (often protected and rare) native insects end up in the traps. Selective traps are only useful around an apiary in case of attacks on the hive.
+- **Registration is necessary to learn from experience**: Statements about the efficiency of management, possible side-effects on other insects and the cost-effectiveness of nest destruction are only possible with information about the measures taken. Vespawatch allows such registration through a password-protected module on the website accessible to the various fire brigades. This information must also be reported to the European Commission for the EU Regulation. 
+
+## Nest found
+
+Do you think you found a nest of Asian hornet? Report it through the Vespawatch website or iNaturalist and provide as many details as possible about your observation. This way, experts can determine whether it is really Asian hornet and nest destruction can be planned. **The fire brigade is the first point of contact for nest removal**. Destroying hornet nests is specialist work that requires training and materials (wasp suit, eye protection, atomizer, telescopic lance, fire ladder). If possible, provide details about the location (address), the accessibility of the nest, the height, and leave your mobile phone number so the wasp team of the fire brigade can plan an action more easily and quickly. Destruction of an Asian hornet nest is free but is only performed after verified reports of a nest. **The fire brigade does not help to search for nests**.

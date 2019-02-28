@@ -24,62 +24,11 @@ if (!VWConfig.debug) {
 
 // 2. Vue.JS components
 
-var VwObservationsMapPopup = {
-    props: ["observation", "editRedirect"],
-    computed: {
-        htmlId: function () {
-            return "map-popup-" + this.observation.id;
-        },
-        observationTime: function () {
-            return moment(this.observation.observation_time).format('D MMMM YYYY');
-        },
-        detailsStr: function () {
-            return gettext('Details');
-        },
-        inaturalistUrl: function () {
-            // TODO: duplication: get data from obs.inaturalist_obs_url instead of reinventing the wheel here
-            return "http://www.inaturalist.org/observations/" + this.observation.inaturalist_id;
-        },
-        detailsUrl: function () {
-            var url = new URL(this.observation.detailsUrl, VWConfig.baseUrl);
-
-            if (this.editRedirect) {
-                url.searchParams.append('redirect_to', this.editRedirect);
-            }
-            return url;
-        }
-    },
-    template: `
-        <div :id="htmlId" class="card">
-            <a :href="detailsUrl">
-                <img class="card-img-top" :src="observation.thumbnails[0]">
-            </a>
-            <div class="card-body">
-                <!--<h5 class="card-title">Vernacular name</h5>-->
-                <h6 class="card-subtitle text-muted mb-2"><em>{{ observation.taxon }}</em></h6>
-                <p class="card-text">
-                    <span class="badge badge-secondary text-lowercase">{{ observation.subject }}</span>
-                    <span class="badge badge-success text-lowercase">validated</span>
-                </p>
-                <p class="card-text">
-                    <a class="card-link" :href="detailsUrl" target="_blank">{{ detailsStr }}</a>
-                    <a class="card-link" v-if="observation.inaturalist_id" :href="inaturalistUrl" target="_blank">iNaturalist</a>
-                </p>
-            </div>
-            <div class="card-footer text-muted">
-                <small>{{ observationTime }}</small>
-            </div>
-        </div>
-    `
-};
 
 // The map of the visualization.
 // This contains an observations prop. When this property is updated, (when data is retrieved
 // from the API or when the user filters the data) the map is cleared and new circles are drawn.
 var VwObservationsVizMap = {
-    components: {
-        'vw-observations-map-popup': VwObservationsMapPopup
-    },
     computed: {
         'managementMap': function () {
             return this.zoneId != null
@@ -91,6 +40,7 @@ var VwObservationsVizMap = {
             map: undefined,
             mapCircles: [],
             observationsLayer: undefined,
+            selectedObservation: undefined
         }
     },
 
@@ -126,10 +76,18 @@ var VwObservationsVizMap = {
                     fillColor: getColor(obs),
                     fillOpacity: conf.fillOpacity,
                     radius: getRadius(obs),
-                    className: "circle"
+                    className: "circle",
+                    subject: obs.subject,
+                    id: obs.id
                 });
-                //circle.bindPopup(this.observationToHtml(obs));
-                circle.bindPopup(document.getElementById('map-popup-' + obs.id));
+
+                circle.on('click', () => {
+                    var popup = new L.Popup();
+                    popup.setLatLng([obs.latitude, obs.longitude]);
+                    popup.setContent('loading...');    // Set the popup content to "loading" while the observation data is requested from the API
+                    this.map.openPopup(popup);
+                    this.fillPopupWithObsData(obs, popup);
+                });
                 this.mapCircles.push(circle);
             });
             this.observationsLayer = L.featureGroup(this.mapCircles);
@@ -139,41 +97,48 @@ var VwObservationsVizMap = {
                 //this.map.fitBounds(this.observationsLayer.getBounds());
             }
             this.initialZoomed = true;
+            this.map.spin(false);
         },
 
-        // Generate a HTML string that represents the observation
-        observationToHtml: function (obs) {
-            // TODO: Use some template system to avoid this method
-            var html = '';
+        fillPopupWithObsData: function (obs, popup) {
 
-            html += '<h1>' + obs.taxon + '</h1>';
+            // Get observation data from the API
+            var url = obs.subject === "individual" ? VWConfig.apis.individualsUrl : VWConfig.apis.nestsUrl;
+            axios.get(url + '/' + obs.id)
+                .then(response => {
+                    // console.log('fetched individual data');
+                    // console.log(response);
+                    var obsData = response.data;
+                    var url = new URL(obsData.detailsUrl, VWConfig.baseUrl);
 
-            if (obs.observation_time != null) {
-                html += moment(obs.observation_time).format('lll') + '';
-            }
+                    if (this.editRedirect) {
+                        url.searchParams.append('redirect_to', this.editRedirect);
+                    }
+                    var str = `
+                        <div id="`+ "map-popup-" + obs.id + `" class="card">
+                            <img class="card-img-top" src="` + obsData.thumbnails[0] + `">
+                            <div class="card-body">
+                                <h5 class="card-title">` + obsData.taxon.vernacular_name[VWConfig.currentLanguageCode] + `</h5>
+                                <h6 class="card-subtitle text-muted mb-2"><em>` + obsData.taxon.scientific_name + `</em></h6>
+                                <p class="card-text">
+                                    <span class="badge badge-secondary text-lowercase">` + obsData.subject + `</span>
+                                    <!-- <span class="badge badge-success text-lowercase">validated</span> -->
+                                </p>` + (obsData.inaturalist_id ? `<a class="card-link stretched-link" href="http://www.inaturalist.org/observations/` + obsData.inaturalist_id + `" target="_blank">iNaturalist</a>` : "") + `
+                            </div>
+                            <div class="card-footer text-muted">
+                                <small>` + moment(obsData.observation_time).format('D MMMM YYYY') + `</small>
+                            </div>
+                        </div>
+                    `;
+                    popup.setContent(str);
 
-            if (obs.subject != null) {
-                html += '<b>subject:</b> ' + obs.subject + '';
-            }
-
-            if (obs.comments != null) {
-                html += '<p>' + obs.comments + '</p>';
-            }
-
-            if (obs.inaturalist_id != null) {
-                html += '<a target="_blank" href="http://www.inaturalist.org/observations/' + obs.inaturalist_id + '">iNaturalist observation</a>';
-            }
-
-            if (obs.imageUrls.length > 0) {
-                obs.imageUrls.forEach(function (img) {
-                    html += '<img class="theme-img-thumb" src="' + img + '">'
+                })
+                .catch(function (error) {
+                    console.log(error);
                 });
-            }
 
-            html += '<a href="/' + obs.subject + 's/' + obs.id + '/' + (this.editRedirect ? '?redirect_to=' + this.editRedirect : '') + '">View details</a>';
-
-            return html;
         },
+
         clearMap: function () {
             if (this.observationsLayer) {
                 this.observationsLayer.clearLayers();
@@ -186,6 +151,8 @@ var VwObservationsVizMap = {
             var mapPosition = conf.initialPosition;
             var mapZoom = conf.initialZoom;
             this.map = L.map("vw-map-map").setView(mapPosition, mapZoom);
+
+            this.map.spin(true);
 
             L.tileLayer(conf.tileLayerBaseUrl, conf.tileLayerOptions).addTo(this.map);
 
@@ -220,9 +187,6 @@ var VwObservationsVizMap = {
 
     template: `<div>
         <div class="mb-2" id="vw-map-map" style="height: 450px;"></div>
-        <div style="display: none;">
-            <vw-observations-map-popup v-for="observation in observations" :observation="observation" :edit-redirect="editRedirect" :key="observation.key"></vw-observations-map-popup>
-        </div>
     </div>`
 };
 
@@ -313,6 +277,8 @@ var VwObservationsVizTimeSlider = {
         observationsTimeRange: function (newRange, oldRange) {
             // Only when data is loaded from the API, the range of the slider can be set. Therefore,
             // watch the 'observationsTimeRange' prop to set the data initial value.
+            console.log('new time range received');
+            console.log(newRange);
             this.selectedTimeRange.start = this.observationsTimeRange.start;
             this.selectedTimeRange.stop = this.observationsTimeRange.start;
 
@@ -365,6 +331,8 @@ var VwObservationsViz = {
 
     data: function () {
         return {
+            individualsUrl: VWConfig.apis.individualsUrl,
+            nestsUrl: VWConfig.apis.nestsUrl,
             observationsUrl: VWConfig.apis.observationsUrl,
             observations: [],
             observationsCF: undefined,
@@ -377,37 +345,54 @@ var VwObservationsViz = {
     methods: {
         getData: function () {
             // Call the API to get observations
-            var url = this.observationsUrl;
+            var urls = [];
+
             if (this.zone != null) {
                 // console.log("Only requesting observations for zone " + this.zone);
-                url += '?zone=' + this.zone + '&type=nest';
+                urls.push(axios.get(this.observationsUrl + '&zone=' + this.zone + '&type=nest'));
             } else {
+                urls.push(axios.get(this.individualsUrl + '?light=true'));
+                urls.push(axios.get(this.nestsUrl + '?light=true'));
                 // console.log("No zone set");
             }
-            axios.get(url)
-                .then(response => {
-                    console.log(response.data);
-                    var allObservations = response.data.observations;
+            axios.all(urls)
+              .then(axios.spread((indivRes, nestRes) => {
+                    console.log(indivRes.data);
+                    console.log(nestRes.data);
+                    this.setSubject(indivRes.data.individuals, 'individual');
+                    this.setSubject(nestRes.data.nests, 'nest');
+                    var allObservations = indivRes.data.individuals.concat(nestRes.data.nests);
+                    this.parseDates(allObservations);
                     this.setCrossFilter(allObservations);
                     this.totalObsCount = allObservations.length;
                     this.initTimerangeSlider();
                     this.setObservations();
-                })
+
+              }))
                 .catch(function (error) {
                     // handle error
                     console.log(error);
                 });
         },
 
+        setSubject: function (observations, subj) {
+            observations.forEach(obs => obs.subject = subj);
+        },
+
         initTimerangeSlider: function () {
             var latestObs = this.cfDimensions.timeDim.top(1);
             var earliestObs = this.cfDimensions.timeDim.bottom(1);
+            console.log(earliestObs);
             var start = earliestObs[0].observation_time;
             var stop = latestObs[0].observation_time;
             if (start === stop) {
                 stop++;
             }
             this.timeRange = {start: start, stop: stop};
+        },
+
+        parseDates: function (observations) {
+            observations.forEach(obs => obs.observation_time = moment(obs.observation_time).valueOf())
         },
 
         setCrossFilter: function (observations) {
@@ -737,9 +722,8 @@ var VwManagementTableNestRow = {
                 this.$emit('data-changed');
             }
         }
-
     },
-    template: `
+    template: ` 
         <tr :class="nestClass">
             <td>{{ observationTimeStr }}</td>
             
@@ -758,7 +742,6 @@ var VwManagementTableNestRow = {
             </td>
             
             <td>
-                    <a v-if="nest.originates_in_vespawatch" v-bind:href="nest.updateUrl">{{ editStr }}</a>
                     <span v-if="!nest.originates_in_vespawatch" v-bind:title="cannotEditTitle">{{ cannotEditLabel }}</span>
             </td>
         </tr>
@@ -1085,137 +1068,6 @@ var VwLocationSelectorCoordinates = {
         `
 };
 
-// Components allowing to select a taxon (with illustrative picture) in the forms
-var VwTaxonSelectorEntry = {
-    delimiters: ['[[', ']]'],
-    props: {
-        'taxon': Object,
-        'radioName': String,
-        'pictureAttribute': String,
-        'selected': {
-            'type': Boolean,
-            'default': false
-        }
-    },
-    methods: {
-        getRadioId: function (taxon) {
-            return 'taxonRadios' + taxon.id;
-        },
-    },
-    template: `
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">[[ taxon.name ]]</h5>
-            
-                <img class="card-img-top" :src="taxon[pictureAttribute]" style="width: 100px;">
-            
-                <input class="form-check-input" type="radio" :name="radioName" :id="getRadioId(taxon)" :value="taxon.id" :checked="selected">
-                        
-                <label class="form-check-label" :for="getRadioId(taxon)">
-                    [[ taxon.name ]]
-                </label>
-            </div>
-        </div>`
-
-};
-
-var VwTaxonSelector = {
-    components: {
-        'vw-taxon-selector-entry': VwTaxonSelectorEntry
-    },
-    delimiters: ['[[', ']]'],
-    props: {
-        'taxonApiUrl': String,
-        'radioName': String,
-        'taxonSelected': Number,
-        'mode': String, // nest | individual
-        'cannotChangeAnymore': {
-            'type': Boolean,
-            'default': false
-        }
-    },
-    computed: {
-        buttonLabel: function () {
-            return gettext('Show more species');
-        },
-        ifYouDontKnowMsg: function () {
-            return gettext("If you don't know, select 'Insecta'.");
-        },
-        taxonCannotBeChangedMsg: function () {
-            return gettext("Taxon can't be changed anymore.");
-        },
-        pictureAttrName: function () {
-            switch (this.mode) {
-                case 'nest':
-                    return 'identification_picture_nest_url';
-                case 'individual':
-                    return 'identification_picture_individual_url';
-            }
-        }
-    },
-    data: function () {
-        return {
-            'taxaData': [],
-            'showAll': false
-        }
-    },
-    methods: {
-        showAllIfNeeded: function () {
-            if (this.taxonSelected) {
-                var that = this;
-                var found = this.taxaData.find(function (taxon) {
-                    return taxon.id === that.taxonSelected;
-                });
-
-                if (!found.identification_priority) {
-                    this.showAll = true;
-                }
-            }
-        },
-        getData: function () {
-            axios.get(this.taxonApiUrl)
-                .then(response => {
-                    this.taxaData = response.data;
-                    this.showAllIfNeeded();
-                })
-                .catch(function (error) {
-                    // handle error
-                    console.log(error);
-                });
-        }
-    },
-    mounted: function () {
-        this.getData();
-    },
-    template: `<div class="form-group">
-                    <template v-if="cannotChangeAnymore">
-                        <div v-for="taxon in taxaData" class="form-check-inline" v-if="taxon.id == taxonSelected">
-                            <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="true"></vw-taxon-selector-entry>
-                        </div>
-                        <span class="small">[[ taxonCannotBeChangedMsg ]]</span>
-                    </template>
-                    
-                    <template v-else>
-                        <div v-for="taxon in taxaData" v-if="taxon.identification_priority" class="form-check-inline">
-                            <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
-                        </div> 
-                    
-                        <div>
-                            <button class="btn btn-outline-primary btn-sm" v-if="!showAll" v-on:click.stop.prevent="showAll = true">[[ buttonLabel ]]</button>
-                            <span class="small">[[ ifYouDontKnowMsg ]]</span>
-                        </div>
-                        
-                        
-                        <div v-if="showAll">
-                            <div v-for="taxon in taxaData" v-if="!taxon.identification_priority" class="form-check-inline">
-                                <vw-taxon-selector-entry :taxon="taxon" :picture-attribute="pictureAttrName" :radio-name="radioName" :selected="taxon.id == taxonSelected"></vw-taxon-selector-entry>
-                            </div>
-                        </div>         
-                    </template>
-                    
-               </div>`
-};
-
 var VwDatetimeSelector = {
     delimiters: ['[[', ']]'],
     props: {
@@ -1348,7 +1200,6 @@ var app = new Vue({
         'vw-location-selector': VwLocationSelector,
         'vw-datetime-selector': VwDatetimeSelector,
         'vw-management-table': VwManagementTable,
-        'vw-taxon-selector': VwTaxonSelector,
         'vw-recent-obs-table': VwRecentObsTable
     },
     data: {

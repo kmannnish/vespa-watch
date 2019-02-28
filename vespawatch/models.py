@@ -10,6 +10,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.base import ContentFile
+from django.forms import model_to_dict
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template import defaultfilters
@@ -302,13 +303,14 @@ class AbstractObservation(models.Model):
             except FirefightersZone.DoesNotExist:
                 pass
 
-    def get_display_taxon_name(self):
-        if self.inaturalist_species:
-            return self.inaturalist_species
-        elif self.taxon:
-            return self.taxon.name
-        else:
-            return ''
+    @property
+    def vernacular_names_in_all_languages(self):
+        """Returns a dict such as: {'en': XXXX, 'nl': YYYY}"""
+        vn = {}
+        for lang in settings.LANGUAGES:
+            code = lang[0]
+            vn[code] = getattr(self.taxon, f'vernacular_name_{code}')
+        return vn
 
     @property
     def can_be_edited_or_deleted(self):
@@ -478,13 +480,8 @@ class Nest(AbstractObservation):
     )
     height = models.CharField(max_length=50, choices=HEIGHT_CHOICES, blank=True)
 
-    def get_detail_page_url(self):
-        # FIXME: I wanted to implement this as the (Django standard) get_absolute_url, but this one was already taken
-        # for the update page. Should it be updated/fixed?
-        return reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
-
     def get_absolute_url(self):
-        return reverse('vespawatch:nest-update', kwargs={'pk': self.pk})
+        return reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
 
     def get_management_action_finished(self):
         action = self.managementaction_set.first()
@@ -510,7 +507,10 @@ class Nest(AbstractObservation):
         return {
             'id': self.pk,
             'key': f'nest-{self.pk}',  # Handy when you need a unique key in a batch of Observations (nests and individuals)
-            'taxon': self.get_display_taxon_name(),
+            'taxon': {
+                'scientific_name': self.taxon.name,
+                'vernacular_name': self.vernacular_names_in_all_languages
+            },
             'subject': self.subject,
             'address': self.address,
             'latitude': self.latitude,
@@ -525,7 +525,6 @@ class Nest(AbstractObservation):
             'actionId': self.get_management_action_id(),
             'actionFinished': self.get_management_action_finished(),
             'originates_in_vespawatch': self.originates_in_vespawatch,
-            'updateUrl': reverse('vespawatch:nest-update', kwargs={'pk': self.pk}),
             'detailsUrl': reverse('vespawatch:nest-detail', kwargs={'pk': self.pk}),
         }
 
@@ -551,11 +550,6 @@ class Individual(AbstractObservation):
     nest = models.ForeignKey(Nest, on_delete=models.CASCADE, blank=True, null=True)
 
     def get_absolute_url(self):
-        return reverse('vespawatch:individual-update', kwargs={'pk': self.pk})
-
-    def get_detail_page_url(self):
-        # FIXME: I wanted to implement this as the (Django standard) get_absolute_url, but this one was already taken
-        # for the update page. Should it be updated/fixed?
         return reverse('vespawatch:individual-detail', kwargs={'pk': self.pk})
 
     @property
@@ -566,7 +560,10 @@ class Individual(AbstractObservation):
         return {
             'id': self.pk,
             'key': f'individual-{self.pk}',  # Handy when you need a unique key in a batch of Observations (nests and individuals)
-            'taxon': self.get_display_taxon_name(),
+            'taxon': {
+                'scientific_name': self.taxon.name,
+                'vernacular_name': self.vernacular_names_in_all_languages
+            },
             'subject': self.subject,
             'address': self.address,
             'latitude': self.latitude,
@@ -671,9 +668,9 @@ def get_observations(include_individuals=True, include_nests=True, zone_id=None,
     obs = []
 
     if include_individuals:
-        obs = obs + list(Individual.objects.all())
+        obs = obs + list(Individual.objects.select_related('taxon').prefetch_related('pictures').all())
     if include_nests:
-        obs = obs + list(Nest.objects.all())
+        obs = obs + list(Nest.objects.select_related('taxon').prefetch_related('pictures').all())
 
     if zone_id is not None:
         # if a zone is given, filter the observations. This works for both individuals and nests
@@ -684,3 +681,18 @@ def get_observations(include_individuals=True, include_nests=True, zone_id=None,
     obs = obs[:limit]
 
     return obs
+
+
+def get_individuals(limit=None):
+    obs = list(Individual.objects.select_related('taxon').prefetch_related('pictures').all())
+    obs.sort(key=lambda x: x.observation_time, reverse=True)
+    obs = obs[:limit]
+    return obs
+
+
+def get_nests(limit=None):
+    obs = list(Nest.objects.select_related('taxon').prefetch_related('pictures').all())
+    obs.sort(key=lambda x: x.observation_time, reverse=True)
+    obs = obs[:limit]
+    return obs
+

@@ -1,9 +1,3 @@
-# Titel
-
-## Ondertitel
-
-Tekst
-
 # Hoornaren herkennen
 
 Hoornaars zijn bijna dubbel zo groot als een wesp of honingbij. Als eenvoudig trucje kan je de grootte van een 1 euro muntstuk in gedachten nemen. Hoornaars zijn altijd groter dan het muntstuk. 
@@ -110,13 +104,119 @@ In bomen vind je soms andere structuren die lijken op een Aziatische hoornaar ne
 
 Een grote vergroeiing van een boomstam of -tak is het gevolg van een schimmel of bacteriële infectie. In de volksmond wordt dan wel eens van een **boomkanker** gesproken. Meestal komt de vergroeiing voor in het onderste deel van de boom, dicht tegen de stam. In een boomtop komen ze minder vaak voor. 
 
-Maretak bollen in een boom. © Karel Schoonvaere 
-Eksternest in een Berk. © Michel de Proft   Boomkanker in een Berk. © HBV
+![foto](Maretak bollen in een boom. © Karel Schoonvaere) 
+![foto](Eksternest in een Berk. © Michel de Proft   Boomkanker in een Berk. © HBV)
 
 ---
 
-# Title
+# Hornet identification
 
-## Subtitle
+Hornets are almost twice as big as a wasp or honeybee. A simple trick is to think of a 1 euro coin. Hornets are always bigger than the coin.
 
-Text
+In Belgium two hornet species occur: the **Asian hornet** and the **European hornet**. The Asian hornet is slightly smaller than the European hornet. An Asian hornet queen measures 3.5 cm. This is slightly smaller than a European hornet queen, with a length of 4 cm. Workers and drones, or males, are smaller than queens. Asian hornet workers and drones are on average 2.5-3 cm long, European hornets are slightly larger with 3-3.5 cm. You will of course probably not get the chance to accurately measure a live hornet. To distinguish Asian from European hornets, use the colour pattern.
+
+![hoornaars_vergelijken](../images/HoornaarsVergelijken.jpg)
+
+## Black with yellow legs
+
+Three simple color features allow to distinguish an Asian from a European hornet. Bear in mind colors are sometimes variable. For example, Asian hornets become paler with age and become worn off. Also, the legs of European hornets are sometimes yellow instead of red-brown. 
+
+## Black abdomen
+
+The abdomen of an Asian horn is black with only one dark yellow abdomen segment (T4). The abdomen of the European hornet is yellow for two thirds. The first segment (T1) is red-brown and black. The tip of the abdomen is always yellow. Usually two rows of black dots are visible on a yellow background.
+
+## Yellow legs
+
+The legs of Asian hornet are black with distinctive yellow tips. The legs of the European hornet are completely red-brown. In rare cases the red-brown color may fade, but the legs are never black. The legs of smaller wasp species (common yellowjacket, German yellowjacket) are almost completely yellow.
+
+## Thorax entirely black
+
+The thorax is the part of the body between the head and the abdomen on which the legs and wings are attached. In Asian hornets, the upperside of the thorax is entirely black, whereas European hornets have red-brown markings on a dark background. The red-brown color extends to the top of the head. The black thorax of other wasp species (common yellowjacket, German yellowjacket) almost always has clear yellow stripes or dots.
+
+# Other look-alike insects
+
+![pictures]
+7: left to right, vbno: middle wasp, French field wasp, Common / German wasp, City giant, Bumblebee, Black wood bee, Giant wood wasp
+    
+- **common and German yellowjacket (_Vespula vulgaris/germanica_)**
+Size: small wasp species, up to 2cm long
+Color: black and yellow, with yellow markings on the thorax.
+Behavior: build paper nest from chewed wood fibers, often underground.
+Distinctive feature: small size, yellow drawing on the breast piece, abdomen yellow with extensive black markings.
+
+- **median wasp (_Dolichovespula media_)**, dark form.
+Size: half the size of a hornet.
+Color: the abdomen is alternately striped with fine yellow and wide black stripes. The legs are more yellow than with Asian hornet. Thorax is black with a yellow, hooked lateral line. In addition to this dark a lighter form exists that resembles common and German yellowjacket.
+Nest: often unprotected in a tree, below 10 meters. The nest looks like an inverted drop with the bottom tapering. The hole is at the bottom, never on the side. Casing is sloppy and pale brown to gray.
+Distinctive feature: abdomen alternately yellow and black.
+
+- **European paper wasp (_Polistes dominula_)**.
+Size: slightly larger than a bee, but smaller and especially slimmer than a hornet.
+Color: the abdomen is alternately yellow and black. The long legs are more yellow and are left hanging in flight. Thorax black with a yellow collar and some finer yellow dots.
+Nest: small nests without sheath. Usually in sheltered locations.
+Distinctive feature: slender wasp species.
+
+- **Giant wood wasp (_Urocerus gigas _)**
+Size: A completely harmless wood wasp that does not wear a sting and is the size of an Asian hornet, often remarkably slim.
+Color: abdomen more yellow than black, same for the legs. Antennae yellow, Asian hornet has black antennae. Two large yellow spots (facet eyes) on the front of the head (dark in Asian hornet).
+Behavior: often found on wood.
+Distinctive feature: projecting ovipositor at the back of the body, yellow antennae.
+
+- **Bumblebees (_Bombus _)**
+Size: workers in between wasp and hornet. Queen the same size, but chubbier than hornets.
+Color: variable. Mostly brown or black in combination with white tip and yellow bands.
+Nest: under ground, flower boxes, garden shed, birdhouses, tree cavities.
+Distinctive feature: hairy, wasps are usually bald.
+
+- **Hornet hoverfly (_Volucella zonaria_)**
+Size: between wasp and hornet, one pair of wings (wasps have four wings). 
+Color: little black, a lot of reddish-brown (chest piece). Reminds more of European hornet.
+Behavior: often found on flowers.
+Distinctive feature: very orangy, one pair of wings spread out at rest.
+
+- **violet carpenter bee (_Xylocopa violaceae_)**
+Size: the size of an Asian hornet, but more chubby.
+Color: entirely black and shiny. Dark wings have violet and blue reflections. Other colors are missing unless pollen is stuck on the thorax. 
+Behavior: often on large flowers, rather rare in Flanders.
+Distinctive feature: black and shiny with violet and blue reflections.
+
+# Nest identification
+
+Asian hornets build two types of nests: a small primary nest in spring and a larger secondary nest as from summer. In 70% of the cases, the colony will move from primary to secondary nest. The two nest types differ in location and size. Regardless the type, the color of the nest is always light brown as it is made up of dead wood fiber. Asian hornets prefer to nest in urban areas where a lot of food can be found. Nests are usually found close to habitation (in gardens, parks, city edges) or in the countryside. In areas with intensive agriculture, relatively little food can be found for the hornets.
+
+## Small spring nests in a sheltered place
+
+From April to June, Asian hornets build their spring nest. This nest is always spherical and located in a sheltered place protected from rain and wind: inside a shed, a porch, a garden shed or a wood shed, in an attic or under the roof of a carport. Spring nests are usually attached to a horizontal base such as a ceiling. Their color is light brown and the size varies between a tennis ball and a small football. The entrance of the nest is at the bottom. The early nest stage, in which the nest is no bigger than a tennis ball, is difficult to distinguish from European hornets or other wasps. The primary nests are often in the vicinity of water.
+  
+![foto]Left: spring nest hangs on a ceiling (diameter: 8 cm)
+![foto]Right: spring nest in an attic (diameter: 15 cm)
+
+## Large summer nests in a treetop
+
+In summer the colony can move to a nearby location. In this case, a secondary nest or summer nest is produced. Most summer nests are built in a treetop higher than 10 meters. They only become visible when the leafs fall in autumn. Other places where summer nests can be built are hedges, barns, sheds, under a roof overflow or against a façade. Sometimes the hornets do not move and they turn the spring nest into a summer nest. Summer nests are bulbous to pear-shaped. They are light brown in color and are on average 50 cm (up to 90 cm) wide. The entrance of the nest is on the side.
+  
+![foto]Left: summer nest built in the same place as the spring nest
+![foto]Right: typical summer nest built in a tree and in a different place than the spring nest.
+
+## Other wasp nests
+
+All wasps use dead wood fibers as nest construction material.
+
+![foto]
+8: left to right, vbno: wasp nest (spring), wasp nest (large), nest European hornet, nest Middle wasp, nest French field wasp
+   + photo MW westerlo
+ 
+Collection of information sheets:
+https://inpn.mnhn.fr/fichesEspece/Vespa_velutina_en.html
+
+## Confusion with mistletoe, bird nests, tree cancer
+
+In trees you can sometimes find other structures that resemble an Asian hornet nest. Especially larger nests of magpies, crows or pigeons, which breed in treetops, can cause confusion. A bird's nest is sloppily built and consists of separate twigs. As a result, from a distance, the contours of the nest are not as smooth as a wasp nest. Bird nests are also very dark in color. Wasp nests are light brown and are less noticeable.
+
+**Mistletoe (_Viscum album_)** is a semi-parasite of deciduous trees. Canada poplar is the main host. A mistletoe in a treetop can be confused with the nest of the Asian hornet. Like bird nests, mistletoe is darker and more striking than wasp nests. In Flanders, mistletoe mainly occurs in the south of the provinces Brabant and Limburg (eastern loam region).
+
+A large deformation of a tree trunk or branch as a result of a fungus or bacterial infection is known as a **tree cancer**. This usually occurs in the lower parts of the tree, close to the trunk. Tree cancers are less common in the treetop.
+
+![foto] Mistletoe bulbs in a tree. © Karel Schoonvaere
+![foto] Magpie nest in a Birch. © Michel de Proft 
+![foto] Tree cancer in a Birch. © HBV

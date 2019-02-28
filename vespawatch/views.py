@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.serializers import serialize
+from django.forms.models import model_to_dict
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ugettext as _
@@ -18,7 +19,7 @@ from django.urls import reverse_lazy
 from vespawatch.utils import ajax_login_required
 from .forms import ManagementActionForm, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
 from .models import Individual, Nest, ManagementAction, Taxon, FirefightersZone, IdentificationCard, \
-    get_observations
+    get_observations, get_individuals, get_nests
 
 
 class CustomBaseDetailView(SingleObjectMixin, View):
@@ -112,35 +113,11 @@ def create_individual(request):
             return HttpResponseRedirect(reverse_lazy(f'vespawatch:{redirect_to}'))
     else:
         redirect_to = request.GET.get('redirect_to', 'index')
+        taxon_id = request.GET.get('taxon')
+        identif_card = IdentificationCard.objects.get(pk=request.GET.get('card_id'))
         form = IndividualForm(initial={'redirect_to': redirect_to})
         image_formset = IndividualImageFormset()
-    return render(request, 'vespawatch/individual_create.html', {'form': form, 'type': 'individual', 'image_formset': image_formset})
-
-
-@login_required
-def update_individual(request, pk):
-    indiv = get_object_or_404(Individual, pk=pk)
-    if request.method == 'POST':
-        image_formset = IndividualImageFormset(request.POST, request.FILES, instance=indiv)
-        form = IndividualForm(request.POST, files=request.FILES, instance=indiv)
-        if request.user.is_authenticated:
-            # set to terms_of_service to true if the user is authenticated
-            form_data_copy = form.data.copy()
-            form_data_copy['terms_of_service'] = True
-            form.data = form_data_copy
-        if form.is_valid():
-            form.save()
-            if image_formset.is_valid():
-                instances = image_formset.save()
-                for obj in image_formset.deleted_objects:
-                    if obj.pk:
-                        obj.delete()
-            return HttpResponseRedirect(reverse_lazy('vespawatch:individual-detail', kwargs={'pk': pk}))
-    elif request.method == 'GET':
-        form = IndividualForm(instance=indiv)
-        image_formset = IndividualImageFormset(instance=indiv)
-    return render(request, 'vespawatch/individual_update.html',
-                  {'form': form, 'object': indiv, 'type': 'individual', 'image_formset': image_formset})
+    return render(request, 'vespawatch/individual_create.html', {'form': form, 'type': 'individual', 'image_formset': image_formset, 'identif_card': identif_card})
 
 
 class IndividualDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
@@ -176,6 +153,7 @@ class IndividualDelete(LoginRequiredMixin, CustomDeleteView):
 def create_nest(request):
     if request.method == 'POST':
         redirect_to = request.POST.get('redirect_to')
+        identif_card = None
 
         new_nest_from_anonymous = not request.user.is_authenticated
         form = NestForm(request.POST, request.FILES, new_nest_from_anonymous=new_nest_from_anonymous)
@@ -195,36 +173,11 @@ def create_nest(request):
             return HttpResponseRedirect(reverse_lazy(f'vespawatch:{redirect_to}'))
     else:
         redirect_to = request.GET.get('redirect_to', 'index')
+        taxon_id = request.GET.get('taxon')
+        identif_card = IdentificationCard.objects.get(pk=request.GET.get('card_id'))
         form = NestForm(initial={'redirect_to': redirect_to})
         image_formset = NestImageFormset()
-    return render(request, 'vespawatch/nest_create.html', {'form': form, 'image_formset': image_formset, 'type': 'nest'})
-
-
-@login_required
-def update_nest(request, pk):
-    nest = get_object_or_404(Nest, pk=pk)
-    if request.method == 'POST':
-        image_formset = NestImageFormset(request.POST, request.FILES, instance=nest)
-        form = NestForm(request.POST, files=request.FILES, instance=nest)
-        if request.user.is_authenticated:
-            # set to terms_of_service to true if the user is authenticated
-            form_data_copy = form.data.copy()
-            form_data_copy['terms_of_service'] = True
-            form.data = form_data_copy
-        if form.is_valid():
-            form.save()
-            if image_formset.is_valid():
-                instances = image_formset.save()
-                for obj in image_formset.deleted_objects:
-                    if obj.pk:
-                        obj.delete()
-            return HttpResponseRedirect(reverse_lazy('vespawatch:nest-detail', kwargs={'pk': pk}))
-    elif request.method == 'GET':
-        form = NestForm(instance=nest)
-        image_formset = NestImageFormset(instance=nest)
-
-    return render(request, 'vespawatch/nest_update.html',
-                  {'form': form, 'object': nest, 'type': 'nest', 'image_formset': image_formset})
+    return render(request, 'vespawatch/nest_create.html', {'form': form, 'image_formset': image_formset, 'type': 'nest', 'identif_card': identif_card})
 
 
 class NestDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
@@ -293,12 +246,6 @@ def obs_create(request):
 # API methods
 # ==============
 
-def taxa_json(request):
-    """
-    Return all taxa as JSON data.
-    """
-    return JsonResponse([s.to_json() for s in Taxon.objects.all()], safe=False)
-
 def observations_json(request):
     """
     Return all observations as JSON data.
@@ -318,9 +265,78 @@ def observations_json(request):
                            zone_id=zone_id,
                            limit=limit)
 
-    return JsonResponse({
-        'observations': [x.as_dict() for x in obs]
-    })
+    light = request.GET.get('light', None)
+
+    if light:
+        response = JsonResponse({
+            'observations': [model_to_dict(x) for x in obs]
+        })
+    else:
+        response = JsonResponse({
+            'observations': [x.as_dict() for x in obs]
+        })
+
+    return response
+
+def individuals_json(request):
+    """
+    Return all individuals as JSON data.
+    """
+    limit = request.GET.get('limit', None)
+    limit = int(limit) if limit is not None else None
+
+    obs = get_individuals(limit=limit)
+
+    light = request.GET.get('light', None)
+
+    if light:
+        response = JsonResponse({
+            'individuals': [model_to_dict(x) for x in obs]
+        })
+    else:
+        response = JsonResponse({
+            'individuals': [x.as_dict() for x in obs]
+        })
+
+    return response
+
+
+def single_individual_json(request, pk=None):
+    """
+    Get a single individual and return it as JSON
+    """
+    return JsonResponse(get_object_or_404(Individual, pk=pk).as_dict())
+
+
+def single_nest_json(request, pk=None):
+    """
+    Get a single nest and return it as JSON
+    """
+    return JsonResponse(get_object_or_404(Nest, pk=pk).as_dict())
+
+
+def nests_json(request):
+    """
+    Return all nests as JSON data.
+    """
+    limit = request.GET.get('limit', None)
+    limit = int(limit) if limit is not None else None
+
+    obs = get_nests(limit=limit)
+
+    light = request.GET.get('light', None)
+
+    if light:
+        response = JsonResponse({
+            'nests': [model_to_dict(x) for x in obs]
+        })
+    else:
+        response = JsonResponse({
+            'nests': [x.as_dict() for x in obs]
+        })
+
+    return response
+
 
 def management_actions_outcomes_json(request):
     #TODO: Implements sorting?

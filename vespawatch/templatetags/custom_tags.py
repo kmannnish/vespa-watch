@@ -8,13 +8,16 @@ from markdownx.utils import markdownify
 
 register = template.Library()
 
-@register.simple_tag
-def js_config_object():
+@register.simple_tag(takes_context=True)
+def js_config_object(context):
     conf = {
+        'currentLanguageCode': context.request.LANGUAGE_CODE,
         'debug': settings.JS_DEBUG,
         'baseUrl': settings.VESPAWATCH_BASE_SITE_URL,
         'apis': {
             'observationsUrl': reverse('vespawatch:api_observations'),
+            'individualsUrl': reverse('vespawatch:api_individuals'),
+            'nestsUrl': reverse('vespawatch:api_nests'),
             'actionOutcomesUrl': reverse('vespawatch:api_action_outcomes'),
             'actionSaveUrl': reverse('vespawatch:api_action_save'),
             'actionLoadUrl': reverse('vespawatch:api_action_get'),

@@ -2,82 +2,72 @@
 {% load i18n %}
 
 {% block content %}
-<main id="vw-main-app" class="container">
-    <div class="row justify-content-center">
-        <div class="col-8">
-            <h1 class="mt-2">{% trans "nest" %} #{{ nest.pk }}</h1>
-            <hr class="mt-0 mb-4">
-
-            <dl>
-                <dt>{% trans "Species" %}</dt>
-                <dd>{% if nest.inaturalist_species %}
+<main class="container" id="vw-main-app">
+    {% if user.is_authenticated %}
+        <h1>{% trans 'nest' %} #{{ nest.pk }}</h1>
+        
+        <dl>
+            <dt>{% trans 'Species' %}</dt>
+            <dd>
+            {% if nest.inaturalist_species %}
                 {{ nest.inaturalist_species|default_if_none:'' }}
-                {% else %}
-                {{  nest.taxon.name|default_if_none:'' }}
-                {% endif %}</dd>
+            {% else %}
+                {{ nest.taxon.name|default_if_none:'' }}
+            {% endif %}
+            </dd>
 
-                <dt>{% trans "ID" %}</dt>
-                <dd>{{ nest.pk }}</dd>
+            <dt>{% trans 'ID' %}</dt>
+            <dd>{{ nest.pk }}</dd>
 
-                <dt>{% trans "Address" %}</dt>
-                <dd>{{ nest.address|default_if_none:'' }}</dd>
+            <dt>{% trans 'Address' %}</dt>
+            <dd>{{ nest.address|default_if_none:'' }}</dd>
 
-                <dt>{% trans "Latitude" %}</dt>
-                <dd>{{ nest.latitude }}</dd>
+            <dt>{% trans 'Latitude' %}</dt>
+            <dd>{{ nest.latitude }}</dd>
 
-                <dt>{% trans "Longitude" %}</dt>
-                <dd>{{ nest.longitude }}</dd>
+            <dt>{% trans 'Longitude' %}</dt>
+            <dd>{{ nest.longitude }}</dd>
 
-                <dt>{% trans "iNaturalist ID" %}</dt>
-                <dd>{{ nest.inaturalist_id|default_if_none:'' }}</dd>
+            <dt>{% trans 'iNaturalist ID' %}</dt>
+            <dd>{{ nest.inaturalist_id|default_if_none:'' }}</dd>
 
-                <dt>{% trans "observation date" %}</dt>
-                <dd>{{ nest.observation_time|default_if_none:'' }}</dd>
+            <dt>{% trans 'observation date' %}</dt>
+            <dd>{{ nest.observation_time|default_if_none:'' }}</dd>
 
-                <dt>{% trans "Observer" %}</dt>
-                <dd>{{ nest.get_observer_display|default_if_none:'' }}</dd>
+            <dt>{% trans 'Observer' %}</dt>
+            <dd>{{ nest.get_observer_display|default_if_none:'' }}</dd>
 
-                <dt>{% trans "Email" %}</dt>
-                <dd>{{ nest.observer_email|default_if_none:'' }}</dd>
+            <dt>{% trans 'Email' %}</dt>
+            <dd>{{ nest.observer_email|default_if_none:'' }}</dd>
 
-                <dt>{% trans "Phone" %}</dt>
-                <dd>{{ nest.observer_phone|default_if_none:'' }}</dd>
+            <dt>{% trans 'Phone' %}</dt>
+            <dd>{{ nest.observer_phone|default_if_none:'' }}</dd>
 
-                <dt>{% trans "Is beekeper" %}</dt>
-                <dd>{{ nest.observer_is_beekeeper|default_if_none:'' }}</dd>
+            <dt>{% trans 'Is beekeper' %}</dt>
+            <dd>{{ nest.observer_is_beekeeper|default_if_none:'' }}</dd>
 
-                <dt>{% trans "Nest size" %}</dt>
-                <dd>{{ nest.get_size_display|default_if_none:'' }}</dd>
+            <dt>{% trans 'Nest size' %}</dt>
+            <dd>{{ nest.get_size_display|default_if_none:'' }}</dd>
 
-                <dt>{% trans "Nest height" %}</dt>
-                <dd>{{ nest.get_height_display|default_if_none:'' }}</dd>
+            <dt>{% trans 'Nest height' %}</dt>
+            <dd>{{ nest.get_height_display|default_if_none:'' }}</dd>
 
-                <dt>{% trans "Comments" %}</dt>
-                <dd>{{ nest.comments|default_if_none:'' }}</dd>
-            </dl>
+            <dt>{% trans 'Comments' %}</dt>
+            <dd>{{ nest.comments|default_if_none:'' }}</dd>
 
         {% if nest.managementaction_set %}
-            <dt>{% trans "Management action" %}</dt>
+            <dt>{% trans 'Management action' %}</dt>
             <dd>{{ nest.get_management_action_display }}</dd>
         {% endif %}
+        </dl>
 
         {% if nest.pictures %}
+            <div>
             {% for image in nest.pictures.all %}
-                <img src="{{ image.image.url }}">
+                <img class="img-thumbnail" style="max-width: 200px;" src="{{ image.image.url }}">
             {% endfor %}
+            </div>
         {% endif %}
-
-        <br>
-
-            {% if user.is_authenticated %}
-                {% if nest.originates_in_vespawatch %}
-                    <a href="{% url 'vespawatch:nest-update' nest.pk %}" class="btn btn-success"> {% trans "Edit" %}</a>
-                    <a href="{% url 'vespawatch:nest-delete' nest.pk %}?redirect_to={{ redirect_to }}" class="btn btn-danger"> {% trans "Delete" %}</a>
-                {% else %}
-                    <span>{% trans "This nest was created on iNaturalist. You cannot edit it here" %}</span>
-                {% endif %}
-            {% endif %}
-        </div>
-    </div>
+    {% endif %}
 </main>
 {% endblock %}
