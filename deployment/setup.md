@@ -23,6 +23,8 @@ To provide the deployment to AWS using  elastic beanstalk, the following element
 Next, some policies required to setup the application:
 - `ec2-trust-policy.json`: assume role of the instance profile, so policies can be linked to ec2 instances.
 - `s3-policy.json`: policy to access the vespawatch bucket, which is linked to the ec2 instances running the application
+- `ec2-describetags.json`: Required to extract the identifiers of the running instances and get the first in row to run cron jobs (and not on all instances)
+- `cloudwatch-write-logs.json`: policy to write custom logs to cloudwatch
 - `s3-tags.json`: tags to indicate the bucket with, required for the admin and cost calculation
 
 ## Setup
@@ -42,7 +44,7 @@ eb deploy --message  "informative message..."
 ### Key-pair combination
 
 It is straightforward to create a new key-pair combination using the AWS Console > EC2 > Key Pairs > `Create Key Pair`.
-For development, the key-pair combination is called `LW-INBO-VESPAWATCH`, which can be used as name both in DEV and PRD.
+For development, the key-pair combination is called `LW-INBO-VESPAWATCH`, which can be used as name both in DEV and PRD. For UAT it is called `LW-INBO-VESPAWATCH-UAT`.
 
 Do not forget to put the key-pair combination in the team-folder location.
 
@@ -76,7 +78,9 @@ aws iam create-role --role-name aws-elasticbeanstalk-ec2-role-vespawatch --assum
 
 # add the S3 access rule
 aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-name lw-vespawatch-s3 --policy-document file://s3-policy.json
+# add the ec2 instance tag query option
 aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-name lw-vespawatch-ec2tags --policy-document file://deployment/ec2-describetags.json
+# add the custom logs to cloudwatch permission
 aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-name lw-vespawatch-write-cloudwatch --policy-document file://deployment/cloudwatch-write-logs.json
 
 # add the required elasticbeanstalk policies (taken from aws-elasticbeanstalk-ec2-role)
@@ -209,15 +213,11 @@ Optional -> python manage.py generateimages
 
 ## Setup the data syncronization with iNaturalist
 
-First of all, make sure an initial set of data is available by syncronizing the observations in iNaturalist to the vespawatch application
+A cron job was setup to regularly syncronize the iNaturalist data with the vespawatch application data. Still, If you want to directly start with the existing iNaturalist observations, an initial set of data is available by syncronizing the observations in iNaturalist to the vespawatch application using the synchronisation command:
 
 ```
 eb ssh --command "source /opt/python/run/venv/bin/activate && python manage.py sync_pull"
 ```
-
-Next, we need a cron job to regularly syncronize the iNaturalist data with the vespawatch application data.
-
-TODO!
 
 ## Adapt the security group excluding inbound rule
 
@@ -237,7 +237,7 @@ modify-db-instance --db-instance-identifier aa6isov6zpwhro --backup-retention-pe
 
 ## Bash script for deployment
 
-A small deployment bash script has been prepared to to the entire setup. To execute the setup, make sure your aws profile is set correctly (dev or prd) and execute the script (adapt the capital arguments with more useful names and store these securely)::
+A small deployment bash script has been prepared to execute  most of these steps. To execute the setup, make sure your aws profile is set correctly (dev or prd) and execute the script (adapt the capital arguments with more useful names and store these securely):
 
 ```
 ./setup.sh dev DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD
@@ -276,10 +276,6 @@ Hence, the log files to screen:
 Notice that the logs (also `django.log`) are accessible using the AWS eb console as well by requestin the logs (all or last 100 lines).
 
 ## Setup and configuration info
-
-### ...
-
-...
 
 ### Geo-django
 
