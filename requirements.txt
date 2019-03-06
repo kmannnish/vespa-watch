@@ -6,7 +6,7 @@ Django==2.1.5
 django-appconf==1.0.2
 django-crispy-forms==1.7.2
 django-debug-toolbar==1.11
--e git://github.com/niconoe/django-imagekit.git@b09496b05d84577d43751a10f838d0c527b6db32#egg=django-imagekit
+-e git+https://github.com/niconoe/django-imagekit.git@b09496b05d84577d43751a10f838d0c527b6db32#egg=django-imagekit
 django-markdownx==2.0.28
 django-modeltranslation==0.13b1
 django-settings-export==1.2.1
