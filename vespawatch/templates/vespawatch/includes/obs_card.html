@@ -1,12 +1,12 @@
-{% load humanize %}
 {% load static %}
 {% load i18n %}
+{% load humanize %}
 
 <div class="card">
     {% if obs.pictures.all|length != 0 %}
         <img class="card-img-top" src="{{ obs.pictures.all.0.thumbnail.url }}">
     {% else %}
-        <img class="card-img-top" src="{% static 'vespawatch/img/no_image.png' %}">
+        <img class="card-img-top" src="{% static 'vespawatch/img/no_image_rectangular.png' %}">
     {% endif %}
     <div class="card-body">
         <h5 class="card-title">{{ obs.taxon.vernacular_name }}</h5>
