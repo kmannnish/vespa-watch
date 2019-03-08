@@ -1,5 +1,4 @@
 {% extends 'vespawatch/base.html' %}
-
 {% load i18n %}
 
 {% block content %}
@@ -14,10 +13,6 @@
         <div class="col-lg-3 col-sm-6">
             {% include 'vespawatch/includes/obs_card.html' %}
         </div>
-        {% if forloop.counter|divisibleby:4 %}
-    </div>
-    <div class="row theme-card-deck">
-        {% endif %}
     {% endfor %}
     </div>
 
