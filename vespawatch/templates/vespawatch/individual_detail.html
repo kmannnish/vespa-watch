@@ -4,10 +4,10 @@
 {% block content %}
 <main class="container" id="vw-main-app">
     {% if user.is_authenticated %}
-        <h1>{% trans "Individual" %} #{{ individual.pk }}</h1>
+        <h1>{% trans 'Individual' %} #{{ individual.pk }}</h1>
 
         <dl>
-            <dt>{% trans "Species" %}</dt>
+            <dt>{% trans 'Species' %}</dt>
             <dd>
             {% if individual.inaturalist_species %}
                 {{ individual.inaturalist_species }}
@@ -16,37 +16,37 @@
             {% endif %}
             </dd>
 
-            <dt>{% trans "ID" %}</dt>
+            <dt>{% trans 'ID %}</dt>
             <dd>{{ individual.pk }}</dd>
 
-            <dt>{% trans "Address" %}</dt>
+            <dt>{% trans 'Address' %}</dt>
             <dd>{{ individual.address|default_if_none:'' }}</dd>
 
-            <dt>{% trans "Latitude" %}</dt>
+            <dt>{% trans 'Latitude' %}</dt>
             <dd>{{ individual.latitude }}</dd>
 
-            <dt>{% trans "Longitude" %}</dt>
+            <dt>{% trans 'Longitude' %}</dt>
             <dd>{{ individual.longitude }}</dd>
 
-            <dt>{% trans "iNaturalist ID" %}</dt>
+            <dt>{% trans 'iNaturalist ID' %}</dt>
             <dd>{{ individual.inaturalist_id|default_if_none:'' }}</dd>
 
-            <dt>{% trans "observation date" %}</dt>
+            <dt>{% trans 'observation date' %}</dt>
             <dd>{{ individual.observation_time|default_if_none:'' }}</dd>
 
-            <dt>{% trans "Observer" %}</dt>
+            <dt>{% trans 'Observer' %}</dt>
             <dd>{{ individual.get_observer_display|default_if_none:'' }}</dd>
 
-            <dt>{% trans "Email" %}</dt>
+            <dt>{% trans 'Email' %}</dt>
             <dd>{{ individual.observer_email|default_if_none:'' }}</dd>
 
-            <dt>{% trans "Phone" %}</dt>
+            <dt>{% trans 'Phone' %}</dt>
             <dd>{{ individual.observer_phone|default_if_none:'' }}</dd>
 
-            <dt>{% trans "Is beekeper" %}</dt>
+            <dt>{% trans 'Is beekeper' %}</dt>
             <dd>{{ individual.observer_is_beekeeper|default_if_none:'' }}</dd>
 
-            <dt>{% trans "Comments" %}</dt>
+            <dt>{% trans 'Comments' %}</dt>
             <dd>{{ individual.comments|default_if_none:'' }}</dd>
         </dl>
 

@@ -5,11 +5,11 @@
 
 {% block content %}
 <main id="vw-main-app" class="container">
-    <h1>{% trans "Record an individual" %}</h1>
+    <h1>{% trans 'Record an individual' %}</h1>
 
     {% if form.errors %}
         <div class="alert alert-danger">
-            {% trans "Please correct the errors below" %}
+            {% trans 'Please correct the errors below' %}
         </div>
         {{ form.errors }}
     {% endif %}
@@ -19,8 +19,8 @@
 
     <form method="post" action="{% url 'vespawatch:individual-add' %}"enctype='multipart/form-data' novalidate>
         {% include 'vespawatch/includes/individual_form.html' %}
-        <button type="submit" class="btn btn-success">{% trans "Save individual" %}</button>
-        <a class="btn btn-light" href="{% url 'vespawatch:index' %}">{% trans "Cancel" %}</a>
+        <button type="submit" class="btn btn-success">{% trans 'Save individual' %}</button>
+        <a class="btn btn-light" href="{% url 'vespawatch:index' %}">{% trans 'Cancel' %}</a>
     </form>
 </main>
 {% endblock %}
