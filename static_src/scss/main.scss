@@ -120,6 +120,11 @@ main.container-fluid {
                 // https://getbootstrap.com/docs/4.0/components/card/
                 margin-bottom: $grid-gutter-width; // Add spacing between rows of cards
             }
+
+            .theme-img-square {
+                height: 200px;
+                width: 200px;
+            }
         }
     }
 }

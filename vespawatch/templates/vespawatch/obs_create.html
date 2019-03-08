@@ -1,6 +1,5 @@
 {% extends 'vespawatch/base.html' %}
 {% load i18n %}
-{% load custom_tags %}
 
 {% block content %}
 <main class="container">
@@ -14,31 +13,9 @@
     {% endif %}
 
     <div class="row theme-card-deck">
-    {% for card in identification_cards %}
-        <div class="col-lg-3 col-sm-6">
-            <div class="card">
-                <a href="#">
-                    <img class="card-img-top" src="{{ card.identification_picture.url }}">
-                </a>
-                <div class="card-body">
-                    <h5 class="card-title">{{ card.represented_taxon.vernacular_name }}</h5>
-                    <h6 class="card-subtitle text-muted mb-2"><em>{{ card.represented_taxon.name }}</em></h6>
-                    <div class="card-text">
-                        {{ card.description|markdown }}
-                    </div>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><a href="{{ card.represented_taxon.inat_pictures_link }}">{% trans 'More pictures' %}</a></li>
-                    <li class="list-group-item"><a href="{% url 'vespawatch:identification' %}">{% trans 'More characteristics' %}</a></li>
-                </ul>
-                <div class="card-footer text-center">
-                {% if card.represents_nest %}
-                    <a class="btn btn-primary" href="{% url 'vespawatch:nest-add' %}?taxon={{ card.represented_taxon.inaturalist_push_taxon_id }}&subject=nest&redirect_to=index&card_id={{ card.pk }}">{% trans 'Report this nest' %}</a>
-                {% else %}
-                    <a class="btn btn-primary" href="{% url 'vespawatch:individual-add' %}?taxon={{ card.represented_taxon.inaturalist_push_taxon_id }}&subject=individual&redirect_to=index&card_id={{ card.pk }}">{% trans 'Report this individual' %}</a>
-                {% endif %}
-                </div>
-            </div>
+    {% for id_card in identification_cards %}
+        <div class="col-lg-6">
+            {% include 'vespawatch/includes/identification_card.html' %}
         </div>
     {% endfor %}
     </div>
