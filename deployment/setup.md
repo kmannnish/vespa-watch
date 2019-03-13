@@ -293,7 +293,7 @@ To create the alarm, link it to the defined metric and namespace and provide the
 aws cloudwatch put-metric-alarm --alarm-name vespawatch-internal-server-error --alarm-description "Alarm on Internal server errors of vespawatch website"  --metric-name vespawatch_internal_server_error_count  --namespace vespawatch_logs  --statistic Sum  --period 300  --threshold 0 --comparison-operator GreaterThanThreshold --evaluation-periods 1 --alarm-actions arn:aws:sns:eu-west-1:226308051916:lw-vespawatch-alerts --treat-missing-data notBreaching
 ```
 
-See also: https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/put-metric-alarm.html and https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html
+See also: https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/put-metric-alarm.html and https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html do not use the `--unit Count` option with this kind of setup (although it seems logical), as this will not result in proper switch to ALARM.
 
 
 ## Backups
