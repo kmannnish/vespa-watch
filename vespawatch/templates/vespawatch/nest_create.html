@@ -5,48 +5,72 @@
 {% load custom_tags %}
 
 {% block content %}
-<main id="vw-main-app" class="container">
-    <h1>{% trans 'Report a nest for' %} !!vernacular name</h1>
+<main class="container" id="vw-main-app">
+    <h1>{% trans 'Report' %}</h1>
+    
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            {% trans "Please correct the errors below" %}
+            {{ form.errors }}
+        </div>
+    {% endif %}
 
-    <div class="row">
-        <div class="col-lg-3 mb-4 order-lg-2">
-            <div class="card d-none d-lg-block">
-                <a href="#">
-                    
-                </a>
-                <div class="card-body">
-                    <h5 class="card-title">{{ identif_card.represented_taxon.name }}</h5>
-                    <h6 class="card-subtitle text-muted mb-2"><em>{{ identif_card.represented_taxon.vernacular_name }}</em></h6>
-                    <div class="card-text">
-                        {{ identif_card.description|markdown }}
-                    </div>
-                    <p class="card-text">
-                        <a class="card-link" href="{{ identif_card.represented_taxon.inat_pictures_link }}" target="_blank">More pictures</a>
-                    </p>
-                </div>
-                <div class="card-footer text-center">
-                    <a class="btn btn-primary" href="{% url 'vespawatch:observation-add' %}">« {% trans 'Report something else' %}</a>
+    {% include 'vespawatch/includes/identification_card.html' with taxon_selected=True %}
+
+    <form method="post" action="{% url 'vespawatch:nest-add' %}"enctype='multipart/form-data' novalidate>
+        {% csrf_token %}
+        
+        {{ form.redirect_to.as_hidden }}
+        {% if object %}
+            <vw-location-selector v-bind:init-coordinates="[{{ object.longitude }}, {{ object.latitude }}]"
+                                  init-marker="true"
+                                  address="{{ object.address }}"></vw-location-selector>
+            <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
+                                  init-date-time="{{ object.observation_time_iso }}"></vw-datetime-selector>
+        {% else %}
+            <vw-location-selector
+                {% if form.data %}
+                    v-bind:init-coordinates="[{{ form.data.longitude|default_if_none:4.5 }}, {{ form.data.latitude|default_if_none:50.7 }}]"
+                    init-marker="true"
+                {% else %}
+                    v-bind:init-coordinates="[4.5, 50.7]"
+                    init-marker="false"
+                {% endif %}
+                    address="{{ form.data.address|default_if_none:'' }}"
+            ></vw-location-selector>
+
+            <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
+                                  init-date-time="{{ form.data.observation_time|default_if_none:'' }}"></vw-datetime-selector>
+        {% endif %}
+
+        {{ form.size|as_crispy_field }}
+        {{ form.height|as_crispy_field }}
+        {{ form.comments|as_crispy_field }}
+
+        {{ image_formset.management_form }}
+        {% for f in image_formset %}
+            {{ f|crispy }}
+        {% endfor %}
+
+        {% if not user.is_authenticated %}
+            {{ form.observer_last_name|as_crispy_field }}
+            {{ form.observer_first_name|as_crispy_field }}
+            {{ form.observer_phone|as_crispy_field }}
+            {{ form.observer_email|as_crispy_field }}
+            <div class="form-group">
+                <div id="div_id_terms_of_service" class="form-check">
+                    <label for="id_terms_of_service" class="form-check-label">
+                        <input type="checkbox" name="terms_of_service" id="id_terms_of_service" class="checkboxinput form-check-input">
+                        {% trans 'Accept the' %} <button type="button" class="btn btn-link" data-toggle="modal" data-target="#TOSModal">{% trans 'terms of service' %}</button>
+                    </label>
                 </div>
             </div>
-            <div class="d-lg-none">
-                <a class="btn btn-primary" href="{% url 'vespawatch:observation-add' %}">« {% trans 'Report something else' %}</a>
-            </div>
-        </div>
 
-        <div class="col-lg-9">
-            {% if form.errors %}
-                <div class="alert alert-danger">
-                    {% trans "Please correct the errors below" %}
-                    {{ form.errors }}
-                </div>
-            {% endif %}
+            {% include 'vespawatch/includes/terms_of_service_modal.html' %}
+        {% endif %}
 
-            <form method="post" action="{% url 'vespawatch:nest-add' %}"enctype='multipart/form-data' novalidate>
-                {% include 'vespawatch/includes/nest_form.html' %}
-                <button type="submit" class="btn btn-success">{% trans "Report nest" %}</button>
-                <a class="btn btn-light" href="{% url 'vespawatch:index' %}">{% trans "Cancel" %}</a>
-            </form>
-        </div>
-    </div>
+        <button type="submit" class="btn btn-success">{% trans "Report nest" %}</button>
+        <a class="btn btn-light" href="{% url 'vespawatch:index' %}">{% trans "Cancel" %}</a>
+    </form>
 </main>
 {% endblock %}
