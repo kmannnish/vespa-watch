@@ -46,13 +46,7 @@
 
     <h2>{% trans 'Latest observations' %}</h2>
 
-    <div class="row theme-card-deck">
-        {% for obs in observations %}
-            <div class="col-lg-3 col-sm-6">
-                {% include 'vespawatch/includes/obs_card.html' %}
-            </div>
-        {% endfor %}
-    </div>
+    {% include 'vespawatch/includes/obs_cards.html' %}
 
     <p class="text-right"><a href="{% url 'vespawatch:latest-observations' %}">
         {% trans 'See more observations' %} »</a>
