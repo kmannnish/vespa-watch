@@ -47,6 +47,8 @@
 
         {{ form.comments|as_crispy_field }}
         {{ form.redirect_to.as_hidden }}
+        {{ form.card_id.as_hidden }}
+        {{ form.taxon.as_hidden }}
         {{ image_formset.management_form }}
         {% for f in image_formset %}
             {{ f|crispy }}
