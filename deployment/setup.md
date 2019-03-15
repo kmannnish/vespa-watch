@@ -253,6 +253,49 @@ Variables:
 
 TODO: https://medium.com/@nqbao/how-to-use-aws-ssm-parameter-store-easily-in-python-94fda04fea84
 
+## Alarm setup vespawatch module
+
+### Setup an SNS topic so maintainers can subscribe:
+
+Call the topic `lw-vespawatch-alerts`
+
+```
+aws sns create-topic --name lw-vespawatch-alerts
+```
+
+Using the received arn, subscribe with the chosen maintainer mailing addresses:
+
+```
+aws sns subscribe --topic-arn arn:aws:sns:eu-west-1:xxxxxxxx --protocol email --notification-endpoint stijn.vanhoey@inbo.be
+```
+
+See also: https://docs.aws.amazon.com/cli/latest/userguide/cli-services-sns.html
+
+### Setup alarms and publish them to the SNS
+
+This requires the extraction of information from the logs using a specific filter and the publishing of alarms. Multiple metrics can be relevant or setup in time. An example on internal server errors is provided.
+
+#### Create metric filter(s)
+
+A filter counting the number of occurrences of `Internal server error`:
+
+```
+aws logs put-metric-filter --log-group-name /aws/elasticbeanstalk/vespawatch-uat/opt/python/log/django.log --filter-name  vespawatch_internal_server_error --filter-pattern "Internal Server Error" --metric-transformations metricName=vespawatch_internal_server_error_count,metricNamespace=vespawatch_logs,metricValue=1,defaultValue=0
+```
+
+Note: `metricValue=1` is the count increase when an occurrence is detected
+
+#### Create alarm on filter and publish to SNS
+
+To create the alarm, link it to the defined metric and namespace and provide the SNS topic as `alarm-action`:
+
+```
+aws cloudwatch put-metric-alarm --alarm-name vespawatch-internal-server-error --alarm-description "Alarm on Internal server errors of vespawatch website"  --metric-name vespawatch_internal_server_error_count  --namespace vespawatch_logs  --statistic Sum  --period 300  --threshold 0 --comparison-operator GreaterThanThreshold --evaluation-periods 1 --alarm-actions arn:aws:sns:eu-west-1:226308051916:lw-vespawatch-alerts --treat-missing-data notBreaching
+```
+
+See also: https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/put-metric-alarm.html and https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html do not use the `--unit Count` option with this kind of setup (although it seems logical), as this will not result in proper switch to ALARM.
+
+
 ## Backups
 
 - All **code** is under version control and each deployment is stored in a S3 bucket managed by elastic beanstalk
