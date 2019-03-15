@@ -273,15 +273,23 @@ See also: https://docs.aws.amazon.com/cli/latest/userguide/cli-services-sns.html
 
 ### Setup alarms and publish them to the SNS
 
-This requires the extraction of information from the logs using a specific filter and the publishing of alarms. Multiple metrics can be relevant or setup in time. An example on internal server errors is provided.
+This requires the extraction of information from the logs using a specific filter and the publishing of alarms. Multiple metrics can be relevant or setup in time. The django logging settings provide django logs using the following format: `{levelname} {asctime} {module} {process:d} {thread:d} {message}` with the `{levelname}` either `WARNING`, `ERROR` or `CRITICAL` (at least on UAT/PRD, see [documentation](https://docs.djangoproject.com/en/2.1/topics/logging/) for other options on dev-level).
+
+For example, the warning that no favicon is found is resulting in the following message: `WARNING 2019-03-15 11:57:32,277 log 21720 140268024583936 Not Found: /favicon.ico`
+
+To setup (mail) alerts when `ERROR` or `CRITICAL` messages are reported, we can setup an approproate filter and create an alarm when any of these occur:
 
 #### Create metric filter(s)
 
-A filter counting the number of occurrences of `Internal server error`:
+We create two filters, one for counting the number of occurrences of `CRITICAL` and one for `ERROR` on the UAT log group:
 
 ```
-aws logs put-metric-filter --log-group-name /aws/elasticbeanstalk/vespawatch-uat/opt/python/log/django.log --filter-name  vespawatch_internal_server_error --filter-pattern "Internal Server Error" --metric-transformations metricName=vespawatch_internal_server_error_count,metricNamespace=vespawatch_logs,metricValue=1,defaultValue=0
+aws logs put-metric-filter --log-group-name /aws/elasticbeanstalk/vespawatch-uat/opt/python/log/django.log --filter-name  vespawatch_critical --filter-pattern "CRITICAL" --metric-transformations metricName=vespawatch_critical_count,metricNamespace=vespawatch_logs,metricValue=1,defaultValue=0
+
+aws logs put-metric-filter --log-group-name /aws/elasticbeanstalk/vespawatch-uat/opt/python/log/django.log --filter-name  vespawatch_error --filter-pattern "ERROR" --metric-transformations metricName=vespawatch_error_count,metricNamespace=vespawatch_logs,metricValue=1,defaultValue=0
 ```
+
+For production, adjust the `log-group-name` to the vespawatch environment name.
 
 Note: `metricValue=1` is the count increase when an occurrence is detected
 
@@ -290,7 +298,9 @@ Note: `metricValue=1` is the count increase when an occurrence is detected
 To create the alarm, link it to the defined metric and namespace and provide the SNS topic as `alarm-action`:
 
 ```
-aws cloudwatch put-metric-alarm --alarm-name vespawatch-internal-server-error --alarm-description "Alarm on Internal server errors of vespawatch website"  --metric-name vespawatch_internal_server_error_count  --namespace vespawatch_logs  --statistic Sum  --period 300  --threshold 0 --comparison-operator GreaterThanThreshold --evaluation-periods 1 --alarm-actions arn:aws:sns:eu-west-1:226308051916:lw-vespawatch-alerts --treat-missing-data notBreaching
+aws cloudwatch put-metric-alarm --alarm-name vespawatch_critical --alarm-description "Alarm on CRITICAL messages from vespawatch website"  --metric-name vespawatch_critical_count  --namespace vespawatch_logs  --statistic Sum  --period 300  --threshold 0 --comparison-operator GreaterThanThreshold --evaluation-periods 1 --alarm-actions arn:aws:sns:eu-west-1:226308051916:lw-vespawatch-alerts --treat-missing-data notBreaching
+
+aws cloudwatch put-metric-alarm --alarm-name vespawatch_error --alarm-description "Alarm on ERROR messages from vespawatch website"  --metric-name vespawatch_error_count  --namespace vespawatch_logs  --statistic Sum  --period 300  --threshold 0 --comparison-operator GreaterThanThreshold --evaluation-periods 1 --alarm-actions arn:aws:sns:eu-west-1:226308051916:lw-vespawatch-alerts --treat-missing-data notBreaching
 ```
 
 See also: https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/put-metric-alarm.html and https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html do not use the `--unit Count` option with this kind of setup (although it seems logical), as this will not result in proper switch to ALARM.
