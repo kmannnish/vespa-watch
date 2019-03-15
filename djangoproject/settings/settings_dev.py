@@ -44,11 +44,19 @@ LOG_FILE_PATH = '/opt/python/log/django.log'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        }
+    },
     'handlers': {
         'file': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'verbose',
             'filename': LOG_FILE_PATH,
+            'backupCount': 3
         },
     },
     'loggers': {
@@ -57,7 +65,7 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
-    },
+    }
 }
 
 
