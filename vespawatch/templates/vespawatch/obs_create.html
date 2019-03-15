@@ -4,8 +4,9 @@
 {% block content %}
 <main class="container">
     <h1>{% trans 'What did you see?' %}</h1>
-    <p class="alert alert-warning">
-        {% trans 'Note: you will have to upload a photo in the next step, so your observation can be verified.' %}
+
+    <p>
+    {% trans 'For more information on these species, see the' %} <a href="{% url 'vespawatch:identification' %}">{% trans 'identification page' %}</a>.
     </p>
 
     {% if identification_cards|length == 0 %}
@@ -15,7 +16,7 @@
     <div class="row theme-card-deck">
     {% for identif_card in identification_cards %}
         <div class="col-lg-6">
-            {% include 'vespawatch/includes/identification_card.html' %}
+            {% include 'vespawatch/includes/identification_card.html' with taxon_selected=False %}
         </div>
     {% endfor %}
     </div>

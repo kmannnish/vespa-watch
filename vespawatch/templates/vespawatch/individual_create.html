@@ -2,23 +2,72 @@
 {% load crispy_forms_tags %}
 {% load static %}
 {% load i18n %}
+{% load custom_tags %}
 
 {% block content %}
-<main id="vw-main-app" class="container">
-    <h1>{% trans 'Record an individual' %}</h1>
+<main class="container" id="vw-main-app">
+    <h1>{% trans 'Report an individual' %}</h1>
 
     {% if form.errors %}
         <div class="alert alert-danger">
             {% trans 'Please correct the errors below' %}
+            {{ form.errors }}
         </div>
-        {{ form.errors }}
     {% endif %}
 
-    <h2>Identification card</h2>
-    Represented taxon: {{ identif_card.represented_taxon }}
+    {% include 'vespawatch/includes/identification_card.html' with taxon_selected=True %}
 
     <form method="post" action="{% url 'vespawatch:individual-add' %}"enctype='multipart/form-data' novalidate>
-        {% include 'vespawatch/includes/individual_form.html' %}
+        {% csrf_token %}
+
+        {{ form.individual_count|as_crispy_field }}
+        {{ form.behaviour|as_crispy_field }}
+
+        {% if object %}
+            <vw-location-selector v-bind:init-coordinates="[{{ object.longitude }}, {{ object.latitude }}]"
+                                  init-marker="true"
+                                  address="{{ object.address }}"></vw-location-selector>
+            <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
+                                  init-date-time="{{ object.observation_time_iso }}"></vw-datetime-selector>
+        {% else %}
+            <vw-location-selector
+                {% if form.data %}
+                    v-bind:init-coordinates="[{{ form.data.longitude|default_if_none:4.5 }}, {{ form.data.latitude|default_if_none:50.7 }}]"
+                    init-marker="true"
+                {% else %}
+                    v-bind:init-coordinates="[4.5, 50.7]"
+                    init-marker="false"
+                {% endif %}
+                    address="{{ form.data.address|default_if_none:'' }}"
+            ></vw-location-selector>
+
+            <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
+                                  init-date-time="{{ form.data.observation_time|default_if_none:'' }}"></vw-datetime-selector>
+        {% endif %}
+
+        {{ form.comments|as_crispy_field }}
+        {{ form.redirect_to.as_hidden }}
+        {{ image_formset.management_form }}
+        {% for f in image_formset %}
+            {{ f|crispy }}
+        {% endfor %}
+        {% if not user.is_authenticated %}
+            {{ form.observer_last_name|as_crispy_field }}
+            {{ form.observer_first_name|as_crispy_field }}
+            {{ form.observer_phone|as_crispy_field }}
+            {{ form.observer_email|as_crispy_field }}
+            {{ form.observer_is_beekeeper|as_crispy_field }}
+            <div class="form-group">
+                <div id="div_id_terms_of_service" class="form-check">
+                    <label for="id_terms_of_service" class="form-check-label">
+                        <input type="checkbox" name="terms_of_service" id="id_terms_of_service" class="checkboxinput form-check-input">
+                        {% trans 'Accept the' %} <button type="button" class="btn btn-link" data-toggle="modal" data-target="#TOSModal">{% trans 'terms of service' %}</button>
+                    </label>
+                </div>
+            </div>
+            {% include 'vespawatch/includes/terms_of_service_modal.html' %}
+        {% endif %}
+
         <button type="submit" class="btn btn-success">{% trans 'Save individual' %}</button>
         <a class="btn btn-light" href="{% url 'vespawatch:index' %}">{% trans 'Cancel' %}</a>
     </form>

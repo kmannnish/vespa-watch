@@ -6,11 +6,11 @@
 
 {% block content %}
 <main class="container" id="vw-main-app">
-    <h1>{% trans 'Report' %}</h1>
+    <h1>{% trans 'Report a nest' %}</h1>
     
     {% if form.errors %}
         <div class="alert alert-danger">
-            {% trans "Please correct the errors below" %}
+            {% trans 'Please correct the errors below' %}
             {{ form.errors }}
         </div>
     {% endif %}
