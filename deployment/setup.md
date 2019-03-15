@@ -189,7 +189,31 @@ When the environment works, the deployment of the application is done by:
 eb deploy --message "your informatice message"
 ```
 
-## Setup the firefighters polygons and accounts
+## Bash script for deployment
+
+A small deployment bash script has been prepared to execute the steps above. To execute the setup, make sure your aws profile is set correctly (dev or prd) and execute the script (adapt the capital arguments with more useful names and store these securely):
+
+```
+./setup.sh dev DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD
+```
+
+Variables:
+* `$ENVIRONMENT` e.g. 'dev'
+* `$DB_USER` RDS database user
+* `$DB_PWD`   RDS database pwd
+* `$DJANGO_SECRET_KEY`   django app secret key
+* `$VESPA_SU_NAME`  user name vespawatch applicatie superuser
+* `$VESPA_SU_PWD` paswoord vespawatch applicatie superuser
+
+TODO: https://medium.com/@nqbao/how-to-use-aws-ssm-parameter-store-easily-in-python-94fda04fea84
+
+Some more steps are required when doing the setup, see next sections.
+
+## Post first-deployment steps
+
+These steps need to be done just a single time after the initial deployment.
+
+### Setup the firefighters polygons and accounts
 
 With the proper authentification rights enabled, we can appply some additional steps during the first requirement. These commands are not included as container commands, as they only need to be configured during the first deployment, whereas the steps in the `01_python_config` file will run each new deployment
 
@@ -211,15 +235,7 @@ python manage.py create_firefighters_accounts
 
 Optional -> python manage.py generateimages
 
-## Setup the data syncronization with iNaturalist
-
-A cron job was setup to regularly syncronize the iNaturalist data with the vespawatch application data. Still, If you want to directly start with the existing iNaturalist observations, an initial set of data is available by syncronizing the observations in iNaturalist to the vespawatch application using the synchronisation command:
-
-```
-eb ssh --command "source /opt/python/run/venv/bin/activate && python manage.py sync_pull"
-```
-
-## Adapt the security group excluding inbound rule
+### Adapt the security group excluding inbound rule
 
 Check the group-id of the security group, e.g. `g-0ed982b15ae8893ef` and revoke the ssh inbound rule on this security group:
 
@@ -227,7 +243,7 @@ Check the group-id of the security group, e.g. `g-0ed982b15ae8893ef` and revoke 
 aws ec2 revoke-security-group-ingress --group-id sg-0ed982b15ae8893ef --protocol tcp --port 22 --cidr 0.0.0.0/0
 ```
 
-## Extend the database backup period
+### Extend the database backup period
 
 So, if the identifier of the created database is `aa6isov6zpwhro`, the extension to 7 days is achieved by:
 
@@ -235,25 +251,9 @@ So, if the identifier of the created database is `aa6isov6zpwhro`, the extension
 modify-db-instance --db-instance-identifier aa6isov6zpwhro --backup-retention-period 7
 ```
 
-## Bash script for deployment
-
-A small deployment bash script has been prepared to execute  most of these steps. To execute the setup, make sure your aws profile is set correctly (dev or prd) and execute the script (adapt the capital arguments with more useful names and store these securely):
-
-```
-./setup.sh dev DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD
-```
-
-Variables:
-* `$ENVIRONMENT` e.g. 'dev'
-* `$DB_USER` RDS database user
-* `$DB_PWD`   RDS database pwd
-* `$DJANGO_SECRET_KEY`   django app secret key
-* `$VESPA_SU_NAME`  user name vespawatch applicatie superuser
-* `$VESPA_SU_PWD` paswoord vespawatch applicatie superuser
-
-TODO: https://medium.com/@nqbao/how-to-use-aws-ssm-parameter-store-easily-in-python-94fda04fea84
-
 ## Alarm setup vespawatch module
+
+To inform the django developers about errors on the application side, setting up an SNS topic to subscribe and the cloudwatch alerts is explained in this section.
 
 ### Setup an SNS topic so maintainers can subscribe
 
@@ -281,7 +281,7 @@ To setup (mail) alerts when `ERROR` or `CRITICAL` messages are reported, we can 
 
 #### Create metric filter(s)
 
-We create two filters, one for counting the number of occurrences of `CRITICAL` and one for `ERROR` on the UAT log group:
+We create two filters, one for counting the number of occurrences of `CRITICAL` and one for `ERROR` on the UAT log group (!adapt for PRD!):
 
 ```
 aws logs put-metric-filter --log-group-name /aws/elasticbeanstalk/vespawatch-uat/opt/python/log/django.log --filter-name  vespawatch_critical --filter-pattern "CRITICAL" --metric-transformations metricName=vespawatch_critical_count,metricNamespace=vespawatch_logs,metricValue=1,defaultValue=0
@@ -295,7 +295,7 @@ Note: `metricValue=1` is the count increase when an occurrence is detected
 
 #### Adjust retention time of the logs
 
-By default, logs are stored forever. This is not required as 3 months of logs will suffice to check the behaviour. Adjusting the log retention time for the django group. For example for the uat `django.log` log group:
+By default, logs are stored forever. This is not required as 3 months of logs will suffice to check the behaviour. Adjusting the log retention time for the django group. For example for the uat `django.log` log group in UAT (!adapt for PRD!):
 
 ```
 aws logs put-retention-policy --log-group-name /aws/elasticbeanstalk/vespawatch-uat/opt/python/log/django.log --retention-in-days 90
