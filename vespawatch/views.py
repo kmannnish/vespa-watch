@@ -266,6 +266,7 @@ def observations_json(request):
     """
     Return all observations as JSON data.
     """
+    # TODO: can we deprecate this function? + If so, can we remove the prefetch_related('pictures') from the get_observations function?
     zone = request.GET.get('zone', '')
     zone_id = int(zone) if zone else None
 
