@@ -6,7 +6,7 @@
 
 {% block content %}
 <main class="container" id="vw-main-app">
-    <h1>{% trans 'Report an individual' %}</h1>
+    <h1>{% trans 'Report observation' %}</h1>
 
     {% if form.errors %}
         <div class="alert alert-danger">
@@ -111,7 +111,7 @@
             </div>
         {% endif %}
 
-        <button type="submit" class="btn btn-success">{% trans 'Report individual' %}</button>
+        <button type="submit" class="btn btn-success">{% trans 'Report observation' %}</button>
         <a class="btn btn-light" href="{% url 'vespawatch:index' %}">{% trans 'Cancel' %}</a>
     </form>
 </main>
