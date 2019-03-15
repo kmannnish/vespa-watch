@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load custom_tags %}
 
-<div class="card w-100 flex-row overflow-hidden{% if identif_card.represents_nest %} border-primary{% endif %}">
+<div class="card w-100 flex-row overflow-hidden{% if identif_card.represents_nest %} bg-primary{% endif %}">
     {% if identif_card.identification_picture %}
         <img class="fluid-img align-self-center theme-img-square" src="{{ identif_card.identification_picture.url }}">
     {% else %}
@@ -20,9 +20,9 @@
             {{ identif_card.description|markdown }}
         </div>
         {% if taxon_selected %}
-            <a class="btn btn-primary" href="{% url 'vespawatch:observation-add' %}">« {% trans 'Report something else' %}</a>
+            <a class="btn btn-light" href="{% url 'vespawatch:observation-add' %}">« {% trans 'Report something else' %}</a>
         {% elif identif_card.represents_nest %}
-            <a class="btn btn-primary stretched-link" href="{% url 'vespawatch:nest-add' %}?card_id={{ identif_card.pk }}&redirect_to=index">{% trans 'Report nest' %}</a>
+            <a class="btn btn-light stretched-link" href="{% url 'vespawatch:nest-add' %}?card_id={{ identif_card.pk }}&redirect_to=index">{% trans 'Report nest' %}</a>
         {% else %}
             <a class="btn btn-primary stretched-link" href="{% url 'vespawatch:individual-add' %}?card_id={{ identif_card.pk }}&redirect_to=index">{% trans 'Report observation' %}</a>
         {% endif %}
