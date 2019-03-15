@@ -2,9 +2,7 @@
 {% load page_fragments %}
 
 {% block content %}
-<main class="container">
-    <section id="vw-main-app">
-        {% get_page_fragment fragment_id %}
-    </section>
+<main class="container" id="vw-main-app">
+    {% get_page_fragment fragment_id %}
 </main>
 {% endblock %}

@@ -48,7 +48,7 @@ def index(request):
     return render(request, 'vespawatch/index.html', {'observations': get_observations(limit=4)})
 
 def identification(request):
-    return render(request, 'vespawatch/identification.html')
+    return render(request, 'vespawatch/simple_page_fragment', {'fragment_id': 'identification_page'})
 
 def about(request):
     return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_page'})
