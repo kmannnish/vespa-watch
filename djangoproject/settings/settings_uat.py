@@ -56,7 +56,7 @@ LOGGING = {
         'file': {
             'level': 'WARNING',
             'class': 'logging.handlers.RotatingFileHandler',
-            'formatter': 'verbose'
+            'formatter': 'verbose',
             'filename': LOG_FILE_PATH,
             'backupCount': 3
         },
