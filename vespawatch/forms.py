@@ -1,10 +1,11 @@
-from django.forms import inlineformset_factory, ModelForm, BooleanField, ChoiceField, forms
+from django.forms import inlineformset_factory, ModelForm, BooleanField, ChoiceField, IntegerField, forms
 from vespawatch.fields import ISODateTimeField
 from .models import ManagementAction, Nest, Individual, NestPicture, IndividualPicture
 
 
 class IndividualForm(ModelForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
+    card_id = IntegerField()
     terms_of_service = BooleanField(label='Accept the terms of service', required=False)   # TODO how to translate that label?
 
     class Meta:
@@ -39,6 +40,7 @@ class NestForm(ModelForm):
         super().__init__(*args, **kwargs)
 
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
+    card_id = IntegerField()
     terms_of_service = BooleanField(label='Accept the terms of service', required=False)   # TODO how to translate that label?
 
     class Meta:

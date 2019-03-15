@@ -21,6 +21,8 @@
         {% csrf_token %}
         
         {{ form.redirect_to.as_hidden }}
+        {{ form.card_id.as_hidden }}
+        {{ form.taxon.as_hidden }}
         {% if object %}
             <vw-location-selector v-bind:init-coordinates="[{{ object.longitude }}, {{ object.latitude }}]"
                                   init-marker="true"
