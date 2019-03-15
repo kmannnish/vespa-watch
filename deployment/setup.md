@@ -304,7 +304,13 @@ See also: https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/put-metric
 
 ## Troubleshooting
 
-When troubleshooting, there are a few directories you should be aware of:
+Different logs are sent to AWS cloudwatch and an email-alert is provided when django logs contain ERROR or CRITICAL. Further troubleshooting will sometimes be required. To login to a current running instance, you can use the `eb ssh` (with the environemnt specified) command, assuming your `.pem`-file is properly stored. For example, to login to UAT:
+
+```
+eb ssh vespawatch-uat
+```
+
+When troubleshooting on the server itself, there are a few directories you should be aware of:
 
 * `/opt/python`: Root of where you application will end up.
 * `/opt/python/current/app`: The current application that is hosted in the environment.
@@ -316,7 +322,7 @@ Hence, the log files to screen:
 * The `/opt/python/log/django.log` file contains the django warning and error information and will be your first entry point for app related information
 * `var/log` contains the general logging files, e.g. the access and erro logs in the `httpd` folder.
 
-Notice that the logs (also `django.log`) are accessible using the AWS eb console as well by requestin the logs (all or last 100 lines).
+Notice that the logs (also `django.log`) are accessible using the AWS eb console as well by requesting the logs (all or last 100 lines).
 
 ## Setup and configuration info
 
