@@ -668,13 +668,15 @@ def get_observations(include_individuals=True, include_nests=True, zone_id=None,
     obs = []
 
     if include_individuals:
-        obs = obs + list(Individual.objects.select_related('taxon').prefetch_related('pictures').all())
+        if zone_id is None:
+            obs = obs + list(Individual.objects.select_related('taxon').prefetch_related('pictures').all()[:40])
+        else:
+            obs = obs + list(Individual.objects.select_related('taxon').prefetch_related('pictures').filter(zone_id__exact=zone_id)[:40])
     if include_nests:
-        obs = obs + list(Nest.objects.select_related('taxon').prefetch_related('pictures').all())
-
-    if zone_id is not None:
-        # if a zone is given, filter the observations. This works for both individuals and nests
-        obs = [x for x in obs if x.zone_id == zone_id]
+        if zone_id is None:
+            obs = obs + list(Nest.objects.select_related('taxon').prefetch_related('pictures').all()[:40])
+        else:
+            obs = obs + list(Nest.objects.select_related('taxon').prefetch_related('pictures').filter(zone_id__exact=zone_id)[:40])
 
     obs.sort(key=lambda x: x.observation_time, reverse=True)
 

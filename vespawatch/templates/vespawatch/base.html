@@ -44,8 +44,16 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'vespawatch:identification' %}">{% trans 'Identification' %}</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'vespawatch:about' %}">{% trans 'About' %}</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="about-dropdown" role="button" data-toggle="dropdown">{% trans 'About' %}</a>
+                            <div class="dropdown-menu" aria-labelledby="about-dropdown">
+                                <a class="dropdown-item" href="{% url 'vespawatch:about_project' %}">{% trans 'Project' %}</a>
+                                <a class="dropdown-item" href="{% url 'vespawatch:about_activities' %}">{% trans 'Activities' %}</a>
+                                <a class="dropdown-item" href="{% url 'vespawatch:about_vespavelutina' %}">{% trans 'Vespa velutina' %}</a>
+                                <a class="dropdown-item" href="{% url 'vespawatch:about_management' %}">{% trans 'Management' %}</a>
+                                <a class="dropdown-item" href="{% url 'vespawatch:about_privacypolicy' %}">{% trans 'Privacy policy' %}</a>
+                                <a class="dropdown-item" href="{% url 'vespawatch:about_links' %}">{% trans 'Links' %}</a>
+                            </div>
                         </li>
                     </ul>
                     <ul class="navbar-nav mr-3">
