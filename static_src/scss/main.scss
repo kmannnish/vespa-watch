@@ -105,7 +105,10 @@ main.container-fluid {
     h1,
     h2 {
         margin-bottom: 1rem;
-    } 
+    }
+    form h5 {
+        margin-top: 1.5rem;
+    }
 
     .theme-card-deck {
         // Apply to .row: mimics Bootstrap .card-deck, stretching cards to equal height, but without

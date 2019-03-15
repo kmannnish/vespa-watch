@@ -7,7 +7,7 @@
 {% block content %}
 <main class="container" id="vw-main-app">
     <h1>{% trans 'Report a nest' %}</h1>
-    
+
     {% if form.errors %}
         <div class="alert alert-danger">
             {% trans 'Please correct the errors below' %}
@@ -17,36 +17,41 @@
 
     <form method="post" action="{% url 'vespawatch:nest-add' %}"enctype='multipart/form-data' novalidate>
         {% csrf_token %}
-        
+
         {{ form.card_id.as_hidden }}
         {{ form.taxon.as_hidden }}
         {{ form.redirect_to.as_hidden }}
 
         <div class="row">
-            <div class="col-lg-6 mb-md-3">
+            <div class="col-lg-6 mb-3">
                 {% include 'vespawatch/includes/identification_card.html' with taxon_selected=True %}
             </div>
-
-            {{ image_formset.management_form }}
-            <div class="col-lg-6">
-                <p>{% trans 'Upload at least one image of your observation' %}:</p>
-                <div>
-                {% for image_form in image_formset %}
-                    <div class="d-flex align-items-end">
-                        {{ image_form.image|as_crispy_field }}
-                        {{ image_form.DELETE|as_crispy_field }}
-                    </div>
-                {% endfor %}
+            <!--<div class="col-lg-6">
+                <div class="alert alert-warning">
+                    Info regarding reporting nests.
                 </div>
-            </div>
+            </div>-->
         </div>
 
+        <h5>{% trans 'Images' %}</h5>
+
+        {{ image_formset.management_form }}
+        <small class="form-text text-muted">{% trans 'Upload at least one image of your observation' %}</small>
+        <div class="row">
+            {% for image_form in image_formset %}
+                <div class="col-md-6">
+                    {{ image_form.image|as_crispy_field }}
+                    {{ image_form.DELETE|as_crispy_field }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <h5>{% trans 'Location' %}</h5>
         {% if object %}
             <vw-location-selector v-bind:init-coordinates="[{{ object.longitude }}, {{ object.latitude }}]"
-                                  init-marker="true"
-                                  address="{{ object.address }}"></vw-location-selector>
-            <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
-                                  init-date-time="{{ object.observation_time_iso }}"></vw-datetime-selector>
+                init-marker="true"
+                address="{{ object.address }}">
+            </vw-location-selector>
         {% else %}
             <vw-location-selector
                 {% if form.data %}
@@ -56,32 +61,60 @@
                     v-bind:init-coordinates="[4.5, 50.7]"
                     init-marker="false"
                 {% endif %}
-                    address="{{ form.data.address|default_if_none:'' }}"
-            ></vw-location-selector>
-
-            <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
-                                  init-date-time="{{ form.data.observation_time|default_if_none:'' }}"></vw-datetime-selector>
+                    address="{{ form.data.address|default_if_none:'' }}">
+            </vw-location-selector>
         {% endif %}
 
-        {{ form.size|as_crispy_field }}
-        {{ form.height|as_crispy_field }}
+        <h5>{% trans 'Date' %}</h5>
+        {% if object %}
+            <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
+                init-date-time="{{ object.observation_time_iso }}">
+            </vw-datetime-selector>
+        {% else %}
+            <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
+                init-date-time="{{ form.data.observation_time|default_if_none:'' }}">
+            </vw-datetime-selector>
+        {% endif %}
+
+        <h5>{% trans 'Nest description' %}</h5>
+        <div class="row">
+            <div class="col-lg-6">
+                {{ form.size|as_crispy_field }}
+            </div>
+            <div class="col-lg-6">
+                {{ form.height|as_crispy_field }}
+            </div>
+        </div>
         {{ form.comments|as_crispy_field }}
 
         {% if not user.is_authenticated %}
-            {{ form.observer_last_name|as_crispy_field }}
-            {{ form.observer_first_name|as_crispy_field }}
-            {{ form.observer_phone|as_crispy_field }}
-            {{ form.observer_email|as_crispy_field }}
-            <div class="form-group">
-                <div id="div_id_terms_of_service" class="form-check">
-                    <label for="id_terms_of_service" class="form-check-label">
-                        <input type="checkbox" name="terms_of_service" id="id_terms_of_service" class="checkboxinput form-check-input">
-                        {% trans 'Accept the' %} <button type="button" class="btn btn-link" data-toggle="modal" data-target="#TOSModal">{% trans 'terms of service' %}</button>
-                    </label>
+            <h5>{% trans 'Contact information' %}</h5>
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    {{ form.observer_first_name|as_crispy_field }}
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    {{ form.observer_last_name|as_crispy_field }}
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    {{ form.observer_phone|as_crispy_field }}
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    {{ form.observer_email|as_crispy_field }}
                 </div>
             </div>
 
-            {% include 'vespawatch/includes/terms_of_service_modal.html' %}
+            <div class="form-group">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="id_terms_of_service" >
+                    <label class="form-check-label" for="id_terms_of_service">
+                        {% url 'vespawatch:about_privacypolicy' as terms_page %}
+                        {% blocktrans %}
+                            I accept the <a href="{{ terms_page }}" target="_blank">terms of service</a>.
+                        {% endblocktrans %}
+                    </label>
+                </div>
+            </div>
         {% endif %}
 
         <button type="submit" class="btn btn-success">{% trans 'Report nest' %}</button>
