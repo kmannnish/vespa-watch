@@ -7,7 +7,7 @@
         <div class="col-lg-3 col-sm-6">
             <div class="card" id="obs-card-{{ obs.pk }}">
                 <!-- image is loaded via jQuery to improve performance -->
-                <img class="card-img-top" src="{% static 'vespawatch/img/no_image_rectangular.png' %}"
+                <img class="card-img-top" src="{% static 'vespawatch/img/no_image_rectangular.png' %}">
                 <div class="card-body">
                     <h5 class="card-title">{{ obs.taxon.vernacular_name }}</h5>
                     <h6 class="card-subtitle text-muted mb-2"><em>{{ obs.taxon.name }}</em></h6>
