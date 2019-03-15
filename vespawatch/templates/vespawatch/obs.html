@@ -7,7 +7,9 @@
         {% trans 'Latest observations' %}
         <a class="btn btn-primary" href="{% url 'vespawatch:observation-add' %}">{% trans 'Add your observation' %}</a>
     </h1>
+
     {% include 'vespawatch/includes/obs_cards.html' %}
+    
     <p>
         {% blocktrans with project_url=settings.VESPAWATCH_PROJECT_URL %}
             For more observations, see the <a href="{{ project_url }}">Vespa-Watch project on iNaturalist</a>.

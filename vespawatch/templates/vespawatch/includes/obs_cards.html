@@ -3,10 +3,8 @@
 {% load humanize %}
 
 <div class="row theme-card-deck">
-
     {% for obs in observations %}
         <div class="col-lg-3 col-sm-6">
-
             <div class="card" id="obs-card-{{ obs.pk }}">
                 <img class="card-img-top" src="{% static 'vespawatch/img/no_image_rectangular.png' %}">
                 <div class="card-body">
