@@ -278,10 +278,10 @@ class AbstractObservation(models.Model):
     inaturalist_species = models.CharField(max_length=100, blank=True, null=True)
 
     # Observer info
-    observer_last_name = models.CharField(max_length=255, blank=True, null=True)
-    observer_first_name = models.CharField(max_length=255, blank=True, null=True)
-    observer_email = models.EmailField(blank=True, null=True)
-    observer_phone = models.CharField(max_length=20, blank=True, null=True)
+    observer_first_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("First name"))
+    observer_last_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Last name"))
+    observer_email = models.EmailField(blank=True, null=True, verbose_name=_("Email address"))
+    observer_phone = models.CharField(max_length=20, blank=True, null=True, verbose_name=_("Telephone number"))
     observer_is_beekeeper = models.NullBooleanField()
 
     # Managers
@@ -470,7 +470,7 @@ class Nest(AbstractObservation):
         (LESS_THAN_25_CM, _("Less than 25cm")),
         (MORE_THAN_25_CM, _("More than 25cm"))
     )
-    size = models.CharField(max_length=50, choices=SIZE_CHOICES, blank=True)
+    size = models.CharField(max_length=50, choices=SIZE_CHOICES, blank=True, verbose_name=_("Nest size"))
 
     BELOW_4_METER = 'BELOW_4_M'
     ABOVE_4_METER = 'BELOW_4_M'
@@ -478,7 +478,7 @@ class Nest(AbstractObservation):
         (BELOW_4_METER, _("Below 4 meters")),
         (ABOVE_4_METER, _("Above 4 meters"))
     )
-    height = models.CharField(max_length=50, choices=HEIGHT_CHOICES, blank=True)
+    height = models.CharField(max_length=50, choices=HEIGHT_CHOICES, blank=True, verbose_name=_("Nest height"))
 
     def get_absolute_url(self):
         return reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
