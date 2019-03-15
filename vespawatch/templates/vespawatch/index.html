@@ -24,41 +24,39 @@
     {% if messages %}
         <div class="messages">
             {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
             {% endfor %}
         </div>
     {% endif %}
 
-    <section id="vw-main-app">
-        <div class="row">
-            <div class="col-md-4">
-                {% get_page_fragment 'welcome' %}
-            </div>
-
-            <div class="col-md-8">
-                <vw-observations-viz load-data="1"></vw-observations-viz>
-            </div>
+    <div class="row">
+        <div class="col-md-4">
+            {% get_page_fragment 'welcome' %}
         </div>
-    </section>
 
-    <section>
-        <h2>{% trans 'Latest observations' %}</h2>
+        <div class="col-md-8" id="vw-main-app">
+            <vw-observations-viz load-data="1"></vw-observations-viz>
+        </div>
+    </div>
 
-        <div class="row theme-card-deck">
+    <h2>{% trans 'Latest observations' %}</h2>
+
+    <div class="row theme-card-deck">
         {% for obs in observations %}
             <div class="col-lg-3 col-sm-6">
                 {% include 'vespawatch/includes/obs_card.html' %}
             </div>
         {% endfor %}
-        </div>
+    </div>
 
-        <p class="text-right"><a href="{% url 'vespawatch:latest-observations' %}">{% trans 'See more observations' %} »</a></p>
-    </section>
+    <p class="text-right"><a href="{% url 'vespawatch:latest-observations' %}">
+        {% trans 'See more observations' %} »</a>
+    </p>
 </main>
 {% endblock %}
 

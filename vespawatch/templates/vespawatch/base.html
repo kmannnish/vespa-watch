@@ -50,16 +50,16 @@
                     </ul>
                     <ul class="navbar-nav mr-3">
                         {% if user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="user-dropdown" role="button" data-toggle="dropdown">{{ user.first_name }} {{ user.last_name }} ({{ user.username }})</a>
-                            <div class="dropdown-menu" aria-labelledby="user-dropdown">
-                                <a class="dropdown-item" href="{% url 'logout' %}">{% trans 'Log out' %}</a>
-                            </div>
-                        </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="user-dropdown" role="button" data-toggle="dropdown">{{ user.first_name }} {{ user.last_name }} ({{ user.username }})</a>
+                                <div class="dropdown-menu" aria-labelledby="user-dropdown">
+                                    <a class="dropdown-item" href="{% url 'logout' %}">{% trans 'Log out' %}</a>
+                                </div>
+                            </li>
                         {% else %}
-                        <li class="nav-item">
-                            <a class="btn btn-primary btn-sm" href="{% url 'login' %}">{% trans 'Log in' %}</a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary btn-sm" href="{% url 'login' %}">{% trans 'Log in' %}</a>
+                            </li>
                         {% endif %}
                     </ul>
 
@@ -68,11 +68,11 @@
                         {% csrf_token %}
                             <input name="next" type="hidden" value="{{ redirect_to }}">
                             <select class="form-control form-control-sm" name="language" id="lang">
-                            {% get_current_language as LANGUAGE_CODE %}
-                            {% get_language_info_list for settings.LANGUAGES_AVAILABLE_IN_SELECTOR as languages %}
-                            {% for language in languages %}
-                                <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>{{ language.name_local }}</option>
-                            {% endfor %}
+                                {% get_current_language as LANGUAGE_CODE %}
+                                {% get_language_info_list for settings.LANGUAGES_AVAILABLE_IN_SELECTOR as languages %}
+                                {% for language in languages %}
+                                    <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>{{ language.name_local }}</option>
+                                {% endfor %}
                             </select>
                         </form>
                     </ul>
@@ -94,7 +94,7 @@
         <script src="{% static 'vespawatch/libraries/bootstrap/bootstrap.min.js' %}"></script>
         
         {% if settings.JS_DEBUG %}
-        {# see https://vuejs.org/v2/guide/deployment.html#Without-Build-Tools #}
+            {# see https://vuejs.org/v2/guide/deployment.html#Without-Build-Tools #}
             <script src="{% static 'vespawatch/libraries/vue/vue.js' %}"></script>
         {% else %}
             <script src="{% static 'vespawatch/libraries/vue/vue.min.js' %}"></script>
