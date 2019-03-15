@@ -255,7 +255,7 @@ TODO: https://medium.com/@nqbao/how-to-use-aws-ssm-parameter-store-easily-in-pyt
 
 ## Alarm setup vespawatch module
 
-### Setup an SNS topic so maintainers can subscribe:
+### Setup an SNS topic so maintainers can subscribe
 
 Call the topic `lw-vespawatch-alerts`
 
@@ -292,6 +292,14 @@ aws logs put-metric-filter --log-group-name /aws/elasticbeanstalk/vespawatch-uat
 For production, adjust the `log-group-name` to the vespawatch environment name.
 
 Note: `metricValue=1` is the count increase when an occurrence is detected
+
+#### Adjust retention time of the logs
+
+By default, logs are stored forever. This is not required as 3 months of logs will suffice to check the behaviour. Adjusting the log retention time for the django group. For example for the uat `django.log` log group:
+
+```
+aws logs put-retention-policy --log-group-name /aws/elasticbeanstalk/vespawatch-uat/opt/python/log/django.log --retention-in-days 90
+```
 
 #### Create alarm on filter and publish to SNS
 
