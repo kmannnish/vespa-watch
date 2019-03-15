@@ -10,8 +10,7 @@
 
     {% if form.errors %}
         <div class="alert alert-danger">
-            {% trans 'Please correct the errors below' %}
-            {{ form.errors }}
+            {% trans 'Please correct the errors below.' %}
         </div>
     {% endif %}
 
@@ -79,10 +78,10 @@
         <h5>{% trans 'Nest description' %}</h5>
         <div class="row">
             <div class="col-lg-6">
-                {{ form.size|as_crispy_field }}
+                {{ form.height|as_crispy_field }}
             </div>
             <div class="col-lg-6">
-                {{ form.height|as_crispy_field }}
+                {{ form.size|as_crispy_field }}
             </div>
         </div>
         {{ form.comments|as_crispy_field }}
