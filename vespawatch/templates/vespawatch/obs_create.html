@@ -6,7 +6,10 @@
     <h1>{% trans 'What did you see?' %}</h1>
 
     <p>
-    {% trans 'For more information on these species, see the' %} <a href="{% url 'vespawatch:identification' %}">{% trans 'identification page' %}</a>.
+        {% url 'vespawatch:identification' as identification_page %}
+        {% blocktrans %}
+            For more information on these species, see the <a href="{{ identification_page }}">identification page</a>.
+        {% endblocktrans %}
     </p>
 
     {% if identification_cards|length == 0 %}
