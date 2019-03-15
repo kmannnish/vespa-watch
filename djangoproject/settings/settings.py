@@ -51,7 +51,7 @@ LOGGING = {
             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
             'style': '{',
         }
-    }
+    },
     'handlers': {
         'file': {
             'level': 'WARNING',
