@@ -59,7 +59,7 @@ class Taxon(models.Model):
         return f'https://www.inaturalist.org/taxa/{self.inaturalist_push_taxon_id}/browse_photos?quality_grade=research'
 
     def __str__(self):
-        return  self.name
+        return self.name
 
     def to_json(self):
         identification_picture_indiv_url = None
@@ -181,6 +181,7 @@ def create_observation_from_inat_data(inaturalist_data):
     else:
         raise ParseDateError
 
+
 def get_local_obs_matching_inat_id(inat_id):
     """Returns a Nest or an Individual, raise ObjectDoesNotExist if nothing is found."""
     models_to_search = [Nest, Individual]
@@ -192,6 +193,7 @@ def get_local_obs_matching_inat_id(inat_id):
 
     raise ObjectDoesNotExist
 
+# TODO: check if this is still needed for the new sync
 def update_loc_obs_taxon_according_to_inat(inaturalist_data):
     """Takes data coming from iNaturalist about one of our local observation, and update the taxon of said local obs,
     if necessary.
@@ -358,6 +360,12 @@ class AbstractObservation(models.Model):
 
         vespawatch_evidence_value = 'nest' if self.__class__ == Nest else 'individual'
 
+        ofv = [{'observation_field_id': settings.VESPAWATCH_ID_OBS_FIELD_ID, 'value': self.pk},
+               {'observation_field_id': settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID, 'value': vespawatch_evidence_value}]
+
+        if vespawatch_evidence_value == 'individual' and self.behaviour:
+            ofv.append({'observation_field_id': settings.VESPAWATCH_BEHAVIOUR_OBS_FIELD_ID, 'value': self.get_behaviour_display()})  # TODO: get_behaviour_display(): what will happen to push if we translate the values for the UI
+
         return {'observed_on_string': self.observation_time.isoformat(),
                 'time_zone': 'Brussels',
                 'description': self.comments,
@@ -365,11 +373,10 @@ class AbstractObservation(models.Model):
                 'longitude': self.longitude,
                 'place_guess': self.address,
 
-                'observation_field_values_attributes':
-                    [{'observation_field_id': settings.VESPAWATCH_ID_OBS_FIELD_ID, 'value': self.pk},
-                    {'observation_field_id': settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID, 'value': vespawatch_evidence_value}]
+                'observation_field_values_attributes': ofv
                 }
 
+    # TODO: check if still used by the new sync?
     def update_at_inaturalist(self, access_token):
         """Update the iNaturalist observation for this obs
 
@@ -381,6 +388,24 @@ class AbstractObservation(models.Model):
         update_observation(observation_id=self.inaturalist_id, params=p, access_token=access_token)
         self.push_attached_pictures_at_inaturalist(access_token=access_token)
 
+    def update_from_inat_data(self, inat_observation_data):
+        # For new sync:
+        # Update an observation in our database following to what's changed at iNaturalist. See #2.
+        # Ideally, we'd like to use it for our observations and for iNaturalist originating ones
+        # Should also set the inat_vv_confirmed flag
+
+        # Update taxon data and set inat_vv_confirmed
+
+        # Update description
+
+        # Update photos
+
+        # Update location
+
+        # Update
+
+        pass
+
     def create_at_inaturalist(self, access_token):
         """Creates a new observation at iNaturalist for this observation
 
@@ -391,7 +416,7 @@ class AbstractObservation(models.Model):
         :param access_token: as returned by pyinaturalist.rest_api.get_access_token(
         """
 
-        params_only_for_create = {'taxon_id': self.taxon.inaturalist_push_taxon_id}
+        params_only_for_create = {'taxon_id': self.taxon.inaturalist_push_taxon_id}  # TODO: with the new sync, does it still makes sense to separate the create/update parameters?
 
         params = {
             'observation': {**params_only_for_create, **self._params_for_inat()}

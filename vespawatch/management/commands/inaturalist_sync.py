@@ -1,7 +1,10 @@
+import datetime
 from json import JSONDecodeError
 
 from django.conf import settings
-from pyinaturalist.node_api import get_all_observations
+from django.utils import timezone
+from pyinaturalist.exceptions import ObservationNotFound
+from pyinaturalist.node_api import get_all_observations, get_observation
 from pyinaturalist.rest_api import get_access_token, delete_observation
 
 from vespawatch.management.commands._utils import VespaWatchCommand
@@ -24,17 +27,17 @@ class Command(VespaWatchCommand):
             if obs.inaturalist_id: # This should always be the case, no?
                 pass
                 #TODO: case1: obs found: update all info and set inat_vv_confirmed
-                #TODO: case2: obs deleted by iNat user, flag our record with warning.
+                #TODO: case2: obs deleted by iNat user, flag our record with a warning.
 
     def obs_created_in_inat_to_be_harvested(self):
         self.w("2. Pull new observations created through iNaturalist")
-        observations = get_all_observations(params={'project_id': settings.VESPAWATCH_PROJECT_ID, 'taxon_id': 119019})
+        observations = get_all_observations(params={'project_id': settings.VESPAWATCH_PROJECT_ID, 'taxon_id': 119019})  #TODO: Taxon ID is only 119019? No need for subspecies?
         for inat_observation_data in observations:
             local_obs = get_local_observation_with_inaturalist_id(inat_observation_data['id'])
             if local_obs is None:
                 # Ok we found a new one
                 self.w(f"iNaturalist observation with ID #{inat_observation_data['id']} is not yet known, we'll create it locally...", ending='')
-                create_observation_from_inat_data(inat_observation_data)  #TODO: check all the required fields are set. Update needed: everything i considered as individual nowx
+                create_observation_from_inat_data(inat_observation_data)  #TODO: check all the required fields are set. # TODO: set 'inat_vv_confirmed'
                 self.w("OK")
 
     def obs_created_in_vespawatch(self, access_token):
@@ -69,11 +72,18 @@ class Command(VespaWatchCommand):
                 else:
                     self.w("Push ignored because of settings.INATURALIST_PUSH")
             else:
-                self.w("1.2.2 This observation has been previoulsy pushed, let's pull", ending="")
+                self.w("1.2.2 This observation has been previously pushed, let's pull", ending="")
                 # Already pushed: there's nothing to push more (possible deletion was taken care of in 1.1), but we can pull
                 # to update all information and set inat_vv_confirmed
-                #TODO: case obs is not found @iNat: flag our record
-                #TODO: case obs is found, update ours and set inat_vv_confirmed
+                try:
+                    inat_obs_data = get_observation(obs.inaturalist_id)
+                    obs.update_from_inat_data(inat_obs_data) # TODO: implement this
+                except ObservationNotFound:
+                    self.w("This observation seems to have vanished of iNaturalist, let's flag it.")
+                    r = obs.warnings.create(text="This observation seems to have vanished of iNaturalist!",
+                                            datetime=timezone.now())
+
+
 
     def handle(self, *args, **options):
         if settings.INATURALIST_PUSH:
