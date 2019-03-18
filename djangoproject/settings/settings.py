@@ -4,13 +4,15 @@ from .base import *
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 JS_DEBUG = False
 
 ALLOWED_HOSTS.extend([
     '.elasticbeanstalk.com',
     '.eu-west-1.elb.amazonaws.com',
-    '.vespawatch-dev.eu-west-1.elasticbeanstalk.com'
+    '.uat.vespawatch.be',
+    '.vespawatch-uat.eu-west-1.elasticbeanstalk.com',
+    '.localhost',
 ])
 
 # Database
@@ -44,20 +46,28 @@ LOG_FILE_PATH = '/opt/python/log/django.log'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        }
+    },
     'handlers': {
         'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'verbose',
             'filename': LOG_FILE_PATH,
+            'backupCount': 3
         },
     },
     'loggers': {
         'django': {
             'handlers': ['file'],
-            'level': 'INFO',
+            'level': 'WARNING',
             'propagate': True,
         },
-    },
+    }
 }
 
 
@@ -65,7 +75,7 @@ LOGGING = {
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 AWS_ACCESS_KEY_ID = None # None to use AWS internal role/permissions
-AWS_STORAGE_BUCKET_NAME = 'lw-vespawatch-dev'
+AWS_STORAGE_BUCKET_NAME = 'lw-vespawatch-uat'
 AWS_DEFAULT_ACL = None
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',  # 1 day
@@ -77,4 +87,4 @@ AWS_LOCATION = 'media'
 
 # Other
 
-VESPAWATCH_BASE_SITE_URL = "http://vespawatch-dev.eu-west-1.elasticbeanstalk.com/"
+VESPAWATCH_BASE_SITE_URL = "http://vespawatch-uat.eu-west-1.elasticbeanstalk.com/"

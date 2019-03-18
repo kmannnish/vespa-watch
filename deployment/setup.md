@@ -189,7 +189,31 @@ When the environment works, the deployment of the application is done by:
 eb deploy --message "your informatice message"
 ```
 
-## Setup the firefighters polygons and accounts
+## Bash script for deployment
+
+A small deployment bash script has been prepared to execute the steps above. To execute the setup, make sure your aws profile is set correctly (dev or prd) and execute the script (adapt the capital arguments with more useful names and store these securely):
+
+```
+./setup.sh dev DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD
+```
+
+Variables:
+* `$ENVIRONMENT` e.g. 'dev'
+* `$DB_USER` RDS database user
+* `$DB_PWD`   RDS database pwd
+* `$DJANGO_SECRET_KEY`   django app secret key
+* `$VESPA_SU_NAME`  user name vespawatch applicatie superuser
+* `$VESPA_SU_PWD` paswoord vespawatch applicatie superuser
+
+TODO: https://medium.com/@nqbao/how-to-use-aws-ssm-parameter-store-easily-in-python-94fda04fea84
+
+Some more steps are required when doing the setup, see next sections.
+
+## Post first-deployment steps
+
+These steps need to be done just a single time after the initial deployment.
+
+### Setup the firefighters polygons and accounts
 
 With the proper authentification rights enabled, we can appply some additional steps during the first requirement. These commands are not included as container commands, as they only need to be configured during the first deployment, whereas the steps in the `01_python_config` file will run each new deployment
 
@@ -211,15 +235,7 @@ python manage.py create_firefighters_accounts
 
 Optional -> python manage.py generateimages
 
-## Setup the data syncronization with iNaturalist
-
-A cron job was setup to regularly syncronize the iNaturalist data with the vespawatch application data. Still, If you want to directly start with the existing iNaturalist observations, an initial set of data is available by syncronizing the observations in iNaturalist to the vespawatch application using the synchronisation command:
-
-```
-eb ssh --command "source /opt/python/run/venv/bin/activate && python manage.py sync_pull"
-```
-
-## Adapt the security group excluding inbound rule
+### Adapt the security group excluding inbound rule
 
 Check the group-id of the security group, e.g. `g-0ed982b15ae8893ef` and revoke the ssh inbound rule on this security group:
 
@@ -227,7 +243,7 @@ Check the group-id of the security group, e.g. `g-0ed982b15ae8893ef` and revoke 
 aws ec2 revoke-security-group-ingress --group-id sg-0ed982b15ae8893ef --protocol tcp --port 22 --cidr 0.0.0.0/0
 ```
 
-## Extend the database backup period
+### Extend the database backup period
 
 So, if the identifier of the created database is `aa6isov6zpwhro`, the extension to 7 days is achieved by:
 
@@ -235,27 +251,11 @@ So, if the identifier of the created database is `aa6isov6zpwhro`, the extension
 modify-db-instance --db-instance-identifier aa6isov6zpwhro --backup-retention-period 7
 ```
 
-## Bash script for deployment
-
-A small deployment bash script has been prepared to execute  most of these steps. To execute the setup, make sure your aws profile is set correctly (dev or prd) and execute the script (adapt the capital arguments with more useful names and store these securely):
-
-```
-./setup.sh dev DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD
-```
-
-Variables:
-* `$ENVIRONMENT` e.g. 'dev'
-* `$DB_USER` RDS database user
-* `$DB_PWD`   RDS database pwd
-* `$DJANGO_SECRET_KEY`   django app secret key
-* `$VESPA_SU_NAME`  user name vespawatch applicatie superuser
-* `$VESPA_SU_PWD` paswoord vespawatch applicatie superuser
-
-TODO: https://medium.com/@nqbao/how-to-use-aws-ssm-parameter-store-easily-in-python-94fda04fea84
-
 ## Alarm setup vespawatch module
 
-### Setup an SNS topic so maintainers can subscribe:
+To inform the django developers about errors on the application side, setting up an SNS topic to subscribe and the cloudwatch alerts is explained in this section.
+
+### Setup an SNS topic so maintainers can subscribe
 
 Call the topic `lw-vespawatch-alerts`
 
@@ -273,24 +273,42 @@ See also: https://docs.aws.amazon.com/cli/latest/userguide/cli-services-sns.html
 
 ### Setup alarms and publish them to the SNS
 
-This requires the extraction of information from the logs using a specific filter and the publishing of alarms. Multiple metrics can be relevant or setup in time. An example on internal server errors is provided.
+This requires the extraction of information from the logs using a specific filter and the publishing of alarms. Multiple metrics can be relevant or setup in time. The django logging settings provide django logs using the following format: `{levelname} {asctime} {module} {process:d} {thread:d} {message}` with the `{levelname}` either `WARNING`, `ERROR` or `CRITICAL` (at least on UAT/PRD, see [documentation](https://docs.djangoproject.com/en/2.1/topics/logging/) for other options on dev-level).
+
+For example, the warning that no favicon is found is resulting in the following message: `WARNING 2019-03-15 11:57:32,277 log 21720 140268024583936 Not Found: /favicon.ico`
+
+To setup (mail) alerts when `ERROR` or `CRITICAL` messages are reported, we can setup an approproate filter and create an alarm when any of these occur:
 
 #### Create metric filter(s)
 
-A filter counting the number of occurrences of `Internal server error`:
+We create two filters, one for counting the number of occurrences of `CRITICAL` and one for `ERROR` on the UAT log group (!adapt for PRD!):
 
 ```
-aws logs put-metric-filter --log-group-name /aws/elasticbeanstalk/vespawatch-uat/opt/python/log/django.log --filter-name  vespawatch_internal_server_error --filter-pattern "Internal Server Error" --metric-transformations metricName=vespawatch_internal_server_error_count,metricNamespace=vespawatch_logs,metricValue=1,defaultValue=0
+aws logs put-metric-filter --log-group-name /aws/elasticbeanstalk/vespawatch-uat/opt/python/log/django.log --filter-name  vespawatch_critical --filter-pattern "CRITICAL" --metric-transformations metricName=vespawatch_critical_count,metricNamespace=vespawatch_logs,metricValue=1,defaultValue=0
+
+aws logs put-metric-filter --log-group-name /aws/elasticbeanstalk/vespawatch-uat/opt/python/log/django.log --filter-name  vespawatch_error --filter-pattern "ERROR" --metric-transformations metricName=vespawatch_error_count,metricNamespace=vespawatch_logs,metricValue=1,defaultValue=0
 ```
+
+For production, adjust the `log-group-name` to the vespawatch environment name.
 
 Note: `metricValue=1` is the count increase when an occurrence is detected
+
+#### Adjust retention time of the logs
+
+By default, logs are stored forever. This is not required as 3 months of logs will suffice to check the behaviour. Adjusting the log retention time for the django group. For example for the uat `django.log` log group in UAT (!adapt for PRD!):
+
+```
+aws logs put-retention-policy --log-group-name /aws/elasticbeanstalk/vespawatch-uat/opt/python/log/django.log --retention-in-days 90
+```
 
 #### Create alarm on filter and publish to SNS
 
 To create the alarm, link it to the defined metric and namespace and provide the SNS topic as `alarm-action`:
 
 ```
-aws cloudwatch put-metric-alarm --alarm-name vespawatch-internal-server-error --alarm-description "Alarm on Internal server errors of vespawatch website"  --metric-name vespawatch_internal_server_error_count  --namespace vespawatch_logs  --statistic Sum  --period 300  --threshold 0 --comparison-operator GreaterThanThreshold --evaluation-periods 1 --alarm-actions arn:aws:sns:eu-west-1:226308051916:lw-vespawatch-alerts --treat-missing-data notBreaching
+aws cloudwatch put-metric-alarm --alarm-name vespawatch_critical --alarm-description "Alarm on CRITICAL messages from vespawatch website"  --metric-name vespawatch_critical_count  --namespace vespawatch_logs  --statistic Sum  --period 300  --threshold 0 --comparison-operator GreaterThanThreshold --evaluation-periods 1 --alarm-actions arn:aws:sns:eu-west-1:226308051916:lw-vespawatch-alerts --treat-missing-data notBreaching
+
+aws cloudwatch put-metric-alarm --alarm-name vespawatch_error --alarm-description "Alarm on ERROR messages from vespawatch website"  --metric-name vespawatch_error_count  --namespace vespawatch_logs  --statistic Sum  --period 300  --threshold 0 --comparison-operator GreaterThanThreshold --evaluation-periods 1 --alarm-actions arn:aws:sns:eu-west-1:226308051916:lw-vespawatch-alerts --treat-missing-data notBreaching
 ```
 
 See also: https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/put-metric-alarm.html and https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html do not use the `--unit Count` option with this kind of setup (although it seems logical), as this will not result in proper switch to ALARM.
@@ -304,7 +322,13 @@ See also: https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/put-metric
 
 ## Troubleshooting
 
-When troubleshooting, there are a few directories you should be aware of:
+Different logs are sent to AWS cloudwatch and an email-alert is provided when django logs contain ERROR or CRITICAL. Further troubleshooting will sometimes be required. To login to a current running instance, you can use the `eb ssh` (with the environemnt specified) command, assuming your `.pem`-file is properly stored. For example, to login to UAT:
+
+```
+eb ssh vespawatch-uat
+```
+
+When troubleshooting on the server itself, there are a few directories you should be aware of:
 
 * `/opt/python`: Root of where you application will end up.
 * `/opt/python/current/app`: The current application that is hosted in the environment.
@@ -316,7 +340,7 @@ Hence, the log files to screen:
 * The `/opt/python/log/django.log` file contains the django warning and error information and will be your first entry point for app related information
 * `var/log` contains the general logging files, e.g. the access and erro logs in the `httpd` folder.
 
-Notice that the logs (also `django.log`) are accessible using the AWS eb console as well by requestin the logs (all or last 100 lines).
+Notice that the logs (also `django.log`) are accessible using the AWS eb console as well by requesting the logs (all or last 100 lines).
 
 ## Setup and configuration info
 

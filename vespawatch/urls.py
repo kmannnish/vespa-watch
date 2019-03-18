@@ -10,7 +10,6 @@ app_name = 'vespawatch'
 urlpatterns = [
     path('', views.index, name='index'),
     path('identification', views.identification, name='identification'),
-    path('about/', views.about, name='about'),
     path('about/project/', views.about_project, name='about_project'),
     path('about/activities/', views.about_activities, name='about_activities'),
     path('about/vespa-velutina/', views.about_vespavelutina, name='about_vespavelutina'),

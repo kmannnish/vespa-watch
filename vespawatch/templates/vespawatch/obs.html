@@ -8,18 +8,12 @@
         <a class="btn btn-primary" href="{% url 'vespawatch:observation-add' %}">{% trans 'Add your observation' %}</a>
     </h1>
 
-    <div class="row theme-card-deck">
-    {% for obs in observations %}
-        <div class="col-lg-3 col-sm-6">
-            {% include 'vespawatch/includes/obs_card.html' %}
-        </div>
-    {% endfor %}
-    </div>
-
+    {% include 'vespawatch/includes/obs_cards.html' %}
+    
     <p>
-    {% blocktrans with project_url=settings.VESPAWATCH_PROJECT_URL %}
-        For more observations, see the <a href="{{ project_url }}">Vespa-Watch project on iNaturalist</a>.
-    {% endblocktrans %}
+        {% blocktrans with project_url=settings.VESPAWATCH_PROJECT_URL %}
+            For more observations, see the <a href="{{ project_url }}">Vespa-Watch project on iNaturalist</a>.
+        {% endblocktrans %}
     </p>
 </main>
 {% endblock %}

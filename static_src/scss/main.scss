@@ -98,14 +98,32 @@ main.container-fluid {
     padding-top: $grid-gutter-width; // Don't stick to top
     padding-bottom: $grid-gutter-width; // Don't stick to footer
 
-    // Customize some Bootstrap classes
+    // Customize vue-datetime
+    
+    .vdatetime-popup__header {
+        background: theme-color("dark");
+    }
+    .vdatetime-calendar__month__day--selected > span > span,
+    .vdatetime-calendar__month__day--selected:hover > span > span {
+        background: theme-color("primary");
+    }
+    .vdatetime-popup__actions__button,
+    .vdatetime-time-picker__item--selected,
+    .vdatetime-year-picker__item--selected {
+        color: theme-color("primary");
+    }
+
+    // Customize Bootstrap classes
 
     // Non-Bootstrap elements
 
     h1,
     h2 {
         margin-bottom: 1rem;
-    } 
+    }
+    form h5 {
+        margin-top: 1.5rem;
+    }
 
     .theme-card-deck {
         // Apply to .row: mimics Bootstrap .card-deck, stretching cards to equal height, but without

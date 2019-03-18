@@ -1,0 +1,30 @@
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+
+<div class="row theme-card-deck">
+    {% for obs in observations %}
+        <div class="col-lg-3 col-sm-6">
+            <div class="card" id="obs-card-{{ obs.pk }}">
+                <!-- image is loaded via jQuery to improve performance -->
+                <img class="card-img-top" src="{% static 'vespawatch/img/no_image_rectangular.png' %}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ obs.taxon.vernacular_name }}</h5>
+                    <h6 class="card-subtitle text-muted mb-2"><em>{{ obs.taxon.name }}</em></h6>
+                    <p class="card-text">
+                        <span class="badge badge-secondary text-lowercase">{% if obs.subject == 'nest' %}{% trans 'Nest' %}{% else %}{% trans 'Individual' %}{% endif %}</span>
+                        <!-- <span class="badge badge-success text-lowercase">{% trans 'Validated' %}</span> -->
+                    </p>
+                    {% if obs.inaturalist_obs_url %}
+                        <a class="card-link stretched-link" href="{{ obs.inaturalist_obs_url }}" target="_blank">{% trans 'iNaturalist' %}</a>
+                    {% else %}
+                        <span class="card-link">{% trans 'To be synchronized' %}</span>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-muted">
+                    <small>{{ obs.observation_time|naturalday }}</small>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>

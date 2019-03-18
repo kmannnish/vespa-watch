@@ -48,7 +48,7 @@ def index(request):
     return render(request, 'vespawatch/index.html', {'observations': get_observations(limit=4)})
 
 def identification(request):
-    return render(request, 'vespawatch/identification.html')
+    return render(request, 'vespawatch/simple_page_fragment', {'fragment_id': 'identification_page'})
 
 def about(request):
     return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_page'})
@@ -266,6 +266,7 @@ def observations_json(request):
     """
     Return all observations as JSON data.
     """
+    # TODO: can we deprecate this function? + If so, can we remove the prefetch_related('pictures') from the get_observations function?
     zone = request.GET.get('zone', '')
     zone_id = int(zone) if zone else None
 
