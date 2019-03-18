@@ -49,7 +49,8 @@
         {% if object %}
             <vw-location-selector v-bind:init-coordinates="[{{ object.longitude }}, {{ object.latitude }}]"
                 init-marker="true"
-                address="{{ object.address }}">
+                address="{{ object.address }}"
+                address-required="true">
             </vw-location-selector>
         {% else %}
             <vw-location-selector
@@ -60,7 +61,8 @@
                     v-bind:init-coordinates="[4.5, 50.7]"
                     init-marker="false"
                 {% endif %}
-                    address="{{ form.data.address|default_if_none:'' }}">
+                    address="{{ form.data.address|default_if_none:'' }}"
+                    address-required="true">
             </vw-location-selector>
         {% endif %}
 
