@@ -276,7 +276,8 @@ class AbstractObservation(models.Model):
     zone = models.ForeignKey(FirefightersZone, blank=True, null=True, on_delete=models.PROTECT)
 
     inaturalist_id = models.BigIntegerField(blank=True, null=True)
-    inaturalist_species = models.CharField(max_length=100, blank=True, null=True)
+    inaturalist_species = models.CharField(max_length=100, blank=True, null=True)  # TODO: check if this is still in use or useful
+    inat_vv_confirmed = models.BooleanField(blank=True, null=True)  # The community ID of iNaturalist says it's Vespa Velutina
 
     # Observer info
     observer_first_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("First name"))
