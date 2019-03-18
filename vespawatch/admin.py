@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from modeltranslation.admin import TranslationAdmin, TranslationTabularInline
 
 from .models import Taxon, Nest, Individual, NestPicture, IndividualPicture, ManagementAction, Profile, \
-    FirefightersZone, IdentificationCard
+    FirefightersZone, IdentificationCard, IndividualObservationWarning, NestObservationWarning
 
 
 class IdentificationCardInline(TranslationTabularInline):
@@ -57,23 +57,27 @@ class IndividualPictureInline(admin.TabularInline):
 
     model = IndividualPicture
 
+
+class IndividualObservationWarningInline(admin.TabularInline):
+    model = IndividualObservationWarning
+
+
+class NestObservationWarningInline(admin.TabularInline):
+    model = NestObservationWarning
+
 class DeleteObjectsOneByOneMixin():
     def delete_queryset(self, request, queryset):
         for obj in queryset:
             obj.delete()
 
+
 @admin.register(Nest)
 class NestAdmin(DeleteObjectsOneByOneMixin, admin.ModelAdmin):
     # Some observations cannot be changed nor deleted
     def has_change_permission(self, request, obj=None):
-        if obj is not None and not obj.can_be_edited_or_deleted:
+        if obj is not None and not obj.can_be_edited_in_admin:
             return False
         return super().has_change_permission(request, obj=obj)
-
-    def has_delete_permission(self, request, obj=None):
-        if obj is not None and not obj.can_be_edited_or_deleted:
-            return False
-        return super().has_delete_permission(request, obj=obj)
 
     def get_readonly_fields(self, request, obj=None):
         r = super().get_readonly_fields(request, obj)
@@ -81,27 +85,25 @@ class NestAdmin(DeleteObjectsOneByOneMixin, admin.ModelAdmin):
             r = r + ('taxon', )
         return r
 
-    list_display = ('taxon', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch')
+    list_display = ('taxon', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch', 'has_warnings')
     readonly_fields = ('originates_in_vespawatch',)
 
     list_filter = ('taxon', 'originates_in_vespawatch')
 
     inlines = [
         NestPictureInline,
+        NestObservationWarningInline
     ]
+
 
 @admin.register(Individual)
 class IndividualAdmin(DeleteObjectsOneByOneMixin, admin.ModelAdmin):
     # Some observations cannot be changed nor deleted
     def has_change_permission(self, request, obj=None):
-        if obj is not None and not obj.can_be_edited_or_deleted:
+        if obj is not None and not obj.can_be_edited_in_admin:
             return False
         return super().has_change_permission(request, obj=obj)
 
-    def has_delete_permission(self, request, obj=None):
-        if obj is not None and not obj.can_be_edited_or_deleted:
-            return False
-        return super().has_delete_permission(request, obj=obj)
 
     def get_readonly_fields(self, request, obj=None):
         r = super().get_readonly_fields(request, obj)
@@ -110,13 +112,14 @@ class IndividualAdmin(DeleteObjectsOneByOneMixin, admin.ModelAdmin):
         return r
 
 
-    list_display = ('taxon', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch')
+    list_display = ('taxon', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch', 'has_warnings')
     readonly_fields = ('originates_in_vespawatch',)
 
     list_filter = ('taxon', 'originates_in_vespawatch')
 
     inlines = [
         IndividualPictureInline,
+        IndividualObservationWarningInline
     ]
 
 @admin.register(ManagementAction)

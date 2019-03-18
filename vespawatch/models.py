@@ -10,7 +10,6 @@ from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.base import ContentFile
-from django.forms import model_to_dict
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template import defaultfilters
@@ -313,6 +312,17 @@ class AbstractObservation(models.Model):
         return vn
 
     @property
+    def can_be_edited_in_admin(self):
+        if self.originates_in_vespawatch:
+            if self.exists_in_inaturalist:
+                return False
+            else:
+                return True
+        else:  # Comes from iNaturalist: we can never delete
+            return False
+
+
+    @property
     def can_be_edited_or_deleted(self):
         """Return True if this observation can be edited in Vespa-Watch (admin, ...)"""
         return self.originates_in_vespawatch  # We can't edit obs that comes from iNaturalist (they're never pushed).
@@ -335,6 +345,10 @@ class AbstractObservation(models.Model):
 
         return None
 
+    def has_warnings(self):
+        return len(self.warnings.all()) > 0
+    has_warnings.boolean = True
+
     def _params_for_inat(self):
         """(Create/update): Common ground for the pushed data to iNaturalist.
 
@@ -351,7 +365,6 @@ class AbstractObservation(models.Model):
                 'longitude': self.longitude,
                 'place_guess': self.address,
 
-                # sets vespawatch_id (an observation field whose ID is 9613)
                 'observation_field_values_attributes':
                     [{'observation_field_id': settings.VESPAWATCH_ID_OBS_FIELD_ID, 'value': self.pk},
                     {'observation_field_id': settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID, 'value': vespawatch_evidence_value}]
@@ -378,8 +391,6 @@ class AbstractObservation(models.Model):
         :param access_token: as returned by pyinaturalist.rest_api.get_access_token(
         """
 
-        # TODO: push more fields
-        # TODO: check the push works when optional fields are missing
         params_only_for_create = {'taxon_id': self.taxon.inaturalist_push_taxon_id}
 
         params = {
@@ -417,7 +428,6 @@ class AbstractObservation(models.Model):
                 add_photo_to_observation(observation_id=self.inaturalist_id,
                                          file_object=picture.image.read(),
                                          access_token=access_token)
-
 
     def get_taxon_name(self):
         if self.taxon:
@@ -576,8 +586,8 @@ class Individual(AbstractObservation):
             'detailsUrl': reverse('vespawatch:individual-detail', kwargs={'pk': self.pk})
         }
 
-    # def __str__(self):
-    #     return f'Individual of {self.get_taxon_name()}, {self.formatted_observation_date}'
+    def __str__(self):
+        return f'Individual of {self.get_taxon_name()}, {self.formatted_observation_date}'
 
 
 class IndividualPicture(models.Model):
@@ -602,6 +612,22 @@ class NestPicture(models.Model):
                                processors=[SmartResize(600, 300)],
                                format='JPEG',
                                options={'quality': 90})
+
+
+class ObservationWarningBase(models.Model):
+    text = models.CharField(max_length=255)
+    datetime = models.DateTimeField()
+
+    class Meta:
+        abstract = True
+
+
+class IndividualObservationWarning(ObservationWarningBase):
+    observation = models.ForeignKey(Individual, on_delete=models.CASCADE, related_name='warnings')
+
+
+class NestObservationWarning(ObservationWarningBase):
+    observation = models.ForeignKey(Nest, on_delete=models.CASCADE, related_name='warnings')
 
 
 
@@ -696,3 +722,11 @@ def get_nests(limit=None):
     obs = obs[:limit]
     return obs
 
+
+def get_local_observation_with_inaturalist_id(inaturalist_id):
+    # Returns None if not found
+    for obs in get_observations():
+        if obs.inaturalist_id == inaturalist_id:
+            return obs
+
+    return None

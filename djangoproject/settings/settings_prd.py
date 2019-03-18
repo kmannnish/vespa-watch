@@ -80,3 +80,5 @@ AWS_LOCATION = 'media'
 # Other
 
 VESPAWATCH_BASE_SITE_URL = "http://vespawatch-prd.eu-west-1.elasticbeanstalk.com/"
+
+INATURALIST_PUSH = True
