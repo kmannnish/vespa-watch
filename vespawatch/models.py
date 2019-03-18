@@ -396,7 +396,9 @@ class AbstractObservation(models.Model):
                 'longitude': self.longitude,
                 'place_guess': self.address,
 
-                'observation_field_values_attributes': ofv
+                'observation_field_values_attributes':
+                    [{'observation_field_id': settings.VESPAWATCH_ID_OBS_FIELD_ID, 'value': self.pk},
+                    {'observation_field_id': settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID, 'value': vespawatch_evidence_value}]
                 }
 
     # TODO: check if still used by the new sync?
