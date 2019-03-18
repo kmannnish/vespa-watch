@@ -85,7 +85,7 @@ class NestAdmin(DeleteObjectsOneByOneMixin, admin.ModelAdmin):
             r = r + ('taxon', )
         return r
 
-    list_display = ('taxon', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch', 'has_warnings')
+    list_display = ('taxon', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch', 'has_warnings', 'inat_vv_confirmed')
     readonly_fields = ('originates_in_vespawatch',)
 
     list_filter = ('taxon', 'originates_in_vespawatch')
@@ -112,7 +112,7 @@ class IndividualAdmin(DeleteObjectsOneByOneMixin, admin.ModelAdmin):
         return r
 
 
-    list_display = ('taxon', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch', 'has_warnings')
+    list_display = ('taxon', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch', 'has_warnings', 'inat_vv_confirmed')
     readonly_fields = ('originates_in_vespawatch',)
 
     list_filter = ('taxon', 'originates_in_vespawatch')

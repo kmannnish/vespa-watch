@@ -24,6 +24,7 @@ from pyinaturalist.rest_api import create_observations, update_observation, add_
 
 from vespawatch.utils import make_unique_filename
 
+INAT_VV_TAXONS_IDS = (119019, 560197) # At iNaturalist, those taxon IDS represents Vespa Velutina and subspecies
 
 def get_taxon_from_inat_taxon_id(inaturalist_taxon_id):
     """ Raises Taxon.DoesNotExists().
@@ -121,6 +122,23 @@ class TaxonMatchError(Exception):
 class ParseDateError(Exception):
     """Cannot parse this date"""
 
+def inat_data_confirms_vv(inaturalist_data):
+    """Takes a bunch of data coming from inaturalist and returns a value according to the community ID:
+
+        - True if community agrees to Vespa Velutina
+        - False if community says it's NOT V. V.
+        - None if no community agreement
+    """
+    if 'community_taxon_id' in inaturalist_data:
+        if inaturalist_data['community_taxon_id'] is None:
+            return None
+        else:
+            taxon_id = int(inaturalist_data['community_taxon_id'])
+            return taxon_id in INAT_VV_TAXONS_IDS
+    else:
+        # no data
+        return None
+
 def create_observation_from_inat_data(inaturalist_data):
     """Creates an observation in our local database according to the data from iNaturalist API.
 
@@ -155,10 +173,13 @@ def create_observation_from_inat_data(inaturalist_data):
         except Taxon.DoesNotExist:
             raise TaxonMatchError
 
+        inat_vv_confirmed = inat_data_confirms_vv(inaturalist_data)
+
         # Check if it has the vespawatch_evidence observation field value and if it's set to "nest"
         is_nest_ofv = next((item for item in inaturalist_data['ofvs'] if item["field_id"] == settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID), None)
         if is_nest_ofv and is_nest_ofv['value'] == "nest":
             created =  Nest.objects.create(
+                inat_vv_confirmed=inat_vv_confirmed,
                 originates_in_vespawatch=False,
                 inaturalist_id=inaturalist_data['id'],
                 taxon=taxon,
@@ -167,6 +188,7 @@ def create_observation_from_inat_data(inaturalist_data):
                 observation_time=observation_time)  # TODO: What to do with iNat observations without (parsable) time?
         else:  # Default is specimen
             created = Individual.objects.create(
+                inat_vv_confirmed=inat_vv_confirmed,
                 originates_in_vespawatch=False,
                 inaturalist_id=inaturalist_data['id'],
                 taxon=taxon,
@@ -395,7 +417,7 @@ class AbstractObservation(models.Model):
         # Ideally, we'd like to use it for our observations and for iNaturalist originating ones
         # Should also set the inat_vv_confirmed flag
 
-        # Update taxon data and set inat_vv_confirmed
+        # Update taxon data and set inat_vv_confirmed (use inat_data_confirms_vv() )
 
         # Update description
 
@@ -654,7 +676,6 @@ class IndividualObservationWarning(ObservationWarningBase):
 
 class NestObservationWarning(ObservationWarningBase):
     observation = models.ForeignKey(Nest, on_delete=models.CASCADE, related_name='warnings')
-
 
 
 class ManagementAction(models.Model):

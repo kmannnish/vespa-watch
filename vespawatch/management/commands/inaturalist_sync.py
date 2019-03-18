@@ -18,7 +18,7 @@ class Command(VespaWatchCommand):
     help = 'Syncrhonize VespaWatch and iNaturalist. Full description: https://github.com/inbo/vespa-watch/issues/2'
 
     def obs_created_in_inat_and_harvested_before(self):
-        self.w("3. Update observations created through iNaturalist that we already know of")
+        self.w("\n3. Update observations created through iNaturalist that we already know of")
         local_observations_from_inat = []
         for Model in OBSERVATION_MODELS:
             local_observations_from_inat + list(Model.from_inat_objects.all())
@@ -30,8 +30,8 @@ class Command(VespaWatchCommand):
                 #TODO: case2: obs deleted by iNat user, flag our record with a warning.
 
     def obs_created_in_inat_to_be_harvested(self):
-        self.w("2. Pull new observations created through iNaturalist")
-        observations = get_all_observations(params={'project_id': settings.VESPAWATCH_PROJECT_ID, 'taxon_id': 119019})  #TODO: Taxon ID is only 119019? No need for subspecies?
+        self.w("\n2. Pull new observations created through iNaturalist")
+        observations = get_all_observations(params={'project_id': settings.VESPAWATCH_PROJECT_ID, 'taxon_id': 119019})  #TODO: Taxon ID is only 119019? No need for subspecies (see models.INAT_VV_TAXONS_IDS)?
         for inat_observation_data in observations:
             local_obs = get_local_observation_with_inaturalist_id(inat_observation_data['id'])
             if local_obs is None:
