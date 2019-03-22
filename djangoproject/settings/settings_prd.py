@@ -11,6 +11,7 @@ ALLOWED_HOSTS.extend([
     '.elasticbeanstalk.com',
     '.eu-west-1.elb.amazonaws.com',
     '.vespawatch-prd.eu-west-1.elasticbeanstalk.com',
+    '.vespawatch.be',
     '.localhost',
 ])
 
