@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-11-21 10:51+0100\n"
+"POT-Creation-Date: 2019-03-19 12:02+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,46 +20,181 @@ msgstr ""
 "X-Language: nl_BE\n"
 "X-Source-Language: en\n"
 
-#: vespawatch/static/vespawatch/js/vespawatch.js:366
-msgid "Select a zone"
+#: node_modules/weekstart/doc/scripts/docstrap.lib.js:1
+msgid "<iframe frameborder='0' width='0' height='0'/>"
 msgstr ""
 
-#: vespawatch/static/vespawatch/js/vespawatch.js:387
-msgid "date"
+#: node_modules/weekstart/doc/scripts/docstrap.lib.js:3
+msgid "<script>"
 msgstr ""
 
-#: vespawatch/static/vespawatch/js/vespawatch.js:390
-msgid "location"
+#: node_modules/weekstart/doc/scripts/docstrap.lib.js:3
+msgid "<div>"
 msgstr ""
 
-#: vespawatch/static/vespawatch/js/vespawatch.js:393
-msgid "management"
-msgstr ""
+#: static_src/js/vespawatch.js:300 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Pause"
+msgstr "Pauzeren"
 
-#: vespawatch/static/vespawatch/js/vespawatch.js:457
-msgid "My nests"
-msgstr ""
+#: static_src/js/vespawatch.js:300 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Play"
+msgstr "Afspelen"
 
-#: vespawatch/static/vespawatch/js/vespawatch.js:463
-msgid "Zone"
-msgstr ""
+#: static_src/js/vespawatch.js:486 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "New management action"
+msgstr "Nieuwe beheersactie"
 
-#: vespawatch/static/vespawatch/js/vespawatch.js:538
-msgid "Position"
-msgstr ""
+#: static_src/js/vespawatch.js:486 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Edit management action"
+msgstr "Pas beheersactie aan"
 
-#: vespawatch/static/vespawatch/js/vespawatch.js:541
-msgid "Search"
-msgstr ""
+#: static_src/js/vespawatch.js:489 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Outcome"
+msgstr "Resultaat"
 
-#: vespawatch/static/vespawatch/js/vespawatch.js:628
+#: static_src/js/vespawatch.js:492 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Save"
+msgstr "Opslaan"
+
+#: static_src/js/vespawatch.js:495 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Cancel"
+msgstr "Annuleer"
+
+#: static_src/js/vespawatch.js:498 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Delete"
+msgstr "Verwijder"
+
+#: static_src/js/vespawatch.js:501 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Yes, delete"
+msgstr "Ja, verwijder"
+
+#: static_src/js/vespawatch.js:504 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Person name"
+msgstr "Naam van de persoon"
+
+#: static_src/js/vespawatch.js:507 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Action time"
+msgstr "Beheerstijd"
+
+#: static_src/js/vespawatch.js:510 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Duration"
+msgstr "Duur"
+
+#: static_src/js/vespawatch.js:513 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "in minutes"
+msgstr "in minuten"
+
+#: static_src/js/vespawatch.js:516 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Errors"
+msgstr "Fouten"
+
+#: static_src/js/vespawatch.js:519 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Are you sure you want to delete this action?"
+msgstr "Bent u zeker dat u deze actie wil verwijderen?"
+
+#: static_src/js/vespawatch.js:670 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "You cannot edit this observation"
+msgstr "U kan deze observatie niet wijzigen"
+
+#: static_src/js/vespawatch.js:673 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "This observation was created on iNaturalist. You cannot edit it here"
+msgstr ""
+"Deze observatie werd geregistreerd in iNaturalist. U kan deze hier niet "
+"wijzigen"
+
+#: static_src/js/vespawatch.js:676 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "edit"
+msgstr "wijzig"
+
+#: static_src/js/vespawatch.js:679 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "add"
+msgstr "toevoegen"
+
+#: static_src/js/vespawatch.js:682 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "edit / delete"
+msgstr "wijzig / verwijder"
+
+#: static_src/js/vespawatch.js:1037
+#: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Latitude"
-msgstr ""
+msgstr "Latitude"
 
-#: vespawatch/static/vespawatch/js/vespawatch.js:631
-msgid "Location"
-msgstr ""
+#: static_src/js/vespawatch.js:1040
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Type coordinates or move maker"
+msgstr "Typ coordinaten of verplaats pin"
 
-#: vespawatch/static/vespawatch/js/vespawatch.js:641
+#: static_src/js/vespawatch.js:1043
+#: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Longitude"
-msgstr ""
+msgstr "Longitude"
+
+#: static_src/js/vespawatch.js:1046
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Address"
+msgstr "Adres"
+
+#: static_src/js/vespawatch.js:1049
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Correct the address if necessary"
+msgstr "Corrigeer het adres indien nodig"
+
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "date"
+msgstr "datum"
+
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "address"
+msgstr "adres"
+
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "management"
+msgstr "beheer"
+
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Loading..."
+msgstr "Laden..."
+
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "No nests yet!"
+msgstr "Nog geen nesten!"
+
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Recent observations"
+msgstr "Recente observaties"
+
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "subject"
+msgstr "onderwerp"
+
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Position"
+msgstr "Positie"
+
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Search"
+msgstr "Zoek"
+
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Detect current position"
+msgstr "Detecteer huidige positie"
+
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "or"
+msgstr "of"
+
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "type a location..."
+msgstr "typ een plaatsnaam..."
+
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "This will populate the fields below"
+msgstr "Dit zal de velden hieronder invullen"
+
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Observation date"
+msgstr "Datum van observatie"
+
+#: vespawatch/static/vespawatch/libraries/moment/moment.min.js:1
+msgid ": "
+msgstr ": "
