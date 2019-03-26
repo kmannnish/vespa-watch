@@ -669,14 +669,14 @@ def get_observations(include_individuals=True, include_nests=True, zone_id=None,
 
     if include_individuals:
         if zone_id is None:
-            obs = obs + list(Individual.objects.select_related('taxon').prefetch_related('pictures').all()[:limit])
+            obs = obs + list(Individual.objects.select_related('taxon').prefetch_related('pictures').all().order_by('-observation_time')[:limit])
         else:
-            obs = obs + list(Individual.objects.select_related('taxon').prefetch_related('pictures').filter(zone_id__exact=zone_id)[:limit])
+            obs = obs + list(Individual.objects.select_related('taxon').prefetch_related('pictures').filter(zone_id__exact=zone_id).order_by('-observation_time')[:limit])
     if include_nests:
         if zone_id is None:
-            obs = obs + list(Nest.objects.select_related('taxon').prefetch_related('pictures').all()[:limit])
+            obs = obs + list(Nest.objects.select_related('taxon').prefetch_related('pictures').all().order_by('-observation_time')[:limit])
         else:
-            obs = obs + list(Nest.objects.select_related('taxon').prefetch_related('pictures').filter(zone_id__exact=zone_id)[:limit])
+            obs = obs + list(Nest.objects.select_related('taxon').prefetch_related('pictures').filter(zone_id__exact=zone_id).order_by('-observation_time')[:limit])
 
     obs.sort(key=lambda x: x.observation_time, reverse=True)
 
