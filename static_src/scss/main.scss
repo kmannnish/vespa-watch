@@ -17,6 +17,17 @@ body {
         white-space: normal; // Wrap button within container
     }
 
+    // Customize leaflet
+
+    .leaflet-popup a,
+    .leaflet-control-attribution a {
+        color: $link-color;
+
+        &:hover {
+            color: $link-hover-color;
+        }
+    }
+
     // Customize vue-datetime
     
     .vdatetime-popup__header {
