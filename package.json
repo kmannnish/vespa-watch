@@ -16,8 +16,9 @@
     "copy:libraries": "npm run copy:bootstrap && npm run copy:axios && npm run copy:crossfilter && npm run copy:leaflet && npm run copy:moment && npm run copy:vue && npm run copy:wnumb",
     "copy:custom-js": "dir='vespawatch/static/vespawatch/js/' && mkdir -p $dir && uglifyjs static_src/js/*.js --compress --mangle --warn --output $dir/app.min.js",
     "copy:img": "dir='vespawatch/static/vespawatch/img/' && mkdir -p $dir && cp -r static_src/img/* $dir",
+    "copy:icons": "dir='vespawatch/static/vespawatch/icons/' && mkdir -p $dir && cp -r static_src/icons/* $dir",
     "create:css": "dir='vespawatch/static/vespawatch/css/' && mkdir -p $dir && node-sass static_src/scss --output-style nested --source-map true --output $dir",
-    "build:all": "npm run wipe:static && npm run copy:libraries && npm run copy:custom-js && npm run copy:img && npm run create:css",
+    "build:all": "npm run wipe:static && npm run copy:libraries && npm run copy:custom-js && npm run copy:icons && npm run copy:img && npm run create:css",
     "watch:js": "onchange 'static_src/js/*.js' -- npm run copy:custom-js",
     "watch:css": "onchange 'static_src/scss/*.scss' -- npm run create:css"
   },
