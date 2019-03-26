@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load custom_tags %}
 
-<div class="card w-100 flex-row overflow-hidden{% if identif_card.represents_nest %} bg-primary{% endif %}">
+<div class="card theme-card-horizontal{% if identif_card.represents_nest %} border-primary{% endif %}">
     {% if identif_card.identification_picture %}
         <img class="img-fluid align-self-center theme-img-square" src="{{ identif_card.identification_picture.url }}">
     {% else %}
