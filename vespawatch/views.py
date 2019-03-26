@@ -53,9 +53,6 @@ def getinvolved(request):
 def identification(request):
     return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'identification'})
 
-def about_activities(request):
-    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_activities'})
-
 def about_links(request):
     return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_links'})
 

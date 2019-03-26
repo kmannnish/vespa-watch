@@ -11,8 +11,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('get-involved', views.getinvolved, name='getinvolved'),
     path('identification', views.identification, name='identification'),
-    
-    path('about/activities/', views.about_activities, name='about_activities'),
+
     path('about/links/', views.about_links, name='about_links'),
     path('about/management/', views.about_management, name='about_management'),
     path('about/privacy-policy/', views.about_privacypolicy, name='about_privacypolicy'),
