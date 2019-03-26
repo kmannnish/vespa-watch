@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-19 12:02+0100\n"
+"POT-Creation-Date: 2019-03-26 10:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,7 +41,6 @@ msgid "Last name"
 msgstr "Familienaam"
 
 #: vespawatch/models.py:283
-#| msgid "Address"
 msgid "Email address"
 msgstr "E-mailadres"
 
@@ -158,8 +157,9 @@ msgid "Vespa velutina"
 msgstr "Vespa velutina"
 
 #: vespawatch/templates/vespawatch/base.html:54
+#: vespawatch/templates/vespawatch/base.html:112
 msgid "Privacy policy"
-msgstr "Privacy beleid"
+msgstr "Privacybeleid"
 
 #: vespawatch/templates/vespawatch/base.html:55
 msgid "Links"
@@ -169,8 +169,33 @@ msgstr "Linken"
 msgid "Log out"
 msgstr "Uitloggen"
 
+#: vespawatch/templates/vespawatch/base.html:103
+msgid ""
+"\n"
+"                            Funded by EWI through the <a "
+"href=\"https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten\">Citizen "
+"science call</a><br>\n"
+"                            Developed by the <a "
+"href=\"https://twitter.com/oscibio\">Open science lab for biodiversity</a>\n"
+"                            "
+msgstr ""
+"\n"
+"                            Gefinancierd door EWI voor de <a "
+"href=\"https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten\">Oproep "
+"citizen science</a><br>\n"
+"                            Ontwikkeld door het <a "
+"href=\"https://twitter.com/oscibio\">Open science lab for biodiversity</a>\n"
+"                            "
+
+#: vespawatch/templates/vespawatch/base.html:111
+msgid "About this project"
+msgstr "Over dit project"
+
+#: vespawatch/templates/vespawatch/base.html:113
+msgid "Contact us"
+msgstr "Contacteer ons"
+
 #: vespawatch/templates/vespawatch/includes/identification_card.html:13
-#| msgid "Nest"
 msgid "Nest of"
 msgstr "Nest van"
 
@@ -187,7 +212,6 @@ msgstr "Meld nest"
 #: vespawatch/templates/vespawatch/includes/identification_card.html:27
 #: vespawatch/templates/vespawatch/individual_create.html:9
 #: vespawatch/templates/vespawatch/individual_create.html:115
-#| msgid "See more observations"
 msgid "Report observation"
 msgstr "Meld observatie"
 
@@ -257,7 +281,6 @@ msgstr "Bevestig verwijderen"
 
 #: vespawatch/templates/vespawatch/individual_create.html:13
 #: vespawatch/templates/vespawatch/nest_create.html:13
-#| msgid "Please correct the errors below"
 msgid "Please correct the errors below."
 msgstr "Gelieve de fouten hieronder te verbeteren."
 
@@ -293,16 +316,21 @@ msgstr "Contactinformatie"
 
 #: vespawatch/templates/vespawatch/individual_create.html:107
 #: vespawatch/templates/vespawatch/nest_create.html:111
-#, fuzzy, python-format
+#, python-format
+#| msgid ""
+#| "\n"
+#| "                            I agree with the <a href=\"%(terms_page)s\" "
+#| "target=\"_blank\">privacy policy</a>.\n"
+#| "                        "
 msgid ""
 "\n"
-"                            I accept the <a href=\"%(terms_page)s\" "
-"target=\"_blank\">terms of service</a>.\n"
+"                            I agree with the <a "
+"href=\"%(privacypolicy_page)s\" target=\"_blank\">privacy policy</a>.\n"
 "                        "
 msgstr ""
 "\n"
-"                            Ik aanvaard de <a href=\"%(terms_page)s\" "
-"target=\"_blank\">gebruiksvoorwaarden</a>.\n"
+"                            Ik ga akkoord met het <a "
+"href=\"%(privacypolicy_page)s\" target=\"_blank\">privacybeleid</a>.\n"
 "                        "
 
 #: vespawatch/templates/vespawatch/individual_detail.html:10
@@ -411,11 +439,6 @@ msgstr "Voeg observatie toe"
 
 #: vespawatch/templates/vespawatch/obs.html:14
 #, python-format
-#| msgid ""
-#| "\n"
-#| "        For more observations, see the <a "
-#| "href=\"%(project_url)s\">Vespa-Watch project on iNaturalist</a>.\n"
-#| "    "
 msgid ""
 "\n"
 "            For more observations, see the <a "
@@ -433,11 +456,6 @@ msgstr "Wat heb je gezien?"
 
 #: vespawatch/templates/vespawatch/obs_create.html:10
 #, python-format
-#| msgid ""
-#| "\n"
-#| "        For more observations, see the <a "
-#| "href=\"%(project_url)s\">Vespa-Watch project on iNaturalist</a>.\n"
-#| "    "
 msgid ""
 "\n"
 "            For more information on these species, see the <a "
