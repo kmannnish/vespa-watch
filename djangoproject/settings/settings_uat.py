@@ -77,6 +77,7 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 AWS_ACCESS_KEY_ID = None # None to use AWS internal role/permissions
 AWS_STORAGE_BUCKET_NAME = 'lw-vespawatch-uat'
 AWS_QUERYSTRING_AUTH = False
+AWS_S3_CUSTOM_DOMAIN = '{}.s3.amazonaws.com'.format(AWS_STORAGE_BUCKET_NAME)
 AWS_DEFAULT_ACL = None  # inherit the bucket ACL
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',  # 1 day
