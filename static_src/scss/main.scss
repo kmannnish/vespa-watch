@@ -8,13 +8,28 @@
 @import "variables"; // Custom variables and overwrites for Bootstrap & Font Awesome variables 
 @import "../../node_modules/bootstrap/scss/bootstrap.scss"; // Bootstrap scss
 
-// GENERAL
+// OVERWRITES
 
 body {
-    // Customize some Bootstrap classes
+    // Customize Bootstrap
 
     .btn {
         white-space: normal; // Wrap button within container
+    }
+
+    // Customize vue-datetime
+    
+    .vdatetime-popup__header {
+        background: $link-color;
+    }
+    .vdatetime-calendar__month__day--selected > span > span,
+    .vdatetime-calendar__month__day--selected:hover > span > span {
+        background: $link-color;
+    }
+    .vdatetime-popup__actions__button,
+    .vdatetime-time-picker__item--selected,
+    .vdatetime-year-picker__item--selected {
+        color: $link-color;
     }
 }
 
@@ -97,25 +112,6 @@ main.container-fluid {
     min-height: calc(100vh - 54px);
     padding-top: $grid-gutter-width; // Don't stick to top
     padding-bottom: $grid-gutter-width; // Don't stick to footer
-
-    // Customize vue-datetime classes
-    
-    .vdatetime-popup__header {
-        background: theme-color("dark");
-    }
-    .vdatetime-calendar__month__day--selected > span > span,
-    .vdatetime-calendar__month__day--selected:hover > span > span {
-        background: theme-color("primary");
-    }
-    .vdatetime-popup__actions__button,
-    .vdatetime-time-picker__item--selected,
-    .vdatetime-year-picker__item--selected {
-        color: theme-color("primary");
-    }
-
-    // Customize Bootstrap classes
-
-    // Non-Bootstrap elements
 
     h1,
     h2 {
