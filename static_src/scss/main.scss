@@ -137,6 +137,11 @@ main.container-fluid {
         overflow: hidden !important; // Same as .overflow-hidden
         width: 100% !important; // Same as .w-100
 
+        &.border-primary,
+        &.border-success {
+            border-width: 3px; // Use thicker border
+        }
+
         img {
             height: 200px;
             width: 200px;
