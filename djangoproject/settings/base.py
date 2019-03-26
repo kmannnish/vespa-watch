@@ -190,11 +190,11 @@ MAP_CIRCLE_STROKE_OPACITY = 0.8
 MAP_CIRCLE_STROKE_WIDTH = 1
 MAP_CIRCLE_NEST_RADIUS = 12
 MAP_CIRCLE_INDIVIDUAL_RADIUS = 5
-MAP_CIRCLE_INDIVIDUAL_COLOR = '#FD9126'
+MAP_CIRCLE_INDIVIDUAL_COLOR = '#fd9126'
 MAP_CIRCLE_NEST_COLOR = {  # This depend of the management action
-    'finished': '#9CCB19',
-    'unfinished': '#EE4000',
-    'DEFAULT': '#73984A'
+    'finished': '#9ccb19',
+    'unfinished': '#ee4000',
+    'DEFAULT': '#73984a'
 }
 MAP_CIRCLE_UNKNOWN_COLOR = '#000' # if the subject is not 'Individual' or 'Nest'
 MAP_INITIAL_POSITION = [50.85, 4.35]
