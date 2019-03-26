@@ -53,7 +53,7 @@ Do not forget to put the key-pair combination in the team-folder location.
 To store the media files (i.e. uploaded images), we use a S3 Bucket. To create the S3 Bucket and add the appropriate tags to it:
 
 ```
-aws s3api create-bucket --bucket lw-vespawatch-prd --region eu-west-1 --create-bucket-configuration LocationConstraint=eu-west-1 --acl private
+aws s3api create-bucket --bucket lw-vespawatch-prd --region eu-west-1 --create-bucket-configuration LocationConstraint=eu-west-1 --acl public-read
 aws s3api put-bucket-tagging --bucket lw-vespawatch-prd --tagging file://s3-tags.json
 ```
 For more info, see https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
