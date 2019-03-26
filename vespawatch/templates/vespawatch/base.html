@@ -93,6 +93,27 @@
 
         <footer>
             <div class="container">
+                <div class="row">
+                    <div class="col-md-9">
+                        <p>
+                            <a class="mr-3" href="https://www.inbo.be"><img src="{% static 'vespawatch/img/logo_inbo.png' %}" height="40" alt=""></a>
+                            <a href="https://www.honeybeevalley.eu/"><img src="{% static 'vespawatch/img/logo_honeybeevalley.png' %}" height="40" alt=""></a>
+                        </p>
+                        <p>
+                            {% blocktrans %}
+                            Funded by EWI through the <a href="https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten">Citizen science call</a><br>
+                            Developed by the <a href="https://twitter.com/oscibio">Open science lab for biodiversity</a>
+                            {% endblocktrans %}
+                        </p>
+                    </div>
+                    <div class="col-md-3">
+                        <ul class="list-unstyled">
+                            <li><a href="{% url 'vespawatch:about_project' %}">{% trans 'About this project' %}</a></li>
+                            <li><a href="{% url 'vespawatch:about_privacypolicy' %}">{% trans 'Privacy policy' %}</a></li>
+                            <li><a href="mailto:vespawatch@inbo.be">{% trans 'Contact us' %}</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </footer>
 
