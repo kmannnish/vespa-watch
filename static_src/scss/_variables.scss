@@ -76,9 +76,9 @@ $light:         $gray-100 !default;
 $dark:          $gray-800 !default;
 
 $theme-colors: (
-  primary: #EA792A, // Used for links, active borders
+  primary: #ea792a, // Used for links, active borders
   secondary: $secondary, // Used for backgrounds (only explicitly with -secondary)
-  success: $green,
+  success: #73984a,
   info: $cyan,
   warning: $yellow,
   danger: $red,

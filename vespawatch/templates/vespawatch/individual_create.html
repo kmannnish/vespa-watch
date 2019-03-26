@@ -10,7 +10,8 @@
 
     {% if form.errors %}
         <div class="alert alert-danger">
-            {% trans 'Please correct the errors below' %}
+            {% trans 'Please correct the errors below.' %}
+            {{ form.errors }}
         </div>
     {% endif %}
 
@@ -22,7 +23,7 @@
         {{ form.redirect_to.as_hidden }}
 
         <div class="row">
-            <div class="col-lg-6 mb-3">
+            <div class="col-lg-6">
                 {% include 'vespawatch/includes/identification_card.html' with taxon_selected=True %}
             </div>
         </div>
@@ -102,9 +103,9 @@
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="id_terms_of_service" >
                     <label class="form-check-label" for="id_terms_of_service">
-                        {% url 'vespawatch:about_privacypolicy' as terms_page %}
+                        {% url 'vespawatch:about_privacypolicy' as privacypolicy_page %}
                         {% blocktrans %}
-                            I accept the <a href="{{ terms_page }}" target="_blank">terms of service</a>.
+                            I agree with the <a href="{{ privacypolicy_page }}" target="_blank">privacy policy</a>.
                         {% endblocktrans %}
                     </label>
                 </div>

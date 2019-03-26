@@ -47,30 +47,26 @@ class CustomDeleteView(SingleObjectTemplateResponseMixin, CustomBaseDeleteView):
 def index(request):
     return render(request, 'vespawatch/index.html', {'observations': get_observations(limit=4)})
 
+def getinvolved(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'getinvolved'})
+
 def identification(request):
-    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'identification_page'})
-
-def about(request):
-    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_page'})
-
-def about_project(request):
-    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_project_page'})
-
-def about_activities(request):
-    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_activities_page'})
-
-def about_vespavelutina(request):
-    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_vespavelutina_page'})
-
-def about_management(request):
-    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_management_page'})
-
-def about_privacypolicy(request):
-    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_privacypolicy_page'})
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'identification'})
 
 def about_links(request):
-    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_links_page'})
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_links'})
 
+def about_management(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_management'})
+
+def about_privacypolicy(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_privacypolicy'})
+
+def about_project(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_project'})
+
+def about_vespavelutina(request):
+    return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_vespavelutina'})
 
 def latest_observations(request):
     return render(request, 'vespawatch/obs.html', {'observations': get_observations(limit=40)})

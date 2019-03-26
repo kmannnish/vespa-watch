@@ -186,6 +186,9 @@ More information on the `eb-create` command, see https://docs.aws.amazon.com/ela
 When the environment works, the deployment of the application is done by:
 
 ```
+# copy the proper settings file working on to settings.py file
+cp ./djangoproject/settings/settings_XXX.py ./djangoproject/settings/settings.py
+# redeploy
 eb deploy --message "your informatice message"
 ```
 

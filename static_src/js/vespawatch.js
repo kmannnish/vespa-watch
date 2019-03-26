@@ -311,7 +311,7 @@ var VwObservationsVizTimeSlider = {
 
     template: `
         <div id="vw-time-slider" class="d-flex align-items-center">
-            <button style="width:120px;" class="btn btn-sm btn-secondary" type="button" @click="toggleAnimation"> {{ buttonLabel }}</button>
+            <button style="width:120px;" class="btn btn-sm btn-secondary" type="button" @click="toggleAnimation">{{ buttonLabel }}</button>
             <input class="form-control-range mx-4" type="range" v-model.number="selectedTimeRange.stop" v-on:input="stopAnimationIfRunning" v-on:change="stopAnimationIfRunning" :min="observationsTimeRange.start" :max="observationsTimeRange.stop" :step="oneWeek">
             <div v-if="dataReady" style="width:120px;">{{ stopStr }}</div>
         </div>
