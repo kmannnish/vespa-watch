@@ -4,9 +4,9 @@
 
 <div class="card w-100 flex-row overflow-hidden{% if identif_card.represents_nest %} bg-primary{% endif %}">
     {% if identif_card.identification_picture %}
-        <img class="fluid-img align-self-center theme-img-square" src="{{ identif_card.identification_picture.url }}">
+        <img class="img-fluid align-self-center theme-img-square" src="{{ identif_card.identification_picture.url }}">
     {% else %}
-        <img class="fluid-img align-self-center theme-img-square" src="{% static 'vespawatch/img/no_image_square.png' %}">
+        <img class="img-fluid align-self-center theme-img-square" src="{% static 'vespawatch/img/no_image_square.png' %}">
     {% endif %}
     <div class="card-body">
         <h5 class="card-title">
