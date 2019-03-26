@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-26 10:11+0100\n"
+"POT-Creation-Date: 2019-03-26 14:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -93,7 +93,7 @@ msgstr "Leeg nest, geen actie ondernomen"
 
 #: vespawatch/templates/registration/login.html:9
 #: vespawatch/templates/registration/login.html:29
-#: vespawatch/templates/vespawatch/base.html:69
+#: vespawatch/templates/vespawatch/base.html:68
 msgid "Log in"
 msgstr "Inloggen"
 
@@ -128,13 +128,12 @@ msgid "Delete"
 msgstr "Verwijder"
 
 #: vespawatch/templates/vespawatch/base.html:38
-#: vespawatch/templates/vespawatch/base.html:53
-msgid "Management"
+msgid "Fire department"
 msgstr "Brandweer"
 
 #: vespawatch/templates/vespawatch/base.html:42
-msgid "Report"
-msgstr "Melding"
+msgid "Get involved"
+msgstr "Doe mee"
 
 #: vespawatch/templates/vespawatch/base.html:45
 msgid "Identification"
@@ -145,31 +144,31 @@ msgid "About"
 msgstr "Over deze website"
 
 #: vespawatch/templates/vespawatch/base.html:50
-msgid "Project"
-msgstr "Project"
-
-#: vespawatch/templates/vespawatch/base.html:51
-msgid "Activities"
-msgstr "Activiteiten"
-
-#: vespawatch/templates/vespawatch/base.html:52
 msgid "Vespa velutina"
 msgstr "Vespa velutina"
 
-#: vespawatch/templates/vespawatch/base.html:54
-#: vespawatch/templates/vespawatch/base.html:112
+#: vespawatch/templates/vespawatch/base.html:51
+msgid "Management"
+msgstr "Beheer"
+
+#: vespawatch/templates/vespawatch/base.html:52
+msgid "Project"
+msgstr "Project"
+
+#: vespawatch/templates/vespawatch/base.html:53
+#: vespawatch/templates/vespawatch/base.html:111
 msgid "Privacy policy"
 msgstr "Privacybeleid"
 
-#: vespawatch/templates/vespawatch/base.html:55
+#: vespawatch/templates/vespawatch/base.html:54
 msgid "Links"
 msgstr "Linken"
 
-#: vespawatch/templates/vespawatch/base.html:64
+#: vespawatch/templates/vespawatch/base.html:63
 msgid "Log out"
 msgstr "Uitloggen"
 
-#: vespawatch/templates/vespawatch/base.html:103
+#: vespawatch/templates/vespawatch/base.html:102
 msgid ""
 "\n"
 "                            Funded by EWI through the <a "
@@ -187,11 +186,11 @@ msgstr ""
 "href=\"https://twitter.com/oscibio\">Open science lab for biodiversity</a>\n"
 "                            "
 
-#: vespawatch/templates/vespawatch/base.html:111
+#: vespawatch/templates/vespawatch/base.html:110
 msgid "About this project"
 msgstr "Over dit project"
 
-#: vespawatch/templates/vespawatch/base.html:113
+#: vespawatch/templates/vespawatch/base.html:112
 msgid "Contact us"
 msgstr "Contacteer ons"
 
@@ -204,12 +203,6 @@ msgid "Report something else"
 msgstr "Meld iets anders"
 
 #: vespawatch/templates/vespawatch/includes/identification_card.html:25
-#: vespawatch/templates/vespawatch/nest_create.html:9
-#: vespawatch/templates/vespawatch/nest_create.html:119
-msgid "Report nest"
-msgstr "Meld nest"
-
-#: vespawatch/templates/vespawatch/includes/identification_card.html:27
 #: vespawatch/templates/vespawatch/individual_create.html:9
 #: vespawatch/templates/vespawatch/individual_create.html:115
 msgid "Report observation"
@@ -317,11 +310,6 @@ msgstr "Contactinformatie"
 #: vespawatch/templates/vespawatch/individual_create.html:107
 #: vespawatch/templates/vespawatch/nest_create.html:111
 #, python-format
-#| msgid ""
-#| "\n"
-#| "                            I agree with the <a href=\"%(terms_page)s\" "
-#| "target=\"_blank\">privacy policy</a>.\n"
-#| "                        "
 msgid ""
 "\n"
 "                            I agree with the <a "
@@ -425,6 +413,11 @@ msgstr ""
 "De volgende nesten en hun gerelateerde objecten zullen worden verwijderd. "
 "Bent u zeker?"
 
+#: vespawatch/templates/vespawatch/nest_create.html:9
+#: vespawatch/templates/vespawatch/nest_create.html:119
+msgid "Report nest"
+msgstr "Meld nest"
+
 #: vespawatch/templates/vespawatch/nest_detail.html:7
 msgid "nest"
 msgstr "nest"
@@ -473,9 +466,15 @@ msgstr ""
 "Geen \"identification cards\" gedefinieerd. Gelieve deze aan te maken in de "
 "admin interface."
 
-#: vespawatch/views.py:115 vespawatch/views.py:182
+#: vespawatch/views.py:111 vespawatch/views.py:178
 msgid "Your observation was successfully created."
 msgstr "Jouw observatie werd succesvol bewaard. Bedankt!"
+
+#~ msgid "Report"
+#~ msgstr "Melding"
+
+#~ msgid "Activities"
+#~ msgstr "Activiteiten"
 
 #~ msgid "Details"
 #~ msgstr "Details"
