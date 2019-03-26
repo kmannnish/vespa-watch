@@ -132,7 +132,11 @@ main.container-fluid {
         margin-top: 1.5rem;
     }
 
-    .theme-card-horizontal { // Used for identification cards
+    .card {
+        margin-bottom: $grid-gutter-width; // Add spacing between rows of cards
+    }
+
+    .theme-card-horizontal { // Used for identification cards and tips
         flex-direction: row !important; // Same as .flex-row
         overflow: hidden !important; // Same as .overflow-hidden
         width: 100% !important; // Same as .w-100
@@ -154,11 +158,7 @@ main.container-fluid {
 
         div[class*="col"] {
             display: flex!important;
-            align-items: stretch!important;
-        
-            .card {
-                margin-bottom: $grid-gutter-width; // Add spacing between rows of cards
-            }
+            align-items: stretch!important; 
         }
     }
 }
