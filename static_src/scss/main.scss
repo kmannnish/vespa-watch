@@ -98,7 +98,7 @@ main.container-fluid {
     padding-top: $grid-gutter-width; // Don't stick to top
     padding-bottom: $grid-gutter-width; // Don't stick to footer
 
-    // Customize vue-datetime
+    // Customize vue-datetime classes
     
     .vdatetime-popup__header {
         background: theme-color("dark");
@@ -154,6 +154,10 @@ body > footer {
     color: $white;
     font-size: 0.95rem;
     padding: $grid-gutter-width / 2 0;
+
+    a, a:hover {
+        color: $white;
+    }
 }
 
 // OTHER
