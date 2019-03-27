@@ -14,14 +14,15 @@ $(document).ready(function () {
 
 // Load obs_card images
 $(document).ready(function () {
-    $('.theme-card-deck div.card').each(function (index, value) {
+    $('#obs-cards div.card').each(function (index, value) {
         var card = $(this);
-        var id = card.attr('id').split('-')[2];
-        var obj = card.find('.card-text span.badge').text().toLowerCase();
-        $.getJSON('/api/' + obj + 's/' + id)
+        var split_id = card.attr('id').split('-');
+        var subject = split_id[1].toLowerCase();
+        var id = split_id[2];
+        $.getJSON('/api/' + subject + 's/' + id)
             .done(function (r) {
                 if (r.thumbnails && r.thumbnails.length > 0 && r.thumbnails[0]) {
-                    card.find('img.card-img-top').attr('src', r.thumbnails[0]);
+                    card.find('img').attr('src', r.thumbnails[0]);
                 }
             });
         }
