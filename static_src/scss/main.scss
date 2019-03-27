@@ -132,25 +132,34 @@ main.container-fluid {
         margin-top: 1.5rem;
     }
 
+    .card {
+        margin-bottom: $grid-gutter-width; // Add spacing between rows of cards
+    }
+
+    .theme-card-horizontal { // Used for identification cards and tips
+        flex-direction: row !important; // Same as .flex-row
+        overflow: hidden !important; // Same as .overflow-hidden
+        width: 100% !important; // Same as .w-100
+
+        &.border-primary,
+        &.border-success {
+            border-width: 3px; // Use thicker border
+        }
+
+        img {
+            height: 200px;
+            width: 200px;
+        }
+    }
+
     .theme-card-deck {
         // Apply to .row: mimics Bootstrap .card-deck, stretching cards to equal height, but without
         // stretching width when there are fewer cards on one row (cards remain equal width).
 
         div[class*="col"] {
             display: flex!important;
-            align-items: stretch!important;
-        
-            .card {
-                // Bootstrap class for styled content containers, e.g. subpages as images
-                // https://getbootstrap.com/docs/4.0/components/card/
-                margin-bottom: $grid-gutter-width; // Add spacing between rows of cards
-            }
+            align-items: stretch!important; 
         }
-    }
-
-    .theme-img-square {
-        height: 200px;
-        width: 200px;
     }
 }
 

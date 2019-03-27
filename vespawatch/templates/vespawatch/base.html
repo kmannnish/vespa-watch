@@ -15,6 +15,17 @@
             var VWConfig = {% js_config_object %};
         </script>
 
+        <!-- Favicons -->
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'vespawatch/icons/apple-touch-icon.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'vespawatch/icons/favicon-32x32.png' %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'vespawatch/icons/favicon-16x16.png' %}">
+        <link rel="manifest" href="{% static 'vespawatch/icons/site.webmanifest' %}">
+        <link rel="mask-icon" href="{% static 'vespawatch/icons/safari-pinned-tab.svg' %}" color="#ea792a">
+        <link rel="shortcut icon" href="{% static 'vespawatch/icons/favicon.ico' %}">
+        <meta name="msapplication-TileColor" content="#ea792a">
+        <meta name="msapplication-config" content="{% static 'vespawatch/icons/browserconfig.xml' %}">
+        <meta name="theme-color" content="#ffffff">
+
         <!-- CSS -->
         <link rel="stylesheet" href="{% static 'vespawatch/libraries/leaflet/leaflet.css' %}">
         <link rel="stylesheet" href="{% static 'vespawatch/libraries/vue/vue-datetime.min.css' %}">
@@ -35,7 +46,7 @@
                     <ul class="navbar-nav mr-auto">
                         {% if user.profile.zone or user.is_staff %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'vespawatch:management' %}">{% trans 'Management' %}</a>
+                                <a class="nav-link" href="{% url 'vespawatch:management' %}">{% trans 'Fire department' %}</a>
                             </li>
                         {% endif %}
                         <li class="nav-item">
@@ -100,7 +111,7 @@
                         </p>
                         <p>
                             {% blocktrans %}
-                            Funded by EWI through the <a href="https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten">Citizen science call</a><br>
+                            This project was funded by <a href="https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten">EWI</a><br>
                             Developed by the <a href="https://twitter.com/oscibio">Open science lab for biodiversity</a>
                             {% endblocktrans %}
                         </p>
@@ -140,8 +151,5 @@
         <script src="{% static 'vespawatch/libraries/wnumb/wnumb.js' %}"></script>
         <script src="{% url 'javascript-catalog' %}"></script>
         <script src="{% static 'vespawatch/js/app.min.js' %}"></script>
-
-        {% block extra_scripts %}
-        {% endblock %}
     </body>
 </html>

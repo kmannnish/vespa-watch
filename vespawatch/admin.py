@@ -13,7 +13,6 @@ class IdentificationCardInline(TranslationTabularInline):
 
 @admin.register(Taxon)
 class TaxonAdmin(admin.ModelAdmin):
-    readonly_fields = ('inaturalist_pull_taxon_ids', 'inaturalist_push_taxon_id')
 
     inlines = (IdentificationCardInline, )
 

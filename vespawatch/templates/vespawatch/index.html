@@ -20,7 +20,7 @@
     </figcaption>
 </figure>
 
-<main class="container">
+<main class="container" id="vw-main-app">
     {% if messages %}
         <div class="messages">
             {% for message in messages %}
@@ -39,7 +39,7 @@
             {% get_page_fragment 'welcome' %}
         </div>
 
-        <div class="col-md-8" id="vw-main-app">
+        <div class="col-md-8">
             <vw-observations-viz load-data="1"></vw-observations-viz>
         </div>
     </div>
@@ -52,7 +52,4 @@
         {% trans 'See more observations' %} »</a>
     </p>
 </main>
-{% endblock %}
-
-{% block extra_scripts %}
 {% endblock %}
