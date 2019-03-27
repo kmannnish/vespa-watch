@@ -2,10 +2,10 @@
 {% load i18n %}
 {% load humanize %}
 
-<div class="row theme-card-deck">
+<div class="row theme-card-deck" id="obs-cards">
     {% for obs in observations %}
         <div class="col-lg-3 col-sm-6">
-            <div class="card" id="obs-card-{{ obs.pk }}">
+            <div class="card" id="obs-{{ obs.subject }}-{{ obs.pk }}">
                 <!-- image is loaded via jQuery to improve performance -->
                 <img class="card-img-top" src="{% static 'vespawatch/img/no_image_rectangular.png' %}">
                 <div class="card-body">
@@ -13,7 +13,7 @@
                     <h6 class="card-subtitle text-muted mb-2"><em>{{ obs.taxon.name }}</em></h6>
                     <p class="card-text">
                         <span class="badge badge-secondary text-lowercase">{% if obs.subject == 'nest' %}{% trans 'Nest' %}{% else %}{% trans 'Individual' %}{% endif %}</span>
-                        <!-- <span class="badge badge-success text-lowercase">{% trans 'Validated' %}</span> -->
+                        <!-- TODO <span class="badge badge-success text-lowercase">{% trans 'Validated' %}</span> -->
                     </p>
                     {% if obs.inaturalist_obs_url %}
                         <a class="card-link stretched-link" href="{{ obs.inaturalist_obs_url }}" target="_blank">{% trans 'iNaturalist' %}</a>
