@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block content %}
-<main class="container">
+<main class="container" id="vw-main-app">
     <h1 class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-end">
         {% trans 'Latest observations' %}
         <a class="btn btn-primary" href="{% url 'vespawatch:observation-add' %}">{% trans 'Add your observation' %}</a>
