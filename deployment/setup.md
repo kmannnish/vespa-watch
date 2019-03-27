@@ -325,6 +325,8 @@ See also: https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/put-metric
 
 ## Troubleshooting
 
+### Logs
+
 Different logs are sent to AWS cloudwatch and an email-alert is provided when django logs contain ERROR or CRITICAL. Further troubleshooting will sometimes be required. To login to a current running instance, you can use the `eb ssh` (with the environemnt specified) command, assuming your `.pem`-file is properly stored. For example, to login to UAT:
 
 ```
