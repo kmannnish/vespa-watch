@@ -31,7 +31,7 @@
     "leaflet-geosearch": "2.0.0",
     "leaflet-spin": "^1.1.0",
     "luxon": "1.7.1",
-    "moment": ">=2.19.3",
+    "moment": "^2.24.0",
     "npm": "^6.4.1",
     "popper.js": "1.14.7",
     "vue": "2.5.17",
@@ -40,7 +40,7 @@
     "wnumb": "1.1.0"
   },
   "devDependencies": {
-    "node-sass": "^4.5.3",
+    "node-sass": "^4.11.0",
     "onchange": "^3.2.1",
     "uglify-es": "^3.3.9"
   }
