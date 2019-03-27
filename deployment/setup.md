@@ -60,6 +60,29 @@ For more info, see https://django-storages.readthedocs.io/en/latest/backends/ama
 
 Django uses the S3 as a backend using the `django-storages` package, see https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
 
+Furthermore, to make sure photos in the page fragments can be stored with their filename (no temporary granted query string) in the database (for other images this is not an issue), access to the images is granted from the domain using a `GetObject` S3 bucket policy. For example, the prd-environment:
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AddPerm",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::lw-vespawatch-uat/*",
+            "Condition": {
+                "StringLike": {
+                    "aws:Referer": "https://vespawatch.be/*"
+                }
+            }
+        }
+    ]
+}
+```
+For uat the `Referer` becomes "https://uat.vespawatch.be/*".
+
 ### Prepare the ec2 instance profile (role) to access the S3 bucket and manage eb admin
 
 Without providing a `instance-role`, the default is used. However, as we have multiple eb running at inbo, the default instance role (what the EC2 machine is allowed to do) would get mixed permissions attached to it. Hence, we define a custom Instance role and attach the S3 permissions to it:
@@ -324,6 +347,8 @@ See also: https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/put-metric
 - Backups of the **media files** in the S3 bucket #TODO
 
 ## Troubleshooting
+
+### Logs
 
 Different logs are sent to AWS cloudwatch and an email-alert is provided when django logs contain ERROR or CRITICAL. Further troubleshooting will sometimes be required. To login to a current running instance, you can use the `eb ssh` (with the environemnt specified) command, assuming your `.pem`-file is properly stored. For example, to login to UAT:
 

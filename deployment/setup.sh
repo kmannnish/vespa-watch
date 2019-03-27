@@ -17,9 +17,11 @@ if [ $ENVIRONMENT = "dev" ]; then
 elif [ $ENVIRONMENT = "uat" ]; then
     aws s3api create-bucket --bucket lw-vespawatch-uat --region eu-west-1 --create-bucket-configuration LocationConstraint=eu-west-1 --acl private
     aws s3api put-bucket-tagging --bucket lw-vespawatch-uat --tagging file://deployment/s3-tags.json
+    aws s3api put-bucket-policy --bucket lw-vespawatch-uat --region eu-west-1 --policy file://deployment/bucket-policy-uat.json
 else
     aws s3api create-bucket --bucket lw-vespawatch-prd --region eu-west-1 --create-bucket-configuration LocationConstraint=eu-west-1 --acl private
     aws s3api put-bucket-tagging --bucket lw-vespawatch-prd --tagging file://deployment/s3-tags.json
+    aws s3api put-bucket-policy --bucket lw-vespawatch-prd --region eu-west-1 --policy file://deployment/bucket-policy-prd.json
 fi
 
 # create the instance profile with permissions
@@ -31,9 +33,9 @@ aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --p
 aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-arn arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier
 if [ $ENVIRONMENT = "prd" ]; then
 aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-arn arn:aws:iam::532750756126:policy/AWS-Beanstalk-Volumes
-else 
+else
 aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-arn arn:aws:iam::226308051916:policy/AWS-Beanstalk-Volumes
-fi 
+fi
 
 aws iam add-role-to-instance-profile --instance-profile-name aws-elasticbeanstalk-ec2-role-vespawatch --role-name aws-elasticbeanstalk-ec2-role-vespawatch
 
