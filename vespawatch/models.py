@@ -34,9 +34,9 @@ def get_taxon_from_inat_taxon_id(inaturalist_taxon_id):
 
 
 class Taxon(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(verbose_name=_("Scientific name"), max_length=100)
 
-    vernacular_name = models.CharField(max_length=100, blank=True)
+    vernacular_name = models.CharField(verbose_name=_("Vernacular name"), max_length=100, blank=True)
 
     inaturalist_push_taxon_id = models.BigIntegerField(null=True, blank=True,
                                                        help_text="When pushing an observation to iNaturalist, we'll "
@@ -90,11 +90,11 @@ class IdentificationCard(models.Model):
     def get_file_path(instance, filename):
         return os.path.join('pictures/identification_cards/', make_unique_filename(filename))
 
-    identification_picture = models.ImageField(upload_to=get_file_path, blank=True, null=True)
+    identification_picture = models.ImageField(verbose_name=_("Photo for identification"), upload_to=get_file_path, blank=True, null=True)
 
-    order = models.IntegerField(unique=True)  # The order in which the cards are shown
+    order = models.IntegerField(verbose_name=_("Order"), unique=True)  # The order in which the cards are shown
 
-    description = MarkdownxField(blank=True)
+    description = MarkdownxField(verbose_name=_("Description"), blank=True)
 
     class Meta:
         ordering = ['order']
@@ -289,23 +289,23 @@ def no_future(value):
 class AbstractObservation(models.Model):
     originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
     taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT)
-    address = models.CharField(max_length=255, blank=True)
+    address = models.CharField(verbose_name=_("Address"), max_length=255, blank=True)
     observation_time = models.DateTimeField(verbose_name=_("Observation date"), validators=[no_future])
-    comments = models.TextField(blank=True)
+    comments = models.TextField(verbose_name=_("Comments"), blank=True)
 
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    latitude = models.FloatField(verbose_name=_("Latitude"))
+    longitude = models.FloatField(verbose_name=_("Longitude"))
     zone = models.ForeignKey(FirefightersZone, blank=True, null=True, on_delete=models.PROTECT)
 
-    inaturalist_id = models.BigIntegerField(blank=True, null=True)
-    inaturalist_species = models.CharField(max_length=100, blank=True, null=True)  # TODO: check if this is still in use or useful
+    inaturalist_id = models.BigIntegerField(verbose_name=_("iNaturalist ID"), blank=True, null=True)
+    inaturalist_species = models.CharField(verbose_name=_("iNaturalist species"), max_length=100, blank=True, null=True)  # TODO: check if this is still in use or useful
     inat_vv_confirmed = models.BooleanField(blank=True, null=True)  # The community ID of iNaturalist says it's Vespa Velutina
 
     # Observer info
-    observer_first_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("First name"))
-    observer_last_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Last name"))
-    observer_email = models.EmailField(blank=True, null=True, verbose_name=_("Email address"))
-    observer_phone = models.CharField(max_length=20, blank=True, null=True, verbose_name=_("Telephone number"))
+    observer_first_name = models.CharField(verbose_name=_("First name"), max_length=255, blank=True, null=True)
+    observer_last_name = models.CharField(verbose_name=_("Last name"), max_length=255, blank=True, null=True)
+    observer_email = models.EmailField(verbose_name=_("Email address"), blank=True, null=True)
+    observer_phone = models.CharField(verbose_name=_("Telephone number"), max_length=20, blank=True, null=True)
     observer_is_beekeeper = models.NullBooleanField()
 
     # Managers
@@ -528,7 +528,7 @@ class Nest(AbstractObservation):
         (LESS_THAN_25_CM, _("Less than 25cm")),
         (MORE_THAN_25_CM, _("More than 25cm"))
     )
-    size = models.CharField(max_length=50, choices=SIZE_CHOICES, blank=True, verbose_name=_("Nest size"))
+    size = models.CharField(verbose_name=_("Nest size"), max_length=50, choices=SIZE_CHOICES, blank=True)
 
     BELOW_4_METER = 'BELOW_4_M'
     ABOVE_4_METER = 'BELOW_4_M'
@@ -536,7 +536,7 @@ class Nest(AbstractObservation):
         (BELOW_4_METER, _("Below 4 meters")),
         (ABOVE_4_METER, _("Above 4 meters"))
     )
-    height = models.CharField(max_length=50, choices=HEIGHT_CHOICES, blank=True, verbose_name=_("Nest height"))
+    height = models.CharField(verbose_name=_("Nest height"), max_length=50, choices=HEIGHT_CHOICES, blank=True)
 
     def get_absolute_url(self):
         return reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
@@ -603,8 +603,8 @@ class Individual(AbstractObservation):
     )
 
     # Fields
-    individual_count = models.IntegerField(blank=True, null=True)
-    behaviour = models.CharField(max_length=2, choices=BEHAVIOUR_CHOICES, blank=True, null=True)
+    individual_count = models.IntegerField(verbose_name=_("Individual count"), blank=True, null=True)
+    behaviour = models.CharField(verbose_name=_("Behaviour"), max_length=2, choices=BEHAVIOUR_CHOICES, blank=True, null=True)
     nest = models.ForeignKey(Nest, on_delete=models.CASCADE, blank=True, null=True)
 
     def get_absolute_url(self):
@@ -643,7 +643,7 @@ class IndividualPicture(models.Model):
         return os.path.join('pictures/individuals/', make_unique_filename(filename))
 
     observation = models.ForeignKey(Individual, on_delete=models.CASCADE, related_name='pictures')
-    image = models.ImageField(upload_to=get_file_path)
+    image = models.ImageField(verbose_name=_("Photo"), upload_to=get_file_path)
     thumbnail = ImageSpecField(source='image',
                                processors=[SmartResize(600, 300)],
                                format='JPEG',
@@ -655,7 +655,7 @@ class NestPicture(models.Model):
         return os.path.join('pictures/nests/', make_unique_filename(filename))
 
     observation = models.ForeignKey(Nest, on_delete=models.CASCADE, related_name='pictures')
-    image = models.ImageField(upload_to=get_file_path)
+    image = models.ImageField(verbose_name=_("Photo"), upload_to=get_file_path)
     thumbnail = ImageSpecField(source='image',
                                processors=[SmartResize(600, 300)],
                                format='JPEG',
@@ -690,10 +690,10 @@ class ManagementAction(models.Model):
     )
 
     nest = models.ForeignKey(Nest, on_delete=models.CASCADE)
-    outcome = models.CharField(max_length=2, choices=OUTCOME_CHOICE)
-    action_time = models.DateTimeField()
-    person_name = models.CharField(max_length=255, blank=True)
-    duration = models.DurationField(null=True, blank=True)
+    outcome = models.CharField(verbose_name=_("Outcome"), max_length=2, choices=OUTCOME_CHOICE)
+    action_time = models.DateTimeField(verbose_name=_("Action time"))
+    person_name = models.CharField(verbose_name=_("Person name"), max_length=255, blank=True)
+    duration = models.DurationField(verbose_name=_("Duration"), null=True, blank=True)
 
     @property
     def duration_in_seconds(self):
