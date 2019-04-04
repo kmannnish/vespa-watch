@@ -228,6 +228,11 @@ LANGUAGES_AVAILABLE_IN_SELECTOR = [
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+MARKDOWNX_IMAGE_MAX_SIZE = {
+    'size': (1200, 600),
+    'quality': 100
+}
+
 VESPAWATCH_EVIDENCE_OBS_FIELD_ID = 9770  # The identifier of the "vespawatch_evidence" observation field @iNaturalist
 VESPAWATCH_ID_OBS_FIELD_ID = 9613 # # The identifier of the "vespawatch_id" observation field @iNaturalist
 VESPAWATCH_PROJECT_ID = 22865  # vespawatch project ID @ iNaturalist

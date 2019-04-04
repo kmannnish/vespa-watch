@@ -5,17 +5,34 @@
 
 // 1. Global stuff
 
-// Enable the language selector (Navbar)
+// Enable the language selector (navbar)
 $(document).ready(function () {
     $('#lang').on('change', function () {
         document.forms['lang-form'].submit();
     });
 });
 
+// Load obs_card images
+$(document).ready(function () {
+    $('#obs-cards div.card').each(function (index, value) {
+        var card = $(this);
+        var split_id = card.attr('id').split('-');
+        var subject = split_id[1].toLowerCase();
+        var id = split_id[2];
+        $.getJSON('/api/' + subject + 's/' + id)
+            .done(function (r) {
+                if (r.thumbnails && r.thumbnails.length > 0 && r.thumbnails[0]) {
+                    card.find('img').attr('src', r.thumbnails[0]);
+                }
+            });
+        }
+    );
+});
+
 // Disable console.log() et al. if settings.JS_DEBUG != True
 if (!VWConfig.debug) {
     if (!window.console) window.console = {};
-    var methods = ["log", "debug", "warn", "info"];
+    var methods = ['log', 'debug', 'warn', 'info'];
     for (var i = 0; i < methods.length; i++) {
         console[methods[i]] = function () {
         };
@@ -23,7 +40,6 @@ if (!VWConfig.debug) {
 }
 
 // 2. Vue.JS components
-
 
 // The map of the visualization.
 // This contains an observations prop. When this property is updated, (when data is retrieved
@@ -76,7 +92,7 @@ var VwObservationsVizMap = {
                     fillColor: getColor(obs),
                     fillOpacity: conf.fillOpacity,
                     radius: getRadius(obs),
-                    className: "circle",
+                    className: 'circle',
                     subject: obs.subject,
                     id: obs.id
                 });
@@ -103,7 +119,7 @@ var VwObservationsVizMap = {
         fillPopupWithObsData: function (obs, popup) {
 
             // Get observation data from the API
-            var url = obs.subject === "individual" ? VWConfig.apis.individualsUrl : VWConfig.apis.nestsUrl;
+            var url = obs.subject === 'individual' ? VWConfig.apis.individualsUrl : VWConfig.apis.nestsUrl;
             axios.get(url + '/' + obs.id)
                 .then(response => {
                     // console.log('fetched individual data');
@@ -150,7 +166,7 @@ var VwObservationsVizMap = {
 
             var mapPosition = conf.initialPosition;
             var mapZoom = conf.initialZoom;
-            this.map = L.map("vw-map-map").setView(mapPosition, mapZoom);
+            this.map = L.map('vw-map-map').setView(mapPosition, mapZoom);
 
             this.map.spin(true);
 
@@ -297,7 +313,7 @@ var VwObservationsVizTimeSlider = {
             return moment(this.selectedTimeRange.stop).format('YYYY MMM');
         },
         buttonLabel: function () {
-            return (this.playing ? gettext("Pause") : gettext("Play"));
+            return (this.playing ? gettext('Pause') : gettext('Play'));
         }
     },
 
@@ -348,12 +364,12 @@ var VwObservationsViz = {
             var urls = [];
 
             if (this.zone != null) {
-                // console.log("Only requesting observations for zone " + this.zone);
+                // console.log('Only requesting observations for zone ' + this.zone);
                 urls.push(axios.get(this.observationsUrl + '&zone=' + this.zone + '&type=nest'));
             } else {
                 urls.push(axios.get(this.individualsUrl + '?light=true'));
                 urls.push(axios.get(this.nestsUrl + '?light=true'));
-                // console.log("No zone set");
+                // console.log('No zone set');
             }
             axios.all(urls)
               .then(axios.spread((indivRes, nestRes) => {
@@ -414,7 +430,7 @@ var VwObservationsViz = {
 
     mounted: function () {
         // This function gets called when the component is completely loaded on the page
-        if (this.loadData === "1") {
+        if (this.loadData === '1') {
             this.getData();
         }
     },
@@ -422,7 +438,7 @@ var VwObservationsViz = {
     props: ['zone', 'loadData', 'editRedirect', 'type'],
     watch: {
         loadData: function (n, o) {
-            if (n === "1") {
+            if (n === '1') {
                 this.getData();
             }
         },
@@ -483,47 +499,47 @@ var VwManagementActionModal = {
         },
 
         modalTitle: function () {
-            return this.mode === 'add' ? gettext("New management action") : gettext("Edit management action")
+            return this.mode === 'add' ? gettext('New management action') : gettext('Edit management action')
         },
         outcomeLabel: function () {
-            return gettext("Outcome")
+            return gettext('Outcome')
         },
         saveLabel: function () {
-            return gettext("Save")
+            return gettext('Save')
         },
         cancelLabel: function () {
-            return gettext("Cancel")
+            return gettext('Cancel')
         },
         deleteLabel: function () {
-            return gettext("Delete")
+            return gettext('Delete')
         },
         yesDeleteLabel: function () {
-            return gettext("Yes, delete")
+            return gettext('Yes, delete')
         },
         nameLabel: function () {
-            return gettext("Person name")
+            return gettext('Person name')
         },
         actionTimeLabel: function () {
-            return gettext("Action time")
+            return gettext('Action time')
         },
         durationLabel: function () {
-            return gettext("Duration")
+            return gettext('Duration')
         },
         inMinutesLabel: function () {
-            return gettext("in minutes")
+            return gettext('in minutes')
         },
         errorsLabel: function () {
-            return gettext("Errors")
+            return gettext('Errors')
         },
         areYouSureStr: function () {
-            return gettext("Are you sure you want to delete this action?")
+            return gettext('Are you sure you want to delete this action?')
         }
     },
     methods: {
         populateFromServer: function () {
             axios.get(this.loadActionUrl, {params: {'action_id': this.actionId}})
                 .then(response => {
-                    console.log("received response", response);
+                    console.log('received response', response);
                     this.actionTime = response.data.action_time;
                     this.outcome = response.data.outcome;
                     this.duration = response.data.duration;
@@ -538,7 +554,7 @@ var VwManagementActionModal = {
                         vm.$emit('close', true);
                     }
                 }, error => {
-                    console.log("Error");
+                    console.log('Error');
                 });
         },
         save: function () {
@@ -660,7 +676,7 @@ var VwManagementTableNestRow = {
     computed: {
         hasManagementAction: function () {
             // Does this Nest has a management action?
-            return (this.nest.action !== "")
+            return (this.nest.action !== '')
         },
         managementActionID: function () {
             // If this nest has a management action, return its ID
@@ -771,7 +787,7 @@ var VwManagementTable = {
             return gettext('No nests yet!')
         },
         nestClass: function () {
-            return "table-danger";
+            return 'table-danger';
         }
     },
     data: function () {
@@ -969,10 +985,10 @@ var VwLocationSelectorMap = {
     },
     methods: {
         emitLongLat: function () {
-            this.$emit("marker-move", [this.marker.getLatLng().lng, this.marker.getLatLng().lat]);
+            this.$emit('marker-move', [this.marker.getLatLng().lng, this.marker.getLatLng().lat]);
         },
         setMarker: function (lat, lng) {
-            console.log("setting marker");
+            console.log('setting marker');
             if (this.marker != undefined) {
                 this.map.removeLayer(this.marker);
             }
@@ -991,15 +1007,15 @@ var VwLocationSelectorMap = {
         }
     },
     mounted: function () {
-        this.map = L.map("vw-location-selector-map-map").setView(this.leafletPosition, this.mapZoom);
+        this.map = L.map('vw-location-selector-map-map').setView(this.leafletPosition, this.mapZoom);
         L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png').addTo(this.map);
-        if (this.initMarker === "true") {
-            console.log("init with a marker");
+        if (this.initMarker === 'true') {
+            console.log('init with a marker');
             this.setMarker(this.position[0], this.position[1]);
             this.map.setZoom(16);
             this.map.panTo(new L.LatLng(this.position[1], this.position[0]));
         } else {
-            console.log("don't add a marker");
+            console.log('don\'t add a marker');
         }
     },
     props: ['position', 'initMarker'],
@@ -1173,7 +1189,7 @@ var VwLocationSelector = {
             // Updates this.modelAddress based on this.locationCoordinates
 
             var that = this;
-            axios.get("https://nominatim.openstreetmap.org/reverse", {
+            axios.get('https://nominatim.openstreetmap.org/reverse', {
                 params: {
                     format: 'jsonv2', 'lat': that.locationCoordinates[1], 'lon': that.locationCoordinates[0]
                 }
