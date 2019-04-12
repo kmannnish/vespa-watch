@@ -104,7 +104,7 @@ class Command(VespaWatchCommand):
         Create objects on iNaturalist that were newly created at vespawatch
         and don't have a iNaturalist id yet
         """
-        self.w("2. Push the nest and individuals that originates in VW")
+        self.w("2. Push the nest and individuals that originate in VW")
         if not settings.INATURALIST_PUSH:
             self.w("Not pushing objects because of settings.INATURALIST_PUSH")
             return
@@ -112,7 +112,7 @@ class Command(VespaWatchCommand):
         local_observations_from_vespawatch = []
         for Model in OBSERVATION_MODELS:
             local_observations_from_vespawatch = local_observations_from_vespawatch + list(Model.new_vespawatch_objects.all())
-        self.w(f"2.1 We currently have {len(local_observations_from_vespawatch)} local observations that originates in VW. Push/pull each of them, as needed")
+        self.w(f"2.1 We currently have {len(local_observations_from_vespawatch)} local observations that originate in VW. Push/pull each of them, as needed")
 
         for obs in local_observations_from_vespawatch:
             self.w(f"Processing {obs.subject} #{obs.pk}...")
