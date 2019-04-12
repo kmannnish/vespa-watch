@@ -32,7 +32,6 @@ class TestSync(TestCase):
         # Set a return value for the get_token_mock
         self.get_token_mock.return_value = 'TESTTOKEN'
 
-        self.objects_to_delete = []
         self.vv_taxon = Taxon(
             name='Vespa velutina',
             vernacular_name='test wasp',
@@ -41,7 +40,6 @@ class TestSync(TestCase):
             identification_priority=1
         )
         self.vv_taxon.save()
-        self.objects_to_delete.append(self.vv_taxon)
 
     def tearDown(self):
         # Stop all patchers
@@ -51,11 +49,11 @@ class TestSync(TestCase):
         self.delete_patcher.stop()
         self.create_at_inat_patcher.stop()
 
-        for obj in self.objects_to_delete:
-            try:
-                obj.delete()
-            except Exception:
-                pass
+        # Delete all objects that have been created
+        InatObsToDelete.objects.all().delete()
+        Individual.objects.all().delete()
+        Nest.objects.all().delete()
+        Taxon.objects.all().delete()
 
     @override_settings(INATURALIST_PUSH=True)
     def test_sync_push_new_individual(self):
@@ -86,7 +84,6 @@ class TestSync(TestCase):
                 {'observation_field_id': settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID, 'value': 'individual'}
             ]
         }
-        self.objects_to_delete.append(ind)
         call_command('inaturalist_sync')
         self.create_at_inat_mock.assert_called_once()
         self.create_at_inat_mock.assert_called_with(access_token='TESTTOKEN', params={'observation': individual_data_to_inaturalist})
@@ -120,7 +117,6 @@ class TestSync(TestCase):
                 {'observation_field_id': settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID, 'value': 'nest'}
             ]
         }
-        self.objects_to_delete.append(ind)
         call_command('inaturalist_sync')
         self.create_at_inat_mock.assert_called_once()
         self.create_at_inat_mock.assert_called_with(access_token='TESTTOKEN', params={'observation': individual_data_to_inaturalist})
