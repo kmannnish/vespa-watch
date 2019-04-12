@@ -177,3 +177,4 @@ class Command(VespaWatchCommand):
         self.push_created(token)
         # pulled_inat_ids = self.pull()
         # self.check_all_missing(pulled_inat_ids)
+        self.w("\ndone\n")
