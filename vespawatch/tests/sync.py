@@ -3,7 +3,7 @@ from django.conf import settings
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 from unittest import mock
-from vespawatch.models import Individual, Nest, Taxon
+from vespawatch.models import Individual, InatObsToDelete, Nest, Taxon
 
 
 class TestSync(TestCase):
@@ -124,3 +124,105 @@ class TestSync(TestCase):
         call_command('inaturalist_sync')
         self.create_at_inat_mock.assert_called_once()
         self.create_at_inat_mock.assert_called_with(access_token='TESTTOKEN', params={'observation': individual_data_to_inaturalist})
+
+    @override_settings(INATURALIST_PUSH=True)
+    def test_sync_push_deleted_indiv(self):
+        """
+        An observation that was created in vespawatch and deleted in vespawatch after it was synced, should be
+        deleted on iNaturalist
+        """
+
+        # Create an Individual that already exists in iNaturalist after a previous push
+        ind = Individual(
+            inaturalist_id=30,
+            latitude=51.2003,
+            longitude=4.9067,
+            observation_time=datetime(2019, 4, 1, 10),
+            originates_in_vespawatch=True,
+            taxon=self.vv_taxon
+        )
+        ind.save()
+        ind.delete()  # When the observation is deleted, it is actually added to the InatObsToDelete table
+
+        self.assertEqual(len(InatObsToDelete.objects.all()), 1)
+        self.assertEqual(InatObsToDelete.objects.all()[0].inaturalist_id, 30)
+
+        # Now a sync is called. The InatObsToDelete observation is deleted on iNaturalist and removed from the db
+        call_command('inaturalist_sync')
+        self.delete_mock.assert_called_once_with(observation_id=30, access_token='TESTTOKEN')
+
+    @override_settings(INATURALIST_PUSH=True)
+    def test_sync_no_push_deleted_indiv(self):
+        """
+        An observation that was deleted on vespawatch before it was synced to iNaturalist should not be deleted on
+        iNaturalist
+        """
+
+        # Create an Individual that already exists in iNaturalist after a previous push
+        ind = Individual(
+            latitude=51.2003,
+            longitude=4.9067,
+            observation_time=datetime(2019, 4, 1, 10),
+            originates_in_vespawatch=True,
+            taxon=self.vv_taxon
+        )
+        ind.save()
+        ind.delete()  # When the observation is deleted, it is deleted without creating a InatObsToDelete object
+
+        self.assertEqual(len(InatObsToDelete.objects.all()), 0)
+
+        # Now a sync is called. Since there are no InatObsToDelete, the delete_mock is never called
+        call_command('inaturalist_sync')
+        self.delete_mock.assert_not_called()
+
+
+    @override_settings(INATURALIST_PUSH=True)
+    def test_sync_push_deleted_nest(self):
+        """
+        An observation that was created in vespawatch and deleted in vespawatch after it was synced, should be
+        deleted on iNaturalist
+        """
+
+        # Create a Nest that already exists in iNaturalist after a previous push
+        nest = Nest(
+            inaturalist_id=30,
+            latitude=51.2003,
+            longitude=4.9067,
+            observation_time=datetime(2019, 4, 1, 10),
+            originates_in_vespawatch=True,
+            taxon=self.vv_taxon
+        )
+        nest.save()
+        nest.delete()  # When the observation is deleted, it is actually added to the InatObsToDelete table
+
+        self.assertEqual(len(InatObsToDelete.objects.all()), 1)
+        self.assertEqual(InatObsToDelete.objects.all()[0].inaturalist_id, 30)
+
+        # Now a sync is called. The InatObsToDelete observation is deleted on iNaturalist and removed from the db
+        call_command('inaturalist_sync')
+        self.delete_mock.assert_called_once_with(observation_id=30, access_token='TESTTOKEN')
+
+    @override_settings(INATURALIST_PUSH=True)
+    def test_sync_no_push_deleted_nest(self):
+        """
+        An observation that was deleted on vespawatch before it was synced to iNaturalist should not be deleted on
+        iNaturalist
+        """
+
+        # Create an Individual that already exists in iNaturalist after a previous push
+        nest = Individual(
+            latitude=51.2003,
+            longitude=4.9067,
+            observation_time=datetime(2019, 4, 1, 10),
+            originates_in_vespawatch=True,
+            taxon=self.vv_taxon
+        )
+        nest.save()
+        nest.delete()  # When the observation is deleted, it is deleted without creating a InatObsToDelete object
+
+        self.assertEqual(len(InatObsToDelete.objects.all()), 0)
+
+        # Now a sync is called. Since there are no InatObsToDelete, the delete_mock is never called
+        call_command('inaturalist_sync')
+        self.delete_mock.assert_not_called()
+
