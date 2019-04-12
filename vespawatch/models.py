@@ -26,6 +26,9 @@ from vespawatch.utils import make_unique_filename
 
 INAT_VV_TAXONS_IDS = (119019, 560197) # At iNaturalist, those taxon IDS represents Vespa Velutina and subspecies
 
+# TODO Remove code marked with DEPRECATED
+
+
 def get_taxon_from_inat_taxon_id(inaturalist_taxon_id):
     """ Raises Taxon.DoesNotExists().
 
@@ -114,6 +117,12 @@ class VespawatchCreatedObservationsManager(models.Manager):
     """The queryset only contains observations that originates from Vespa-Watch"""
     def get_queryset(self):
         return super().get_queryset().filter(originates_in_vespawatch=True)
+
+
+class VespawatchNewlyCreatedObservationsManager(models.Manager):
+    """The queryset contains only observations that were created in vespawatch and have no iNaturalist id yet"""
+    def get_queryset(self):
+        return super().get_queryset().filter(originates_in_vespawatch=True, inaturalist_id__isnull=True)
 
 
 class TaxonMatchError(Exception):
@@ -312,6 +321,7 @@ class AbstractObservation(models.Model):
     objects = models.Manager()  # The default manager.
     from_inat_objects = InatCreatedObservationsManager()
     from_vespawatch_objects = VespawatchCreatedObservationsManager()
+    new_vespawatch_objects = VespawatchNewlyCreatedObservationsManager()
 
     class Meta:
         abstract = True
@@ -401,8 +411,7 @@ class AbstractObservation(models.Model):
                     {'observation_field_id': settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID, 'value': vespawatch_evidence_value}]
                 }
 
-    # TODO: check if still used by the new sync?
-    def update_at_inaturalist(self, access_token):
+    def update_at_inaturalist_DEPRECATED(self, access_token):  # Naming this DEPRECATED. See if it is called somewhere
         """Update the iNaturalist observation for this obs
 
         :param access_token:
@@ -414,22 +423,31 @@ class AbstractObservation(models.Model):
         self.push_attached_pictures_at_inaturalist(access_token=access_token)
 
     def update_from_inat_data(self, inat_observation_data):
-        # For new sync:
-        # Update an observation in our database following to what's changed at iNaturalist. See #2.
-        # Ideally, we'd like to use it for our observations and for iNaturalist originating ones
-        # Should also set the inat_vv_confirmed flag
+        # Check the vespawatch_evidence
+        # ------
+        # If the observation is a nest but the vespawatch evidence is not nest => flag the nest
+        if self.__class__.__name__ == 'Nest':
+            if inat_observation_data['vespawatch_evidence'] != 'nest':
+                self.flag_ag_indiv_at_inat()
+        # If the observation is an individual but the vespawatch evidence is a nest and the observation originates in vespawatch => delete the individual and create a nest
+        elif self.__class__.__name__ == 'Individual':
+            if inat_observation_data['vespawatch_evidence'] != 'nest' and self.originates_in_vespawatch:
+                create_observation_from_inat_data(inat_observation_data)
+                self.delete()
+                return
 
         # Update taxon data and set inat_vv_confirmed (use inat_data_confirms_vv() )
-
-        # Update description
+        self.inat_vv_confirmed = inat_data_confirms_vv(inat_observation_data)
 
         # Update photos
+        for photo in inat_observation_data['photos']:
+            self.assign_picture_from_url(photo['url'])
 
         # Update location
+        self.latitude = inat_observation_data['geojson']['coordinates'][1]
+        self.longitude = inat_observation_data['geojson']['coordinates'][0]
 
-        # Update
-
-        pass
+        self.save()
 
     def create_at_inaturalist(self, access_token):
         """Creates a new observation at iNaturalist for this observation
@@ -452,25 +470,30 @@ class AbstractObservation(models.Model):
         self.save()
         self.push_attached_pictures_at_inaturalist(access_token=access_token)
 
-    def assign_picture_from_url(self, photo_url):
-        if self.__class__ == Nest:
-            photo_obj = NestPicture()
-        else:
-            photo_obj = IndividualPicture()
-
+    def get_photo_filename(self, photo_url):
         # TODO: Find a cleaner solution to this
         # It seems the iNaturalist only returns small thumbnails such as
         # 'https://static.inaturalist.org/photos/1960816/square.jpg?1444437211'
         # We can circumvent the issue by hacking the URL...
         photo_url = photo_url.replace('square.jpg', 'large.jpg')
         photo_url = photo_url.replace('square.jpeg', 'large.jpeg')
-
-        photo_content = ContentFile(requests.get(photo_url).content)
         photo_filename = photo_url[photo_url.rfind("/")+1:].split('?',1)[0]
+        return photo_filename
 
-        photo_obj.observation = self
-        photo_obj.image.save(photo_filename, photo_content)
-        photo_obj.save()
+    def assign_picture_from_url(self, photo_url):
+        photo_filename = self.get_photo_filename(photo_url)
+        if photo_filename not in [x.image.name for x in self.pictures.all()]:
+            if self.__class__ == Nest:
+                photo_obj = NestPicture()
+            else:
+                photo_obj = IndividualPicture()
+
+
+            photo_content = ContentFile(requests.get(photo_url).content)
+
+            photo_obj.observation = self
+            photo_obj.image.save(photo_filename, photo_content)
+            photo_obj.save()
 
     def push_attached_pictures_at_inaturalist(self, access_token):
         if self.inaturalist_id:
@@ -781,3 +804,12 @@ def get_local_observation_with_inaturalist_id(inaturalist_id):
             return obs
 
     return None
+
+def get_missing_at_inat_observations(pulled_inat_ids):
+    """
+    Get all observations that exist in our database with an iNaturalist ID but that were not returned by the
+    iNaturalist pull.
+    """
+    missing_indiv = Individual.objects.all().filter(inaturalist_id__isnull=False).exclude(inaturalist_id__in=pulled_inat_ids)
+    missing_nests = Nest.objects.all().filter(inaturalist_id__isnull=False).exclude(inaturalist_id__in=pulled_inat_ids)
+    return list(missing_indiv) + list(missing_nests)
