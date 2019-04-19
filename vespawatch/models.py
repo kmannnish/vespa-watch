@@ -148,6 +148,7 @@ def inat_data_confirms_vv(inaturalist_data):
         # no data
         return None
 
+
 def create_observation_from_inat_data(inaturalist_data):
     """Creates an observation in our local database according to the data from iNaturalist API.
 
@@ -185,7 +186,10 @@ def create_observation_from_inat_data(inaturalist_data):
         inat_vv_confirmed = inat_data_confirms_vv(inaturalist_data)
 
         # Check if it has the vespawatch_evidence observation field value and if it's set to "nest"
-        is_nest_ofv = next((item for item in inaturalist_data['ofvs'] if item["field_id"] == settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID), None)
+        if 'ofvs' in inaturalist_data:
+            is_nest_ofv = next((item for item in inaturalist_data['ofvs'] if item["field_id"] == settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID), None)
+        else:
+            is_nest_ofv = None
         if is_nest_ofv and is_nest_ofv['value'] == "nest":
             created =  Nest.objects.create(
                 inat_vv_confirmed=inat_vv_confirmed,
@@ -256,7 +260,7 @@ def update_loc_obs_taxon_according_to_inat(inaturalist_data):
 
     return 'no_community_id'
 
-def inat_observation_comes_from_vespawatch(inat_observation_id):
+def inat_observation_comes_from_vespawatch_DEPRECATED(inat_observation_id):
     """ Takes an observation_id from iNat API and returns True if this observation was first created from the
     VespaWatch website.
 
@@ -422,26 +426,64 @@ class AbstractObservation(models.Model):
         update_observation(observation_id=self.inaturalist_id, params=p, access_token=access_token)
         self.push_attached_pictures_at_inaturalist(access_token=access_token)
 
+    def flag_warning(self, text):
+        if self.__class__.__name__ == 'Nest':
+            warning = NestObservationWarning(text=text, datetime=datetime.now(),
+                                             observation=self)
+            warning.save()
+        elif self.__class__.__name__ == 'Individual':
+            warning = IndividualObservationWarning(text=text, datetime=datetime.now(),
+                                                   observation=self)
+            warning.save()
+
+    def flag_based_on_inat_data(self, inat_observation_data):
+        """
+        The observation was no longer found on iNaturalist with our general filters.
+        Check why, and flag this observation
+        """
+        # Project is vespawatch?
+        if not settings.VESPAWATCH_PROJECT_ID in inat_observation_data['project_ids']:
+            self.flag_warning('not in vespawatch project')
+
+        # Taxon known in VW?
+        if inat_observation_data['community_taxon_id'] not in INAT_VV_TAXONS_IDS:
+            self.flag_warning('unknown taxon')
+
     def update_from_inat_data(self, inat_observation_data):
         # Check the vespawatch_evidence
         # ------
         # If the observation is a nest but the vespawatch evidence is not nest => flag the nest
-        if self.__class__.__name__ == 'Nest':
-            if inat_observation_data['vespawatch_evidence'] != 'nest':
-                self.flag_ag_indiv_at_inat()
-        # If the observation is an individual but the vespawatch evidence is a nest and the observation originates in vespawatch => delete the individual and create a nest
-        elif self.__class__.__name__ == 'Individual':
-            if inat_observation_data['vespawatch_evidence'] != 'nest' and self.originates_in_vespawatch:
-                create_observation_from_inat_data(inat_observation_data)
-                self.delete()
-                return
+        if 'ofvs' in inat_observation_data:
+            vw_evidence_list = [x['value'] for x in inat_observation_data['ofvs'] if x['field_id'] == settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID]
+            if len(vw_evidence_list) > 0:
+                vw_evidence = vw_evidence_list[0]
+
+                if self.__class__.__name__ == 'Nest':
+                    if vw_evidence != 'nest':
+                        self.flag_warning('individual at inaturalist')
+                # If the observation is an individual but the vespawatch evidence is a nest and the observation originates in vespawatch => delete the individual and create a nest
+                elif self.__class__.__name__ == 'Individual':
+                    if vw_evidence:
+                        if self.originates_in_vespawatch:
+                            self.flag_warning('nest at inaturalist')
+                        else:
+                            create_observation_from_inat_data(inat_observation_data)
+                            self.delete()
+                            return
 
         # Update taxon data and set inat_vv_confirmed (use inat_data_confirms_vv() )
         self.inat_vv_confirmed = inat_data_confirms_vv(inat_observation_data)
 
         # Update photos
-        for photo in inat_observation_data['photos']:
-            self.assign_picture_from_url(photo['url'])
+        # -------------
+        # When we pull again and the API returns additional images, those are not added. This is done
+        # because we insert a UUID in the filename when we pull it. The result of that is that we cannot
+        # compare that image with the image url that we retrieve from iNaturalist. So to prevent adding
+        # the same image again and again with subsequent pulls, we only add images when the observation
+        # has none.
+        if len(self.pictures.all()) == 0:
+            for photo in inat_observation_data['photos']:
+                self.assign_picture_from_url(photo['url'])
 
         # Update location
         self.latitude = inat_observation_data['geojson']['coordinates'][1]
@@ -487,7 +529,6 @@ class AbstractObservation(models.Model):
                 photo_obj = NestPicture()
             else:
                 photo_obj = IndividualPicture()
-
 
             photo_content = ContentFile(requests.get(photo_url).content)
 

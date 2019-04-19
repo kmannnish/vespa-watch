@@ -9,7 +9,7 @@ from pyinaturalist.rest_api import get_access_token, delete_observation
 
 from vespawatch.management.commands._utils import VespaWatchCommand
 from vespawatch.models import Individual, Nest, InatObsToDelete, get_local_observation_with_inaturalist_id, \
-    create_observation_from_inat_data, get_missing_at_inat_observations
+    create_observation_from_inat_data, get_missing_at_inat_observations, INAT_VV_TAXONS_IDS
 
 OBSERVATION_MODELS = [Individual, Nest]
 
@@ -112,11 +112,10 @@ class Command(VespaWatchCommand):
         local_observations_from_vespawatch = []
         for Model in OBSERVATION_MODELS:
             local_observations_from_vespawatch = local_observations_from_vespawatch + list(Model.new_vespawatch_objects.all())
-        self.w(f"2.1 We currently have {len(local_observations_from_vespawatch)} local observations that originate in VW. Push/pull each of them, as needed")
+        self.w(f"2.1 We currently have {len(local_observations_from_vespawatch)} local observations that originate in VW. Push each of them")
 
         for obs in local_observations_from_vespawatch:
-            self.w(f"Processing {obs.subject} #{obs.pk}...")
-            self.w("2.2 This is a new observation, we'll create it at iNaturalist. ", ending="")
+            self.w(f"... Creating {obs.subject} #{obs.pk} on iNaturalist")
             obs.create_at_inaturalist(access_token=access_token)
 
     def pull(self):
@@ -127,7 +126,7 @@ class Command(VespaWatchCommand):
         If we do have an observation with that iNaturalist ID, update it.
         """
         self.w("\n3. Pull all observations from iNaturalist")
-        observations = get_all_observations(params={'project_id': settings.VESPAWATCH_PROJECT_ID, 'taxon_id': 119019})  #TODO: Taxon ID is only 119019? No need for subspecies (see models.INAT_VV_TAXONS_IDS)?
+        observations = get_all_observations(params={'project_id': settings.VESPAWATCH_PROJECT_ID, 'taxon_id': list(INAT_VV_TAXONS_IDS)})
         pulled_inat_ids = []
         for inat_observation_data in observations:
             pulled_inat_ids.append(inat_observation_data['id'])
@@ -139,7 +138,7 @@ class Command(VespaWatchCommand):
                 self.w("OK")
             else:
                 # We already have an observation for this id. Update it
-                local_obs.update_from_inat_data(inat_observation_data)  # TODO: implement this
+                local_obs.update_from_inat_data(inat_observation_data)
         return pulled_inat_ids
 
     def check_missing_obs(self, observation):
@@ -151,7 +150,7 @@ class Command(VespaWatchCommand):
         self.w("\n4. Check the observations that were not returned from iNaturalist")
         try:
             inat_obs_data = get_observation(observation.inaturalist_id)
-            observation.update_from_inat_data(inat_obs_data)  # TODO: or add flags as indicated in the sheet specification
+            observation.flag_based_on_inat_data(inat_obs_data)
         except ObservationNotFound:
             observation.delete()
 
@@ -175,6 +174,6 @@ class Command(VespaWatchCommand):
 
         self.push_deletes(token)
         self.push_created(token)
-        # pulled_inat_ids = self.pull()
-        # self.check_all_missing(pulled_inat_ids)
+        pulled_inat_ids = self.pull()
+        self.check_all_missing(pulled_inat_ids)
         self.w("\ndone\n")
