@@ -691,13 +691,3 @@ class TestSync(TestCase):
         self.assertEqual(len(Individual.objects.all()), 0)
         # And that it is not added to the InatObsToDelete (otherwise we will delete it on iNaturalist at the next push)
         self.assertEqual(len(InatObsToDelete.objects.all()), 0)
-
-
-
-
-
-
-
-# TODO: check missing observations:
-# TODO test vwatch evidence added or changed
-
