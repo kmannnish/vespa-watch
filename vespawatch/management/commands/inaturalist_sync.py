@@ -2,7 +2,6 @@ import logging
 from json import JSONDecodeError
 
 from django.conf import settings
-from django.utils import timezone
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.node_api import get_all_observations, get_observation
 from pyinaturalist.rest_api import get_access_token, delete_observation
@@ -15,7 +14,7 @@ OBSERVATION_MODELS = [Individual, Nest]
 
 
 class Command(VespaWatchCommand):
-    help = 'Syncrhonize VespaWatch and iNaturalist. Full description: https://github.com/inbo/vespa-watch/issues/2'
+    help = 'Synchronize VespaWatch and iNaturalist. Full description: https://github.com/inbo/vespa-watch/issues/2'
 
     def push_deletes(self, access_token):
         """
@@ -29,7 +28,8 @@ class Command(VespaWatchCommand):
                 delete_observation(observation_id=obs.inaturalist_id, access_token=access_token)
                 obs.delete()  # Only delete locally if the API call succeeded
             except JSONDecodeError:
-                # (temporary?) iNaturalist API issue...
+                # (temporary?) iNaturalist API issue. Just log a warning. We will try to delete the observation
+                # at the next sync
                 logging.warning(f'Delete observation {obs.inaturalist_id} raised a JSONDecodeError')
             self.w("OK")
 
@@ -79,7 +79,8 @@ class Command(VespaWatchCommand):
         """
         Get the observation data from iNaturalist and update the observation.
         If that yields an ObservationNotFound error, the observation was deleted at iNaturalist and should be
-        deleted at vespawatch too.
+        deleted at vespawatch too. Otherwise, check which field (project id or taxon) changed that caused
+        the observation to no longer match the filter criteria. Flag the observation with the appropriate warning.
         """
         self.w("\n4. Check the observations that were not returned from iNaturalist")
         try:
@@ -96,7 +97,6 @@ class Command(VespaWatchCommand):
         missing_obs = get_missing_at_inat_observations(missing_inat_ids)
         for obs in missing_obs:
             self.check_missing_obs(obs)
-
 
     def handle(self, *args, **options):
         if settings.INATURALIST_PUSH:
