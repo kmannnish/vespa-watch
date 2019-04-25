@@ -8,7 +8,7 @@ from pyinaturalist.rest_api import get_access_token, delete_observation
 
 from vespawatch.management.commands._utils import VespaWatchCommand
 from vespawatch.models import Individual, Nest, InatObsToDelete, get_local_observation_with_inaturalist_id, \
-    create_observation_from_inat_data, get_missing_at_inat_observations, INAT_VV_TAXONS_IDS
+    create_observation_from_inat_data, get_missing_at_inat_observations
 
 OBSERVATION_MODELS = [Individual, Nest]
 
@@ -57,7 +57,7 @@ class Command(VespaWatchCommand):
         If we do have an observation with that iNaturalist ID, update it.
         """
         self.w("\n3. Pull all observations from iNaturalist")
-        observations = get_all_observations(params={'project_id': settings.VESPAWATCH_PROJECT_ID, 'taxon_id': list(INAT_VV_TAXONS_IDS)})
+        observations = get_all_observations(params={'project_id': settings.VESPAWATCH_PROJECT_ID})
         pulled_inat_ids = []
         for inat_observation_data in observations:
             pulled_inat_ids.append(inat_observation_data['id'])
