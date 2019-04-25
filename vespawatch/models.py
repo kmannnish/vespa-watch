@@ -427,6 +427,8 @@ class AbstractObservation(models.Model):
         self.push_attached_pictures_at_inaturalist(access_token=access_token)
 
     def flag_warning(self, text):
+        if text in [x.text for x in self.warnings.all()]:
+            return  # warning already set
         if self.__class__.__name__ == 'Nest':
             warning = NestObservationWarning(text=text, datetime=datetime.now(),
                                              observation=self)
