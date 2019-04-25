@@ -39,9 +39,6 @@ class Command(VespaWatchCommand):
         and don't have a iNaturalist id yet
         """
         self.w("2. Push the nest and individuals that originate in VW")
-        if not settings.INATURALIST_PUSH:
-            self.w("Not pushing objects because of settings.INATURALIST_PUSH")
-            return
 
         local_observations_from_vespawatch = []
         for Model in OBSERVATION_MODELS:
@@ -68,7 +65,7 @@ class Command(VespaWatchCommand):
             if local_obs is None:
                 # This is a new one. Check vespawatch-evidence and create a nest or individual
                 self.w(f"iNaturalist observation with ID #{inat_observation_data['id']} is not yet known, we'll create it locally...", ending='')
-                create_observation_from_inat_data(inat_observation_data)  #TODO: check all the required fields are set. # TODO: set 'inat_vv_confirmed'
+                create_observation_from_inat_data(inat_observation_data)  #TODO: check all the required fields are set
                 self.w("OK")
             else:
                 # We already have an observation for this id. Update it
@@ -82,11 +79,11 @@ class Command(VespaWatchCommand):
         deleted at vespawatch too. Otherwise, check which field (project id or taxon) changed that caused
         the observation to no longer match the filter criteria. Flag the observation with the appropriate warning.
         """
-        self.w("\n4. Check the observations that were not returned from iNaturalist")
         try:
             inat_obs_data = get_observation(observation.inaturalist_id)
             observation.flag_based_on_inat_data(inat_obs_data)
         except ObservationNotFound:
+            self.w(f"\n... obs {observation.pk} was not found. Deleting it.")
             observation.delete()
 
     def check_all_missing(self, missing_inat_ids):
@@ -95,6 +92,7 @@ class Command(VespaWatchCommand):
         data of the iNaturlist pull. Check the observations one by one.
         """
         missing_obs = get_missing_at_inat_observations(missing_inat_ids)
+        self.w("\n4. Check the observations that were not returned from iNaturalist")
         for obs in missing_obs:
             self.check_missing_obs(obs)
 
@@ -106,8 +104,12 @@ class Command(VespaWatchCommand):
         else:
             token = None
 
-        self.push_deletes(token)
-        self.push_created(token)
+        if settings.INATURALIST_PUSH:
+            self.push_deletes(token)
+            self.push_created(token)
+        else:
+            self.w("Not pushing objects because of settings.INATURALIST_PUSH")
+
         pulled_inat_ids = self.pull()
         self.check_all_missing(pulled_inat_ids)
         self.w("\ndone\n")
