@@ -10,7 +10,6 @@ from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.base import ContentFile
-from django.forms import model_to_dict
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template import defaultfilters
@@ -538,10 +537,10 @@ class Individual(AbstractObservation):
     FLOWER = 'FL'
     OTHER = 'OT'
     BEHAVIOUR_CHOICES = (
-        (FOURAGING, 'Fouraging'),
-        (HUNTING, 'Hunting at hive'),
-        (FLOWER, 'At flower'),
-        (OTHER, 'Other')
+        (FOURAGING, _('Fouraging')),
+        (HUNTING, _('Hunting at hive')),
+        (FLOWER, _('At flower')),
+        (OTHER, _('Other'))
     )
 
     # Fields
