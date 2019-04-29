@@ -1,4 +1,3 @@
-
 # Django app setup on AWS
 
 ## Introduction

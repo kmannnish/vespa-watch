@@ -1074,23 +1074,23 @@ var VwLocationSelectorCoordinates = {
         }
 
     },
-    props: ['longitude', 'latitude', 'address'],
+    props: ['longitude', 'latitude', 'address', 'isRequired'],
     template: `
         <div>
             <div class="form-row">
                 <div class="form-group col-6">
-                    <label for="id_latitude">{{latitudeLabel}}</label>
+                    <label for="id_latitude">{{latitudeLabel}}<span v-if="isRequired"> *</span></label>
                     <input type="text" class="form-control numberinput" id="id_latitude" name="latitude" v-model="lat">
                     <small class="form-text text-muted">{{coordinatesHelpLabel}}</small>
                 </div>
                 <div class="form-group col-6">
-                    <label for="id_longitude">{{longitudeLabel}}</label>
+                    <label for="id_longitude">{{longitudeLabel}}<span v-if="isRequired"> *</span></label>
                     <input type="text" class="form-control numberinput" id="id_longitude" name="longitude" v-model="long">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-12">
-                    <label for="id_address">{{addressLabel}}</label>
+                    <label for="id_address">{{addressLabel}}<span v-if="isRequired"> *</span></label>
                     <input type="text" class="form-control numberinput" id="id_address" name="address" v-model="_address">
                     <small class="form-text text-muted">{{addressHelpLabel}}</small>
                 </div>
@@ -1130,10 +1130,7 @@ var VwDatetimeSelector = {
     template: `<div class="form-group">
                     <datetime v-model="observationTime" type="datetime" 
                               input-class="datetimeinput form-control" :max-datetime="nowIsoFormat()">
-                        <label for="startDate" slot="before">
-                            [[ observationTimeLabel ]]
-                            <span v-if="isRequired">*</span>
-                        </label>          
+                        <label for="startDate" slot="before">[[ observationTimeLabel ]]<span v-if="isRequired"> *</span></label>          
                     </datetime>
                     <input type="hidden" :name="hiddenFieldName" :value="observationTime"/>
                </div>`
@@ -1214,13 +1211,13 @@ var VwLocationSelector = {
         },
     },
 
-    props: ['initCoordinates', 'initMarker', 'address'],
+    props: ['initCoordinates', 'initMarker', 'address', 'addressRequired'],
 
     template: `
         <div class="row">
             <div class="col-lg-6">
                 <vw-location-selector-location-input v-bind:init-address="address" v-on:autodetect-btn="autodetectPosition" v-on:search="getCoordinates"></vw-location-selector-location-input>
-                <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:address="modelAddress" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude"></vw-location-selector-coordinates>
+                <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:address="modelAddress" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude" v-bind:is-required="addressRequired"></vw-location-selector-coordinates>
             </div>
             <div class="col-lg-6">
                 <vw-location-selector-map v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>

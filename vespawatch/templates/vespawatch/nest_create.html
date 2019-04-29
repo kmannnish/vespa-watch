@@ -33,10 +33,10 @@
             </div>-->
         </div>
 
-        <h5>{% trans 'Images' %}</h5>
+        <h5>{% trans 'Photos' %}</h5>
 
         {{ image_formset.management_form }}
-        <small class="form-text text-muted">{% trans 'Upload at least one image of your observation' %}</small>
+        <small class="form-text text-muted">{% trans 'Upload at least one photo of your observation' %}</small>
         <div class="row">
             {% for image_form in image_formset %}
                 <div class="col-md-6">
@@ -50,7 +50,8 @@
         {% if object %}
             <vw-location-selector v-bind:init-coordinates="[{{ object.longitude }}, {{ object.latitude }}]"
                 init-marker="true"
-                address="{{ object.address }}">
+                address="{{ object.address }}"
+                address-required="true">
             </vw-location-selector>
         {% else %}
             <vw-location-selector
@@ -61,7 +62,8 @@
                     v-bind:init-coordinates="[4.5, 50.7]"
                     init-marker="false"
                 {% endif %}
-                    address="{{ form.data.address|default_if_none:'' }}">
+                    address="{{ form.data.address|default_if_none:'' }}"
+                    address-required="true">
             </vw-location-selector>
         {% endif %}
 
@@ -105,13 +107,17 @@
             </div>
 
             <div class="form-group">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="id_terms_of_service" >
+                <div id="div_id_terms_of_service" class="form-check">
                     <label class="form-check-label" for="id_terms_of_service">
-                        {% url 'vespawatch:about_privacypolicy' as privacypolicy_page %}
+                        <input type="checkbox" name="terms_of_service" id="id_terms_of_service" class="checkboxinput form-check-input">
+
+                    {% url 'vespawatch:about_privacypolicy' as privacypolicy_page %}
                         {% blocktrans %}
                             I agree with the <a href="{{ privacypolicy_page }}" target="_blank">privacy policy</a>.
                         {% endblocktrans %}
+
+
+
                     </label>
                 </div>
             </div>
