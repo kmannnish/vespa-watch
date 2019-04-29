@@ -532,14 +532,23 @@ class Nest(AbstractObservation):
 
 
 class Individual(AbstractObservation):
-    FOURAGING = 'FO'
     HUNTING = 'HU'
     FLOWER = 'FL'
     OTHER = 'OT'
+    NEAR_WOOD = 'WO'
+    NEAR_WATER = 'WA'
+    FLYING = 'FG'
+    CAPTURED = 'CA'
+    DEAD = 'DE'
+
     BEHAVIOUR_CHOICES = (
-        (FOURAGING, _('Fouraging')),
-        (HUNTING, _('Hunting at hive')),
-        (FLOWER, _('At flower')),
+        (HUNTING, _('Hunting at beehive')),
+        (FLOWER, _('Drinking nectar on flower')),
+        (NEAR_WOOD, _('Near wood source')),
+        (NEAR_WATER, _('Near water source')),
+        (FLYING, _('Flying')),
+        (CAPTURED, _('Captured')),
+        (DEAD, _('Dead')),
         (OTHER, _('Other'))
     )
 
