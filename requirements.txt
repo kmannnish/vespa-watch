@@ -2,7 +2,7 @@ boto3==1.9.38
 certifi==2018.8.24
 chardet==3.0.4
 dateparser==0.7.0
-Django==2.1.5
+Django==2.1.8
 django-appconf==1.0.2
 django-crispy-forms==1.7.2
 django-debug-toolbar==1.11
@@ -24,4 +24,4 @@ requests==2.20.0
 six==1.11.0
 sqlparse==0.2.4
 tzlocal==1.5.1
-urllib3==1.23
+urllib3==1.24.2
