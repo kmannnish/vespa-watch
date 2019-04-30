@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-29 11:32+0200\n"
+"POT-Creation-Date: 2019-04-29 12:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -135,59 +135,75 @@ msgstr "Hoger dan 4 meter"
 msgid "Nest height"
 msgstr "Nesthoogte"
 
-#: vespawatch/models.py:540
-msgid "Fouraging"
+#: vespawatch/models.py:545
+msgid "Hunting at beehive"
 msgstr ""
 
-#: vespawatch/models.py:541
-msgid "Hunting at hive"
-msgstr ""
-
-#: vespawatch/models.py:542
-msgid "At flower"
-msgstr ""
-
-#: vespawatch/models.py:543
-msgid "Other"
+#: vespawatch/models.py:546
+msgid "Drinking nectar on flower"
 msgstr ""
 
 #: vespawatch/models.py:547
+msgid "Near wood source"
+msgstr ""
+
+#: vespawatch/models.py:548
+msgid "Near water source"
+msgstr ""
+
+#: vespawatch/models.py:549
+msgid "Flying"
+msgstr ""
+
+#: vespawatch/models.py:550
+msgid "Captured"
+msgstr ""
+
+#: vespawatch/models.py:551
+msgid "Dead"
+msgstr ""
+
+#: vespawatch/models.py:552
+msgid "Other"
+msgstr ""
+
+#: vespawatch/models.py:556
 msgid "Individual count"
 msgstr "Aantal individuën"
 
-#: vespawatch/models.py:548
+#: vespawatch/models.py:557
 msgid "Behaviour"
 msgstr "Gedrag"
 
-#: vespawatch/models.py:587 vespawatch/models.py:599
+#: vespawatch/models.py:596 vespawatch/models.py:608
 msgid "Photo"
 msgstr "Foto"
 
-#: vespawatch/models.py:613
+#: vespawatch/models.py:622
 msgid "Full destruction, no debris"
 msgstr "Volledige vernietiging, geen resten"
 
-#: vespawatch/models.py:614
+#: vespawatch/models.py:623
 msgid "Partial destruction/debris left"
 msgstr "Gedeeltelijke vernietiging/nog resten"
 
-#: vespawatch/models.py:615
+#: vespawatch/models.py:624
 msgid "Empty nest, nothing done"
 msgstr "Leeg nest, geen actie ondernomen"
 
-#: vespawatch/models.py:619
+#: vespawatch/models.py:628
 msgid "Outcome"
 msgstr "Resultaat"
 
-#: vespawatch/models.py:620
+#: vespawatch/models.py:629
 msgid "Action time"
 msgstr "Actietijd"
 
-#: vespawatch/models.py:621
+#: vespawatch/models.py:630
 msgid "Person name"
 msgstr "Naam van persoon"
 
-#: vespawatch/models.py:622
+#: vespawatch/models.py:631
 msgid "Duration"
 msgstr "Duur"
 
