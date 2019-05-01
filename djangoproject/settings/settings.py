@@ -4,14 +4,17 @@ from .base import *
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 JS_DEBUG = False
 
 ALLOWED_HOSTS.extend([
     '.elasticbeanstalk.com',
     '.eu-west-1.elb.amazonaws.com',
-    '.vespawatch-dev.eu-west-1.elasticbeanstalk.com'
+    '.vespawatch-prd.eu-west-1.elasticbeanstalk.com',
+    '.vespawatch.be',
+    '.localhost',
 ])
+
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -30,9 +33,10 @@ DATABASES = {
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
-# on deployment files are copied frop static_root to static_url
 
 STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
+STATIC_URL = '/static/'
+
 
 # ---------- Custom settings ----------
 
@@ -51,7 +55,7 @@ LOGGING = {
     },
     'handlers': {
         'file': {
-            'level': 'INFO',
+            'level': 'WARNING',
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'verbose',
             'filename': LOG_FILE_PATH,
@@ -61,21 +65,20 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['file'],
-            'level': 'INFO',
+            'level': 'WARNING',
             'propagate': True,
         },
     }
 }
 
-
-# S3 static storage for static files
+# S3 storage for static and pictures
 AWS_ACCESS_KEY_ID = None # None to use AWS internal role/permissions
-AWS_STORAGE_BUCKET_NAME = 'lw-vespawatch-dev'
+AWS_STORAGE_BUCKET_NAME = 'lw-vespawatch-prd'
 AWS_QUERYSTRING_AUTH = False
 AWS_S3_CUSTOM_DOMAIN = '{}.s3.amazonaws.com'.format(AWS_STORAGE_BUCKET_NAME)
 AWS_DEFAULT_ACL = None  # inherit the bucket ACL
 AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',  # 1 day
+    'CacheControl': 'max-age=2592000',  # 1 day
 }
 AWS_S3_FILE_OVERWRITE = True
 AWS_S3_REGION_NAME = 'eu-west-1'
@@ -89,5 +92,7 @@ STATIC_URL = 'https://{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
 MEDIAFILES_LOCATION = 'media'
 DEFAULT_FILE_STORAGE = 'custom_s3_storage.MediaStorage'
 
+
 # Other
-VESPAWATCH_BASE_SITE_URL = "http://vespawatch-dev.eu-west-1.elasticbeanstalk.com/"
+
+VESPAWATCH_BASE_SITE_URL = "http://vespawatch-prd.eu-west-1.elasticbeanstalk.com/"

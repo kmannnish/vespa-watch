@@ -68,7 +68,7 @@ LOGGING = {
 }
 
 
-# S3 static storage for static files
+# S3 storage for static and pictures
 AWS_ACCESS_KEY_ID = None # None to use AWS internal role/permissions
 AWS_STORAGE_BUCKET_NAME = 'lw-vespawatch-dev'
 AWS_QUERYSTRING_AUTH = False
