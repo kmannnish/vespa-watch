@@ -8,7 +8,7 @@ The deployment is using elastic beanstalk on AWS to setup and manage the resourc
 
 To perform these actions, the [AWS CLI](https://aws.amazon.com/cli/) and [eb CLI](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3.html) are required. Furthermore, make sure to have the AWS authentification and profiles defined for DEV and/or PRD environment.
 
-The elastic beanstalk cli initialization is done using  `eb init`, from which custom adaptations were added (inside the `.ebextensions` and .elasticbeanstalk` folders). When you want to start using elastic beanstalk for the vespawatch, you have to link the initialization with vespawatch application. Execute the command `eb init` in the same folder as the `.ebextensions`, choose `eu-west-1 : EU (Ireland)` and select the vespawatch application when prompted. Say No to using AWS Code Commit.
+The elastic beanstalk cli initialization is done using  `eb init`, from which custom adaptations were added (inside the `.ebextensions` and `.elasticbeanstalk` folders). When you want to start using elastic beanstalk for the vespawatch, you have to link the initialization with vespawatch application. Execute the command `eb init` in the same folder as the `.ebextensions`, choose `eu-west-1 : EU (Ireland)` and select the vespawatch application when prompted. Say No to using AWS Code Commit.
 
 The tutorial underneath starts from these existing components to create a new environment and provide new deployments.
 
@@ -368,6 +368,65 @@ Hence, the log files to screen:
 * `var/log` contains the general logging files, e.g. the access and erro logs in the `httpd` folder.
 
 Notice that the logs (also `django.log`) are accessible using the AWS eb console as well by requesting the logs (all or last 100 lines).
+
+### Database
+
+The backup setup of the RDS is creates automated backups of last 7 days. However, in case of management on the environment, when testing queries,... on the prd-database or just to import the prd-dbase for local development, make an additional dump. To do so, make a connection to the database first, which can be done by using port-forwarding the dbase instance to you localhost
+
+```
+ssh YOUR_ACCOUNT@BASTION_IP -2 -4 -i YOUR_ACCOUNT.pem -N -L 127.0.1:54321:DBASE_ENDPOINT:5432
+```
+
+with:
+- `YOUR_ACCOUNT` the AWS account user name
+- `BASTION_IP` the ip address from the bastion server
+- `YOUR_ACCOUNT.pem` the path of your locally stored (read-only) pem file
+- `DBASE_ENDPOINT` the endpoint of the database
+
+Note, the `127.0.1:54321` is just chosen. When portforwarding is active, the `pg_xxx` commands can be used on the remote database.
+
+```
+pg_dump --format=c -n public --verbose --host=127.0.0.1 --port=54321 --username=USERNAME DB_NAME > dump-vespawatch.backup
+```
+
+with:
+- `USERNAME` the database superuser username
+- `DB_NAME` the database name (probably `vespawatch`)
+
+which stored the database in to the file `dump-vespawatch.backup`. To setup a new local database using the dump:
+
+```
+createdb DB_NAME
+pg_restore -v -d DB_NAME dump-vespawatch.backup
+```
+
+with:
+- `DB_NAME` the database name (probably `vespawatch` or alike).
+
+### Recreate the environment
+
+A regular redeployment (provide correct `settings.py` file and run `eb deploy ENV-NAME`) does only redeploy the code to the instances and does not affect the RDS. In the (rare) occurrence of a complete failure of the environment, the rebuilding or entire resetup of the application could be required.
+
+__IMPORTANT:__ Rebuilding an elastic beanstalk environment with an Amazon RDS database instance creates a new database with the same configuration, but __does not apply a snapshot__ to the new database!
+
+In order to rebuild an environment from scratch, the procedure above remains largely the same (assuming the S3 buckets and policies - not part of the eb environment - will still exists) except of the __database__, which need to be created from an AWS snapshot and/or manual export (see previous section).
+
+The main difference is the additional step of providing the database in between the environment creation (`eb create`) and the effective deployment (`eb deploy`).
+
+To fill the database with the dump and using the ´DB_USER˘ and ´DB_PWD` provided when setting up the stack, make sure to have the port forwarding again (via the Bastion server, see previous section) and use
+
+```
+psql \
+   -f dump-vespawatch.backup \
+   --host 127.0.0.1 \
+   --port 54321 \
+   --username ´DB_USER˘ \
+   --password ´DB_PWD \
+   --dbname vespawatch
+```
+
+See also the [AWS documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Procedural.Importing.html#PostgreSQL.Procedural.Importing.EC2)
+
 
 ## Setup and configuration info
 
