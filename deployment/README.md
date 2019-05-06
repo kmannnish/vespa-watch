@@ -38,6 +38,9 @@ In general, to create a new environment (dev/prd), following steps are required 
 Next, new deployments can be done whenever required using the deployment command:
 
 ```
+# choose environment to deploy
+cp ./djangoproject/settings/settings_XXX.py ./djangoproject/settings/settings.py
+# deploy
 eb deploy --message  "informative message..."
 ```
 ### Key-pair combination
@@ -343,7 +346,7 @@ See also: https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/put-metric
 
 - All **code** is under version control and each deployment is stored in a S3 bucket managed by elastic beanstalk
 - Backups of the **RDS** are managed on organisation level of INBO.
-- Backups of the **media files** in the S3 bucket #TODO
+- Backups of the **media files** in the S3 bucket is not considered.
 
 ## Troubleshooting
 
@@ -412,10 +415,13 @@ __IMPORTANT:__ Rebuilding an elastic beanstalk environment with an Amazon RDS da
 In order to rebuild an environment from scratch, the procedure above remains largely the same (assuming the S3 buckets and policies - not part of the eb environment - will still exists) except of the __database__, which need to be created from an AWS snapshot and/or manual export (see previous section).
 
 The main difference is the additional step of providing the database in between the environment creation (`eb create`) and the effective deployment (`eb deploy`).
+To fill the database with the dump and using the ´DB_USER˘ and ´DB_PWD` provided when setting up the stack, make sure to have the port forwarding again (via the Bastion server, see previous section) and use the 
 
-To fill the database with the dump and using the ´DB_USER˘ and ´DB_PWD` provided when setting up the stack, make sure to have the port forwarding again (via the Bastion server, see previous section) and use
+```NOT CORRECT YET
+pg_restore -v --host=127.0.0.1 --port=54321 -d vespawatch dump-vespawatch.backup
 
-```
+
+psql --host=127.0.0.1 --port=54321 --command="createdb vespawatch"
 psql \
    -f dump-vespawatch.backup \
    --host 127.0.0.1 \
@@ -423,6 +429,8 @@ psql \
    --username ´DB_USER˘ \
    --password ´DB_PWD \
    --dbname vespawatch
+
+psql -f dump-vespawatch.backup --host 127.0.0.1 --port 54321 --username vespawatch --password vespawatch --dbname vespawatch
 ```
 
 See also the [AWS documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Procedural.Importing.html#PostgreSQL.Procedural.Importing.EC2)
