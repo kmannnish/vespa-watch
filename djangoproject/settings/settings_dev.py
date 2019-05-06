@@ -30,10 +30,9 @@ DATABASES = {
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
+# on deployment files are copied frop static_root to static_url
 
 STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
-STATIC_URL = '/static/'
-
 
 # ---------- Custom settings ----------
 
@@ -69,9 +68,7 @@ LOGGING = {
 }
 
 
-# S3 static storage for media files
-
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# S3 storage for static and pictures
 AWS_ACCESS_KEY_ID = None # None to use AWS internal role/permissions
 AWS_STORAGE_BUCKET_NAME = 'lw-vespawatch-dev'
 AWS_QUERYSTRING_AUTH = False
@@ -82,9 +79,15 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 AWS_S3_FILE_OVERWRITE = True
 AWS_S3_REGION_NAME = 'eu-west-1'
-AWS_LOCATION = 'media'
 
+# s3 static file settings
+STATICFILES_LOCATION = 'static'
+STATICFILES_STORAGE = 'custom_s3_storage.StaticStorage'
+STATIC_URL = 'https://{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
+
+# S3 media file settings
+MEDIAFILES_LOCATION = 'media'
+DEFAULT_FILE_STORAGE = 'custom_s3_storage.MediaStorage'
 
 # Other
-
 VESPAWATCH_BASE_SITE_URL = "http://vespawatch-dev.eu-west-1.elasticbeanstalk.com/"
