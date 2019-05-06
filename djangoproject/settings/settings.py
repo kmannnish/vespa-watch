@@ -71,21 +71,26 @@ LOGGING = {
     }
 }
 
-
-# S3 static storage for media files
-
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# S3 storage for static and pictures
 AWS_ACCESS_KEY_ID = None # None to use AWS internal role/permissions
 AWS_STORAGE_BUCKET_NAME = 'lw-vespawatch-prd'
 AWS_QUERYSTRING_AUTH = False
 AWS_S3_CUSTOM_DOMAIN = '{}.s3.amazonaws.com'.format(AWS_STORAGE_BUCKET_NAME)
 AWS_DEFAULT_ACL = None  # inherit the bucket ACL
 AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',  # 1 day
+    'CacheControl': 'max-age=2592000',  # 1 day
 }
 AWS_S3_FILE_OVERWRITE = True
 AWS_S3_REGION_NAME = 'eu-west-1'
-AWS_LOCATION = 'media'
+
+# s3 static file settings
+STATICFILES_LOCATION = 'static'
+STATICFILES_STORAGE = 'custom_s3_storage.StaticStorage'
+STATIC_URL = 'https://{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
+
+# S3 media file settings
+MEDIAFILES_LOCATION = 'media'
+DEFAULT_FILE_STORAGE = 'custom_s3_storage.MediaStorage'
 
 
 # Other
