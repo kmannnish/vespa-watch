@@ -173,7 +173,7 @@ msgstr "Andere"
 
 #: vespawatch/models.py:556
 msgid "Individual count"
-msgstr "Aantal individuën"
+msgstr "Aantal individuen"
 
 #: vespawatch/models.py:557
 msgid "Behaviour"
