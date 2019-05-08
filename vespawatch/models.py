@@ -14,7 +14,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template import defaultfilters
 from django.urls import reverse
-from django.utils.timezone import is_naive, make_aware
+from django.utils.timezone import is_naive, make_aware, now
 from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
 from markdownx.models import MarkdownxField
@@ -430,11 +430,11 @@ class AbstractObservation(models.Model):
         if text in [x.text for x in self.warnings.all()]:
             return  # warning already set
         if self.__class__.__name__ == 'Nest':
-            warning = NestObservationWarning(text=text, datetime=datetime.now(),
+            warning = NestObservationWarning(text=text, datetime=now(),
                                              observation=self)
             warning.save()
         elif self.__class__.__name__ == 'Individual':
-            warning = IndividualObservationWarning(text=text, datetime=datetime.now(),
+            warning = IndividualObservationWarning(text=text, datetime=now(),
                                                    observation=self)
             warning.save()
 
