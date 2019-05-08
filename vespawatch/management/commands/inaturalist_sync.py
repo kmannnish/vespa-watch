@@ -31,6 +31,9 @@ class Command(VespaWatchCommand):
                 # (temporary?) iNaturalist API issue. Just log a warning. We will try to delete the observation
                 # at the next sync
                 logging.warning(f'Delete observation {obs.inaturalist_id} raised a JSONDecodeError')
+            except ObservationNotFound:
+                logging.warning(f"Observation {obs.inaturalist_id} could not be deleted on iNaturalist because it doesn't exist")
+                obs.delete()  # Delete it to make sure we don't try to push this delete again
             self.w("OK")
 
     def push_created(self, access_token):

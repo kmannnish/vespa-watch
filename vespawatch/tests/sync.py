@@ -5,6 +5,7 @@ from django.test import TestCase, override_settings
 from pyinaturalist.exceptions import ObservationNotFound
 from unittest import mock, SkipTest
 from vespawatch.models import Individual, InatObsToDelete, Nest, NestPicture, Taxon, INAT_VV_TAXONS_IDS
+from requests.exceptions import HTTPError
 import requests
 
 
@@ -691,3 +692,39 @@ class TestSync(TestCase):
         self.assertEqual(len(Individual.objects.all()), 0)
         # And that it is not added to the InatObsToDelete (otherwise we will delete it on iNaturalist at the next push)
         self.assertEqual(len(InatObsToDelete.objects.all()), 0)
+
+
+    @override_settings(INATURALIST_PUSH=True)
+    def test_sync_push_deleted_obs_doesnt_exist(self):
+        """
+        Pyinaturalist will raise a ObservationNotFound exception when you try to delete an observation
+        that does not exist on iNaturalist.
+        Make sure we catch that and properly handle it (delete the observation locally since it's
+        already gone on iNaturalist)
+        """
+        # Create an Individual that already exists in iNaturalist after a previous push
+        ind = Individual(
+            inaturalist_id=30,
+            latitude=51.2003,
+            longitude=4.9067,
+            observation_time=datetime(2019, 4, 1, 10),
+            originates_in_vespawatch=True,
+            taxon=self.vv_taxon
+        )
+        ind.save()
+
+        # Now delete it
+        ind.delete()
+
+        self.assertEqual(len(InatObsToDelete.objects.all()), 1)
+
+        # Set a return value for the self.get_all_mock. It should return no observations
+        self.get_all_mock.return_value = []
+
+        # Set a side effect for the self.get_obs_mock. It should raise a ObservationNotFound exception
+        self.delete_mock.side_effect = ObservationNotFound()
+
+        # Run inaturalist sync.
+        call_command('inaturalist_sync')
+        self.assertEqual(len(InatObsToDelete.objects.all()), 0)
+
