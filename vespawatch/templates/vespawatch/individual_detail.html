@@ -35,7 +35,7 @@
             <dd>{{ individual.observation_time|default_if_none:'' }}</dd>
 
             <dt>{% trans 'Observer' %}</dt>
-            <dd>{{ individual.get_observer_display|default_if_none:'' }}</dd>
+            <dd>{{ individual.observer_name }}</dd>
 
             <dt>{% trans 'Email' %}</dt>
             <dd>{{ individual.observer_email|default_if_none:'' }}</dd>

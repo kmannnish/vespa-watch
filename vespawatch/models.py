@@ -277,8 +277,7 @@ class AbstractObservation(models.Model):
     inaturalist_species = models.CharField(verbose_name=_("iNaturalist species"), max_length=100, blank=True, null=True)
 
     # Observer info
-    observer_first_name = models.CharField(verbose_name=_("First name"), max_length=255, blank=True, null=True)
-    observer_last_name = models.CharField(verbose_name=_("Last name"), max_length=255, blank=True, null=True)
+    observer_name = models.CharField(verbose_name=_("Name"), max_length=255, blank=True, null=True)
     observer_email = models.EmailField(verbose_name=_("Email address"), blank=True, null=True)
     observer_phone = models.CharField(verbose_name=_("Telephone number"), max_length=20, blank=True, null=True)
     observer_is_beekeeper = models.NullBooleanField()
@@ -423,10 +422,6 @@ class AbstractObservation(models.Model):
             return self.taxon.name
         else:
             return ''
-
-    def get_observer_display(self):
-        parts = [self.observer_first_name, self.observer_last_name]
-        return ' '.join([x for x in parts if x])
 
     @property
     def formatted_observation_date(self):

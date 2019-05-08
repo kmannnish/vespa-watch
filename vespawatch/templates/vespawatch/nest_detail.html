@@ -35,7 +35,7 @@
             <dd>{{ nest.observation_time|default_if_none:'' }}</dd>
 
             <dt>{% trans 'Observer' %}</dt>
-            <dd>{{ nest.get_observer_display|default_if_none:'' }}</dd>
+            <dd>{{ nest.observer_name }}</dd>
 
             <dt>{% trans 'Email' %}</dt>
             <dd>{{ nest.observer_email|default_if_none:'' }}</dd>
