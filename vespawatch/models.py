@@ -280,7 +280,6 @@ class AbstractObservation(models.Model):
     observer_name = models.CharField(verbose_name=_("Name"), max_length=255, blank=True, null=True)
     observer_email = models.EmailField(verbose_name=_("Email address"), blank=True, null=True)
     observer_phone = models.CharField(verbose_name=_("Telephone number"), max_length=20, blank=True, null=True)
-    observer_is_beekeeper = models.NullBooleanField()
 
     # Managers
     objects = models.Manager()  # The default manager.

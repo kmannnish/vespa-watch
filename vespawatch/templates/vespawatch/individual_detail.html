@@ -43,9 +43,6 @@
             <dt>{% trans 'Phone' %}</dt>
             <dd>{{ individual.observer_phone|default_if_none:'' }}</dd>
 
-            <dt>{% trans 'Is beekeper' %}</dt>
-            <dd>{{ individual.observer_is_beekeeper|default_if_none:'' }}</dd>
-
             <dt>{% trans 'Comments' %}</dt>
             <dd>{{ individual.comments|default_if_none:'' }}</dd>
         </dl>

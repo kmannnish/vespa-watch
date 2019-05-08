@@ -43,9 +43,6 @@
             <dt>{% trans 'Phone' %}</dt>
             <dd>{{ nest.observer_phone|default_if_none:'' }}</dd>
 
-            <dt>{% trans 'Is beekeper' %}</dt>
-            <dd>{{ nest.observer_is_beekeeper|default_if_none:'' }}</dd>
-
             <dt>{% trans 'Nest size' %}</dt>
             <dd>{{ nest.get_size_display|default_if_none:'' }}</dd>
 
