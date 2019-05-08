@@ -72,6 +72,7 @@ class Command(VespaWatchCommand):
                 self.w("OK")
             else:
                 # We already have an observation for this id. Update it
+                self.w(f'updating observation {type(local_obs).__name__} {local_obs.pk}')
                 local_obs.update_from_inat_data(inat_observation_data)
         return pulled_inat_ids
 
@@ -97,6 +98,7 @@ class Command(VespaWatchCommand):
         missing_obs = get_missing_at_inat_observations(missing_inat_ids)
         self.w("\n4. Check the observations that were not returned from iNaturalist")
         for obs in missing_obs:
+            self.w(f'   observation {type(obs).__name__} {obs.pk} was missing')
             self.check_missing_obs(obs)
 
     def handle(self, *args, **options):
