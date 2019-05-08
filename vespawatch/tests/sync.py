@@ -3,9 +3,8 @@ from django.conf import settings
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 from pyinaturalist.exceptions import ObservationNotFound
-from unittest import mock, SkipTest
+from unittest import mock
 from vespawatch.models import Individual, InatObsToDelete, Nest, NestPicture, Taxon, INAT_VV_TAXONS_IDS
-from requests.exceptions import HTTPError
 import requests
 
 
@@ -40,8 +39,8 @@ class TestSync(TestCase):
         self.vv_taxon = Taxon(
             name='Vespa velutina',
             vernacular_name='test wasp',
-            inaturalist_push_taxon_id=1,
-            inaturalist_pull_taxon_ids=[1],
+            inaturalist_push_taxon_id=INAT_VV_TAXONS_IDS[0],
+            inaturalist_pull_taxon_ids=INAT_VV_TAXONS_IDS,
             identification_priority=1
         )
         self.vv_taxon.save()
@@ -56,6 +55,16 @@ class TestSync(TestCase):
         self.other_taxon.save()
 
     def tearDown(self):
+        # Clear mocks
+        self.get_all_mock.reset_mock(return_value=True, side_effect=True)
+        self.get_obs_mock.reset_mock(return_value=True, side_effect=True)
+        self.get_token_mock.reset_mock(return_value=True, side_effect=True)
+        self.delete_mock.reset_mock(return_value=True, side_effect=True)
+        self.create_at_inat_mock.reset_mock(return_value=True, side_effect=True)
+        self.update_at_inat_mock.reset_mock(return_value=True, side_effect=True)
+        self.add_photo_from_inat_mock.reset_mock(return_value=True, side_effect=True)
+        self.requests_mock.reset_mock(return_value=True, side_effect=True)
+
         # Stop all patchers
         self.get_all_patcher.stop()
         self.get_obs_patcher.stop()
@@ -102,7 +111,7 @@ class TestSync(TestCase):
                 {'observation_field_id': settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID, 'value': 'individual'}
             ]
         }
-        call_command('inaturalist_sync')
+        call_command('inaturalist_sync', pushonly=True)
         self.create_at_inat_mock.assert_called_once()
         self.create_at_inat_mock.assert_called_with(access_token='TESTTOKEN', params={'observation': individual_data_to_inaturalist})
 
@@ -135,7 +144,7 @@ class TestSync(TestCase):
                 {'observation_field_id': settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID, 'value': 'nest'}
             ]
         }
-        call_command('inaturalist_sync')
+        call_command('inaturalist_sync', pushonly=True)
         self.create_at_inat_mock.assert_called_once()
         self.create_at_inat_mock.assert_called_with(access_token='TESTTOKEN', params={'observation': individual_data_to_inaturalist})
 
@@ -250,15 +259,15 @@ class TestSync(TestCase):
         self.get_all_mock.return_value = [
             {
                 'id': 30,
-                'community_taxon_id': INAT_VV_TAXONS_IDS[0],
                 'geojson': {
                     'coordinates': [10, 20]
                 },
+                'description': '',
                 'observed_on_string': '2019-04-01T11:20:00+00:00',
                 'observed_time_zone': 'Europe/Brussels',
                 'photos': [],
                 'taxon': {
-                    'id': INAT_VV_TAXONS_IDS[0]
+                    'id': self.vv_taxon.inaturalist_pull_taxon_ids[0]
                 }
             }
         ]
@@ -278,7 +287,7 @@ class TestSync(TestCase):
         self.get_all_mock.return_value = [
             {
                 'id': 30,
-                'community_taxon_id': INAT_VV_TAXONS_IDS[0],
+                'description': '',
                 'geojson': {
                     'coordinates': [10, 20]
                 },
@@ -289,7 +298,7 @@ class TestSync(TestCase):
                 'observed_time_zone': 'Europe/Brussels',
                 'photos': [],
                 'taxon': {
-                    'id': INAT_VV_TAXONS_IDS[0]
+                    'id': self.vv_taxon.inaturalist_push_taxon_id
                 }
             }
         ]
@@ -310,7 +319,7 @@ class TestSync(TestCase):
         self.get_all_mock.return_value = [
             {
                 'id': 30,
-                'community_taxon_id': INAT_VV_TAXONS_IDS[0],
+                'description': '',
                 'geojson': {
                     'coordinates': [10, 20]
                 },
@@ -321,7 +330,7 @@ class TestSync(TestCase):
                 ],
                 'photos': [],
                 'taxon': {
-                    'id': INAT_VV_TAXONS_IDS[0]
+                    'id': self.vv_taxon.inaturalist_pull_taxon_ids[0]
                 }
             }
         ]
@@ -339,7 +348,7 @@ class TestSync(TestCase):
         self.get_all_mock.return_value = [
             {
                 'id': 30,
-                'community_taxon_id': INAT_VV_TAXONS_IDS[0],
+                'description': '',
                 'geojson': {
                     'coordinates': [10, 20]
                 },
@@ -350,7 +359,7 @@ class TestSync(TestCase):
                 ],
                 'photos': [],
                 'taxon': {
-                    'id': INAT_VV_TAXONS_IDS[0]
+                    'id': self.vv_taxon.inaturalist_pull_taxon_ids[0]
                 }
             }
         ]
@@ -384,7 +393,7 @@ class TestSync(TestCase):
         self.get_all_mock.return_value = [
             {
                 'id': 13,
-                'community_taxon_id': INAT_VV_TAXONS_IDS[0],
+                'description': '',
                 'geojson': {
                     'coordinates': [10, 20]
                 },
@@ -395,7 +404,7 @@ class TestSync(TestCase):
                 ],
                 'photos': [{'url': '/notexisting/square.jpg'}],
                 'taxon': {
-                    'id': INAT_VV_TAXONS_IDS[0]
+                    'id': self.vv_taxon.inaturalist_pull_taxon_ids[0]
                 }
             }
         ]
@@ -451,9 +460,15 @@ class TestSync(TestCase):
         self.get_all_mock.return_value = [
             {
                 'id': 30,
-                'community_taxon_id': INAT_VV_TAXONS_IDS[0],
+                'community_taxon_id': self.vv_taxon.inaturalist_pull_taxon_ids[0],
+                'description': '',
                 'geojson': {
                     'coordinates': [10, 20]
+                },
+                'observed_on_string': '2019-04-01T11:20:00+00:00',
+                'observed_time_zone': 'Europe/Brussels',
+                'taxon': {
+                    'id': self.vv_taxon.inaturalist_pull_taxon_ids[0]
                 },
                 'photos': []
             }
@@ -525,16 +540,21 @@ class TestSync(TestCase):
         # Set a side effect for the self.get_obs_mock. It should return an observation that has no vespawatch project id
         self.get_obs_mock.return_value = {
             'id': 30,
-            'community_taxon_id': INAT_VV_TAXONS_IDS[0],
+            'taxon': {'id': self.vv_taxon.inaturalist_pull_taxon_ids[0]},
+            'description': '',
             'geojson': {
                 'coordinates': [10, 20]
             },
+            'observed_on_string': '2019-04-01T11:20:00+00:00',
+            'observed_time_zone': 'Europe/Brussels',
             'photos': [],
             'project_ids': [999]  # not vespawatch
         }
 
         # Assert that the individual had no warning before the sync
         self.assertEqual(len(Individual.objects.filter(inaturalist_id=30)[0].warnings.all()), 0)
+        self.assertEqual(len(Taxon.objects.all()), 2)
+
         # Run inaturalist sync.
         call_command('inaturalist_sync')
         # Assert that the individual has a warning now
@@ -568,10 +588,15 @@ class TestSync(TestCase):
         # Set a side effect for the self.get_obs_mock. It should return an observation that has no vespawatch project id
         self.get_obs_mock.return_value = {
             'id': 30,
-            'community_taxon_id': 2,
+            'taxon': {
+                'id': self.other_taxon.inaturalist_pull_taxon_ids[0]
+            },
+            'description': '',
             'geojson': {
                 'coordinates': [10, 20]
             },
+            'observed_on_string': '2019-04-01T11:20:00+00:00',
+            'observed_time_zone': 'Europe/Brussels',
             'photos': [],
             'project_ids': [11]  # some random project
         }
@@ -583,6 +608,8 @@ class TestSync(TestCase):
         # Assert that the individual has a warning now
         self.assertEqual(len(Individual.objects.filter(inaturalist_id=30)[0].warnings.all()), 1)
         self.assertEqual(Individual.objects.filter(inaturalist_id=30)[0].warnings.all()[0].text, 'not in vespawatch project')
+        # Make sure the taxon is also updated
+        self.assertEqual(Individual.objects.filter(inaturalist_id=30)[0].taxon.id, self.other_taxon.id)
 
     @override_settings(INATURALIST_PUSH=False)
     def test_sync_pull_obs_taxon_changed_unknown(self):
@@ -609,10 +636,16 @@ class TestSync(TestCase):
         # Set a side effect for the self.get_obs_mock. It should return an observation that has no vespawatch project id
         self.get_obs_mock.return_value = {
             'id': 30,
-            'community_taxon_id': 2732, # some random taxon
+            'taxon': {
+                'id': 2732,
+                'name': 'Unknown taxon'
+            },
+            'description': '',
             'geojson': {
                 'coordinates': [10, 20]
             },
+            'observed_on_string': '2019-04-01T11:20:00+00:00',
+            'observed_time_zone': 'Europe/Brussels',
             'photos': [],
             'project_ids': [11]  # some random project
         }
@@ -626,6 +659,8 @@ class TestSync(TestCase):
         warning_texts = sorted([x.text for x in Individual.objects.filter(inaturalist_id=30)[0].warnings.all()])
         self.assertEqual(warning_texts[0], 'not in vespawatch project')
         self.assertEqual(warning_texts[1], 'unknown taxon')
+        # Assert that the inaturalist_species field was set to the taxon name
+        self.assertEqual(Individual.objects.filter(inaturalist_id=30)[0].inaturalist_species, 'Unknown taxon')
 
     @override_settings(INATURALIST_PUSH=False)
     def test_sync_pull_obs_vw_evidence_changed_to_indiv(self):
@@ -646,13 +681,19 @@ class TestSync(TestCase):
             {
                 'id': 30,
                 'community_taxon_id': INAT_VV_TAXONS_IDS[0],
+                'description': '',
                 'geojson': {
                     'coordinates': [10, 20]
                 },
+                'observed_on_string': '2019-04-01T11:20:00+00:00',
+                'observed_time_zone': 'Europe/Brussels',
                 'ofvs': [
                     {'field_id': settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID, 'value': 'indiv'}
                 ],
-                'photos': []
+                'photos': [],
+                'taxon': {
+                    'id': self.vv_taxon.inaturalist_pull_taxon_ids[0]
+                }
             }
         ]
         # Run inaturalist sync.
@@ -682,13 +723,18 @@ class TestSync(TestCase):
         self.get_all_mock.return_value = [
             {
                 'id': 30,
-                'community_taxon_id': INAT_VV_TAXONS_IDS[0],
+                'description': '',
                 'geojson': {
                     'coordinates': [10, 20]
                 },
+                'observed_on_string': '2019-04-01T11:20:00+00:00',
+                'observed_time_zone': 'Europe/Brussels',
                 'ofvs': [
                     {'field_id': settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID, 'value': 'nest'}
                 ],
+                'taxon': {
+                    'id': self.vv_taxon.inaturalist_pull_taxon_ids[0]
+                },
                 'photos': []
             }
         ]
@@ -719,7 +765,7 @@ class TestSync(TestCase):
         self.get_all_mock.return_value = [
             {
                 'id': 30,
-                'community_taxon_id': INAT_VV_TAXONS_IDS[0],
+                'description': '',
                 'geojson': {
                     'coordinates': [10, 20]
                 },
@@ -730,7 +776,7 @@ class TestSync(TestCase):
                 'observed_time_zone': 'Europe/Brussels',
                 'photos': [],
                 'taxon': {
-                    'id': INAT_VV_TAXONS_IDS[0]
+                    'id': self.vv_taxon.inaturalist_pull_taxon_ids[0]
                 }
             }
         ]
@@ -782,3 +828,8 @@ class TestSync(TestCase):
         call_command('inaturalist_sync')
         self.assertEqual(len(InatObsToDelete.objects.all()), 0)
 
+
+# TODO add tests for pulling and checking taxon id (first community taxon, then taxon)
+# TODO check update description
+# TODO check update date
+# TODO check update taxon

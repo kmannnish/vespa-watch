@@ -16,6 +16,9 @@ OBSERVATION_MODELS = [Individual, Nest]
 class Command(VespaWatchCommand):
     help = 'Synchronize VespaWatch and iNaturalist. Full description: https://github.com/inbo/vespa-watch/issues/2'
 
+    def add_arguments(self, parser):
+        parser.add_argument('--pushonly', type=bool, default=False)
+
     def push_deletes(self, access_token):
         """
         Delete objects on iNaturalist that were deleted on vespawatch
@@ -117,6 +120,7 @@ class Command(VespaWatchCommand):
         else:
             self.w("Not pushing objects because of settings.INATURALIST_PUSH")
 
-        pulled_inat_ids = self.pull()
-        self.check_all_missing(pulled_inat_ids)
+        if not options['pushonly']:
+            pulled_inat_ids = self.pull()
+            self.check_all_missing(pulled_inat_ids)
         self.w("\ndone\n")

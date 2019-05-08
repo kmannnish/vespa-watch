@@ -24,7 +24,7 @@ from pyinaturalist.rest_api import create_observations, update_observation, add_
 
 from vespawatch.utils import make_unique_filename
 
-INAT_VV_TAXONS_IDS = (119019, 560197) # At iNaturalist, those taxon IDS represents Vespa Velutina and subspecies
+INAT_VV_TAXONS_IDS = (119019, 560197) # At iNaturalist, those taxon IDS represents Vespa velutina and subspecies
 
 # TODO Remove code marked with DEPRECATED
 
@@ -229,7 +229,7 @@ def get_local_obs_matching_inat_id(inat_id):
     raise ObjectDoesNotExist
 
 # TODO: check if this is still needed for the new sync
-def update_loc_obs_taxon_according_to_inat(inaturalist_data):
+def update_loc_obs_taxon_according_to_inat_DEPRECATED(inaturalist_data):
     """Takes data coming from iNaturalist about one of our local observation, and update the taxon of said local obs,
     if necessary.
 
@@ -448,7 +448,13 @@ class AbstractObservation(models.Model):
             self.flag_warning('not in vespawatch project')
 
         # Taxon known in VW?
-        if inat_observation_data['community_taxon_id'] not in [y for x in Taxon.objects.all() for y in x.inaturalist_pull_taxon_ids]:
+        returned_taxon_id = ''
+        if 'community_taxon_id' in inat_observation_data and inat_observation_data['community_taxon_id']:
+            returned_taxon_id = inat_observation_data['community_taxon_id']
+        elif 'taxon' in inat_observation_data:
+            if 'id' in inat_observation_data['taxon']:
+                returned_taxon_id = inat_observation_data['taxon']['id']
+        if returned_taxon_id not in [y for x in Taxon.objects.all() for y in x.inaturalist_pull_taxon_ids]:
             self.flag_warning('unknown taxon')
 
     def update_from_inat_data(self, inat_observation_data):
@@ -490,6 +496,41 @@ class AbstractObservation(models.Model):
         # Update location
         self.latitude = inat_observation_data['geojson']['coordinates'][1]
         self.longitude = inat_observation_data['geojson']['coordinates'][0]
+
+        # Update time
+        # -------------
+        observation_time = dateparser.parse(inat_observation_data['observed_on_string'],
+                                            settings={'TIMEZONE': inat_observation_data['observed_time_zone']})
+        if observation_time is None:
+            # Sometimes, dateparser doesn't understand the string but we have the bits and pieces in
+            # inaturalist_data['observed_on_details']
+            details = inat_observation_data['observed_on_details']
+            observation_time = datetime(year=details['year'],
+                                        month=details['month'],
+                                        day=details['day'],
+                                        hour=details[
+                                            'hour'])  # in the observed cases, we had nothing more precise than the hour
+
+        # Sometimes, the time is naive (even when specifying it to dateparser), because (for the detected cases, at least)
+        # The time is 00:00:00. In that case we make it aware to avoid Django warnings (in the local time zone since all
+        # observations occur in Belgium
+        if is_naive(observation_time):
+            # Some dates (apparently)
+            observation_time = make_aware(observation_time)
+
+        self.observation_time = observation_time
+
+        self.description = inat_observation_data['description']
+
+
+        # Update taxon
+        # -------------
+        try:
+            self.inaturalist_species = ''
+            taxon = get_taxon_from_inat_taxon_id(inat_observation_data['taxon']['id'])
+            self.taxon = taxon
+        except Taxon.DoesNotExist:
+            self.inaturalist_species = inat_observation_data['taxon']['name'] if 'name' in inat_observation_data['taxon'] else ''
 
         self.save()
 
@@ -564,12 +605,6 @@ class AbstractObservation(models.Model):
     def observation_time_iso(self):
         # TODO check with Nico whether this should also be a property
         return self.observation_time.isoformat()
-
-    def clean(self):
-        if self.pk is not None:
-            orig = self.__class__.objects.get(pk=self.pk)
-            if orig.taxon != self.taxon and not self.taxon_can_be_locally_changed:
-                raise ValidationError(_("Observation already pushed to iNaturalist, taxon can't be changed anymore!"))
 
     def save(self, *args, **kwargs):
         # Let's make sure model.clean() is called on each save(), for validation
