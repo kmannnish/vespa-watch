@@ -414,26 +414,29 @@ __IMPORTANT:__ Rebuilding an elastic beanstalk environment with an Amazon RDS da
 
 In order to rebuild an environment from scratch, the procedure above remains largely the same (assuming the S3 buckets and policies - not part of the eb environment - will still exists) except of the __database__, which need to be created from an AWS snapshot and/or manual export (see previous section).
 
-The main difference is the additional step of providing the database in between the environment creation (`eb create`) and the effective deployment (`eb deploy`).
-To fill the database with the dump and using the ´DB_USER˘ and ´DB_PWD` provided when setting up the stack, make sure to have the port forwarding again (via the Bastion server, see previous section) and use the 
+Make sure to create a snapshot before deleting any environment. The snapshot can be used as such in the new environment. The main difference is the additional step of providing the database in between the environment creation (`eb create`) and the effective deployment (`eb deploy`) instead of creating a new database on the environment creation.
 
-```NOT CORRECT YET
-pg_restore -v --host=127.0.0.1 --port=54321 -d vespawatch dump-vespawatch.backup
+1. Create a new environment without database, this means use the `eb create` command but without `--database --database.username $DB_USER --database.password $DB_PWD` line, for example:
 
-
-psql --host=127.0.0.1 --port=54321 --command="createdb vespawatch"
-psql \
-   -f dump-vespawatch.backup \
-   --host 127.0.0.1 \
-   --port 54321 \
-   --username ´DB_USER˘ \
-   --password ´DB_PWD \
-   --dbname vespawatch
-
-psql -f dump-vespawatch.backup --host 127.0.0.1 --port 54321 --username vespawatch --password vespawatch --dbname vespawatch
 ```
+eb create
+--cname vespawatch-prd
+--elb-type classic
+--envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,DB_USER=$DB_USER,DB_PWD=$DB_PWD,ENVIRONMENT=$ENVIRONMENT
+--region eu-west-1
+--vpc
+--vpc.dbsubnets subnet-7a763f23,subnet-c4f6ffa1,subnet-9a0a3bed
+--vpc.ec2subnets subnet-78763f21,subnet-c5f6ffa0,subnet-9c0a3beb
+--vpc.elbsubnets subnet-78763f21,subnet-c5f6ffa0,subnet-9c0a3beb
+--vpc.id vpc-79d0f71c
+--vpc.securitygroups sg-ce6ff5b6,sg-35d5ed51
+--tags APPLICATION=VESPAWATCH,ENVIRONMENT=PRD,OWNER=LIFEWATCH-VESPAWATCH,BUSINESS_UNIT=LIFEWATCH,COST_CENTER=EVINBO,RUNDECK=TRUE
+--instance_profile aws-elasticbeanstalk-ec2-role-vespawatch
+```
+As the creation will also call the config with the migration of the database (which is not existing), the environment will initiate errors. Ignore these for now.
 
-See also the [AWS documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Procedural.Importing.html#PostgreSQL.Procedural.Importing.EC2)
+2.  Using the AWS Console, attach the database snapshot to the environment, as described in the [AWS docs](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.managing.db.html)
+3. Once database is restored (this takes a while), redeploy the application with `eb deploy`.
 
 
 ## Setup and configuration info
