@@ -255,7 +255,7 @@ These steps need to be done just a single time after the initial deployment.
 With the proper authentification rights enabled, we can appply some additional steps during the first requirement. These commands are not included as container commands, as they only need to be configured during the first deployment, whereas the steps in the `01_python_config` file will run each new deployment
 
 ```
-eb ssh --command "source /opt/python/run/venv/bin/activate && python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson"
+eb ssh --command "source /opt/python/run/venv/bin/activate  python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson"
 eb ssh --command "source /opt/python/run/venv/bin/activate && python manage.py create_firefighters_accounts"
 ```
 
