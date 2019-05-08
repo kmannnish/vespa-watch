@@ -46,6 +46,15 @@ class TestSync(TestCase):
         )
         self.vv_taxon.save()
 
+        self.other_taxon = Taxon(
+            name='Other taxon',
+            vernacular_name='other taxon',
+            inaturalist_push_taxon_id=2,
+            inaturalist_pull_taxon_ids=[2],
+            identification_priority=1
+        )
+        self.other_taxon.save()
+
     def tearDown(self):
         # Stop all patchers
         self.get_all_patcher.stop()
@@ -533,11 +542,54 @@ class TestSync(TestCase):
         self.assertEqual(Individual.objects.filter(inaturalist_id=30)[0].warnings.all()[0].text, 'not in vespawatch project')
 
     @override_settings(INATURALIST_PUSH=False)
-    def test_sync_pull_obs_taxon_changed(self):
+    def test_sync_pull_obs_taxon_changed_known(self):
         """
         We have an observation in our database with a iNaturalist ID, but when we pull from the iNaturalist API
         this observation is not returned.
-        So we check the observation individually and in this case we conclude the taxon is not one of the vespawatch taxa.
+        So we check the observation individually and in this case we conclude the taxon is not Vespa velutina (so
+        the project id is not the one we expect) but it is another taxon that is known in our database.
+        In this case, we should flag it as `not in vespawatch project` but we should not flag it as
+        `taxon unkown`
+        """
+        # Create an Individual that already exists in iNaturalist after a previous push
+        ind = Individual(
+            inaturalist_id=30,
+            latitude=51.2003,
+            longitude=4.9067,
+            observation_time=datetime(2019, 4, 1, 10),
+            originates_in_vespawatch=True,
+            taxon=self.vv_taxon
+        )
+        ind.save()
+
+        # Set a return value for the self.get_all_mock. It should return no observations
+        self.get_all_mock.return_value = []
+
+        # Set a side effect for the self.get_obs_mock. It should return an observation that has no vespawatch project id
+        self.get_obs_mock.return_value = {
+            'id': 30,
+            'community_taxon_id': 2,
+            'geojson': {
+                'coordinates': [10, 20]
+            },
+            'photos': [],
+            'project_ids': [11]  # some random project
+        }
+
+        # Assert that the individual had no warning before the sync
+        self.assertEqual(len(Individual.objects.filter(inaturalist_id=30)[0].warnings.all()), 0)
+        # Run inaturalist sync.
+        call_command('inaturalist_sync')
+        # Assert that the individual has a warning now
+        self.assertEqual(len(Individual.objects.filter(inaturalist_id=30)[0].warnings.all()), 1)
+        self.assertEqual(Individual.objects.filter(inaturalist_id=30)[0].warnings.all()[0].text, 'not in vespawatch project')
+
+    @override_settings(INATURALIST_PUSH=False)
+    def test_sync_pull_obs_taxon_changed_unknown(self):
+        """
+        We have an observation in our database with a iNaturalist ID, but when we pull from the iNaturalist API
+        this observation is not returned.
+        So we check the observation individually and in this case we conclude the taxon is not known in our database
         It doesn't matter where this observation comes from, we should flag it as "unknown taxon"
         """
         # Create an Individual that already exists in iNaturalist after a previous push
@@ -557,12 +609,12 @@ class TestSync(TestCase):
         # Set a side effect for the self.get_obs_mock. It should return an observation that has no vespawatch project id
         self.get_obs_mock.return_value = {
             'id': 30,
-            'community_taxon_id': 2165,
+            'community_taxon_id': 2732, # some random taxon
             'geojson': {
                 'coordinates': [10, 20]
             },
             'photos': [],
-            'project_ids': [settings.VESPAWATCH_PROJECT_ID]
+            'project_ids': [11]  # some random project
         }
 
         # Assert that the individual had no warning before the sync
@@ -570,8 +622,10 @@ class TestSync(TestCase):
         # Run inaturalist sync.
         call_command('inaturalist_sync')
         # Assert that the individual has a warning now
-        self.assertEqual(len(Individual.objects.filter(inaturalist_id=30)[0].warnings.all()), 1)
-        self.assertEqual(Individual.objects.filter(inaturalist_id=30)[0].warnings.all()[0].text, 'unknown taxon')
+        self.assertEqual(len(Individual.objects.filter(inaturalist_id=30)[0].warnings.all()), 2)
+        warning_texts = sorted([x.text for x in Individual.objects.filter(inaturalist_id=30)[0].warnings.all()])
+        self.assertEqual(warning_texts[0], 'not in vespawatch project')
+        self.assertEqual(warning_texts[1], 'unknown taxon')
 
     @override_settings(INATURALIST_PUSH=False)
     def test_sync_pull_obs_vw_evidence_changed_to_indiv(self):

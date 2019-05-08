@@ -448,7 +448,7 @@ class AbstractObservation(models.Model):
             self.flag_warning('not in vespawatch project')
 
         # Taxon known in VW?
-        if inat_observation_data['community_taxon_id'] not in INAT_VV_TAXONS_IDS:
+        if inat_observation_data['community_taxon_id'] not in [y for x in Taxon.objects.all() for y in x.inaturalist_pull_taxon_ids]:
             self.flag_warning('unknown taxon')
 
     def update_from_inat_data(self, inat_observation_data):
