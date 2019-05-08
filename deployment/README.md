@@ -38,10 +38,8 @@ In general, to create a new environment (dev/prd), following steps are required 
 Next, new deployments can be done whenever required using the deployment command:
 
 ```
-# choose environment to deploy
-cp ./djangoproject/settings/settings_XXX.py ./djangoproject/settings/settings.py
 # deploy
-eb deploy --message  "informative message..."
+eb deploy vespawatch-xxx --message  "informative message..."
 ```
 ### Key-pair combination
 
@@ -127,9 +125,9 @@ More info on the instance profile creation is provided here:
 
 ### create environment
 
-The setup is different in development versus production, as the subnets, security groups and key-pair combination are different. Also on the django side, some configuration settings (settings are contained inside `djangoproject/djangoproject/settings` folder) are different.
+The setup is different in development versus production, as the subnets, security groups and key-pair combination are different. Also on the django side, some configuration settings (settings are contained inside `djangoproject/djangoproject/settings` folder) are different. This `settings.py` file is referenced inside the `.ebextensions` folder settings to retrieve the settings.
 
-First of all, prepare the `settings.py file` depending from the environment working in. If in development, copy the `settings_dev.py` to a `settings.py` file. In production, copy the `settings_prd.py` to a `settings.py` file. This file is referenced inside the `.ebextensions` folder settings to prepare the settings.
+The `settings.py file` configurations that are environment specific are adjusted using the environmental variable `ENVIRONMENT` (with one of the values`dev`, `uat` or `prd`).
 
 For *development*, the environment creation is done with the following command:
 ```
@@ -137,7 +135,7 @@ eb create
 --cname vespawatch-dev
 --database --database.username $DB_USER --database.password $DB_PWD
 --elb-type classic
---envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,ENVIRONMENT=$ENVIRONMENT
+--envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,DB_USER=$DB_USER,DB_PWD=$DB_PWD,ENVIRONMENT=dev
 --region eu-west-1
 --vpc
 --vpc.dbsubnets subnet-2b338273,subnet-2ce39448,subnet-d0c6a5a6
@@ -156,7 +154,7 @@ eb create
 --database.size 5
 --database.engine postgres
 --elb-type classic
---envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD
+--envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,DB_USER=$DB_USER,DB_PWD=$DB_PWD,ENVIRONMENT=uat
 --region eu-west-1
 --vpc
 --vpc.dbsubnets subnet-f54dfcad,subnet-14f98e70,subnet-e7fc9f91
@@ -175,7 +173,7 @@ eb create
 --cname vespawatch-prd
 --database --database.username $DB_USER --database.password $DB_PWD
 --elb-type classic
---envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,DB_USER=$DB_USER,DB_PWD=$DB_PWD,ENVIRONMENT=$ENVIRONMENT
+--envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,DB_USER=$DB_USER,DB_PWD=$DB_PWD,ENVIRONMENT=$ENVIRONMENT,INAT_APP_SECRET=$INAT_APP_SECRET
 --region eu-west-1
 --vpc
 --vpc.dbsubnets subnet-7a763f23,subnet-c4f6ffa1,subnet-9a0a3bed
@@ -186,6 +184,9 @@ eb create
 --tags APPLICATION=VESPAWATCH,ENVIRONMENT=PRD,OWNER=LIFEWATCH-VESPAWATCH,BUSINESS_UNIT=LIFEWATCH,COST_CENTER=EVINBO,RUNDECK=TRUE
 --instance_profile aws-elasticbeanstalk-ec2-role-vespawatch
 ```
+
+Note the additional environmental variable `INAT_APP_SECRET` for production to enable push access to the Inaturalist app, which is only used in production.
+
 
 Prompt will provide some additional questions:
 
@@ -211,29 +212,37 @@ More information on the `eb-create` command, see https://docs.aws.amazon.com/ela
 When the environment works, the deployment of the application is done by:
 
 ```
-# copy the proper settings file working on to settings.py file
-cp ./djangoproject/settings/settings_XXX.py ./djangoproject/settings/settings.py
 # redeploy
-eb deploy --message "your informatice message"
+eb deploy vespawatch-xxx --message "your informatice message"
 ```
+
+`vespawatch-xxx` is the environment you want to deploy to.
 
 ## Bash script for deployment
 
 A small deployment bash script has been prepared to execute the steps above. To execute the setup, make sure your aws profile is set correctly (dev or prd) and execute the script (adapt the capital arguments with more useful names and store these securely):
 
 ```
-./setup.sh dev DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD
+./setup.sh dev DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD DUMMY
 ```
 
+or
+
+```
+./setup.sh prd DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD INAT_API_SECRET
+```
+
+
 Variables:
-* `$ENVIRONMENT` e.g. 'dev'
+* `$ENVIRONMENT` e.g. 'dev' (or 'uat', 'prd')
 * `$DB_USER` RDS database user
 * `$DB_PWD`   RDS database pwd
 * `$DJANGO_SECRET_KEY`   django app secret key
 * `$VESPA_SU_NAME`  user name vespawatch applicatie superuser
-* `$VESPA_SU_PWD` paswoord vespawatch applicatie superuser
+* `$VESPA_SU_PWD` password vespawatch applicatie superuser
+* `$INAT_APP_SECRET` (only relevant for production) password
 
-TODO: https://medium.com/@nqbao/how-to-use-aws-ssm-parameter-store-easily-in-python-94fda04fea84
+Possible improvement: https://medium.com/@nqbao/how-to-use-aws-ssm-parameter-store-easily-in-python-94fda04fea84
 
 Some more steps are required when doing the setup, see next sections.
 
@@ -261,7 +270,7 @@ python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson
 python manage.py create_firefighters_accounts
 ```
 
-Optional -> python manage.py generateimages
+Optional (when encountering thumbnail errors), use the `python manage.py generateimages` command as well.
 
 ### Adapt the security group excluding inbound rule
 
@@ -422,7 +431,7 @@ Make sure to create a snapshot before deleting any environment. The snapshot can
 eb create
 --cname vespawatch-prd
 --elb-type classic
---envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,DB_USER=$DB_USER,DB_PWD=$DB_PWD,ENVIRONMENT=$ENVIRONMENT
+--envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,DB_USER=$DB_USER,DB_PWD=$DB_PWD,ENVIRONMENT=$ENVIRONMENT,INAT_APP_SECRET=$INAT_APP_SECRET
 --region eu-west-1
 --vpc
 --vpc.dbsubnets subnet-7a763f23,subnet-c4f6ffa1,subnet-9a0a3bed
