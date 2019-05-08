@@ -465,7 +465,7 @@ class AbstractObservation(models.Model):
                         self.flag_warning('individual at inaturalist')
                 # If the observation is an individual but the vespawatch evidence is a nest and the observation originates in vespawatch => delete the individual and create a nest
                 elif self.__class__.__name__ == 'Individual':
-                    if vw_evidence:
+                    if vw_evidence == 'nest':
                         if self.originates_in_vespawatch:
                             self.flag_warning('nest at inaturalist')
                         else:
