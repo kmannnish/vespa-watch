@@ -223,13 +223,13 @@ eb deploy vespawatch-xxx --message "your informatice message"
 A small deployment bash script has been prepared to execute the steps above. To execute the setup, make sure your aws profile is set correctly (dev or prd) and execute the script (adapt the capital arguments with more useful names and store these securely):
 
 ```
-./setup.sh dev DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD DUMMY
+./deployment/setup.sh dev DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD DUMMY
 ```
 
 or
 
 ```
-./setup.sh prd DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD INAT_API_SECRET
+./deployment/setup.sh prd DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD INAT_API_SECRET
 ```
 
 
