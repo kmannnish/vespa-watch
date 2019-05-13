@@ -1,4 +1,5 @@
-from django.forms import inlineformset_factory, ModelForm, BooleanField, ChoiceField, IntegerField, forms
+from django.forms import inlineformset_factory, ModelForm, BooleanField, ChoiceField, IntegerField, EmailField, CharField
+from django.utils.translation import ugettext_lazy as _
 from vespawatch.fields import ISODateTimeField
 from .models import ManagementAction, Nest, Individual, NestPicture, IndividualPicture
 
@@ -42,12 +43,12 @@ class NestForm(ModelForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
     terms_of_service = BooleanField(label='Accept the terms of service', required=False)   # TODO how to translate that label?
+    height = ChoiceField(choices=Nest.HEIGHT_CHOICES)
 
     class Meta:
         model = Nest
         fields = ['taxon', 'address', 'latitude', 'longitude',
-                  'observation_time', 'size', 'height', 'comments',
-                  'observer_last_name', 'observer_first_name', 'observer_email', 'observer_phone',
+                  'observation_time', 'size', 'comments',
                   'observer_is_beekeeper'
         ]
         field_classes = {
@@ -62,6 +63,42 @@ class NestForm(ModelForm):
             msg = "You must accept the terms of service."
             self.add_error('terms_of_service', msg)
 
+        addr = cleaned_data.get('address')
+        if not addr:
+            msg = 'This field is required'
+            self.add_error('address', msg)
+
+        height = cleaned_data.get('height')
+        if not height:
+            msg = 'This field is required'
+            self.add_error('height', msg)
+
+        return cleaned_data
+
+    def save(self, *args, **kwargs):
+        observation = super().save(*args, **kwargs)
+        if hasattr(self.files, 'getlist'):
+            for image in self.files.getlist('images'):
+                NestPicture.objects.create(observation=observation, image=image)
+
+
+class NestFormUnauthenticated(NestForm):
+    observer_email = EmailField()
+    observer_phone = CharField(max_length=20)
+
+    class Meta:
+        model = Nest
+        fields = ['taxon', 'address', 'latitude', 'longitude',
+                  'observation_time', 'size', 'comments',
+                  'observer_last_name', 'observer_first_name',
+                  'observer_is_beekeeper'
+        ]
+        field_classes = {
+            'observation_time': ISODateTimeField,
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
         # If it's for announcing a new nest from an anonymous user, we'll need some contact info
         observer_email = cleaned_data.get('observer_email')
         if self.new_nest_from_anonymous and not observer_email:
@@ -71,13 +108,6 @@ class NestForm(ModelForm):
         if self.new_nest_from_anonymous and not observer_phone:
             self.add_error('observer_phone', 'Observer phone is mandatory')
 
-        return cleaned_data
-
-    def save(self, *args, **kwargs):
-        observation = super().save(*args, **kwargs)
-        if hasattr(self.files, 'getlist'):
-            for image in self.files.getlist('images'):
-                NestPicture.objects.create(observation=observation, image=image)
 
 class IndividualPictureForm(ModelForm):
     class Meta:

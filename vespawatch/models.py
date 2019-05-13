@@ -477,7 +477,7 @@ class Nest(AbstractObservation):
         (BELOW_4_METER, _("Below 4 meters")),
         (ABOVE_4_METER, _("Above 4 meters"))
     )
-    height = models.CharField(verbose_name=_("Nest height"), max_length=50, choices=HEIGHT_CHOICES, blank=True)
+    height = models.CharField(verbose_name=_("Nest height"), max_length=50, choices=HEIGHT_CHOICES, blank=True)  # Will be set to required in the form, but can be empty for iNaturalist observations
 
     def get_absolute_url(self):
         return reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
