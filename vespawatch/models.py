@@ -429,7 +429,6 @@ class AbstractObservation(models.Model):
 
     @property
     def observation_time_iso(self):
-        # TODO check with Nico whether this should also be a property
         return self.observation_time.isoformat()
 
     def clean(self):
