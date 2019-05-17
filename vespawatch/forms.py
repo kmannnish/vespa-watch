@@ -12,8 +12,7 @@ class IndividualForm(ModelForm):
         model = Individual
         fields = ['taxon', 'individual_count', 'behaviour', 'address', 'latitude', 'longitude',
                   'observation_time', 'comments',
-                  'observer_last_name', 'observer_first_name', 'observer_email', 'observer_phone',
-                  'observer_is_beekeeper'
+                  'observer_name', 'observer_email', 'observer_phone'
         ]
         field_classes = {
             'observation_time': ISODateTimeField,
@@ -47,8 +46,7 @@ class NestForm(ModelForm):
         model = Nest
         fields = ['taxon', 'address', 'latitude', 'longitude',
                   'observation_time', 'size', 'height', 'comments',
-                  'observer_last_name', 'observer_first_name', 'observer_email', 'observer_phone',
-                  'observer_is_beekeeper'
+                  'observer_name', 'observer_email', 'observer_phone'
         ]
         field_classes = {
             'observation_time': ISODateTimeField,

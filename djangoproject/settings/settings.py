@@ -4,16 +4,32 @@ from .base import *
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+if os.environ['ENVIRONMENT'] == "dev":
+    DEBUG = True
+else:
+    DEBUG = False
 JS_DEBUG = False
 
+# allowed hosts as function of the environment
 ALLOWED_HOSTS.extend([
     '.elasticbeanstalk.com',
     '.eu-west-1.elb.amazonaws.com',
-    '.vespawatch-prd.eu-west-1.elasticbeanstalk.com',
-    '.vespawatch.be',
     '.localhost',
 ])
+if os.environ['ENVIRONMENT'] == "dev":
+    ALLOWED_HOSTS.extend([
+        '.vespawatch-dev.eu-west-1.elasticbeanstalk.com',
+    ])
+if os.environ['ENVIRONMENT'] == "uat":
+    ALLOWED_HOSTS.extend([
+        '.vespawatch-uat.eu-west-1.elasticbeanstalk.com',
+        '.uat.vespawatch.be',
+    ])
+if os.environ['ENVIRONMENT'] == "prd":
+    ALLOWED_HOSTS.extend([
+    '.vespawatch-prd.eu-west-1.elasticbeanstalk.com',
+    '.vespawatch.be',
+    ])
 
 
 # Database
@@ -30,13 +46,15 @@ DATABASES = {
     }
 }
 
+# iNaturalist app secret
+if os.environ['ENVIRONMENT'] == "prd":
+    INAT_APP_SECRET = os.environ['INAT_APP_SECRET']
+    INATURALIST_PUSH = True;
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
-STATIC_URL = '/static/'
-
 
 # ---------- Custom settings ----------
 
@@ -71,23 +89,32 @@ LOGGING = {
     }
 }
 
+# increase the alert level for dev environment
+if os.environ['ENVIRONMENT'] == 'dev':
+    LOGGING['handlers']['file']['level'] = 'INFO'
+    LOGGING['loggers']['django']['level'] = 'INFO'
 
-# S3 static storage for media files
-
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# S3 storage for static and pictures
 AWS_ACCESS_KEY_ID = None # None to use AWS internal role/permissions
-AWS_STORAGE_BUCKET_NAME = 'lw-vespawatch-prd'
+AWS_STORAGE_BUCKET_NAME = 'lw-vespawatch-{}'.format(os.environ['ENVIRONMENT'])
 AWS_QUERYSTRING_AUTH = False
 AWS_S3_CUSTOM_DOMAIN = '{}.s3.amazonaws.com'.format(AWS_STORAGE_BUCKET_NAME)
 AWS_DEFAULT_ACL = None  # inherit the bucket ACL
 AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',  # 1 day
+    'CacheControl': 'max-age=2592000',  # 30 days
 }
 AWS_S3_FILE_OVERWRITE = True
 AWS_S3_REGION_NAME = 'eu-west-1'
-AWS_LOCATION = 'media'
+
+# s3 static file settings
+STATICFILES_LOCATION = 'static'
+STATICFILES_STORAGE = 'custom_s3_storage.StaticStorage'
+STATIC_URL = 'https://{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
+
+# S3 media file settings
+MEDIAFILES_LOCATION = 'media'
+DEFAULT_FILE_STORAGE = 'custom_s3_storage.MediaStorage'
 
 
 # Other
-
-VESPAWATCH_BASE_SITE_URL = "http://vespawatch-prd.eu-west-1.elasticbeanstalk.com/"
+VESPAWATCH_BASE_SITE_URL = "http://vespawatch-{}.eu-west-1.elasticbeanstalk.com/".format(os.environ['ENVIRONMENT'])

@@ -315,11 +315,9 @@ class AbstractObservation(models.Model):
     inat_vv_confirmed = models.BooleanField(blank=True, null=True)  # The community ID of iNaturalist says it's Vespa Velutina
 
     # Observer info
-    observer_first_name = models.CharField(verbose_name=_("First name"), max_length=255, blank=True, null=True)
-    observer_last_name = models.CharField(verbose_name=_("Last name"), max_length=255, blank=True, null=True)
+    observer_name = models.CharField(verbose_name=_("Name"), max_length=255, blank=True, null=True)
     observer_email = models.EmailField(verbose_name=_("Email address"), blank=True, null=True)
     observer_phone = models.CharField(verbose_name=_("Telephone number"), max_length=20, blank=True, null=True)
-    observer_is_beekeeper = models.NullBooleanField()
 
     # Managers
     objects = models.Manager()  # The default manager.
@@ -592,10 +590,6 @@ class AbstractObservation(models.Model):
         else:
             return ''
 
-    def get_observer_display(self):
-        parts = [self.observer_first_name, self.observer_last_name]
-        return ' '.join([x for x in parts if x])
-
     @property
     def formatted_observation_date(self):
         # We need to be aware of the timezone, hence the defaultfilter trick
@@ -603,7 +597,6 @@ class AbstractObservation(models.Model):
 
     @property
     def observation_time_iso(self):
-        # TODO check with Nico whether this should also be a property
         return self.observation_time.isoformat()
 
     def save(self, *args, **kwargs):
@@ -696,15 +689,24 @@ class Nest(AbstractObservation):
 
 
 class Individual(AbstractObservation):
-    FOURAGING = 'FO'
     HUNTING = 'HU'
     FLOWER = 'FL'
     OTHER = 'OT'
+    NEAR_WOOD = 'WO'
+    NEAR_WATER = 'WA'
+    FLYING = 'FG'
+    CAPTURED = 'CA'
+    DEAD = 'DE'
+
     BEHAVIOUR_CHOICES = (
-        (FOURAGING, 'Fouraging'),
-        (HUNTING, 'Hunting at hive'),
-        (FLOWER, 'At flower'),
-        (OTHER, 'Other')
+        (HUNTING, _('Hunting at beehive')),
+        (FLOWER, _('Drinking nectar on flower')),
+        (NEAR_WOOD, _('Near wood source')),
+        (NEAR_WATER, _('Near water source')),
+        (FLYING, _('Flying')),
+        (CAPTURED, _('Captured')),
+        (DEAD, _('Dead')),
+        (OTHER, _('Other'))
     )
 
     # Fields

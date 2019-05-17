@@ -137,9 +137,15 @@ main.container-fluid {
     }
 
     .theme-card-horizontal { // Used for identification cards and tips
-        flex-direction: row !important; // Same as .flex-row
-        overflow: hidden !important; // Same as .overflow-hidden
-        width: 100% !important; // Same as .w-100
+        // Stack vertical by default (useful on small screens)
+        flex-direction: column;
+        // Stack horizontal on wider screens
+        @include media-breakpoint-up(sm) {
+            flex-direction: row!important;
+        }
+
+        overflow: hidden!important; // Same as .overflow-hidden
+        width: 100%!important; // Same as .w-100
 
         &.border-primary,
         &.border-success {
