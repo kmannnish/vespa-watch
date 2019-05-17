@@ -216,6 +216,7 @@ INAT_APP_ID = 'd1d0f541791be42e234ce82a5bb8332ab816ff7ab35c6e27b12c0455939a5ea8'
 INAT_APP_SECRET = ''
 INATURALIST_PUSH = False
 
+INATURALIST_PUSH = False  # Set it to true if we want to REALLY push data to iNaturalist
 
 # Other
 
@@ -235,7 +236,8 @@ MARKDOWNX_IMAGE_MAX_SIZE = {
 }
 
 VESPAWATCH_EVIDENCE_OBS_FIELD_ID = 9770  # The identifier of the "vespawatch_evidence" observation field @iNaturalist
-VESPAWATCH_ID_OBS_FIELD_ID = 9613 # # The identifier of the "vespawatch_id" observation field @iNaturalist
+VESPAWATCH_ID_OBS_FIELD_ID = 9613 # The identifier of the "vespawatch_id" observation field @iNaturalist
+VESPAWATCH_BEHAVIOUR_OBS_FIELD_ID = 10192
 VESPAWATCH_PROJECT_ID = 22865  # vespawatch project ID @ iNaturalist
 VESPAWATCH_PROJECT_URL = f"https://inaturalist.org/projects/{VESPAWATCH_PROJECT_ID}"
 VESPAWATCH_USER_ID = 1263313  # vespawatch user ID @ iNaturalist
