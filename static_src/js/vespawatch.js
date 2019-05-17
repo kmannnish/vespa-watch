@@ -122,8 +122,8 @@ var VwObservationsVizMap = {
             var url = obs.subject === 'individual' ? VWConfig.apis.individualsUrl : VWConfig.apis.nestsUrl;
             axios.get(url + '/' + obs.id)
                 .then(response => {
-                    // console.log('fetched individual data');
-                    // console.log(response);
+                    console.log('Fetched individual data');
+                    console.log(response);
                     var obsData = response.data;
                     var url = new URL(obsData.detailsUrl, VWConfig.baseUrl);
 
@@ -137,8 +137,8 @@ var VwObservationsVizMap = {
                                 <h5 class="card-title">` + obsData.taxon.vernacular_name[VWConfig.currentLanguageCode] + `</h5>
                                 <h6 class="card-subtitle text-muted mb-2"><em>` + obsData.taxon.scientific_name + `</em></h6>
                                 <p class="card-text">
-                                    <span class="badge badge-secondary text-lowercase">` + obsData.subject + `</span>
-                                    <!-- <span class="badge badge-success text-lowercase">validated</span> -->
+                                    <span class="badge badge-secondary text-lowercase">` + obsData.subject + `</span>` +
+                                    (obsData.inat_vv_confirmed ? ` <span class="badge badge-success text-lowercase">Confirmed</span>` : "") + `
                                 </p>` + (obsData.inaturalist_id ? `<a class="card-link stretched-link" href="http://www.inaturalist.org/observations/` + obsData.inaturalist_id + `" target="_blank">iNaturalist</a>` : "") + `
                             </div>
                             <div class="card-footer text-muted">
@@ -293,7 +293,7 @@ var VwObservationsVizTimeSlider = {
         observationsTimeRange: function (newRange, oldRange) {
             // Only when data is loaded from the API, the range of the slider can be set. Therefore,
             // watch the 'observationsTimeRange' prop to set the data initial value.
-            console.log('new time range received');
+            console.log('New time range received');
             console.log(newRange);
             this.selectedTimeRange.start = this.observationsTimeRange.start;
             this.selectedTimeRange.stop = this.observationsTimeRange.start;
@@ -364,12 +364,12 @@ var VwObservationsViz = {
             var urls = [];
 
             if (this.zone != null) {
-                // console.log('Only requesting observations for zone ' + this.zone);
+                console.log('Only requesting observations for zone ' + this.zone);
                 urls.push(axios.get(this.observationsUrl + '&zone=' + this.zone + '&type=nest'));
             } else {
                 urls.push(axios.get(this.individualsUrl + '?light=true'));
                 urls.push(axios.get(this.nestsUrl + '?light=true'));
-                // console.log('No zone set');
+                console.log('No zone set');
             }
             axios.all(urls)
               .then(axios.spread((indivRes, nestRes) => {
@@ -386,7 +386,6 @@ var VwObservationsViz = {
 
               }))
                 .catch(function (error) {
-                    // handle error
                     console.log(error);
                 });
         },
@@ -539,7 +538,7 @@ var VwManagementActionModal = {
         populateFromServer: function () {
             axios.get(this.loadActionUrl, {params: {'action_id': this.actionId}})
                 .then(response => {
-                    console.log('received response', response);
+                    console.log('Received response', response);
                     this.actionTime = response.data.action_time;
                     this.outcome = response.data.outcome;
                     this.duration = response.data.duration;
@@ -587,7 +586,6 @@ var VwManagementActionModal = {
                     this.availabeOutcomes = response.data;
                 })
                 .catch(function (error) {
-                    // handle error
                     console.log(error);
                 });
         }
@@ -988,7 +986,7 @@ var VwLocationSelectorMap = {
             this.$emit('marker-move', [this.marker.getLatLng().lng, this.marker.getLatLng().lat]);
         },
         setMarker: function (lat, lng) {
-            console.log('setting marker');
+            console.log('Setting marker');
             if (this.marker != undefined) {
                 this.map.removeLayer(this.marker);
             }
@@ -1010,12 +1008,12 @@ var VwLocationSelectorMap = {
         this.map = L.map('vw-location-selector-map-map').setView(this.leafletPosition, this.mapZoom);
         L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png').addTo(this.map);
         if (this.initMarker === 'true') {
-            console.log('init with a marker');
+            console.log('Init with a marker');
             this.setMarker(this.position[0], this.position[1]);
             this.map.setZoom(16);
             this.map.panTo(new L.LatLng(this.position[1], this.position[0]));
         } else {
-            console.log('don\'t add a marker');
+            console.log('Don\'t add a marker');
         }
     },
     props: ['position', 'initMarker'],
@@ -1205,11 +1203,11 @@ var VwLocationSelector = {
             this.reverseGeocode();
         },
         updateLatitude: function (lat) {
-            console.log('latitude was updated');
+            console.log('Latitude was updated');
             this.markerCoordinates = [this.markerCoordinates[0], lat];
         },
         updateLongitude: function (long) {
-            console.log('longitude was updated');
+            console.log('Longitude was updated');
             this.markerCoordinates = [long, this.markerCoordinates[1]];
         },
     },
@@ -1262,7 +1260,6 @@ var app = new Vue({
                     this.currentlyLoading = false;
                 })
                 .catch(function (error) {
-                    // handle error
                     console.log(error);
                 });
 
