@@ -49,6 +49,7 @@ DATABASES = {
 # iNaturalist app secret
 if os.environ['ENVIRONMENT'] == "prd":
     INAT_APP_SECRET = os.environ['INAT_APP_SECRET']
+    INAT_USER_PASSWORD =  os.environ['INAT_USER_PASSWORD']
     INATURALIST_PUSH = True;
 
 # Static files (CSS, JavaScript, Images)
