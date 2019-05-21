@@ -88,7 +88,6 @@ class Command(VespaWatchCommand):
         """
         try:
             inat_obs_data = get_observation(observation.inaturalist_id)
-            # self.w(f'inat obs data:\n {inat_obs_data}')  # TODO remove this line
             observation.flag_based_on_inat_data(inat_obs_data)
             observation.update_from_inat_data(inat_obs_data)
         except ObservationNotFound:
