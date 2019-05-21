@@ -71,7 +71,8 @@ class Command(VespaWatchCommand):
             if local_obs is None:
                 # This is a new one. Check vespawatch-evidence and create a nest or individual
                 self.w(f"iNaturalist observation with ID #{inat_observation_data['id']} is not yet known, we'll create it locally...", ending='')
-                create_observation_from_inat_data(inat_observation_data)  #TODO: check all the required fields are set
+                create_observation_from_inat_data(inat_observation_data)  #
+                       : check all the required fields are set
                 self.w("OK")
             else:
                 # We already have an observation for this id. Update it
@@ -88,7 +89,6 @@ class Command(VespaWatchCommand):
         """
         try:
             inat_obs_data = get_observation(observation.inaturalist_id)
-            self.w(f'inat obs data:\n {inat_obs_data}')  # TODO remove this line
             observation.flag_based_on_inat_data(inat_obs_data)
             observation.update_from_inat_data(inat_obs_data)
         except ObservationNotFound:
