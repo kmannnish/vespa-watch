@@ -1217,7 +1217,7 @@ var VwLocationSelector = {
         <div class="row">
             <div class="col-lg-6">
                 <vw-location-selector-location-input v-bind:init-address="address" v-on:autodetect-btn="autodetectPosition" v-on:search="getCoordinates"></vw-location-selector-location-input>
-                <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:address="modelAddress" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude" v-bind:is-required="addressRequired"></vw-location-selector-coordinates>
+                <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:address="modelAddress" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude" v-bind:address-required="addressRequired"></vw-location-selector-coordinates>
             </div>
             <div class="col-lg-6">
                 <vw-location-selector-map v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
