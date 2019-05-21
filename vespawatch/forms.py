@@ -13,7 +13,6 @@ class IndividualForm(ModelForm):
         model = Individual
         fields = ['taxon', 'individual_count', 'behaviour', 'address', 'latitude', 'longitude',
                   'observation_time', 'comments',
-                  'observer_last_name', 'observer_first_name', 'observer_email', 'observer_phone',
                   'observer_is_beekeeper'
         ]
         field_classes = {
@@ -35,19 +34,32 @@ class IndividualForm(ModelForm):
             for image in self.files.getlist('images'):
                 IndividualPicture.objects.create(observation=observation, image=image)
 
-class NestForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        self.new_nest_from_anonymous = kwargs.pop('new_nest_from_anonymous', False)
-        super().__init__(*args, **kwargs)
 
+class IndividualFormUnauthenticated(IndividualForm):
+    observer_email = EmailField()
+
+    class Meta:
+        model = Individual
+        fields = ['taxon', 'individual_count', 'behaviour', 'address', 'latitude', 'longitude',
+                  'observation_time', 'comments',
+                  'observer_last_name', 'observer_first_name', 'observer_phone',
+                  'observer_is_beekeeper'
+        ]
+        field_classes = {
+            'observation_time': ISODateTimeField,
+        }
+
+
+class NestForm(ModelForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
-    terms_of_service = BooleanField(label='Accept the terms of service', required=False)   # TODO how to translate that label?
-    height = ChoiceField(choices=Nest.HEIGHT_CHOICES)
+    terms_of_service = BooleanField(label=_('Accept the terms of service'), required=False)
+    height = ChoiceField(choices=[('', '--------')] + list(Nest.HEIGHT_CHOICES))
+    address = CharField(max_length=255)
 
     class Meta:
         model = Nest
-        fields = ['taxon', 'address', 'latitude', 'longitude',
+        fields = ['taxon', 'latitude', 'longitude',
                   'observation_time', 'size', 'comments',
                   'observer_is_beekeeper'
         ]
@@ -83,31 +95,21 @@ class NestForm(ModelForm):
 
 
 class NestFormUnauthenticated(NestForm):
+    observer_first_name = CharField(max_length=255)
+    observer_last_name = CharField(max_length=255)
     observer_email = EmailField()
     observer_phone = CharField(max_length=20)
+    terms_of_service = BooleanField(label=_('Accept the terms of service'))
 
     class Meta:
         model = Nest
-        fields = ['taxon', 'address', 'latitude', 'longitude',
+        fields = ['taxon', 'latitude', 'longitude',
                   'observation_time', 'size', 'comments',
-                  'observer_last_name', 'observer_first_name',
                   'observer_is_beekeeper'
         ]
         field_classes = {
             'observation_time': ISODateTimeField,
         }
-
-    def clean(self):
-        cleaned_data = super().clean()
-        # If it's for announcing a new nest from an anonymous user, we'll need some contact info
-        observer_email = cleaned_data.get('observer_email')
-        if self.new_nest_from_anonymous and not observer_email:
-            self.add_error('observer_email', 'Observer email is mandatory')
-
-        observer_phone = cleaned_data.get('observer_phone')
-        if self.new_nest_from_anonymous and not observer_phone:
-            self.add_error('observer_phone', 'Observer phone is mandatory')
-
 
 class IndividualPictureForm(ModelForm):
     class Meta:

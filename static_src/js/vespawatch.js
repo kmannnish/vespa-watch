@@ -635,7 +635,7 @@ var VwManagementActionModal = {
                         </div>
                         <form>
                             <div class="form-group">
-                                <label for="outcome">{{ outcomeLabel }} *</label>
+                                <label for="outcome">{{ outcomeLabel }}*</label>
                                 <select v-model="outcome" class="form-control" id="outcome">
                                     <option :value="outcome.value" v-for="outcome in availabeOutcomes">{{ outcome.label }}</option>
                                 </select>
@@ -644,7 +644,7 @@ var VwManagementActionModal = {
                                 
                                 <datetime v-model="actionTime" type="datetime" 
                                     input-class="datetimeinput form-control">
-                                    <label for="startDate" slot="before">{{ actionTimeLabel }} *</label>          
+                                    <label for="startDate" slot="before">{{ actionTimeLabel }}*</label>          
                                 </datetime>
                 
                                 <label for="duration">{{ durationLabel }}</label>
@@ -1074,23 +1074,23 @@ var VwLocationSelectorCoordinates = {
         }
 
     },
-    props: ['longitude', 'latitude', 'address', 'isRequired'],
+    props: ['longitude', 'latitude', 'address', 'addressRequired'],
     template: `
         <div>
             <div class="form-row">
                 <div class="form-group col-6">
-                    <label for="id_latitude">{{latitudeLabel}}<span v-if="isRequired"> *</span></label>
+                    <label for="id_latitude">{{latitudeLabel}}<span>*</span></label>
                     <input type="text" class="form-control numberinput" id="id_latitude" name="latitude" v-model="lat">
                     <small class="form-text text-muted">{{coordinatesHelpLabel}}</small>
                 </div>
                 <div class="form-group col-6">
-                    <label for="id_longitude">{{longitudeLabel}}<span v-if="isRequired"> *</span></label>
+                    <label for="id_longitude">{{longitudeLabel}}<span>*</span></label>
                     <input type="text" class="form-control numberinput" id="id_longitude" name="longitude" v-model="long">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-12">
-                    <label for="id_address">{{addressLabel}}<span v-if="isRequired"> *</span></label>
+                    <label for="id_address">{{addressLabel}}<span v-if="addressRequired">*</span></label>
                     <input type="text" class="form-control numberinput" id="id_address" name="address" v-model="_address">
                     <small class="form-text text-muted">{{addressHelpLabel}}</small>
                 </div>
@@ -1130,7 +1130,7 @@ var VwDatetimeSelector = {
     template: `<div class="form-group">
                     <datetime v-model="observationTime" type="datetime" 
                               input-class="datetimeinput form-control" :max-datetime="nowIsoFormat()">
-                        <label for="startDate" slot="before">[[ observationTimeLabel ]]<span v-if="isRequired"> *</span></label>          
+                        <label for="startDate" slot="before">[[ observationTimeLabel ]]<span v-if="isRequired">*</span></label>          
                     </datetime>
                     <input type="hidden" :name="hiddenFieldName" :value="observationTime"/>
                </div>`
