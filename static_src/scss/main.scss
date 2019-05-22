@@ -158,6 +158,29 @@ body > footer {
 
 // OTHER
 
+// Customize Django form errors
+
+.errorlist {
+    // List the errors on the top of the forms as:
+    // bolded field: error message(s)
+    font-weight: bold;
+    
+    ul {
+        display: inline;
+        font-weight: normal;
+        list-style: none;
+        padding-left: 0;
+
+        li {
+            display: inline;
+            padding-right: 0.1rem;
+        }
+
+        &:before {
+            content: ": ";
+        }
+    }
+}
 
 // Customize leaflet
 
