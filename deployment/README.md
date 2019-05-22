@@ -336,6 +336,7 @@ By default, logs are stored forever. This is not required as 3 months of logs wi
 
 ```
 aws logs put-retention-policy --log-group-name /aws/elasticbeanstalk/vespawatch-uat/opt/python/log/django.log --retention-in-days 90
+aws logs put-retention-policy --log-group-name /aws/elasticbeanstalk/vespawatch-uat/var/log/cron_inaturalist_sync.log --retention-in-days 90
 ```
 
 #### Create alarm on filter and publish to SNS
