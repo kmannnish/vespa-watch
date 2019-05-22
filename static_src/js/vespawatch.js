@@ -1138,7 +1138,7 @@ var VwDatetimeSelector = {
 var VwLocationSelector = {
     data: function () {
         return {
-            locationCoordinates: [this.initCoordinates[0], this.initCoordinates[1]],  // the coordinates that will be passed to the long lat fields
+            locationCoordinates: ["", ""],  // the coordinates that will be passed to the long lat fields
             markerCoordinates: [this.initCoordinates[0], this.initCoordinates[1]],  // the coordinates that will be passed to the map
             modelAddress: this.address ? '' + this.address : '',
             provider: new GeoSearch.OpenStreetMapProvider({
@@ -1150,10 +1150,10 @@ var VwLocationSelector = {
     },
     computed: {
         locationLng: function () {
-            return this.locationCoordinates ? this.locationCoordinates[0] : this.initCoordinates[0];  // TODO or use startCoordinates?
+            return this.locationCoordinates ? this.locationCoordinates[0] : "";
         },
         locationLat: function () {
-            return this.locationCoordinates ? this.locationCoordinates[1] : this.initCoordinates[1];  // TODO or use startCoordinates?
+            return this.locationCoordinates ? this.locationCoordinates[1] : "";
         }
     },
     components: {
