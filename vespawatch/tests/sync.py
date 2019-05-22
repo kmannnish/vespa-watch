@@ -662,6 +662,7 @@ class TestSync(TestCase):
         self.assertEqual(warning_texts[1], 'unknown taxon')
         # Assert that the inaturalist_species field was set to the taxon name
         self.assertEqual(Individual.objects.filter(inaturalist_id=30)[0].inaturalist_species, 'Unknown taxon')
+        self.assertEqual(Individual.objects.filter(inaturalist_id=30)[0].taxon, None)
 
     @override_settings(INATURALIST_PUSH=False)
     def test_sync_pull_obs_taxon_changed_twice(self):

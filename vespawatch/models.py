@@ -542,6 +542,7 @@ class AbstractObservation(models.Model):
             taxon = get_taxon_from_inat_taxon_id(inat_observation_data['taxon']['id'])
             self.taxon = taxon
         except Taxon.DoesNotExist:
+            self.taxon = None
             self.inaturalist_species = inat_observation_data['taxon']['name'] if 'name' in inat_observation_data['taxon'] else ''
 
         self.save()
