@@ -7,7 +7,7 @@ from .models import ManagementAction, Nest, Individual, NestPicture, IndividualP
 class IndividualForm(ModelForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
-    terms_of_service = BooleanField(label=_('Accept the terms of service'), required=False)
+    terms_of_service = BooleanField(label=_('Accept the privacy policy'), required=False)
 
     class Meta:
         model = Individual
@@ -24,7 +24,7 @@ class IndividualForm(ModelForm):
         toc = cleaned_data.get('terms_of_service')
         print('Toc: {}'.format(toc))
         if not toc:
-            msg = "You must accept the terms of service."
+            msg = _("You must accept the privacy policy.")
             self.add_error('terms_of_service', msg)
         return cleaned_data
 
@@ -52,7 +52,7 @@ class IndividualFormUnauthenticated(IndividualForm):
 class NestForm(ModelForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
-    terms_of_service = BooleanField(label=_('Accept the terms of service'), required=False)
+    terms_of_service = BooleanField(label=_('Accept the privacy policy'), required=False)
     height = ChoiceField(choices=[('', '--------')] + list(Nest.HEIGHT_CHOICES))
     address = CharField(max_length=255)
 
@@ -73,7 +73,7 @@ class NestForm(ModelForm):
         toc = cleaned_data.get('terms_of_service')
         print('Toc: {}'.format(toc))
         if not toc:
-            msg = "You must accept the terms of service."
+            msg = _("You must accept the privacy policy.")
             self.add_error('terms_of_service', msg)
 
         addr = cleaned_data.get('address')
@@ -106,7 +106,7 @@ class NestFormUnauthenticated(NestForm):
     observer_last_name = CharField(max_length=255)
     observer_email = EmailField()
     observer_phone = CharField(max_length=20)
-    terms_of_service = BooleanField(label=_('Accept the terms of service'))
+    terms_of_service = BooleanField(label=_('Accept the privacy policy'))
 
     class Meta:
         model = Nest
