@@ -8,7 +8,7 @@ The deployment is using elastic beanstalk on AWS to setup and manage the resourc
 
 To perform these actions, the [AWS CLI](https://aws.amazon.com/cli/) and [eb CLI](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3.html) are required. Furthermore, make sure to have the AWS authentification and profiles defined for DEV and/or PRD environment.
 
-The elastic beanstalk cli initialization is done using  `eb init`, from which custom adaptations were added (inside the `.ebextensions` and .elasticbeanstalk` folders). When you want to start using elastic beanstalk for the vespawatch, you have to link the initialization with vespawatch application. Execute the command `eb init` in the same folder as the `.ebextensions`, choose `eu-west-1 : EU (Ireland)` and select the vespawatch application when prompted. Say No to using AWS Code Commit.
+The elastic beanstalk cli initialization is done using  `eb init`, from which custom adaptations were added (inside the `.ebextensions` and `.elasticbeanstalk` folders). When you want to start using elastic beanstalk for the vespawatch, you have to link the initialization with vespawatch application. Execute the command `eb init` in the same folder as the `.ebextensions`, choose `eu-west-1 : EU (Ireland)` and select the vespawatch application when prompted. Say No to using AWS Code Commit.
 
 The tutorial underneath starts from these existing components to create a new environment and provide new deployments.
 
@@ -38,7 +38,8 @@ In general, to create a new environment (dev/prd), following steps are required 
 Next, new deployments can be done whenever required using the deployment command:
 
 ```
-eb deploy --message  "informative message..."
+# deploy
+eb deploy vespawatch-xxx --message  "informative message..."
 ```
 ### Key-pair combination
 
@@ -124,9 +125,9 @@ More info on the instance profile creation is provided here:
 
 ### create environment
 
-The setup is different in development versus production, as the subnets, security groups and key-pair combination are different. Also on the django side, some configuration settings (settings are contained inside `djangoproject/djangoproject/settings` folder) are different.
+The setup is different in development versus production, as the subnets, security groups and key-pair combination are different. Also on the django side, some configuration settings (settings are contained inside `djangoproject/djangoproject/settings` folder) are different. This `settings.py` file is referenced inside the `.ebextensions` folder settings to retrieve the settings.
 
-First of all, prepare the `settings.py file` depending from the environment working in. If in development, copy the `settings_dev.py` to a `settings.py` file. In production, copy the `settings_prd.py` to a `settings.py` file. This file is referenced inside the `.ebextensions` folder settings to prepare the settings.
+The `settings.py file` configurations that are environment specific are adjusted using the environmental variable `ENVIRONMENT` (with one of the values`dev`, `uat` or `prd`).
 
 For *development*, the environment creation is done with the following command:
 ```
@@ -134,7 +135,7 @@ eb create
 --cname vespawatch-dev
 --database --database.username $DB_USER --database.password $DB_PWD
 --elb-type classic
---envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,ENVIRONMENT=$ENVIRONMENT
+--envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,DB_USER=$DB_USER,DB_PWD=$DB_PWD,ENVIRONMENT=dev
 --region eu-west-1
 --vpc
 --vpc.dbsubnets subnet-2b338273,subnet-2ce39448,subnet-d0c6a5a6
@@ -153,7 +154,7 @@ eb create
 --database.size 5
 --database.engine postgres
 --elb-type classic
---envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD
+--envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,DB_USER=$DB_USER,DB_PWD=$DB_PWD,ENVIRONMENT=uat
 --region eu-west-1
 --vpc
 --vpc.dbsubnets subnet-f54dfcad,subnet-14f98e70,subnet-e7fc9f91
@@ -172,7 +173,7 @@ eb create
 --cname vespawatch-prd
 --database --database.username $DB_USER --database.password $DB_PWD
 --elb-type classic
---envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,DB_USER=$DB_USER,DB_PWD=$DB_PWD,ENVIRONMENT=$ENVIRONMENT
+--envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,DB_USER=$DB_USER,DB_PWD=$DB_PWD,ENVIRONMENT=$ENVIRONMENT,INAT_APP_SECRET=$INAT_APP_SECRET
 --region eu-west-1
 --vpc
 --vpc.dbsubnets subnet-7a763f23,subnet-c4f6ffa1,subnet-9a0a3bed
@@ -183,6 +184,9 @@ eb create
 --tags APPLICATION=VESPAWATCH,ENVIRONMENT=PRD,OWNER=LIFEWATCH-VESPAWATCH,BUSINESS_UNIT=LIFEWATCH,COST_CENTER=EVINBO,RUNDECK=TRUE
 --instance_profile aws-elasticbeanstalk-ec2-role-vespawatch
 ```
+
+Note the additional environmental variable `INAT_APP_SECRET` for production to enable push access to the Inaturalist app, which is only used in production.
+
 
 Prompt will provide some additional questions:
 
@@ -208,29 +212,37 @@ More information on the `eb-create` command, see https://docs.aws.amazon.com/ela
 When the environment works, the deployment of the application is done by:
 
 ```
-# copy the proper settings file working on to settings.py file
-cp ./djangoproject/settings/settings_XXX.py ./djangoproject/settings/settings.py
 # redeploy
-eb deploy --message "your informatice message"
+eb deploy vespawatch-xxx --message "your informatice message"
 ```
+
+`vespawatch-xxx` is the environment you want to deploy to.
 
 ## Bash script for deployment
 
 A small deployment bash script has been prepared to execute the steps above. To execute the setup, make sure your aws profile is set correctly (dev or prd) and execute the script (adapt the capital arguments with more useful names and store these securely):
 
 ```
-./setup.sh dev DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD
+./deployment/setup.sh dev DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD DUMMY
 ```
 
+or
+
+```
+./deployment/setup.sh prd DB_USERNAME DB_PASSWORD KEEPTHISDJANGOKEYSECRET APP_SU_USERNAME APP_SU_PASSWORD INAT_API_SECRET
+```
+
+
 Variables:
-* `$ENVIRONMENT` e.g. 'dev'
+* `$ENVIRONMENT` e.g. 'dev' (or 'uat', 'prd')
 * `$DB_USER` RDS database user
 * `$DB_PWD`   RDS database pwd
 * `$DJANGO_SECRET_KEY`   django app secret key
 * `$VESPA_SU_NAME`  user name vespawatch applicatie superuser
-* `$VESPA_SU_PWD` paswoord vespawatch applicatie superuser
+* `$VESPA_SU_PWD` password vespawatch applicatie superuser
+* `$INAT_APP_SECRET` (only relevant for production) password
 
-TODO: https://medium.com/@nqbao/how-to-use-aws-ssm-parameter-store-easily-in-python-94fda04fea84
+Possible improvement: https://medium.com/@nqbao/how-to-use-aws-ssm-parameter-store-easily-in-python-94fda04fea84
 
 Some more steps are required when doing the setup, see next sections.
 
@@ -243,7 +255,7 @@ These steps need to be done just a single time after the initial deployment.
 With the proper authentification rights enabled, we can appply some additional steps during the first requirement. These commands are not included as container commands, as they only need to be configured during the first deployment, whereas the steps in the `01_python_config` file will run each new deployment
 
 ```
-eb ssh --command "source /opt/python/run/venv/bin/activate && python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson"
+eb ssh --command "source /opt/python/run/venv/bin/activate  python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson"
 eb ssh --command "source /opt/python/run/venv/bin/activate && python manage.py create_firefighters_accounts"
 ```
 
@@ -258,7 +270,7 @@ python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson
 python manage.py create_firefighters_accounts
 ```
 
-Optional -> python manage.py generateimages
+Optional (when encountering thumbnail errors), use the `python manage.py generateimages` command as well.
 
 ### Adapt the security group excluding inbound rule
 
@@ -343,7 +355,7 @@ See also: https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/put-metric
 
 - All **code** is under version control and each deployment is stored in a S3 bucket managed by elastic beanstalk
 - Backups of the **RDS** are managed on organisation level of INBO.
-- Backups of the **media files** in the S3 bucket #TODO
+- Backups of the **media files** in the S3 bucket is not considered.
 
 ## Troubleshooting
 
@@ -368,6 +380,73 @@ Hence, the log files to screen:
 * `var/log` contains the general logging files, e.g. the access and erro logs in the `httpd` folder.
 
 Notice that the logs (also `django.log`) are accessible using the AWS eb console as well by requesting the logs (all or last 100 lines).
+
+### Database
+
+The backup setup of the RDS is creates automated backups of last 7 days. However, in case of management on the environment, when testing queries,... on the prd-database or just to import the prd-dbase for local development, make an additional dump. To do so, make a connection to the database first, which can be done by using port-forwarding the dbase instance to you localhost
+
+```
+ssh YOUR_ACCOUNT@BASTION_IP -2 -4 -i YOUR_ACCOUNT.pem -N -L 127.0.1:54321:DBASE_ENDPOINT:5432
+```
+
+with:
+- `YOUR_ACCOUNT` the AWS account user name
+- `BASTION_IP` the ip address from the bastion server
+- `YOUR_ACCOUNT.pem` the path of your locally stored (read-only) pem file
+- `DBASE_ENDPOINT` the endpoint of the database
+
+Note, the `127.0.1:54321` is just chosen. When portforwarding is active, the `pg_xxx` commands can be used on the remote database.
+
+```
+pg_dump --format=c -n public --verbose --host=127.0.0.1 --port=54321 --username=USERNAME DB_NAME > dump-vespawatch.backup
+```
+
+with:
+- `USERNAME` the database superuser username
+- `DB_NAME` the database name (probably `vespawatch`)
+
+which stored the database in to the file `dump-vespawatch.backup`. To setup a new local database using the dump:
+
+```
+createdb DB_NAME
+pg_restore -v -d DB_NAME dump-vespawatch.backup
+```
+
+with:
+- `DB_NAME` the database name (probably `vespawatch` or alike).
+
+### Recreate the environment
+
+A regular redeployment (provide correct `settings.py` file and run `eb deploy ENV-NAME`) does only redeploy the code to the instances and does not affect the RDS. In the (rare) occurrence of a complete failure of the environment, the rebuilding or entire resetup of the application could be required.
+
+__IMPORTANT:__ Rebuilding an elastic beanstalk environment with an Amazon RDS database instance creates a new database with the same configuration, but __does not apply a snapshot__ to the new database!
+
+In order to rebuild an environment from scratch, the procedure above remains largely the same (assuming the S3 buckets and policies - not part of the eb environment - will still exists) except of the __database__, which need to be created from an AWS snapshot and/or manual export (see previous section).
+
+Make sure to create a snapshot before deleting any environment. The snapshot can be used as such in the new environment. The main difference is the additional step of providing the database in between the environment creation (`eb create`) and the effective deployment (`eb deploy`) instead of creating a new database on the environment creation.
+
+1. Create a new environment without database, this means use the `eb create` command but without `--database --database.username $DB_USER --database.password $DB_PWD` line, for example:
+
+```
+eb create
+--cname vespawatch-prd
+--elb-type classic
+--envvars SECRET_KEY=$DJANGO_SECRET_KEY,VESPA_SU_NAME=$VESPA_SU_NAME,VESPA_SU_PWD=$VESPA_SU_PWD,DB_USER=$DB_USER,DB_PWD=$DB_PWD,ENVIRONMENT=$ENVIRONMENT,INAT_APP_SECRET=$INAT_APP_SECRET
+--region eu-west-1
+--vpc
+--vpc.dbsubnets subnet-7a763f23,subnet-c4f6ffa1,subnet-9a0a3bed
+--vpc.ec2subnets subnet-78763f21,subnet-c5f6ffa0,subnet-9c0a3beb
+--vpc.elbsubnets subnet-78763f21,subnet-c5f6ffa0,subnet-9c0a3beb
+--vpc.id vpc-79d0f71c
+--vpc.securitygroups sg-ce6ff5b6,sg-35d5ed51
+--tags APPLICATION=VESPAWATCH,ENVIRONMENT=PRD,OWNER=LIFEWATCH-VESPAWATCH,BUSINESS_UNIT=LIFEWATCH,COST_CENTER=EVINBO,RUNDECK=TRUE
+--instance_profile aws-elasticbeanstalk-ec2-role-vespawatch
+```
+As the creation will also call the config with the migration of the database (which is not existing), the environment will initiate errors. Ignore these for now.
+
+2.  Using the AWS Console, attach the database snapshot to the environment, as described in the [AWS docs](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.managing.db.html)
+3. Once database is restored (this takes a while), redeploy the application with `eb deploy`.
+
 
 ## Setup and configuration info
 

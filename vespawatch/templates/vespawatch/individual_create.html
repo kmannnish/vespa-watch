@@ -86,10 +86,7 @@
             <h5>{% trans 'Contact information' %}</h5>
             <div class="row">
                 <div class="col-lg-3 col-md-6">
-                    {{ form.observer_first_name|as_crispy_field }}
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    {{ form.observer_last_name|as_crispy_field }}
+                    {{ form.observer_name|as_crispy_field }}
                 </div>
                 <div class="col-lg-3 col-md-6">
                     {{ form.observer_phone|as_crispy_field }}

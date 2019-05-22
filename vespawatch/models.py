@@ -14,7 +14,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template import defaultfilters
 from django.urls import reverse
-from django.utils.timezone import is_naive, make_aware
+from django.utils.timezone import is_naive, make_aware, now
 from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
 from markdownx.models import MarkdownxField
@@ -23,6 +23,10 @@ from pyinaturalist.node_api import get_observation
 from pyinaturalist.rest_api import create_observations, update_observation, add_photo_to_observation
 
 from vespawatch.utils import make_unique_filename
+
+INAT_VV_TAXONS_IDS = (119019, 560197) # At iNaturalist, those taxon IDS represents Vespa velutina and subspecies
+
+# TODO Remove code marked with DEPRECATED
 
 
 def get_taxon_from_inat_taxon_id(inaturalist_taxon_id):
@@ -59,7 +63,7 @@ class Taxon(models.Model):
         return f'https://www.inaturalist.org/taxa/{self.inaturalist_push_taxon_id}/browse_photos?quality_grade=research'
 
     def __str__(self):
-        return  self.name
+        return self.name
 
     def to_json(self):
         identification_picture_indiv_url = None
@@ -115,11 +119,35 @@ class VespawatchCreatedObservationsManager(models.Manager):
         return super().get_queryset().filter(originates_in_vespawatch=True)
 
 
+class VespawatchNewlyCreatedObservationsManager(models.Manager):
+    """The queryset contains only observations that were created in vespawatch and have no iNaturalist id yet"""
+    def get_queryset(self):
+        return super().get_queryset().filter(originates_in_vespawatch=True, inaturalist_id__isnull=True)
+
+
 class TaxonMatchError(Exception):
     """Unable to match this (iNaturalist) taxon id to our Taxon table"""
 
 class ParseDateError(Exception):
     """Cannot parse this date"""
+
+def inat_data_confirms_vv(inaturalist_data):
+    """Takes a bunch of data coming from inaturalist and returns a value according to the community ID:
+
+        - True if community agrees to Vespa Velutina
+        - False if community says it's NOT V. V.
+        - None if no community agreement
+    """
+    if 'community_taxon_id' in inaturalist_data:
+        if inaturalist_data['community_taxon_id'] is None:
+            return None
+        else:
+            taxon_id = int(inaturalist_data['community_taxon_id'])
+            return taxon_id in INAT_VV_TAXONS_IDS
+    else:
+        # no data
+        return None
+
 
 def create_observation_from_inat_data(inaturalist_data):
     """Creates an observation in our local database according to the data from iNaturalist API.
@@ -155,10 +183,16 @@ def create_observation_from_inat_data(inaturalist_data):
         except Taxon.DoesNotExist:
             raise TaxonMatchError
 
+        inat_vv_confirmed = inat_data_confirms_vv(inaturalist_data)
+
         # Check if it has the vespawatch_evidence observation field value and if it's set to "nest"
-        is_nest_ofv = next((item for item in inaturalist_data['ofvs'] if item["field_id"] == settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID), None)
+        if 'ofvs' in inaturalist_data:
+            is_nest_ofv = next((item for item in inaturalist_data['ofvs'] if item["field_id"] == settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID), None)
+        else:
+            is_nest_ofv = None
         if is_nest_ofv and is_nest_ofv['value'] == "nest":
             created =  Nest.objects.create(
+                inat_vv_confirmed=inat_vv_confirmed,
                 originates_in_vespawatch=False,
                 inaturalist_id=inaturalist_data['id'],
                 taxon=taxon,
@@ -167,6 +201,7 @@ def create_observation_from_inat_data(inaturalist_data):
                 observation_time=observation_time)  # TODO: What to do with iNat observations without (parsable) time?
         else:  # Default is specimen
             created = Individual.objects.create(
+                inat_vv_confirmed=inat_vv_confirmed,
                 originates_in_vespawatch=False,
                 inaturalist_id=inaturalist_data['id'],
                 taxon=taxon,
@@ -181,6 +216,7 @@ def create_observation_from_inat_data(inaturalist_data):
     else:
         raise ParseDateError
 
+
 def get_local_obs_matching_inat_id(inat_id):
     """Returns a Nest or an Individual, raise ObjectDoesNotExist if nothing is found."""
     models_to_search = [Nest, Individual]
@@ -192,7 +228,8 @@ def get_local_obs_matching_inat_id(inat_id):
 
     raise ObjectDoesNotExist
 
-def update_loc_obs_taxon_according_to_inat(inaturalist_data):
+# TODO: check if this is still needed for the new sync
+def update_loc_obs_taxon_according_to_inat_DEPRECATED(inaturalist_data):
     """Takes data coming from iNaturalist about one of our local observation, and update the taxon of said local obs,
     if necessary.
 
@@ -223,7 +260,7 @@ def update_loc_obs_taxon_according_to_inat(inaturalist_data):
 
     return 'no_community_id'
 
-def inat_observation_comes_from_vespawatch(inat_observation_id):
+def inat_observation_comes_from_vespawatch_DEPRECATED(inat_observation_id):
     """ Takes an observation_id from iNat API and returns True if this observation was first created from the
     VespaWatch website.
 
@@ -274,19 +311,19 @@ class AbstractObservation(models.Model):
     zone = models.ForeignKey(FirefightersZone, blank=True, null=True, on_delete=models.PROTECT)
 
     inaturalist_id = models.BigIntegerField(verbose_name=_("iNaturalist ID"), blank=True, null=True)
-    inaturalist_species = models.CharField(verbose_name=_("iNaturalist species"), max_length=100, blank=True, null=True)
+    inaturalist_species = models.CharField(verbose_name=_("iNaturalist species"), max_length=100, blank=True, null=True)  # TODO: check if this is still in use or useful
+    inat_vv_confirmed = models.BooleanField(blank=True, null=True)  # The community ID of iNaturalist says it's Vespa Velutina
 
     # Observer info
-    observer_first_name = models.CharField(verbose_name=_("First name"), max_length=255, blank=True, null=True)
-    observer_last_name = models.CharField(verbose_name=_("Last name"), max_length=255, blank=True, null=True)
+    observer_name = models.CharField(verbose_name=_("Name"), max_length=255, blank=True, null=True)
     observer_email = models.EmailField(verbose_name=_("Email address"), blank=True, null=True)
     observer_phone = models.CharField(verbose_name=_("Telephone number"), max_length=20, blank=True, null=True)
-    observer_is_beekeeper = models.NullBooleanField()
 
     # Managers
     objects = models.Manager()  # The default manager.
     from_inat_objects = InatCreatedObservationsManager()
     from_vespawatch_objects = VespawatchCreatedObservationsManager()
+    new_vespawatch_objects = VespawatchNewlyCreatedObservationsManager()
 
     class Meta:
         abstract = True
@@ -312,6 +349,17 @@ class AbstractObservation(models.Model):
         return vn
 
     @property
+    def can_be_edited_in_admin(self):
+        if self.originates_in_vespawatch:
+            if self.exists_in_inaturalist:
+                return False
+            else:
+                return True
+        else:  # Comes from iNaturalist: we can never delete
+            return False
+
+
+    @property
     def can_be_edited_or_deleted(self):
         """Return True if this observation can be edited in Vespa-Watch (admin, ...)"""
         return self.originates_in_vespawatch  # We can't edit obs that comes from iNaturalist (they're never pushed).
@@ -334,6 +382,10 @@ class AbstractObservation(models.Model):
 
         return None
 
+    def has_warnings(self):
+        return len(self.warnings.all()) > 0
+    has_warnings.boolean = True
+
     def _params_for_inat(self):
         """(Create/update): Common ground for the pushed data to iNaturalist.
 
@@ -343,6 +395,12 @@ class AbstractObservation(models.Model):
 
         vespawatch_evidence_value = 'nest' if self.__class__ == Nest else 'individual'
 
+        ofv = [{'observation_field_id': settings.VESPAWATCH_ID_OBS_FIELD_ID, 'value': self.pk},
+               {'observation_field_id': settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID, 'value': vespawatch_evidence_value}]
+
+        if vespawatch_evidence_value == 'individual' and self.behaviour:
+            ofv.append({'observation_field_id': settings.VESPAWATCH_BEHAVIOUR_OBS_FIELD_ID, 'value': self.get_behaviour_display()})  # TODO: get_behaviour_display(): what will happen to push if we translate the values for the UI
+
         return {'observed_on_string': self.observation_time.isoformat(),
                 'time_zone': 'Brussels',
                 'description': self.comments,
@@ -350,13 +408,12 @@ class AbstractObservation(models.Model):
                 'longitude': self.longitude,
                 'place_guess': self.address,
 
-                # sets vespawatch_id (an observation field whose ID is 9613)
                 'observation_field_values_attributes':
                     [{'observation_field_id': settings.VESPAWATCH_ID_OBS_FIELD_ID, 'value': self.pk},
                     {'observation_field_id': settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID, 'value': vespawatch_evidence_value}]
                 }
 
-    def update_at_inaturalist(self, access_token):
+    def update_at_inaturalist_DEPRECATED(self, access_token):  # Naming this DEPRECATED. See if it is called somewhere
         """Update the iNaturalist observation for this obs
 
         :param access_token:
@@ -366,6 +423,114 @@ class AbstractObservation(models.Model):
 
         update_observation(observation_id=self.inaturalist_id, params=p, access_token=access_token)
         self.push_attached_pictures_at_inaturalist(access_token=access_token)
+
+    def flag_warning(self, text):
+        if text in [x.text for x in self.warnings.all()]:
+            return  # warning already set
+        if self.__class__.__name__ == 'Nest':
+            warning = NestObservationWarning(text=text, datetime=now(),
+                                             observation=self)
+            warning.save()
+        elif self.__class__.__name__ == 'Individual':
+            warning = IndividualObservationWarning(text=text, datetime=now(),
+                                                   observation=self)
+            warning.save()
+
+    def flag_based_on_inat_data(self, inat_observation_data):
+        """
+        The observation was no longer found on iNaturalist with our general filters.
+        Check why, and flag this observation
+        """
+        # Project is vespawatch?
+        if not settings.VESPAWATCH_PROJECT_ID in inat_observation_data['project_ids']:
+            self.flag_warning('not in vespawatch project')
+
+        # Taxon known in VW?
+        returned_taxon_id = ''
+        if 'community_taxon_id' in inat_observation_data and inat_observation_data['community_taxon_id']:
+            returned_taxon_id = inat_observation_data['community_taxon_id']
+        elif 'taxon' in inat_observation_data:
+            if 'id' in inat_observation_data['taxon']:
+                returned_taxon_id = inat_observation_data['taxon']['id']
+        if returned_taxon_id not in [y for x in Taxon.objects.all() for y in x.inaturalist_pull_taxon_ids]:
+            self.flag_warning('unknown taxon')
+
+    def update_from_inat_data(self, inat_observation_data):
+        # Check the vespawatch_evidence
+        # ------
+        # If the observation is a nest but the vespawatch evidence is not nest => flag the nest
+        if 'ofvs' in inat_observation_data:
+            vw_evidence_list = [x['value'] for x in inat_observation_data['ofvs'] if x['field_id'] == settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID]
+            if len(vw_evidence_list) > 0:
+                vw_evidence = vw_evidence_list[0]
+
+                if self.__class__.__name__ == 'Nest':
+                    if vw_evidence != 'nest':
+                        self.flag_warning('individual at inaturalist')
+                # If the observation is an individual but the vespawatch evidence is a nest and the observation originates in vespawatch => delete the individual and create a nest
+                elif self.__class__.__name__ == 'Individual':
+                    if vw_evidence == 'nest':
+                        if self.originates_in_vespawatch:
+                            self.flag_warning('nest at inaturalist')
+                        else:
+                            create_observation_from_inat_data(inat_observation_data)
+                            self.delete()
+                            return
+
+        # Update taxon data and set inat_vv_confirmed (use inat_data_confirms_vv() )
+        self.inat_vv_confirmed = inat_data_confirms_vv(inat_observation_data)
+
+        # Update photos
+        # -------------
+        # When we pull again and the API returns additional images, those are not added. This is done
+        # because we insert a UUID in the filename when we pull it. The result of that is that we cannot
+        # compare that image with the image url that we retrieve from iNaturalist. So to prevent adding
+        # the same image again and again with subsequent pulls, we only add images when the observation
+        # has none.
+        if len(self.pictures.all()) == 0:
+            for photo in inat_observation_data['photos']:
+                self.assign_picture_from_url(photo['url'])
+
+        # Update location
+        self.latitude = inat_observation_data['geojson']['coordinates'][1]
+        self.longitude = inat_observation_data['geojson']['coordinates'][0]
+
+        # Update time
+        # -------------
+        observation_time = dateparser.parse(inat_observation_data['observed_on_string'],
+                                            settings={'TIMEZONE': inat_observation_data['observed_time_zone']})
+        if observation_time is None:
+            # Sometimes, dateparser doesn't understand the string but we have the bits and pieces in
+            # inaturalist_data['observed_on_details']
+            details = inat_observation_data['observed_on_details']
+            observation_time = datetime(year=details['year'],
+                                        month=details['month'],
+                                        day=details['day'],
+                                        hour=details[
+                                            'hour'])  # in the observed cases, we had nothing more precise than the hour
+
+        # Sometimes, the time is naive (even when specifying it to dateparser), because (for the detected cases, at least)
+        # The time is 00:00:00. In that case we make it aware to avoid Django warnings (in the local time zone since all
+        # observations occur in Belgium
+        if is_naive(observation_time):
+            # Some dates (apparently)
+            observation_time = make_aware(observation_time)
+
+        self.observation_time = observation_time
+
+        self.description = inat_observation_data['description']
+
+
+        # Update taxon
+        # -------------
+        try:
+            self.inaturalist_species = ''
+            taxon = get_taxon_from_inat_taxon_id(inat_observation_data['taxon']['id'])
+            self.taxon = taxon
+        except Taxon.DoesNotExist:
+            self.inaturalist_species = inat_observation_data['taxon']['name'] if 'name' in inat_observation_data['taxon'] else ''
+
+        self.save()
 
     def create_at_inaturalist(self, access_token):
         """Creates a new observation at iNaturalist for this observation
@@ -377,9 +542,7 @@ class AbstractObservation(models.Model):
         :param access_token: as returned by pyinaturalist.rest_api.get_access_token(
         """
 
-        # TODO: push more fields
-        # TODO: check the push works when optional fields are missing
-        params_only_for_create = {'taxon_id': self.taxon.inaturalist_push_taxon_id}
+        params_only_for_create = {'taxon_id': self.taxon.inaturalist_push_taxon_id}  # TODO: with the new sync, does it still makes sense to separate the create/update parameters?
 
         params = {
             'observation': {**params_only_for_create, **self._params_for_inat()}
@@ -390,25 +553,29 @@ class AbstractObservation(models.Model):
         self.save()
         self.push_attached_pictures_at_inaturalist(access_token=access_token)
 
-    def assign_picture_from_url(self, photo_url):
-        if self.__class__ == Nest:
-            photo_obj = NestPicture()
-        else:
-            photo_obj = IndividualPicture()
-
+    def get_photo_filename(self, photo_url):
         # TODO: Find a cleaner solution to this
         # It seems the iNaturalist only returns small thumbnails such as
         # 'https://static.inaturalist.org/photos/1960816/square.jpg?1444437211'
         # We can circumvent the issue by hacking the URL...
         photo_url = photo_url.replace('square.jpg', 'large.jpg')
         photo_url = photo_url.replace('square.jpeg', 'large.jpeg')
-
-        photo_content = ContentFile(requests.get(photo_url).content)
         photo_filename = photo_url[photo_url.rfind("/")+1:].split('?',1)[0]
+        return photo_filename
 
-        photo_obj.observation = self
-        photo_obj.image.save(photo_filename, photo_content)
-        photo_obj.save()
+    def assign_picture_from_url(self, photo_url):
+        photo_filename = self.get_photo_filename(photo_url)
+        if photo_filename not in [x.image.name for x in self.pictures.all()]:
+            if self.__class__ == Nest:
+                photo_obj = NestPicture()
+            else:
+                photo_obj = IndividualPicture()
+
+            photo_content = ContentFile(requests.get(photo_url).content)
+
+            photo_obj.observation = self
+            photo_obj.image.save(photo_filename, photo_content)
+            photo_obj.save()
 
     def push_attached_pictures_at_inaturalist(self, access_token):
         if self.inaturalist_id:
@@ -417,16 +584,11 @@ class AbstractObservation(models.Model):
                                          file_object=picture.image.read(),
                                          access_token=access_token)
 
-
     def get_taxon_name(self):
         if self.taxon:
             return self.taxon.name
         else:
             return ''
-
-    def get_observer_display(self):
-        parts = [self.observer_first_name, self.observer_last_name]
-        return ' '.join([x for x in parts if x])
 
     @property
     def formatted_observation_date(self):
@@ -435,14 +597,7 @@ class AbstractObservation(models.Model):
 
     @property
     def observation_time_iso(self):
-        # TODO check with Nico whether this should also be a property
         return self.observation_time.isoformat()
-
-    def clean(self):
-        if self.pk is not None:
-            orig = self.__class__.objects.get(pk=self.pk)
-            if orig.taxon != self.taxon and not self.taxon_can_be_locally_changed:
-                raise ValidationError(_("Observation already pushed to iNaturalist, taxon can't be changed anymore!"))
 
     def save(self, *args, **kwargs):
         # Let's make sure model.clean() is called on each save(), for validation
@@ -515,6 +670,8 @@ class Nest(AbstractObservation):
             'latitude': self.latitude,
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,
+            'inaturalist_url': self.inaturalist_obs_url,
+            'inat_vv_confirmed': self.inat_vv_confirmed,
             'observation_time': self.observation_time.timestamp() * 1000,
             'comments': self.comments,
             'images': [x.image.url for x in self.pictures.all()],
@@ -577,6 +734,8 @@ class Individual(AbstractObservation):
             'latitude': self.latitude,
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,
+            'inaturalist_url': self.inaturalist_obs_url,
+            'inat_vv_confirmed': self.inat_vv_confirmed,
             'observation_time': self.observation_time.timestamp() * 1000,
             'comments': self.comments,
             'images': [x.image.url for x in self.pictures.all()],
@@ -584,8 +743,8 @@ class Individual(AbstractObservation):
             'detailsUrl': reverse('vespawatch:individual-detail', kwargs={'pk': self.pk})
         }
 
-    # def __str__(self):
-    #     return f'Individual of {self.get_taxon_name()}, {self.formatted_observation_date}'
+    def __str__(self):
+        return f'Individual of {self.get_taxon_name()}, {self.formatted_observation_date}'
 
 
 class IndividualPicture(models.Model):
@@ -611,6 +770,21 @@ class NestPicture(models.Model):
                                format='JPEG',
                                options={'quality': 90})
 
+
+class ObservationWarningBase(models.Model):
+    text = models.CharField(max_length=255)
+    datetime = models.DateTimeField()
+
+    class Meta:
+        abstract = True
+
+
+class IndividualObservationWarning(ObservationWarningBase):
+    observation = models.ForeignKey(Individual, on_delete=models.CASCADE, related_name='warnings')
+
+
+class NestObservationWarning(ObservationWarningBase):
+    observation = models.ForeignKey(Nest, on_delete=models.CASCADE, related_name='warnings')
 
 
 class ManagementAction(models.Model):
@@ -706,3 +880,20 @@ def get_nests(limit=None):
     obs = obs[:limit]
     return obs
 
+
+def get_local_observation_with_inaturalist_id(inaturalist_id):
+    # Returns None if not found
+    for obs in get_observations():
+        if obs.inaturalist_id == inaturalist_id:
+            return obs
+
+    return None
+
+def get_missing_at_inat_observations(pulled_inat_ids):
+    """
+    Get all observations that exist in our database with an iNaturalist ID but that were not returned by the
+    iNaturalist pull.
+    """
+    missing_indiv = Individual.objects.all().filter(inaturalist_id__isnull=False).exclude(inaturalist_id__in=pulled_inat_ids)
+    missing_nests = Nest.objects.all().filter(inaturalist_id__isnull=False).exclude(inaturalist_id__in=pulled_inat_ids)
+    return list(missing_indiv) + list(missing_nests)
