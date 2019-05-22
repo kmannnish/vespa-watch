@@ -120,7 +120,8 @@ var VwObservationsVizMap = {
 
             // Get observation data from the API
             var url = obs.subject === 'individual' ? VWConfig.apis.individualsUrl : VWConfig.apis.nestsUrl;
-            axios.get(url + '/' + obs.id)
+            var sep = url[url.length - 1] === '/' ? '' : '/';
+            axios.get(url + sep + obs.id)
                 .then(response => {
                     console.log('Fetched individual data');
                     console.log(response);
@@ -134,11 +135,11 @@ var VwObservationsVizMap = {
                         <div id="`+ "map-popup-" + obs.id + `" class="card">
                             <img class="card-img-top" src="` + obsData.thumbnails[0] + `">
                             <div class="card-body">
-                                <h5 class="card-title">` + obsData.taxon.vernacular_name[VWConfig.currentLanguageCode] + `</h5>
-                                <h6 class="card-subtitle text-muted mb-2"><em>` + obsData.taxon.scientific_name + `</em></h6>
+                                <h5 class="card-title">` + obsData.display_vernacular_name + `</h5>
+                                <h6 class="card-subtitle text-muted mb-2"><em>` + obsData.display_scientific_name + `</em></h6>
                                 <p class="card-text">
                                     <span class="badge badge-secondary text-lowercase">` + obsData.subject + `</span>` +
-                                    (obsData.inat_vv_confirmed ? ` <span class="badge badge-success text-lowercase">Confirmed</span>` : "") + `
+                                    (obsData.inat_vv_confirmed ? ` <span class="badge badge-success text-lowercase">` + gettext('Confirmed') + `</span>` : "") + `
                                 </p>` + (obsData.inaturalist_id ? `<a class="card-link stretched-link" href="http://www.inaturalist.org/observations/` + obsData.inaturalist_id + `" target="_blank">iNaturalist</a>` : "") + `
                             </div>
                             <div class="card-footer text-muted">

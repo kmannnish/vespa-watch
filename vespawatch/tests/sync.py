@@ -461,7 +461,7 @@ class TestSync(TestCase):
             {
                 'id': 30,
                 'community_taxon_id': self.vv_taxon.inaturalist_pull_taxon_ids[0],
-                'description': '',
+                'description': 'test description',
                 'geojson': {
                     'coordinates': [10, 20]
                 },
@@ -484,6 +484,7 @@ class TestSync(TestCase):
         self.assertEqual(ind.longitude, 10)
         self.assertEqual(ind.latitude, 20)
         self.assertTrue(ind.inat_vv_confirmed)
+        self.assertEqual(ind.comments, 'test description')
 
     @override_settings(INATURALIST_PUSH=False)
     def test_sync_pull_deleted_obs(self):
@@ -661,6 +662,67 @@ class TestSync(TestCase):
         self.assertEqual(warning_texts[1], 'unknown taxon')
         # Assert that the inaturalist_species field was set to the taxon name
         self.assertEqual(Individual.objects.filter(inaturalist_id=30)[0].inaturalist_species, 'Unknown taxon')
+
+    @override_settings(INATURALIST_PUSH=False)
+    def test_sync_pull_obs_taxon_changed_twice(self):
+        """
+        We have an observation in our database with a iNaturalist ID, but when we pull from the iNaturalist API
+        this observation is not returned.
+        So we check the observation individually and in this case we conclude the taxon is not known in our database
+        We flag it as "unknown taxon". On a next pull, the taxon is again changed at iNaturalist, this time back
+        to a taxon that is known. We should make sure the taxon is changed again
+        (this test was added to fix issue #264)
+        """
+        # Create an Individual that already exists in iNaturalist after a previous push
+        ind = Individual(
+            inaturalist_id=30,
+            latitude=51.2003,
+            longitude=4.9067,
+            observation_time=datetime(2019, 4, 1, 10),
+            originates_in_vespawatch=True,
+            taxon=self.vv_taxon
+        )
+        ind.save()
+
+        # Set a return value for the self.get_all_mock. It should return no observations
+        self.get_all_mock.return_value = []
+
+        # Set a side effect for the self.get_obs_mock. It should return an observation that has no vespawatch project id
+        get_obs_mock_value = {
+            'id': 30,
+            'taxon': {
+                'id': 2732,
+                'name': 'Unknown taxon'
+            },
+            'description': '',
+            'geojson': {
+                'coordinates': [10, 20]
+            },
+            'observed_on_string': '2019-04-01T11:20:00+00:00',
+            'observed_time_zone': 'Europe/Brussels',
+            'photos': [],
+            'project_ids': [11]  # some random project
+        }
+        self.get_obs_mock.return_value = get_obs_mock_value
+
+        # Assert that the individual had no warning before the sync
+        self.assertEqual(len(Individual.objects.filter(inaturalist_id=30)[0].warnings.all()), 0)
+        # Run inaturalist sync.
+        call_command('inaturalist_sync')
+        # Assert that the individual has a warning now
+        self.assertEqual(len(Individual.objects.filter(inaturalist_id=30)[0].warnings.all()), 2)
+        warning_texts = sorted([x.text for x in Individual.objects.filter(inaturalist_id=30)[0].warnings.all()])
+        self.assertEqual(warning_texts[0], 'not in vespawatch project')
+        self.assertEqual(warning_texts[1], 'unknown taxon')
+        # Assert that the inaturalist_species field was set to the taxon name
+        self.assertEqual(Individual.objects.filter(inaturalist_id=30)[0].inaturalist_species, 'Unknown taxon')
+
+        # Now, assume that on a next pull the taxon is changed again to a known taxon
+        get_obs_mock_value['taxon']['id'] = self.other_taxon.inaturalist_pull_taxon_ids[0]
+        get_obs_mock_value['taxon']['name'] = 'known taxon'
+        call_command('inaturalist_sync')
+        self.assertEqual(Individual.objects.filter(inaturalist_id=30)[0].inaturalist_species, '')
+        self.assertEqual(Individual.objects.filter(inaturalist_id=30)[0].taxon.inaturalist_push_taxon_id, 2)
 
     @override_settings(INATURALIST_PUSH=False)
     def test_sync_pull_obs_vw_evidence_changed_to_indiv(self):
