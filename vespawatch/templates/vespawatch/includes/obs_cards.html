@@ -10,10 +10,10 @@
                 <img class="card-img-top" src="{% static 'vespawatch/img/no_image_rectangular.png' %}">
                 <div class="card-body">
                     <h5 class="card-title">{{ obs.taxon.vernacular_name }}</h5>
-                    <h6 class="card-subtitle text-muted mb-2"><em>{{ obs.taxon.name }}</em></h6>
+                    <h6 class="card-subtitle text-muted mb-2"><em>{{ obs.taxon.name }}</em> {{ obs.inaturalist_species }}</h6>
                     <p class="card-text">
                         <span class="badge badge-secondary text-lowercase">{% if obs.subject == 'nest' %}{% trans 'Nest' %}{% else %}{% trans 'Individual' %}{% endif %}</span>
-                        <span class="badge badge-success text-lowercase">{% if obs.inat_vv_confirmed %}{% trans 'confirmed' %}{% endif %}</span>
+                        <span class="badge badge-success text-lowercase">{% if obs.inat_vv_confirmed %}{% trans 'Confirmed' %}{% endif %}</span>
                     </p>
                     {% if obs.inaturalist_obs_url %}
                         <a class="card-link stretched-link" href="{{ obs.inaturalist_obs_url }}" target="_blank">{% trans 'iNaturalist' %}</a>
