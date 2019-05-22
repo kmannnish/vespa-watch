@@ -56,7 +56,6 @@ class IndividualFormUnauthenticated(IndividualForm):
 class NestForm(ModelForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
-    terms_of_service = BooleanField(label=_('Accept the privacy policy'), required=False)
     height = ChoiceField(choices=[('', '--------')] + list(Nest.HEIGHT_CHOICES))
     address = CharField(max_length=255)
 
@@ -72,10 +71,6 @@ class NestForm(ModelForm):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        toc = cleaned_data.get('terms_of_service')
-        if not toc:
-            msg = _("You must accept the privacy policy.")
-            self.add_error('terms_of_service', msg)
 
         if len(self.files) is 0:
             msg = 'You must add at least one picture'
@@ -93,8 +88,7 @@ class NestForm(ModelForm):
 
 
 class NestFormUnauthenticated(NestForm):
-    observer_first_name = CharField(max_length=255)
-    observer_last_name = CharField(max_length=255)
+    observer_name = CharField(max_length=255)
     observer_email = EmailField()
     observer_phone = CharField(max_length=20)
     terms_of_service = BooleanField(label=_('Accept the privacy policy'))
@@ -102,11 +96,21 @@ class NestFormUnauthenticated(NestForm):
     class Meta:
         model = Nest
         fields = ['taxon', 'latitude', 'longitude',
-                  'observer_name', 'observation_time', 'size', 'comments'
+                  'observation_time', 'size', 'comments'
         ]
         field_classes = {
             'observation_time': ISODateTimeField,
         }
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+
+        toc = cleaned_data.get('terms_of_service')
+        if not toc:
+            msg = _("You must accept the privacy policy.")
+            self.add_error('terms_of_service', msg)
+
+        return cleaned_data
 
 class IndividualPictureForm(ModelForm):
     class Meta:
