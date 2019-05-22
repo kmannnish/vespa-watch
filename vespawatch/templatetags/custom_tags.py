@@ -14,6 +14,7 @@ def js_config_object(context):
         'currentLanguageCode': context.request.LANGUAGE_CODE,
         'debug': settings.JS_DEBUG,
         'baseUrl': settings.VESPAWATCH_BASE_SITE_URL,
+        'staticRoot': settings.STATIC_URL,
         'apis': {
             'observationsUrl': reverse('vespawatch:api_observations'),
             'individualsUrl': reverse('vespawatch:api_individuals'),
