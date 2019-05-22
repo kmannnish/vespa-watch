@@ -26,6 +26,10 @@ class IndividualForm(ModelForm):
         if not toc:
             msg = _("You must accept the privacy policy.")
             self.add_error('terms_of_service', msg)
+        if len(self.files) is 0:
+            msg = 'You must add at least one picture'
+            self.add_error(None, msg)
+
         return cleaned_data
 
     def save(self, *args, **kwargs):
