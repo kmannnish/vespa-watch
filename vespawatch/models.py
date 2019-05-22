@@ -532,7 +532,7 @@ class AbstractObservation(models.Model):
 
         self.observation_time = observation_time
 
-        self.comments = inat_observation_data['description']
+        self.comments = inat_observation_data['description'] or ''
 
 
         # Update taxon
