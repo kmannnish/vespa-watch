@@ -1138,8 +1138,8 @@ var VwDatetimeSelector = {
 var VwLocationSelector = {
     data: function () {
         return {
-            locationCoordinates: ["", ""],  // the coordinates that will be passed to the long lat fields
-            markerCoordinates: [this.initCoordinates[0], this.initCoordinates[1]],  // the coordinates that will be passed to the map
+            locationCoordinates: [this.initCoordinates[0], this.initCoordinates[1]],  // the coordinates that will be passed to the long lat fields
+            markerCoordinates: this.initCoordinates[0] ? [this.initCoordinates[0], this.initCoordinates[1]] : [4.5, 50.7],  // the coordinates that will be passed to the map
             modelAddress: this.address ? '' + this.address : '',
             provider: new GeoSearch.OpenStreetMapProvider({
                 params: {
@@ -1210,7 +1210,7 @@ var VwLocationSelector = {
         },
     },
 
-    props: ['initCoordinates', 'initMarker', 'address', 'addressRequired'],
+    props: ['initCoordinates', 'initializeCoordinates', 'initMarker', 'address', 'addressRequired'],
 
     template: `
         <div class="row">

@@ -50,10 +50,10 @@
         {% else %}
             <vw-location-selector
                 {% if form.data %}
-                    v-bind:init-coordinates="[{{ form.data.longitude|default_if_none:4.5 }}, {{ form.data.latitude|default_if_none:50.7 }}]"
+                    v-bind:init-coordinates="[{{ form.data.longitude|default_if_none:'' }}, {{ form.data.latitude|default_if_none:'' }}]"
                     init-marker="true"
                 {% else %}
-                    v-bind:init-coordinates="[4.5, 50.7]"
+                    v-bind:init-coordinates="['', '']"
                     init-marker="false"
                 {% endif %}
                     address="{{ form.data.address|default_if_none:'' }}">
