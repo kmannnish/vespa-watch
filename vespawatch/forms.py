@@ -83,8 +83,6 @@ class NestForm(ModelForm):
         if hasattr(self.files, 'getlist'):
             for image in self.files.getlist('images'):
                 NestPicture.objects.create(observation=observation, image=image)
-        # else:
-        #     self.add_error('images', 'You must add at least one image')
 
 
 class NestFormUnauthenticated(NestForm):
@@ -103,7 +101,7 @@ class NestFormUnauthenticated(NestForm):
         }
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super().clean()
 
         toc = cleaned_data.get('terms_of_service')
         if not toc:
