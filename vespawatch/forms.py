@@ -72,23 +72,10 @@ class NestForm(ModelForm):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        print(cleaned_data)
-        print(self.files)
         toc = cleaned_data.get('terms_of_service')
-        print('Toc: {}'.format(toc))
         if not toc:
             msg = _("You must accept the privacy policy.")
             self.add_error('terms_of_service', msg)
-
-        addr = cleaned_data.get('address')
-        if not addr:
-            msg = 'This field is required'
-            self.add_error('address', msg)
-
-        height = cleaned_data.get('height')
-        if not height:
-            msg = 'This field is required'
-            self.add_error('height', msg)
 
         if len(self.files) is 0:
             msg = 'You must add at least one picture'
