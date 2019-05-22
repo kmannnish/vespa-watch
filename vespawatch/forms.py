@@ -56,7 +56,7 @@ class IndividualFormUnauthenticated(IndividualForm):
 class NestForm(ModelForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
-    height = ChoiceField(label=_('Height'), choices=[('', '--------')] + list(Nest.HEIGHT_CHOICES))
+    height = ChoiceField(label=_('Nest height'), choices=[('', '--------')] + list(Nest.HEIGHT_CHOICES))
     address = CharField(max_length=255)
 
     class Meta:
