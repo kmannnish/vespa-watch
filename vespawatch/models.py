@@ -542,6 +542,7 @@ class AbstractObservation(models.Model):
             taxon = get_taxon_from_inat_taxon_id(inat_observation_data['taxon']['id'])
             self.taxon = taxon
         except Taxon.DoesNotExist:
+            self.taxon = None
             self.inaturalist_species = inat_observation_data['taxon']['name'] if 'name' in inat_observation_data['taxon'] else ''
 
         self.save()
@@ -646,7 +647,7 @@ class Nest(AbstractObservation):
         (BELOW_4_METER, _("Below 4 meters")),
         (ABOVE_4_METER, _("Above 4 meters"))
     )
-    height = models.CharField(verbose_name=_("Nest height"), max_length=50, choices=HEIGHT_CHOICES, blank=True)
+    height = models.CharField(verbose_name=_("Nest height"), max_length=50, choices=HEIGHT_CHOICES, blank=True)  # Will be set to required in the form, but can be empty for iNaturalist observations
 
     def get_absolute_url(self):
         return reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})

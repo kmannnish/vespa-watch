@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-22 10:34+0200\n"
+"POT-Creation-Date: 2019-05-22 14:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,6 +27,31 @@ msgstr "Miniatuurafbeelding"
 #: vespawatch/fields.py:19
 msgid "Enter a valid date/time."
 msgstr "Vul een correcte datum/tijd in."
+
+#: vespawatch/forms.py:10 vespawatch/forms.py:94
+msgid "Accept the privacy policy"
+msgstr "Accepteer het privacybeleid"
+
+#: vespawatch/forms.py:27 vespawatch/forms.py:110
+msgid "You must accept the privacy policy."
+msgstr "U moet expliciet akkoord gaan met het privacybeleid."
+
+#: vespawatch/forms.py:43 vespawatch/forms.py:92 vespawatch/models.py:319
+msgid "Email address"
+msgstr "E-mailadres"
+
+#: vespawatch/forms.py:59 vespawatch/models.py:650
+#: vespawatch/templates/vespawatch/nest_detail.html:49
+msgid "Nest height"
+msgstr "Nesthoogte"
+
+#: vespawatch/forms.py:91 vespawatch/models.py:318
+msgid "Name"
+msgstr "Naam"
+
+#: vespawatch/forms.py:93 vespawatch/models.py:320
+msgid "Telephone number"
+msgstr "Telefoonnummer"
 
 #: vespawatch/models.py:40
 msgid "Scientific name"
@@ -92,111 +117,95 @@ msgstr "iNaturalist ID"
 msgid "iNaturalist species"
 msgstr "iNaturalist soort"
 
-#: vespawatch/models.py:318
-msgid "Name"
-msgstr "Naam"
-
-#: vespawatch/models.py:319
-msgid "Email address"
-msgstr "E-mailadres"
-
-#: vespawatch/models.py:320
-msgid "Telephone number"
-msgstr "Telefoonnummer"
-
-#: vespawatch/models.py:624
+#: vespawatch/models.py:639
 msgid "Less than 25cm"
 msgstr "Minder dan 25cm"
 
-#: vespawatch/models.py:625
+#: vespawatch/models.py:640
 msgid "More than 25cm"
 msgstr "Meer dan 25cm"
 
-#: vespawatch/models.py:627 vespawatch/templates/vespawatch/nest_detail.html:46
+#: vespawatch/models.py:642 vespawatch/templates/vespawatch/nest_detail.html:46
 msgid "Nest size"
 msgstr "Nestgrootte"
 
-#: vespawatch/models.py:632
+#: vespawatch/models.py:647
 msgid "Below 4 meters"
 msgstr "Lager dan 4 meter"
 
-#: vespawatch/models.py:633
+#: vespawatch/models.py:648
 msgid "Above 4 meters"
 msgstr "Hoger dan 4 meter"
 
-#: vespawatch/models.py:635 vespawatch/templates/vespawatch/nest_detail.html:49
-msgid "Nest height"
-msgstr "Nesthoogte"
-
-#: vespawatch/models.py:702
+#: vespawatch/models.py:715
 msgid "Hunting at beehive"
 msgstr "Jagend bij bijenkorf"
 
-#: vespawatch/models.py:703
+#: vespawatch/models.py:716
 msgid "Drinking nectar on flower"
 msgstr "Nectar drinkend op bloem"
 
-#: vespawatch/models.py:704
+#: vespawatch/models.py:717
 msgid "Near wood source"
 msgstr "Nabij hout"
 
-#: vespawatch/models.py:705
+#: vespawatch/models.py:718
 msgid "Near water source"
 msgstr "Nabij water"
 
-#: vespawatch/models.py:706
+#: vespawatch/models.py:719
 msgid "Flying"
 msgstr "Vliegend"
 
-#: vespawatch/models.py:707
+#: vespawatch/models.py:720
 msgid "Captured"
 msgstr "Gevangen"
 
-#: vespawatch/models.py:708
+#: vespawatch/models.py:721
 msgid "Dead"
 msgstr "Dood"
 
-#: vespawatch/models.py:709
+#: vespawatch/models.py:722
 msgid "Other"
 msgstr "Andere"
 
-#: vespawatch/models.py:713
+#: vespawatch/models.py:726
 msgid "Individual count"
 msgstr "Aantal individuen"
 
-#: vespawatch/models.py:714
+#: vespawatch/models.py:727
 msgid "Behaviour"
 msgstr "Gedrag"
 
-#: vespawatch/models.py:755 vespawatch/models.py:767
+#: vespawatch/models.py:766 vespawatch/models.py:778
 msgid "Photo"
 msgstr "Foto"
 
-#: vespawatch/models.py:796
+#: vespawatch/models.py:807
 msgid "Full destruction, no debris"
 msgstr "Volledige vernietiging, geen resten"
 
-#: vespawatch/models.py:797
+#: vespawatch/models.py:808
 msgid "Partial destruction/debris left"
 msgstr "Gedeeltelijke vernietiging/nog resten"
 
-#: vespawatch/models.py:798
+#: vespawatch/models.py:809
 msgid "Empty nest, nothing done"
 msgstr "Leeg nest, geen actie ondernomen"
 
-#: vespawatch/models.py:802
+#: vespawatch/models.py:813
 msgid "Outcome"
 msgstr "Resultaat"
 
-#: vespawatch/models.py:803
+#: vespawatch/models.py:814
 msgid "Action time"
 msgstr "Actietijd"
 
-#: vespawatch/models.py:804
+#: vespawatch/models.py:815
 msgid "Person name"
 msgstr "Naam van persoon"
 
-#: vespawatch/models.py:805
+#: vespawatch/models.py:816
 msgid "Duration"
 msgstr "Duur"
 
@@ -280,17 +289,19 @@ msgstr "Uitloggen"
 #: vespawatch/templates/vespawatch/base.html:113
 msgid ""
 "\n"
-"                            This project was funded by <a "
-"href=\"https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten\">EWI</a><br>\n"
-"                            Developed by the <a "
-"href=\"https://twitter.com/oscibio\">Open science lab for biodiversity</a>\n"
+"                            This project was funded by <a href=\"https://www."
+"ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten\">EWI</"
+"a><br>\n"
+"                            Developed by the <a href=\"https://twitter.com/"
+"oscibio\">Open science lab for biodiversity</a>\n"
 "                            "
 msgstr ""
 "\n"
-"                            Dit project is gefinancierd door <a "
-"href=\"https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten\">EWI</a><br>\n"
-"                            Ontwikkeld door het <a "
-"href=\"https://twitter.com/oscibio\">Open science lab for biodiversity</a>\n"
+"                            Dit project is gefinancierd door <a href="
+"\"https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-"
+"projecten\">EWI</a><br>\n"
+"                            Ontwikkeld door het <a href=\"https://twitter."
+"com/oscibio\">Open science lab for biodiversity</a>\n"
 "                            "
 
 #: vespawatch/templates/vespawatch/base.html:121
@@ -335,7 +346,6 @@ msgid "Individual"
 msgstr "Individu"
 
 #: vespawatch/templates/vespawatch/includes/obs_cards.html:16
-#| msgid "Confirm deletion"
 msgid "Confirmed"
 msgstr "Bevestigd"
 
@@ -356,7 +366,6 @@ msgid "Close"
 msgstr "Sluiten"
 
 #: vespawatch/templates/vespawatch/index.html:12
-#| msgid "Monitor the invasion of Asian hornet"
 msgid "Monitor the invasion of the Asian hornet"
 msgstr "Help de Aziatische hoornaar in kaart te brengen"
 
@@ -426,13 +435,13 @@ msgstr "Contactinformatie"
 #, python-format
 msgid ""
 "\n"
-"                            I agree with the <a "
-"href=\"%(privacypolicy_page)s\" target=\"_blank\">privacy policy</a>.\n"
+"                            I agree with the <a href=\"%(privacypolicy_page)s"
+"\" target=\"_blank\">privacy policy</a>*.\n"
 "                        "
 msgstr ""
 "\n"
-"                            Ik ga akkoord met het <a "
-"href=\"%(privacypolicy_page)s\" target=\"_blank\">privacybeleid</a>.\n"
+"                            Ik ga akkoord met het <a href="
+"\"%(privacypolicy_page)s\" target=\"_blank\">privacybeleid</a>*.\n"
 "                        "
 
 #: vespawatch/templates/vespawatch/individual_detail.html:10
@@ -513,13 +522,13 @@ msgstr "Voeg observatie toe"
 #, python-format
 msgid ""
 "\n"
-"            For more observations, see the <a "
-"href=\"%(project_url)s\">Vespa-Watch project on iNaturalist</a>.\n"
+"            For more observations, see the <a href=\"%(project_url)s\">Vespa-"
+"Watch project on iNaturalist</a>.\n"
 "        "
 msgstr ""
 "\n"
-"            Voor meer observaties, zie het <a "
-"href=\"%(project_url)s\">Vespa-Watch project op iNaturalist</a>.\n"
+"            Voor meer observaties, zie het <a href=\"%(project_url)s\">Vespa-"
+"Watch project op iNaturalist</a>.\n"
 "        "
 
 #: vespawatch/templates/vespawatch/obs_create.html:6
@@ -530,13 +539,13 @@ msgstr "Wat heb je gezien?"
 #, python-format
 msgid ""
 "\n"
-"            For more information on these species, see the <a "
-"href=\"%(identification_page)s\">identification page</a>.\n"
+"            For more information on these species, see the <a href="
+"\"%(identification_page)s\">identification page</a>.\n"
 "        "
 msgstr ""
 "\n"
-"            Meer informatie over deze soorten vind je op de <a "
-"href=\"%(identification_page)s\">identificatie pagina</a>.\n"
+"            Meer informatie over deze soorten vind je op de <a href="
+"\"%(identification_page)s\">identificatie pagina</a>.\n"
 "        "
 
 #: vespawatch/templates/vespawatch/obs_create.html:16
@@ -545,10 +554,25 @@ msgstr ""
 "Geen \"identification cards\" gedefinieerd. Gelieve deze aan te maken in de "
 "admin interface."
 
-#: vespawatch/views.py:111 vespawatch/views.py:178
+#: vespawatch/views.py:113 vespawatch/views.py:187
 msgid ""
 "Your observation was successfully created. Thanks for your contribution!"
 msgstr "Jouw observatie werd succesvol bewaard. Bedankt voor je bijdrage!"
+
+#, fuzzy
+#~| msgid "Observer"
+#~ msgid "Observer email"
+#~ msgstr "Waarnemer"
+
+#, fuzzy
+#~| msgid "Observer"
+#~ msgid "Observer name"
+#~ msgstr "Waarnemer"
+
+#, fuzzy
+#~| msgid "Observer"
+#~ msgid "Observer phone"
+#~ msgstr "Waarnemer"
 
 #~ msgid "First name"
 #~ msgstr "Voornaam"

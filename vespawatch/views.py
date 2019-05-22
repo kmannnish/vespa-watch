@@ -17,7 +17,7 @@ from django.views.generic.edit import DeletionMixin
 from django.urls import reverse_lazy
 
 from vespawatch.utils import ajax_login_required
-from .forms import ManagementActionForm, IndividualForm, NestForm, IndividualImageFormset, NestImageFormset
+from .forms import ManagementActionForm, IndividualForm, IndividualFormUnauthenticated, NestForm, NestFormUnauthenticated, IndividualImageFormset, NestImageFormset
 from .models import Individual, Nest, ManagementAction, Taxon, FirefightersZone, IdentificationCard, \
     get_observations, get_individuals, get_nests
 
@@ -96,13 +96,15 @@ def create_individual(request):
         card_id = request.POST.get('card_id')
         print(f'2: {card_id}')
         identif_card = IdentificationCard.objects.get(pk=card_id)
-        form = IndividualForm(request.POST, request.FILES)
         image_formset = IndividualImageFormset()
         if request.user.is_authenticated:
             # set to terms_of_service to true if the user is authenticated
+            form = IndividualForm(request.POST, request.FILES)
             form_data_copy = form.data.copy()
             form_data_copy['terms_of_service'] = True
             form.data = form_data_copy
+        else:
+            form = IndividualFormUnauthenticated(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             image_formset = IndividualImageFormset(request.POST, request.FILES, instance=form.instance)
@@ -116,10 +118,16 @@ def create_individual(request):
         identif_card = IdentificationCard.objects.get(pk=identif_card_id)
         taxon = identif_card.represented_taxon
         print(f'1: {identif_card_id}')
-        form = IndividualForm(initial={
-            'redirect_to': redirect_to,
-            'card_id': identif_card_id,
-            'taxon': taxon})
+        if request.user.is_authenticated:
+            form = IndividualForm(initial={
+                'redirect_to': redirect_to,
+                'card_id': identif_card_id,
+                'taxon': taxon})
+        else:
+            form = IndividualFormUnauthenticated(initial={
+                'redirect_to': redirect_to,
+                'card_id': identif_card_id,
+                'taxon': taxon})
         image_formset = IndividualImageFormset()
     return render(request, 'vespawatch/individual_create.html',
                   {'form': form, 'type': 'individual', 'image_formset': image_formset, 'identif_card': identif_card})
@@ -161,14 +169,15 @@ def create_nest(request):
         card_id = request.POST.get('card_id')
         identif_card = IdentificationCard.objects.get(pk=card_id)
 
-        new_nest_from_anonymous = not request.user.is_authenticated
-        form = NestForm(request.POST, request.FILES, new_nest_from_anonymous=new_nest_from_anonymous)
         image_formset = NestImageFormset()
         if request.user.is_authenticated:
+            form = NestForm(request.POST, request.FILES)
             # set to terms_of_service to true if the user is authenticated
             form_data_copy = form.data.copy()
             form_data_copy['terms_of_service'] = True
             form.data = form_data_copy
+        else:
+            form = NestFormUnauthenticated(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             image_formset = NestImageFormset(request.POST, request.FILES, instance=form.instance)
@@ -182,11 +191,20 @@ def create_nest(request):
         identif_card_id = request.GET.get('card_id')
         identif_card = IdentificationCard.objects.get(pk=identif_card_id)
         taxon = identif_card.represented_taxon
-        form = NestForm(initial={
-            'redirect_to': redirect_to,
-            'card_id': identif_card_id,
-            'taxon': taxon
-        })
+        if request.user.is_authenticated:
+            form = NestForm(initial={
+                'redirect_to': redirect_to,
+                'card_id': identif_card_id,
+                'taxon': taxon
+            })
+        else:
+            form = NestFormUnauthenticated(
+                initial={
+                    'redirect_to': redirect_to,
+                    'card_id': identif_card_id,
+                    'taxon': taxon
+                }
+            )
         image_formset = NestImageFormset()
     return render(request, 'vespawatch/nest_create.html',
                   {'form': form, 'image_formset': image_formset, 'type': 'nest', 'identif_card': identif_card})
