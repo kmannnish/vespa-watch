@@ -370,8 +370,8 @@ var VwObservationsViz = {
                 console.log('Only requesting observations for zone ' + this.zone);
                 urls.push(axios.get(this.observationsUrl + '&zone=' + this.zone + '&type=nest'));
             } else {
-                urls.push(axios.get(this.individualsUrl + '?light=true'));
-                urls.push(axios.get(this.nestsUrl + '?light=true'));
+                urls.push(axios.get(this.individualsUrl + '?light=true&vvOnly=true'));
+                urls.push(axios.get(this.nestsUrl + '?light=true&vvOnly=true'));
                 console.log('No zone set');
             }
             axios.all(urls)
