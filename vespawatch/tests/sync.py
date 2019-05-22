@@ -461,7 +461,7 @@ class TestSync(TestCase):
             {
                 'id': 30,
                 'community_taxon_id': self.vv_taxon.inaturalist_pull_taxon_ids[0],
-                'description': '',
+                'description': 'test description',
                 'geojson': {
                     'coordinates': [10, 20]
                 },
@@ -484,6 +484,7 @@ class TestSync(TestCase):
         self.assertEqual(ind.longitude, 10)
         self.assertEqual(ind.latitude, 20)
         self.assertTrue(ind.inat_vv_confirmed)
+        self.assertEqual(ind.comments, 'test description')
 
     @override_settings(INATURALIST_PUSH=False)
     def test_sync_pull_deleted_obs(self):
