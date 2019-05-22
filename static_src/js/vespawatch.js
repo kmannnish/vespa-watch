@@ -127,13 +127,15 @@ var VwObservationsVizMap = {
                     console.log(response);
                     var obsData = response.data;
                     var url = new URL(obsData.detailsUrl, VWConfig.baseUrl);
+                    var sep = VWConfig.staticRoot[VWConfig.staticRoot.length - 1] === '/' ? '' : '/';
+                    var no_image_url = VWConfig.staticRoot + sep + "vespawatch/img/no_image_rectangular.png";
 
                     if (this.editRedirect) {
                         url.searchParams.append('redirect_to', this.editRedirect);
                     }
                     var str = `
                         <div id="`+ "map-popup-" + obs.id + `" class="card">
-                            <img class="card-img-top" src="` + obsData.thumbnails[0] + `">
+                            <img class="card-img-top" src="` + (obsData.thumbnails[0] ? obsData.thumbnails[0] : no_image_url) + `">
                             <div class="card-body">
                                 <h5 class="card-title">` + obsData.display_vernacular_name + `</h5>
                                 <h6 class="card-subtitle text-muted mb-2"><em>` + obsData.display_scientific_name + `</em></h6>
