@@ -331,7 +331,7 @@ var VwObservationsVizTimeSlider = {
     template: `
         <div id="vw-time-slider" class="d-flex align-items-center">
             <button style="width:120px;" class="btn btn-sm btn-secondary" type="button" @click="toggleAnimation">{{ buttonLabel }}</button>
-            <input class="form-control-range mx-4" type="range" v-model.number="selectedTimeRange.stop" v-on:input="stopAnimationIfRunning" v-on:change="stopAnimationIfRunning" :min="observationsTimeRange.start" :max="observationsTimeRange.stop" :step="oneWeek">
+            <input class="form-control-range mx-4" type="range" v-model.number="selectedTimeRange.stop" v-on:input="stopAnimationIfRunning" v-on:change="stopAnimationIfRunning" :min="observationsTimeRange.start" :max="observationsTimeRange.stop + oneWeek" :step="oneWeek">
             <div v-if="dataReady" style="width:120px;">{{ stopStr }}</div>
         </div>
         `
@@ -398,11 +398,10 @@ var VwObservationsViz = {
         },
 
         initTimerangeSlider: function () {
-            var latestObs = this.cfDimensions.timeDim.top(1);
             var earliestObs = this.cfDimensions.timeDim.bottom(1);
             console.log(earliestObs);
             var start = earliestObs[0].observation_time;
-            var stop = latestObs[0].observation_time;
+            var stop = new Date().valueOf();
             if (start === stop) {
                 stop++;
             }
