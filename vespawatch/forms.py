@@ -40,7 +40,7 @@ class IndividualForm(ModelForm):
 
 
 class IndividualFormUnauthenticated(IndividualForm):
-    observer_email = EmailField()
+    observer_email = EmailField(label=_('Observer email'))
 
     class Meta:
         model = Individual
@@ -56,7 +56,7 @@ class IndividualFormUnauthenticated(IndividualForm):
 class NestForm(ModelForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
-    height = ChoiceField(choices=[('', '--------')] + list(Nest.HEIGHT_CHOICES))
+    height = ChoiceField(label=_('Height'), choices=[('', '--------')] + list(Nest.HEIGHT_CHOICES))
     address = CharField(max_length=255)
 
     class Meta:
@@ -88,9 +88,9 @@ class NestForm(ModelForm):
 
 
 class NestFormUnauthenticated(NestForm):
-    observer_name = CharField(max_length=255)
-    observer_email = EmailField()
-    observer_phone = CharField(max_length=20)
+    observer_name = CharField(label=_('Observer name'), max_length=255)
+    observer_email = EmailField(label=_('Observer email'))
+    observer_phone = CharField(label=_('Observer phone'), max_length=20)
     terms_of_service = BooleanField(label=_('Accept the privacy policy'))
 
     class Meta:
