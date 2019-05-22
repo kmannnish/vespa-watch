@@ -34,7 +34,7 @@ msgstr ""
 
 #: static_src/js/vespawatch.js:142 vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Confirmed"
-msgstr ""
+msgstr "Bevestigd"
 
 #: static_src/js/vespawatch.js:317 vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Pause"
