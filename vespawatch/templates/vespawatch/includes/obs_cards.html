@@ -9,8 +9,8 @@
                 <!-- image is loaded via jQuery to improve performance -->
                 <img class="card-img-top" src="{% static 'vespawatch/img/no_image_rectangular.png' %}">
                 <div class="card-body">
-                    <h5 class="card-title">{{ obs.taxon.vernacular_name }}</h5>
-                    <h6 class="card-subtitle text-muted mb-2"><em>{{ obs.taxon.name }}</em></h6>
+                    <h5 class="card-title">{{ obs.display_vernacular_name }}</h5>
+                    <h6 class="card-subtitle text-muted mb-2"><em>{{ obs.display_scientific_name }}</em></h6>
                     <p class="card-text">
                         <span class="badge badge-secondary text-lowercase">{% if obs.subject == 'nest' %}{% trans 'Nest' %}{% else %}{% trans 'Individual' %}{% endif %}</span>
                         <span class="badge badge-success text-lowercase">{% if obs.inat_vv_confirmed %}{% trans 'confirmed' %}{% endif %}</span>

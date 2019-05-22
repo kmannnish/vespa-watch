@@ -301,7 +301,7 @@ def no_future(value):
 
 class AbstractObservation(models.Model):
     originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
-    taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT)
+    taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT, blank=True, null=True)
     address = models.CharField(verbose_name=_("Address"), max_length=255, blank=True)
     observation_time = models.DateTimeField(verbose_name=_("Observation date"), validators=[no_future])
     comments = models.TextField(verbose_name=_("Comments"), blank=True)
@@ -347,6 +347,20 @@ class AbstractObservation(models.Model):
             code = lang[0]
             vn[code] = getattr(self.taxon, f'vernacular_name_{code}')
         return vn
+
+    @property
+    def display_vernacular_name(self):
+        if self.taxon:
+            return _(self.taxon.vernacular_name)
+        else:
+            return ''
+
+    @property
+    def display_scientific_name(self):
+        if self.taxon:
+            return self.taxon.name
+        else:
+            return self.inaturalist_species
 
     @property
     def can_be_edited_in_admin(self):
@@ -661,10 +675,8 @@ class Nest(AbstractObservation):
         return {
             'id': self.pk,
             'key': f'nest-{self.pk}',  # Handy when you need a unique key in a batch of Observations (nests and individuals)
-            'taxon': {
-                'scientific_name': self.taxon.name,
-                'vernacular_name': self.vernacular_names_in_all_languages
-            },
+            'display_scientific_name': self.display_scientific_name,
+            'display_vernacular_name': self.display_vernacular_name,
             'subject': self.subject,
             'address': self.address,
             'latitude': self.latitude,
@@ -725,10 +737,8 @@ class Individual(AbstractObservation):
         return {
             'id': self.pk,
             'key': f'individual-{self.pk}',  # Handy when you need a unique key in a batch of Observations (nests and individuals)
-            'taxon': {
-                'scientific_name': self.taxon.name,
-                'vernacular_name': self.vernacular_names_in_all_languages
-            },
+            'display_scientific_name': self.display_scientific_name,
+            'display_vernacular_name': self.display_vernacular_name,
             'subject': self.subject,
             'address': self.address,
             'latitude': self.latitude,
