@@ -7,7 +7,7 @@ from .models import ManagementAction, Nest, Individual, NestPicture, IndividualP
 class IndividualForm(ModelForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
-    terms_of_service = BooleanField(label='Accept the terms of service', required=False)   # TODO how to translate that label?
+    terms_of_service = BooleanField(label=_('Accept the terms of service'), required=False)
 
     class Meta:
         model = Individual
