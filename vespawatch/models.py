@@ -360,7 +360,7 @@ class AbstractObservation(models.Model):
         if self.taxon:
             return self.taxon.name
         else:
-            return self.inaturalist_species
+            return self.inaturalist_species or _('Unknown')
 
     @property
     def can_be_edited_in_admin(self):
