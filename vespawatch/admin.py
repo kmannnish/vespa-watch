@@ -64,6 +64,7 @@ class IndividualObservationWarningInline(admin.TabularInline):
 class NestObservationWarningInline(admin.TabularInline):
     model = NestObservationWarning
 
+
 class DeleteObjectsOneByOneMixin():
     def delete_queryset(self, request, queryset):
         for obj in queryset:
@@ -85,7 +86,7 @@ class NestAdmin(DeleteObjectsOneByOneMixin, admin.ModelAdmin):
         return r
 
     list_display = ('taxon', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch', 'has_warnings', 'inat_vv_confirmed')
-    readonly_fields = ('originates_in_vespawatch',)
+    readonly_fields = ('originates_in_vespawatch', 'created_at')
 
     list_filter = ('taxon', 'originates_in_vespawatch')
 
@@ -103,16 +104,14 @@ class IndividualAdmin(DeleteObjectsOneByOneMixin, admin.ModelAdmin):
             return False
         return super().has_change_permission(request, obj=obj)
 
-
     def get_readonly_fields(self, request, obj=None):
         r = super().get_readonly_fields(request, obj)
         if obj and not obj.taxon_can_be_locally_changed:
             r = r + ('taxon', )
         return r
 
-
     list_display = ('taxon', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch', 'has_warnings', 'inat_vv_confirmed')
-    readonly_fields = ('originates_in_vespawatch',)
+    readonly_fields = ('originates_in_vespawatch', 'created_at')
 
     list_filter = ('taxon', 'originates_in_vespawatch')
 

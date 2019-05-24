@@ -14,6 +14,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template import defaultfilters
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.timezone import is_naive, make_aware, now
 from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
@@ -191,7 +192,7 @@ def create_observation_from_inat_data(inaturalist_data):
         else:
             is_nest_ofv = None
         if is_nest_ofv and is_nest_ofv['value'] == "nest":
-            created =  Nest.objects.create(
+            created = Nest.objects.create(
                 inat_vv_confirmed=inat_vv_confirmed,
                 originates_in_vespawatch=False,
                 inaturalist_id=inaturalist_data['id'],
@@ -318,6 +319,8 @@ class AbstractObservation(models.Model):
     observer_name = models.CharField(verbose_name=_("Name"), max_length=255, blank=True, null=True)
     observer_email = models.EmailField(verbose_name=_("Email address"), blank=True, null=True)
     observer_phone = models.CharField(verbose_name=_("Telephone number"), max_length=20, blank=True, null=True)
+
+    created_at = models.DateTimeField(default=timezone.now)
 
     # Managers
     objects = models.Manager()  # The default manager.
