@@ -60,7 +60,6 @@ class Command(VespaWatchCommand):
                 self.w('HTTP Error received, check logs.')
                 logging.exception("HTTPError while pushing observation.")
 
-
     def pull(self):
         """
         Pull all observations from iNaturalist.
