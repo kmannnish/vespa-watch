@@ -42,6 +42,12 @@ class IndividualForm(ModelForm):
 class IndividualFormUnauthenticated(IndividualForm):
     observer_email = EmailField(label=_('Email address'))
 
+    def __init__(self, *args, **kwargs):
+        super(IndividualFormUnauthenticated, self).__init__(*args, **kwargs)
+        self.date_is_invalid = False
+
+    # TODO: on validation, sets 'date_is_invalid' in case of error.
+
     class Meta:
         model = Individual
         fields = ['taxon', 'individual_count', 'behaviour', 'address', 'latitude', 'longitude',

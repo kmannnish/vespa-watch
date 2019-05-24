@@ -63,11 +63,13 @@
         <h5>{% trans 'Date' %}</h5>
         {% if object %}
             <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
-                init-date-time="{{ object.observation_time_iso }}">
+                init-date-time="{{ object.observation_time_iso }}"
+                :validation-error="true">
             </vw-datetime-selector>
         {% else %}
             <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
-                init-date-time="{{ form.data.observation_time|default_if_none:'' }}">
+                init-date-time="{{ form.data.observation_time|default_if_none:'' }}"
+                :validation-error={{ form.date_is_invalid|boolean_to_string }}>
             </vw-datetime-selector>
         {% endif %}
 

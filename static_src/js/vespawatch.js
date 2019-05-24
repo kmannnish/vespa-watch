@@ -1106,6 +1106,7 @@ var VwDatetimeSelector = {
         'initDateTime': String,
         'isRequired': Boolean,
         'hiddenFieldName': String,
+        'validationError': Boolean
     },
     data: function () {
         return {
@@ -1115,6 +1116,13 @@ var VwDatetimeSelector = {
     methods: {
         nowIsoFormat: function () {
             return new Date().toISOString();
+        },
+        inputClasses: function () {
+            var cssClasses =  ['datetimeinput', 'form-control'];
+            if (this.validationError) {
+                cssClasses.push('is-invalid');
+            }
+            return cssClasses.join(' ');
         }
     },
     computed: {
@@ -1130,7 +1138,7 @@ var VwDatetimeSelector = {
     },
     template: `<div class="form-group">
                     <datetime v-model="observationTime" type="datetime" 
-                              input-class="datetimeinput form-control" :max-datetime="nowIsoFormat()">
+                              :input-class="inputClasses()" :max-datetime="nowIsoFormat()">
                         <label for="startDate" slot="before">[[ observationTimeLabel ]]<span v-if="isRequired">*</span></label>          
                     </datetime>
                     <input type="hidden" :name="hiddenFieldName" :value="observationTime"/>

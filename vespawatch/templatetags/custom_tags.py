@@ -45,6 +45,14 @@ def js_config_object(context):
     }
     return mark_safe(json.dumps(conf))
 
+
 @register.filter
 def markdown(value, arg=None):
     return mark_safe(markdownify(value))
+
+
+@register.filter
+def boolean_to_string(value, arg=None):
+    if value is True:
+        return "true"
+    return "false"
