@@ -259,7 +259,7 @@ eb ssh --command "source /opt/python/run/venv/bin/activate  python manage.py imp
 eb ssh --command "source /opt/python/run/venv/bin/activate && python manage.py create_firefighters_accounts"
 ```
 
-If those commands would not work as such, they can be executed from any instance as well after ssh to the instance. In order to run the django manage commands, the proper environment and sudo rights should be provided:
+If those commands would not work as such, they can be executed from any instance as well after ssh in to the instance (the elastic beanstalk `eb ssh vespawatch-xxx` command is a convenient alternative to looking in the AWS console for the instance ip address). In order to run the django manage commands, the proper environment and sudo rights should be provided:
 
 ```
 sudo su
