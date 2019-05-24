@@ -535,7 +535,7 @@ class AbstractObservation(models.Model):
 
         self.observation_time = observation_time
 
-        self.comments = inat_observation_data['description']
+        self.comments = inat_observation_data['description'] or ''
 
 
         # Update taxon
@@ -881,15 +881,21 @@ def get_observations(include_individuals=True, include_nests=True, zone_id=None,
     return obs
 
 
-def get_individuals(limit=None):
-    obs = list(Individual.objects.select_related('taxon').prefetch_related('pictures').all())
+def get_individuals(limit=None, vv_only=True):
+    qs = Individual.objects.all()
+    if vv_only:
+        qs = qs.filter(taxon__inaturalist_push_taxon_id__in=INAT_VV_TAXONS_IDS)
+    obs = list(qs.select_related('taxon').prefetch_related('pictures').all())
     obs.sort(key=lambda x: x.observation_time, reverse=True)
     obs = obs[:limit]
     return obs
 
 
-def get_nests(limit=None):
-    obs = list(Nest.objects.select_related('taxon').prefetch_related('pictures').all())
+def get_nests(limit=None, vv_only=True):
+    qs = Nest.objects.all()
+    if vv_only:
+        qs = qs.filter(taxon__inaturalist_push_taxon_id__in=INAT_VV_TAXONS_IDS)
+    obs = list(qs.select_related('taxon').prefetch_related('pictures').all())
     obs.sort(key=lambda x: x.observation_time, reverse=True)
     obs = obs[:limit]
     return obs

@@ -316,9 +316,10 @@ def individuals_json(request):
     limit = request.GET.get('limit', None)
     limit = int(limit) if limit is not None else None
 
-    obs = get_individuals(limit=limit)
-
     light = request.GET.get('light', None)
+    vv_only = request.GET.get('vvOnly', None)
+
+    obs = get_individuals(limit=limit, vv_only=vv_only)
 
     if light:
         response = JsonResponse({
@@ -353,9 +354,10 @@ def nests_json(request):
     limit = request.GET.get('limit', None)
     limit = int(limit) if limit is not None else None
 
-    obs = get_nests(limit=limit)
-
     light = request.GET.get('light', None)
+    vv_only = request.GET.get('vvOnly', False)
+
+    obs = get_nests(limit=limit, vv_only=vv_only)
 
     if light:
         response = JsonResponse({
