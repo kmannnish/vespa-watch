@@ -46,7 +46,7 @@ class IndividualFormUnauthenticated(IndividualForm):
         model = Individual
         fields = ['taxon', 'individual_count', 'behaviour', 'address', 'latitude', 'longitude',
                   'observation_time', 'comments',
-                  'observer_name', 'observer_phone',
+                  'observer_email', 'observer_name', 'observer_phone',
         ]
         field_classes = {
             'observation_time': ISODateTimeField,
@@ -94,7 +94,8 @@ class NestFormUnauthenticated(NestForm):
     class Meta:
         model = Nest
         fields = ['taxon', 'latitude', 'longitude',
-                  'observation_time', 'size', 'comments'
+                  'observation_time', 'size', 'comments', 'observer_email',
+                  'observer_name', 'observer_phone'
         ]
         field_classes = {
             'observation_time': ISODateTimeField,
