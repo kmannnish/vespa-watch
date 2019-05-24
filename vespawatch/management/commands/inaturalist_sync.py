@@ -5,6 +5,7 @@ from django.conf import settings
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.node_api import get_all_observations, get_observation
 from pyinaturalist.rest_api import get_access_token, delete_observation
+from requests import HTTPError
 
 from vespawatch.management.commands._utils import VespaWatchCommand
 from vespawatch.models import Individual, Nest, InatObsToDelete, get_local_observation_with_inaturalist_id, \
@@ -53,7 +54,12 @@ class Command(VespaWatchCommand):
 
         for obs in local_observations_from_vespawatch:
             self.w(f"... Creating {obs.subject} #{obs.pk} on iNaturalist")
-            obs.create_at_inaturalist(access_token=access_token)
+            try:
+                obs.create_at_inaturalist(access_token=access_token)
+            except HTTPError:
+                self.w('HTTP Error received, check logs.')
+                logging.exception("HTTPError while pushing observation.")
+
 
     def pull(self):
         """
