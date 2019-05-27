@@ -168,6 +168,7 @@ USE_TZ = True
 LANGUAGES = [
     ('nl', _('Dutch')),
     ('en', _('English')),
+    ('fr', _('French'))
 ]
 
 PAGE_FRAGMENTS_FALLBACK_LANGUAGE = 'nl'
@@ -225,6 +226,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LANGUAGES_AVAILABLE_IN_SELECTOR = [
     ('nl', _('Dutch')),
     ('en', _('English')),
+    ('fr', _('French'))
 ]
 
 LOGIN_REDIRECT_URL = '/'

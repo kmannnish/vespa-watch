@@ -8,6 +8,7 @@ class PageFragment(models.Model):
     identifier = models.SlugField(unique=True)
     content_nl = MarkdownxField(blank=True)
     content_en = MarkdownxField(blank=True)
+    content_fr = MarkdownxField(blank=True)
 
     def __str__(self):
         return self.identifier
