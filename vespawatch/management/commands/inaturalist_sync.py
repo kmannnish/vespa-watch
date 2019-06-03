@@ -1,4 +1,6 @@
+import boto3
 import logging
+from botocore.exceptions import ClientError
 from json import JSONDecodeError
 
 from django.conf import settings
@@ -15,6 +17,47 @@ OBSERVATION_MODELS = [Individual, Nest]
 
 class Command(VespaWatchCommand):
     help = 'Synchronize VespaWatch and iNaturalist. Full description: https://github.com/inbo/vespa-watch/issues/2'
+    email_client = None
+
+    def send_email_to_reporter(self, obs):
+        if not self.email_client:
+            self.w('set up email client')
+            self.email_client = boto3.client('ses', region_name=settings.AWS_S3_REGION_NAME)
+
+        self.w('sending email')
+        body = settings.EMAIL_TEMPLATE.format(
+            title='Vespawatch email',
+            message='Beste, bedankt voor uw waarneming. Deze werd nu gepubliceerd op iNaturalist met id {}'.format(obs.inaturalist_id)
+        )
+        subject = 'Thank you for your Vespawatch observation'
+        try:
+            # Provide the contents of the email.
+            response = self.email_client.send_email(
+                Destination={
+                    'ToAddresses': [
+                        obs.observer_email,
+                    ],
+                },
+                Message={
+                    'Body': {
+                        'Html': {
+                            'Charset': settings.EMAIL_CHARSET,
+                            'Data': body,
+                        },
+                    },
+                    'Subject': {
+                        'Charset': settings.EMAIL_CHARSET,
+                        'Data': subject,
+                    },
+                },
+                Source=settings.EMAIL_SENDER,
+            )
+        # Display an error if something goes wrong.
+        except ClientError as e:
+            print(e.response['Error']['Message'])
+        else:
+            print("Email sent! Message ID:"),
+            print(response['MessageId'])
 
     def add_arguments(self, parser):
         parser.add_argument('--pushonly', type=bool, default=False)
@@ -54,6 +97,7 @@ class Command(VespaWatchCommand):
         for obs in local_observations_from_vespawatch:
             self.w(f"... Creating {obs.subject} #{obs.pk} on iNaturalist")
             obs.create_at_inaturalist(access_token=access_token)
+            self.send_email_to_reporter(obs)
 
     def pull(self):
         """
