@@ -55,10 +55,10 @@ class Command(VespaWatchCommand):
             )
         # Display an error if something goes wrong.
         except ClientError as e:
-            print(e.response['Error']['Message'])
+            self.w(e.response['Error']['Message'])
         else:
-            print("Email sent! Message ID:"),
-            print(response['MessageId'])
+            self.w("Email sent! Message ID:"),
+            self.w(response['MessageId'])
 
     def add_arguments(self, parser):
         parser.add_argument('--pushonly', type=bool, default=False)
