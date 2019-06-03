@@ -9,6 +9,10 @@ class IndividualForm(ModelForm):
     card_id = IntegerField()
     terms_of_service = BooleanField(label=_('Accept the privacy policy'), required=False)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.date_is_invalid = False
+
     class Meta:
         model = Individual
         fields = ['taxon', 'individual_count', 'behaviour', 'address', 'latitude', 'longitude',
@@ -30,6 +34,10 @@ class IndividualForm(ModelForm):
             msg = 'You must add at least one picture'
             self.add_error(None, msg)
 
+        # For Vue.js components
+        if 'observation_time' in self.errors:
+            self.date_is_invalid = True
+
         return cleaned_data
 
     def save(self, *args, **kwargs):
@@ -41,12 +49,6 @@ class IndividualForm(ModelForm):
 
 class IndividualFormUnauthenticated(IndividualForm):
     observer_email = EmailField(label=_('Email address'))
-
-    def __init__(self, *args, **kwargs):
-        super(IndividualFormUnauthenticated, self).__init__(*args, **kwargs)
-        self.date_is_invalid = False
-
-    # TODO: on validation, sets 'date_is_invalid' in case of error.
 
     class Meta:
         model = Individual
