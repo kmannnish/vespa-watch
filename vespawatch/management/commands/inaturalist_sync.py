@@ -99,10 +99,10 @@ class Command(VespaWatchCommand):
             self.w(f"... Creating {obs.subject} #{obs.pk} on iNaturalist")
             try:
                 obs.create_at_inaturalist(access_token=access_token)
+                self.send_email_to_reporter(obs)
             except HTTPError:
                 self.w('HTTP Error received, check logs.')
                 logging.exception("HTTPError while pushing observation.")
-            self.send_email_to_reporter(obs)
 
     def pull(self):
         """
