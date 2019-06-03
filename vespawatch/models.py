@@ -331,6 +331,9 @@ class AbstractObservation(models.Model):
 
     class Meta:
         abstract = True
+        # We got some duplicates and don't exactly know why, this is an attempt to block them without being too
+        # aggresive and introduce bugs (hence the limited number of fields).
+        unique_together = ['taxon', 'observation_time', 'latitude', 'longitude', 'comments']
 
     def auto_assign_zone(self):
         """Sets the zone attribute, according to the latitude/longitude. You'll need to manually save the model instance.
