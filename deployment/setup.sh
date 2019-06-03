@@ -31,6 +31,7 @@ aws iam create-role --role-name aws-elasticbeanstalk-ec2-role-vespawatch --assum
 aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-name lw-vespawatch-s3 --policy-document file://deployment/s3-policy.json
 aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-name lw-vespawatch-ec2tags --policy-document file://deployment/ec2-describetags.json
 aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-name lw-vespawatch-write-cloudwatch --policy-document file://deployment/cloudwatch-write-logs.json
+aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-name lw-vespawatch-ec2ses --policy-document file://deployment/ses-sendmailing.json
 aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-arn arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier
 if [ $ENVIRONMENT = "prd" ]; then
 aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-arn arn:aws:iam::532750756126:policy/AWS-Beanstalk-Volumes

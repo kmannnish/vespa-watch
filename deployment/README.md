@@ -105,6 +105,8 @@ aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --p
 aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-name lw-vespawatch-ec2tags --policy-document file://deployment/ec2-describetags.json
 # add the custom logs to cloudwatch permission
 aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-name lw-vespawatch-write-cloudwatch --policy-document file://deployment/cloudwatch-write-logs.json
+# add custom rule to allow ec2 SES sending of mails
+aws iam put-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-name lw-vespawatch-ec2ses --policy-document file://deployment/ses-sendmailing.json
 
 # add the required elasticbeanstalk policies (taken from aws-elasticbeanstalk-ec2-role)
 aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role-vespawatch --policy-arn arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier
