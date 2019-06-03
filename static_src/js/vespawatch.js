@@ -1075,18 +1075,39 @@ var VwLocationSelectorCoordinates = {
         }
 
     },
-    props: ['longitude', 'latitude', 'address', 'addressRequired'],
+    methods: {
+        commontInputClasses: function () {
+            return ['numberinput', 'form-control'];
+        },
+        latInputClasses: function() {
+            var cssClasses =  this.commontInputClasses();
+            if (this.latitudeIsInvalid === true) {
+                cssClasses.push('is-invalid');
+            }
+            return cssClasses.join(' ');
+
+        },
+        lonInputClasses: function() {
+            var cssClasses =  this.commontInputClasses();
+            if (this.longitudeIsInvalid) {
+                cssClasses.push('is-invalid');
+            }
+            return cssClasses.join(' ');
+
+        }
+    },
+    props: ['longitude', 'latitude', 'address', 'addressRequired', 'latitudeIsInvalid', 'longitudeIsInvalid'],
     template: `
         <div>
             <div class="form-row">
                 <div class="form-group col-6">
                     <label for="id_latitude">{{latitudeLabel}}<span>*</span></label>
-                    <input type="text" class="form-control numberinput" id="id_latitude" name="latitude" v-model="lat">
+                    <input type="text" :class="latInputClasses()" id="id_latitude" name="latitude" v-model="lat">
                     <small class="form-text text-muted">{{coordinatesHelpLabel}}</small>
                 </div>
                 <div class="form-group col-6">
                     <label for="id_longitude">{{longitudeLabel}}<span>*</span></label>
-                    <input type="text" class="form-control numberinput" id="id_longitude" name="longitude" v-model="long">
+                    <input type="text" :class="lonInputClasses()" id="id_longitude" name="longitude" v-model="long">
                 </div>
             </div>
             <div class="form-row">
@@ -1220,13 +1241,13 @@ var VwLocationSelector = {
         },
     },
 
-    props: ['initCoordinates', 'initializeCoordinates', 'initMarker', 'address', 'addressRequired'],
+    props: ['initCoordinates', 'initializeCoordinates', 'initMarker', 'address', 'addressRequired', 'latitudeIsInvalid', 'longitudeIsInvalid'],
 
     template: `
         <div class="row">
             <div class="col-lg-6">
                 <vw-location-selector-location-input v-bind:init-address="address" v-on:autodetect-btn="autodetectPosition" v-on:search="getCoordinates"></vw-location-selector-location-input>
-                <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:address="modelAddress" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude" v-bind:address-required="addressRequired"></vw-location-selector-coordinates>
+                <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:address="modelAddress" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude" v-bind:address-required="addressRequired" v-bind:latitude-is-invalid="latitudeIsInvalid" v-bind:longitude-is-invalid="longitudeIsInvalid"></vw-location-selector-coordinates>
             </div>
             <div class="col-lg-6">
                 <vw-location-selector-map v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
