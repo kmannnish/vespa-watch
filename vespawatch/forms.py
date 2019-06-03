@@ -93,9 +93,9 @@ class NestFormUnauthenticated(NestForm):
 
     class Meta:
         model = Nest
-        fields = ['taxon', 'latitude', 'longitude',
-                  'observation_time', 'size', 'comments', 'observer_email',
-                  'observer_name', 'observer_phone'
+        fields = ['taxon', 'address', 'latitude', 'longitude',
+                  'observation_time', 'size', 'height', 'comments',
+                  'observer_email', 'observer_name', 'observer_phone'
         ]
         field_classes = {
             'observation_time': ISODateTimeField,
