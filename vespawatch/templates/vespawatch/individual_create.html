@@ -5,6 +5,7 @@
 {% load custom_tags %}
 
 {% block content %}
+    <script>var csrftoken = "{{ csrf_token }}";</script>
 <main class="container" id="vw-main-app">
     <h1>{% trans 'Report observation' %}</h1>
 
@@ -23,6 +24,7 @@
         {{ form.card_id.as_hidden }}
         {{ form.taxon.as_hidden }}
         {{ form.redirect_to.as_hidden }}
+        {{ form.image_ids.as_hidden }}
 
         <div class="row">
             <div class="col-lg-6">
@@ -32,16 +34,8 @@
 
         <h5>{% trans 'Photos' %}</h5>
 
-        {{ image_formset.management_form }}
         <small class="form-text text-muted">{% trans 'Upload at least one photo of your observation' %}</small>
-        <div class="row">
-            {% for image_form in image_formset %}
-                <div class="col-md-6">
-                    {{ image_form.image|as_crispy_field }}
-                    {{ image_form.DELETE|as_crispy_field }}
-                </div>
-            {% endfor %}
-        </div>
+        <vw-image-dropzone type="individual" csrf-token="{{ csrf_token }}"></vw-image-dropzone>
 
         <h5>{% trans 'Location' %}</h5>
         {% if object %}

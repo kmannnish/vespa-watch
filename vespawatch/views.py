@@ -17,7 +17,8 @@ from django.views.generic.edit import DeletionMixin
 from django.urls import reverse_lazy
 
 from vespawatch.utils import ajax_login_required
-from .forms import ManagementActionForm, IndividualForm, IndividualFormUnauthenticated, NestForm, NestFormUnauthenticated, IndividualImageFormset, NestImageFormset
+from .forms import ManagementActionForm, IndividualForm, IndividualFormUnauthenticated, IndividualPictureForm, \
+    NestForm, NestPictureForm, NestFormUnauthenticated, IndividualImageFormset, NestImageFormset
 from .models import Individual, Nest, ManagementAction, Taxon, FirefightersZone, IdentificationCard, \
     get_observations, get_individuals, get_nests
 
@@ -96,7 +97,6 @@ def create_individual(request):
         card_id = request.POST.get('card_id')
         print(f'2: {card_id}')
         identif_card = IdentificationCard.objects.get(pk=card_id)
-        image_formset = IndividualImageFormset()
         if request.user.is_authenticated:
             # set to terms_of_service to true if the user is authenticated
             form = IndividualForm(request.POST, request.FILES)
@@ -107,30 +107,29 @@ def create_individual(request):
             form = IndividualFormUnauthenticated(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            image_formset = IndividualImageFormset(request.POST, request.FILES, instance=form.instance)
-            if image_formset.is_valid():
-                instances = image_formset.save()
             messages.success(request, _("Your observation was successfully created. Thanks for your contribution!"))
             return HttpResponseRedirect(reverse_lazy(f'vespawatch:{redirect_to}'))
     else:
         redirect_to = request.GET.get('redirect_to', 'index')
         identif_card_id = request.GET.get('card_id')
         identif_card = IdentificationCard.objects.get(pk=identif_card_id)
+        image_ids = request.GET.get('image_ids')
         taxon = identif_card.represented_taxon
         print(f'1: {identif_card_id}')
         if request.user.is_authenticated:
             form = IndividualForm(initial={
                 'redirect_to': redirect_to,
                 'card_id': identif_card_id,
+                'image_ids': image_ids,
                 'taxon': taxon})
         else:
             form = IndividualFormUnauthenticated(initial={
                 'redirect_to': redirect_to,
                 'card_id': identif_card_id,
+                'image_ids': image_ids,
                 'taxon': taxon})
-        image_formset = IndividualImageFormset()
     return render(request, 'vespawatch/individual_create.html',
-                  {'form': form, 'type': 'individual', 'image_formset': image_formset, 'identif_card': identif_card})
+                  {'form': form, 'type': 'individual', 'identif_card': identif_card})
 
 
 class IndividualDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
@@ -169,7 +168,6 @@ def create_nest(request):
         card_id = request.POST.get('card_id')
         identif_card = IdentificationCard.objects.get(pk=card_id)
 
-        image_formset = NestImageFormset()
         if request.user.is_authenticated:
             form = NestForm(request.POST, request.FILES)
             # set to terms_of_service to true if the user is authenticated
@@ -180,21 +178,20 @@ def create_nest(request):
             form = NestFormUnauthenticated(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            image_formset = NestImageFormset(request.POST, request.FILES, instance=form.instance)
-            if image_formset.is_valid():
-                instances = image_formset.save()
 
             messages.success(request, _("Your observation was successfully created. Thanks for your contribution!"))
             return HttpResponseRedirect(reverse_lazy(f'vespawatch:{redirect_to}'))
     else:
         redirect_to = request.GET.get('redirect_to', 'index')
         identif_card_id = request.GET.get('card_id')
+        image_ids = request.GET.get('image_ids')
         identif_card = IdentificationCard.objects.get(pk=identif_card_id)
         taxon = identif_card.represented_taxon
         if request.user.is_authenticated:
             form = NestForm(initial={
                 'redirect_to': redirect_to,
                 'card_id': identif_card_id,
+                'image_ids': image_ids,
                 'taxon': taxon
             })
         else:
@@ -202,12 +199,12 @@ def create_nest(request):
                 initial={
                     'redirect_to': redirect_to,
                     'card_id': identif_card_id,
+                    'image_ids': image_ids,
                     'taxon': taxon
                 }
             )
-        image_formset = NestImageFormset()
     return render(request, 'vespawatch/nest_create.html',
-                  {'form': form, 'image_formset': image_formset, 'type': 'nest', 'identif_card': identif_card})
+                  {'form': form, 'type': 'nest', 'identif_card': identif_card})
 
 
 class NestDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
@@ -420,3 +417,36 @@ def get_zone(request):
         return HttpResponse(serialize('geojson', [zone],
                   geometry_field='mpolygon',
                   fields=('pk', 'name')))
+
+
+def save_nest_image(request):
+    """
+    API method to save NestPictures
+    To be used in the dropzone component. That component will immediately save the image and insert the image id
+    in the Nest form
+    """
+    if request.method == 'POST':
+        form = NestPictureForm(request.POST, request.FILES or None)
+        if form.is_valid():
+            img_id = form.save()
+            return JsonResponse({'imageId': img_id.pk, 'type': 'NestPicture'})
+        else:
+            print(form.errors)
+            return JsonResponse({'errors': form.errors}, status=400)
+
+
+def save_individual_image(request):
+    """
+    API method to save IndividualPictures
+    To be used in the dropzone component. That component will immediately save the image and insert the image id
+    in the Individual form
+    """
+    if request.method == 'POST':
+        form = IndividualPictureForm(request.POST, request.FILES or None)
+        if form.is_valid():
+            img_id = form.save()
+            return JsonResponse({'imageId': img_id.pk, 'type': 'IndividualPicture'})
+        else:
+            print(form.errors)
+            return JsonResponse({'errors': form.errors}, status=400)
+

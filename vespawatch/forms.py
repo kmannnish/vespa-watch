@@ -8,6 +8,7 @@ class IndividualForm(ModelForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
     terms_of_service = BooleanField(label=_('Accept the privacy policy'), required=False)
+    image_ids = CharField(max_length=255)
 
     class Meta:
         model = Individual
@@ -26,7 +27,7 @@ class IndividualForm(ModelForm):
         if not toc:
             msg = _("You must accept the privacy policy.")
             self.add_error('terms_of_service', msg)
-        if len(self.files) is 0:
+        if not cleaned_data['image_ids']:
             msg = 'You must add at least one picture'
             self.add_error(None, msg)
 
@@ -34,9 +35,11 @@ class IndividualForm(ModelForm):
 
     def save(self, *args, **kwargs):
         observation = super().save(*args, **kwargs)
-        if hasattr(self.files, 'getlist'):
-            for image in self.files.getlist('images'):
-                IndividualPicture.objects.create(observation=observation, image=image)
+        image_ids = [x for x in self.cleaned_data['image_ids'].strip().split(',') if x]
+        for image_id in image_ids:
+            np = IndividualPicture.objects.get(pk=image_id)
+            np.observation = observation
+            np.save()
 
 
 class IndividualFormUnauthenticated(IndividualForm):
@@ -58,6 +61,7 @@ class NestForm(ModelForm):
     card_id = IntegerField()
     height = ChoiceField(label=_('Nest height'), choices=[('', '--------')] + list(Nest.HEIGHT_CHOICES))
     address = CharField(max_length=255)
+    image_ids = CharField(max_length=255)
 
     class Meta:
         model = Nest
@@ -72,17 +76,18 @@ class NestForm(ModelForm):
     def clean(self):
         cleaned_data = self.cleaned_data
 
-        if len(self.files) is 0:
+        if not cleaned_data['image_ids']:
             msg = 'You must add at least one picture'
             self.add_error(None, msg)
-
         return cleaned_data
 
     def save(self, *args, **kwargs):
         observation = super().save(*args, **kwargs)
-        if hasattr(self.files, 'getlist'):
-            for image in self.files.getlist('images'):
-                NestPicture.objects.create(observation=observation, image=image)
+        image_ids = [x for x in self.cleaned_data['image_ids'].strip().split(',') if x]
+        for image_id in image_ids:
+            np = NestPicture.objects.get(pk=image_id)
+            np.observation = observation
+            np.save()
 
 
 class NestFormUnauthenticated(NestForm):

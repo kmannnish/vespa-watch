@@ -1136,6 +1136,56 @@ var VwDatetimeSelector = {
                </div>`
 };
 
+var VwImageDropZone = {
+    components: {
+        vueDropzone: vue2Dropzone
+      },
+    computed: {
+        url: function () {
+            return this.urls[this.type];
+        },
+        dropzoneOptions: function () {
+            return {
+                addRemoveLinks: true,
+                params: {'csrfmiddlewaretoken': this.csrfToken},
+                url: this.url,
+                paramName: 'image',
+                thumbnailWidth: 150,
+                maxFilesize: 0.5
+            }
+        }
+    },
+    data: function () {
+        return {
+            imageFieldElement: null,
+            urls: {'nest': '/api/nest_images/', 'individual': '/api/individual_images/'},
+        }
+    },
+    props: {
+        'csrfToken': String,
+        'type': String
+    },
+    methods: {
+        addToForm: function (file, response) {
+            console.log("Image successfully added!");
+            console.log(response);
+            var imgId = response.imageId;
+
+            var oldVal = this.imageFieldElement.val();  // pity: I have to fall back to jQuery here, otherwise the entire form should go into a Vue component
+            console.log(oldVal);
+            this.imageFieldElement.val(oldVal + "," + imgId);
+
+        }
+    },
+    mounted: function () {
+        this.imageFieldElement = $("#id_image_ids");
+    },
+    template: `<div>
+                <vue-dropzone ref="myVueDropzone" id="dropzone" :options="dropzoneOptions" v-on:vdropzone-success="addToForm"></vue-dropzone>
+            </div>`
+
+};
+
 var VwLocationSelector = {
     data: function () {
         return {
@@ -1232,12 +1282,15 @@ var app = new Vue({
         'vw-location-selector': VwLocationSelector,
         'vw-datetime-selector': VwDatetimeSelector,
         'vw-management-table': VwManagementTable,
-        'vw-recent-obs-table': VwRecentObsTable
+        'vw-recent-obs-table': VwRecentObsTable,
+        'vw-image-dropzone': VwImageDropZone
     },
-    data: {
-        individuals: null,
-        nests: null,
-        currentlyLoading: false
+    data: function () {
+        return {
+            individuals: null,
+            nests: null,
+            currentlyLoading: false
+        };
     },
     delimiters: ['[[', ']]'],
     el: '#vw-main-app',

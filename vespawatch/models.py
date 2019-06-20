@@ -769,7 +769,8 @@ class IndividualPicture(models.Model):
     def get_file_path(instance, filename):
         return os.path.join('pictures/individuals/', make_unique_filename(filename))
 
-    observation = models.ForeignKey(Individual, on_delete=models.CASCADE, related_name='pictures')
+    observation = models.ForeignKey(Individual, on_delete=models.CASCADE, related_name='pictures', blank=True, null=True)
+    datetime = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(verbose_name=_("Photo"), upload_to=get_file_path)
     thumbnail = ImageSpecField(source='image',
                                processors=[SmartResize(600, 300)],
@@ -781,7 +782,8 @@ class NestPicture(models.Model):
     def get_file_path(instance, filename):
         return os.path.join('pictures/nests/', make_unique_filename(filename))
 
-    observation = models.ForeignKey(Nest, on_delete=models.CASCADE, related_name='pictures')
+    observation = models.ForeignKey(Nest, on_delete=models.CASCADE, related_name='pictures', blank=True, null=True)
+    datetime = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(verbose_name=_("Photo"), upload_to=get_file_path)
     thumbnail = ImageSpecField(source='image',
                                processors=[SmartResize(600, 300)],
