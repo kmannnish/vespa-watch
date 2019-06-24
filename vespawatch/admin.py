@@ -1,15 +1,33 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+from import_export import resources
+from import_export.admin import ExportMixin
+from import_export.fields import Field
 from modeltranslation.admin import TranslationAdmin, TranslationTabularInline
 
 from .models import Taxon, Nest, Individual, NestPicture, IndividualPicture, ManagementAction, Profile, \
     FirefightersZone, IdentificationCard, IndividualObservationWarning, NestObservationWarning
 
 
+class NestResource(resources.ModelResource):
+    taxon_name = Field(attribute='taxon__name', column_name='taxon_name')
+
+    class Meta:
+        model = Nest
+
+
+class IndividualResource(resources.ModelResource):
+    taxon_name = Field(attribute='taxon__name', column_name='taxon_name')
+
+    class Meta:
+        model = Individual
+
+
 class IdentificationCardInline(TranslationTabularInline):
     model = IdentificationCard
     max_num = 2
+
 
 @admin.register(Taxon)
 class TaxonAdmin(admin.ModelAdmin):
@@ -72,7 +90,9 @@ class DeleteObjectsOneByOneMixin():
 
 
 @admin.register(Nest)
-class NestAdmin(DeleteObjectsOneByOneMixin, admin.ModelAdmin):
+class NestAdmin(DeleteObjectsOneByOneMixin, ExportMixin, admin.ModelAdmin):
+    resource_class = NestResource
+
     # Some observations cannot be changed nor deleted
     def has_change_permission(self, request, obj=None):
         if obj is not None and not obj.can_be_edited_in_admin:
@@ -97,7 +117,9 @@ class NestAdmin(DeleteObjectsOneByOneMixin, admin.ModelAdmin):
 
 
 @admin.register(Individual)
-class IndividualAdmin(DeleteObjectsOneByOneMixin, admin.ModelAdmin):
+class IndividualAdmin(DeleteObjectsOneByOneMixin, ExportMixin, admin.ModelAdmin):
+    resource_class = IndividualResource
+
     # Some observations cannot be changed nor deleted
     def has_change_permission(self, request, obj=None):
         if obj is not None and not obj.can_be_edited_in_admin:

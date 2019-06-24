@@ -15,7 +15,7 @@
         </div>
     {% endif %}
 
-    <p>{% trans "Please do not kill insects unnecessarily." %}</p>
+    <p>{% trans "Please do not unnecessarily kill insects." %}</p>
 
     <form method="post" action="{% url 'vespawatch:individual-add' %}"enctype='multipart/form-data' novalidate>
         {% csrf_token %}

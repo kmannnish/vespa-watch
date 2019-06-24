@@ -109,6 +109,71 @@ msgid "You cannot edit this observation"
 msgstr "U kan deze observatie niet wijzigen"
 
 #: static_src/js/vespawatch.js:715 vespawatch/static/vespawatch/js/app.min.js:1
+#: static_src/js/vespawatch.js:319 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Pause"
+msgstr "Pauzeren"
+
+#: static_src/js/vespawatch.js:319 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Play"
+msgstr "Afspelen"
+
+#: static_src/js/vespawatch.js:503 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "New management action"
+msgstr "Nieuwe beheersactie"
+
+#: static_src/js/vespawatch.js:503 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Edit management action"
+msgstr "Pas beheersactie aan"
+
+#: static_src/js/vespawatch.js:506 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Outcome"
+msgstr "Resultaat"
+
+#: static_src/js/vespawatch.js:509 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Save"
+msgstr "Opslaan"
+
+#: static_src/js/vespawatch.js:512 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Cancel"
+msgstr "Annuleer"
+
+#: static_src/js/vespawatch.js:515 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Delete"
+msgstr "Verwijder"
+
+#: static_src/js/vespawatch.js:518 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Yes, delete"
+msgstr "Ja, verwijder"
+
+#: static_src/js/vespawatch.js:521 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Person name"
+msgstr "Naam van de persoon"
+
+#: static_src/js/vespawatch.js:524 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Action time"
+msgstr "Beheerstijd"
+
+#: static_src/js/vespawatch.js:527 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Duration"
+msgstr "Duur"
+
+#: static_src/js/vespawatch.js:530 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "in minutes"
+msgstr "in minuten"
+
+#: static_src/js/vespawatch.js:533 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Errors"
+msgstr "Fouten"
+
+#: static_src/js/vespawatch.js:536 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "Are you sure you want to delete this action?"
+msgstr "Bent u zeker dat u deze actie wil verwijderen?"
+
+#: static_src/js/vespawatch.js:686 vespawatch/static/vespawatch/js/app.min.js:1
+msgid "You cannot edit this observation"
+msgstr "U kan deze observatie niet wijzigen"
+
+#: static_src/js/vespawatch.js:689 vespawatch/static/vespawatch/js/app.min.js:1
 msgid "This observation was created on iNaturalist. You cannot edit it here"
 msgstr ""
 "Deze observatie werd geregistreerd in iNaturalist. U kan deze hier niet "
@@ -126,7 +191,7 @@ msgstr "toevoegen"
 msgid "edit / delete"
 msgstr "wijzig / verwijder"
 
-#: static_src/js/vespawatch.js:1079
+#: static_src/js/vespawatch.js:1053
 #: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Latitude"
 msgstr "Latitude"
