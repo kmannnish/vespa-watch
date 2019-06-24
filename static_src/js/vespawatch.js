@@ -164,6 +164,12 @@ var VwObservationsVizMap = {
                 this.mapCircles = [];
             }
         },
+
+        buildStaticUrl: function(relativePath) {
+            var sep = VWConfig.staticRoot[VWConfig.staticRoot.length - 1] === '/' ? '' : '/';
+            return VWConfig.staticRoot + sep + relativePath;
+        },
+
         init: function () {
             var conf = VWConfig.map;
 
@@ -204,7 +210,27 @@ var VwObservationsVizMap = {
         }
     },
 
+    computed: {
+        legendNestIcon: function () {
+            return this.buildStaticUrl("vespawatch/img/legend_nest.png");
+        },
+
+        legendIndividualIcon: function () {
+            return this.buildStaticUrl("vespawatch/img/legend_individual.png");
+        },
+
+        nestLabel: function () {
+            return gettext('Nest');
+        },
+
+        individualLabel: function () {
+            return gettext('Individual');
+        },
+
+    },
+
     template: `<div>
+        <div class="mb-2 small"><img :src="legendNestIcon" />: {{ nestLabel }} <img :src="legendIndividualIcon" />: {{ individualLabel }}</div>
         <div class="mb-2" id="vw-map-map" style="height: 450px;"></div>
     </div>`
 };
