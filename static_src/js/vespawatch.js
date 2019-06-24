@@ -1034,6 +1034,9 @@ var VwLocationSelectorMap = {
 
 var VwLocationSelectorCoordinates = {
     computed: {
+        errorMsg: function () {
+            return gettext('This field is required.')
+        },
         lat: {
             get: function () {
                 return this.latitude
@@ -1103,17 +1106,20 @@ var VwLocationSelectorCoordinates = {
                 <div class="form-group col-6">
                     <label for="id_latitude">{{latitudeLabel}}<span>*</span></label>
                     <input type="text" :class="latInputClasses()" id="id_latitude" name="latitude" v-model="lat">
+                    <p id="error_1_id_latitude" class="invalid-feedback"><strong>{{ errorMsg }}</strong></p>
                     <small class="form-text text-muted">{{coordinatesHelpLabel}}</small>
                 </div>
                 <div class="form-group col-6">
                     <label for="id_longitude">{{longitudeLabel}}<span>*</span></label>
                     <input type="text" :class="lonInputClasses()" id="id_longitude" name="longitude" v-model="long">
+                    <p id="error_1_id_longitude" class="invalid-feedback"><strong>{{ errorMsg }}</strong></p>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-12">
                     <label for="id_address">{{addressLabel}}<span v-if="addressRequired">*</span></label>
                     <input type="text" class="form-control numberinput" id="id_address" name="address" v-model="_address">
+                    <p id="error_1_id_address" class="invalid-feedback"><strong>{{ errorMsg }}</strong></p>
                     <small class="form-text text-muted">{{addressHelpLabel}}</small>
                 </div>
             </div>
@@ -1147,6 +1153,9 @@ var VwDatetimeSelector = {
         }
     },
     computed: {
+        errorMsg: function () {
+            return gettext('This field is required.')
+        },
         observationTimeLabel: function () {
             return gettext('Observation date');
         },
@@ -1160,7 +1169,9 @@ var VwDatetimeSelector = {
     template: `<div class="form-group">
                     <datetime v-model="observationTime" type="datetime" 
                               :input-class="inputClasses()" :max-datetime="nowIsoFormat()">
-                        <label for="startDate" slot="before">[[ observationTimeLabel ]]<span v-if="isRequired">*</span></label>          
+                        <label for="startDate" slot="before">[[ observationTimeLabel ]]<span v-if="isRequired">*</span></label>
+                    <p slot="after" id="error_1_id_observation_time" class="invalid-feedback"><strong>[[ errorMsg ]]</strong></p>
+          
                     </datetime>
                     <input type="hidden" :name="hiddenFieldName" :value="observationTime"/>
                </div>`
