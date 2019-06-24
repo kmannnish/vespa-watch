@@ -777,6 +777,9 @@ class IndividualPicture(models.Model):
                                format='JPEG',
                                options={'quality': 90})
 
+    def to_dict(self):
+        return {'url': self.image.url, 'name': self.image.name}
+
 
 class NestPicture(models.Model):
     def get_file_path(instance, filename):
@@ -789,6 +792,9 @@ class NestPicture(models.Model):
                                processors=[SmartResize(600, 300)],
                                format='JPEG',
                                options={'quality': 90})
+
+    def to_dict(self):
+        return {'url': self.image.url, 'name': self.image.name}
 
 
 class ObservationWarningBase(models.Model):

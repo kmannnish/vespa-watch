@@ -27,7 +27,7 @@ class IndividualForm(ModelForm):
         if not toc:
             msg = _("You must accept the privacy policy.")
             self.add_error('terms_of_service', msg)
-        if not cleaned_data['image_ids']:
+        if 'image_ids' not in cleaned_data or not cleaned_data['image_ids']:
             msg = 'You must add at least one picture'
             self.add_error(None, msg)
 
@@ -76,7 +76,7 @@ class NestForm(ModelForm):
     def clean(self):
         cleaned_data = self.cleaned_data
 
-        if not cleaned_data['image_ids']:
+        if 'image_ids' not in cleaned_data or not cleaned_data['image_ids']:
             msg = 'You must add at least one picture'
             self.add_error(None, msg)
         return cleaned_data

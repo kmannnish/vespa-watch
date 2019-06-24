@@ -1145,43 +1145,79 @@ var VwImageDropZone = {
             return this.urls[this.type];
         },
         dropzoneOptions: function () {
+            // See https://www.dropzonejs.com/#configuration-options
             return {
                 addRemoveLinks: true,
                 params: {'csrfmiddlewaretoken': this.csrfToken},
                 url: this.url,
                 paramName: 'image',
                 thumbnailWidth: 150,
-                maxFilesize: 0.5
+                dictResponseError: "this is a custom error",
+                maxFilesize: 5  // MB
             }
         }
     },
     data: function () {
         return {
             imageFieldElement: null,
-            urls: {'nest': '/api/nest_images/', 'individual': '/api/individual_images/'},
+            uploadedImages: {},
+            urls: {'nest': '/api/nest_pictures/', 'individual': '/api/individual_pictures/'},
         }
     },
-    props: {
-        'csrfToken': String,
-        'type': String
-    },
+    props: ['csrfToken', 'type'],
     methods: {
         addToForm: function (file, response) {
-            console.log("Image successfully added!");
-            console.log(response);
             var imgId = response.imageId;
-
+            this.uploadedImages[response.name] = imgId;
             var oldVal = this.imageFieldElement.val();  // pity: I have to fall back to jQuery here, otherwise the entire form should go into a Vue component
-            console.log(oldVal);
             this.imageFieldElement.val(oldVal + "," + imgId);
 
+        },
+        removeFromForm: function (file, error, xhr) {
+            // Make sure to remove the image from the form when the user deletes it from the dropzone
+            var imgId = this.uploadedImages[file.name];
+            var oldVal = this.imageFieldElement.val();
+            var newIdList = oldVal.split(',').filter(x => x !== "").filter(x => parseInt(x) !== imgId);
+            this.imageFieldElement.val(newIdList.join(","));
+            delete this.uploadedImages[file.name];
+
+        },
+        showError: function (file, message, xhr) {
+            if (message.hasOwnProperty('errors')) {
+                if (message.errors.hasOwnProperty('image')) {
+                    $(file.previewElement).find(".dz-error-message span").text( message.errors.image[0] )
+                }
+            }
         }
     },
     mounted: function () {
         this.imageFieldElement = $("#id_image_ids");
+        var el = this;
+        var preloadImageObj = this.imageFieldElement.val();  // pity: I have to fall back to jQuery here, otherwise the entire form should go into a Vue component
+        if (preloadImageObj != null) {
+            var preloadImageIds = preloadImageObj.split(',').filter(x => x !== "").map(x => parseInt(x));  // remove empty elements from the list and parse integers
+            preloadImageIds.forEach(function (x) {
+                // For every image url, get the image (meta)data from the API
+                axios.get(el.url + x)
+                    .then(response => {
+                        var file = {size: 123, name: response.data.name, type: "image/png"};
+                        var sep = VWConfig.staticRoot[VWConfig.staticRoot.length - 1] === '/' ? '' : '/';
+                        var path;
+                        if (response.data.url[0] === '/') {
+                            path = response.data.url.slice(1, response.data.url.length - 1);
+                        } else {
+                            path = response.data.url;
+                        }
+                        var url = VWConfig.staticRoot + sep + path;
+                        // Use the image data to preload images in the dropzone element
+                        el.$refs.myVueDropzone.manuallyAddFile(file, url);
+                        el.uploadedImages[file.name] = x;
+                    });
+            });
+        }
     },
     template: `<div>
-                <vue-dropzone ref="myVueDropzone" id="dropzone" :options="dropzoneOptions" v-on:vdropzone-success="addToForm"></vue-dropzone>
+                <vue-dropzone ref="myVueDropzone" id="dropzone" :options="dropzoneOptions" v-on:vdropzone-success="addToForm" v-on:vdropzone-removed-file="removeFromForm" v-on:vdropzone-error="showError"></vue-dropzone>
             </div>`
 
 };
