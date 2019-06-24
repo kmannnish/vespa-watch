@@ -179,9 +179,7 @@ var VwObservationsVizMap = {
             // Add legend
             var legend = L.control({ position: "topright" });
             var nest_size = (conf.circle.nestRadius + conf.circle.strokeWidth) * 2;
-            var indiv_size = (conf.circle.individualRadius + conf.circle.strokeWidth) * 2;
-
-            
+            var indiv_size = (conf.circle.individualRadius + conf.circle.strokeWidth) * 2;          
             legend.onAdd = function(map) {
                 var div = L.DomUtil.create("div", "legend");
                 div.innerHTML +=
@@ -216,7 +214,6 @@ var VwObservationsVizMap = {
 
                 return div;
             };
-
             legend.addTo(this.map);
 
             // Add base layer
