@@ -1196,6 +1196,7 @@ var VwImageDropZone = {
         var preloadImageObj = this.imageFieldElement.val();  // pity: I have to fall back to jQuery here, otherwise the entire form should go into a Vue component
         if (preloadImageObj != null) {
             var preloadImageIds = preloadImageObj.split(',').filter(x => x !== "").map(x => parseInt(x));  // remove empty elements from the list and parse integers
+            console.log(preloadImageIds);
             preloadImageIds.forEach(function (x) {
                 // For every image url, get the image (meta)data from the API
                 axios.get(el.url + x)
