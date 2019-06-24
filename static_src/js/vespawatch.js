@@ -165,20 +165,61 @@ var VwObservationsVizMap = {
             }
         },
 
-        buildStaticUrl: function(relativePath) {
-            var sep = VWConfig.staticRoot[VWConfig.staticRoot.length - 1] === '/' ? '' : '/';
-            return VWConfig.staticRoot + sep + relativePath;
-        },
-
         init: function () {
             var conf = VWConfig.map;
 
+            // Init map
             var mapPosition = conf.initialPosition;
             var mapZoom = conf.initialZoom;
             this.map = L.map('vw-map-map').setView(mapPosition, mapZoom);
 
+            // Add spinner
             this.map.spin(true);
 
+            // Add legend
+            var legend = L.control({ position: "topright" });
+            var nest_size = (conf.circle.nestRadius + conf.circle.strokeWidth) * 2;
+            var indiv_size = (conf.circle.individualRadius + conf.circle.strokeWidth) * 2;
+
+            
+            legend.onAdd = function(map) {
+                var div = L.DomUtil.create("div", "legend");
+                div.innerHTML +=
+                    '<svg ' +
+                        'width="' + nest_size + '" ' +
+                        'height="' + nest_size + '">' +
+                    '<circle ' +
+                        'cx="' + nest_size / 2 + '" ' +
+                        'cy="' + nest_size / 2 + '" ' +
+                        'r="' + conf.circle.nestRadius + '" ' +
+                        'stroke="' + conf.circle.nestColor.DEFAULT + '" ' +
+                        'stroke-width="' + conf.circle.strokeWidth + '" ' +
+                        'stroke-opacity="' + conf.circle.strokeOpacity + '" ' +
+                        'fill="' + conf.circle.nestColor.DEFAULT + '" ' +
+                        'fill-opacity="' + conf.circle.fillOpacity + '"/>' +
+                    '</svg> ' + gettext('Nest') + ' ';
+                    
+                div.innerHTML +=
+                    '<svg ' +
+                        'width="' + indiv_size + '" ' +
+                        'height="' + indiv_size + '">' +
+                    '<circle ' +
+                        'cx="' + indiv_size / 2 + '" ' +
+                        'cy="' + indiv_size / 2 + '" ' +
+                        'r="' + conf.circle.individualRadius + '" ' +
+                        'stroke="' + conf.circle.individualColor + '" ' +
+                        'stroke-width="' + conf.circle.strokeWidth + '" ' +
+                        'stroke-opacity="' + conf.circle.strokeOpacity + '" ' +
+                        'fill="' + conf.circle.individualColor + '" ' +
+                        'fill-opacity="' + conf.circle.fillOpacity + '"/>' +
+                    '</svg> ' + gettext('Individual');
+
+                return div;
+            };
+
+            legend.addTo(this.map);
+
+            // Add base layer
             L.tileLayer(conf.tileLayerBaseUrl, conf.tileLayerOptions).addTo(this.map);
 
             if (this.zoneId) {
@@ -211,14 +252,6 @@ var VwObservationsVizMap = {
     },
 
     computed: {
-        legendNestIcon: function () {
-            return this.buildStaticUrl("vespawatch/img/legend_nest.png");
-        },
-
-        legendIndividualIcon: function () {
-            return this.buildStaticUrl("vespawatch/img/legend_individual.png");
-        },
-
         nestLabel: function () {
             return gettext('Nest');
         },
@@ -230,7 +263,6 @@ var VwObservationsVizMap = {
     },
 
     template: `<div>
-        <div class="mb-2 small"><img :src="legendNestIcon" />: {{ nestLabel }} <img :src="legendIndividualIcon" />: {{ individualLabel }}</div>
         <div class="mb-2" id="vw-map-map" style="height: 450px;"></div>
     </div>`
 };
