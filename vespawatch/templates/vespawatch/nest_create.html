@@ -52,16 +52,15 @@
             {% if form.data %}
                 v-bind:init-coordinates="[{{ form.data.longitude|default_if_none:'' }}, {{ form.data.latitude|default_if_none:'' }}]"
                 init-marker="true"
+                address="{{ form.data.address|default_if_none:'' }}"
+                :address-is-invalid={{ form.address_is_invalid|boolean_to_string }}
                 :latitude-is-invalid={{ form.latitude_is_invalid|boolean_to_string }}
                 :longitude-is-invalid={{ form.longitude_is_invalid|boolean_to_string }}
             {% else %}
                 v-bind:init-coordinates="['', '']"
                 init-marker="false"
             {% endif %}
-                address="{{ form.data.address|default_if_none:'' }}"
                 address-required="true">
-                :latitude-is-invalid={{ form.latitude_is_invalid|boolean_to_string }}
-                :longitude-is-invalid={{ form.longitude_is_invalid|boolean_to_string }}
         </vw-location-selector>
 
         <h5>{% trans 'Date' %}</h5>

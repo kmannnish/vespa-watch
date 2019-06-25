@@ -6,7 +6,8 @@ from .models import ManagementAction, Nest, Individual, NestPicture, IndividualP
 
 OBS_FORM_VUE_FIELDS = ({'field_name': 'observation_time', 'attribute_if_error': 'date_is_invalid'},
                        {'field_name': 'latitude', 'attribute_if_error': 'latitude_is_invalid'},
-                       {'field_name': 'longitude', 'attribute_if_error': 'longitude_is_invalid'}
+                       {'field_name': 'longitude', 'attribute_if_error': 'longitude_is_invalid'},
+                       {'field_name': 'address', 'attribute_if_error': 'address_is_invalid'}
                        )
 
 
