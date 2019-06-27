@@ -193,6 +193,11 @@ body > footer {
     }
 }
 
+.leaflet-control.legend {
+    background-color: $white;
+    padding: 5px;
+}
+
 // Customize vue-datetime
 
 .vdatetime-popup__header {
