@@ -1152,7 +1152,6 @@ var VwImageDropZone = {
                 url: this.url,
                 paramName: 'image',
                 thumbnailWidth: 150,
-                dictResponseError: "this is a custom error",
                 maxFilesize: 5  // MB
             }
         }
