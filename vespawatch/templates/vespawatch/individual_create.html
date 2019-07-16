@@ -5,6 +5,10 @@
 {% load custom_tags %}
 
 {% block content %}
+    <script>
+        // set a global variable, accessible for JS
+        var formErrorMessagesRaw = "{{ form.errors_as_json }}";
+    </script>
 <main class="container" id="vw-main-app">
     <h1>{% trans 'Report observation' %}</h1>
 

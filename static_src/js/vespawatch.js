@@ -39,6 +39,9 @@ if (!VWConfig.debug) {
     }
 }
 
+// Declare global variable that can be filled in by a Django view
+var formErrorMessagesRaw;
+
 // 2. Vue.JS components
 
 // The map of the visualization.
@@ -1034,9 +1037,6 @@ var VwLocationSelectorMap = {
 
 var VwLocationSelectorCoordinates = {
     computed: {
-        errorMsg: function () {
-            return gettext('This field is required.')
-        },
         lat: {
             get: function () {
                 return this.latitude
@@ -1053,14 +1053,23 @@ var VwLocationSelectorCoordinates = {
                 this.$emit('lon-updated', v);
             }
         },
+        latitudeErrorMessages: function () {
+            return (this.$root.formErrorMessages && this.$root.formErrorMessages.hasOwnProperty('latitude')) ? this.$root.formErrorMessages.latitude.map(x => gettext(x.message)) : []
+        },
         latitudeLabel: function () {
             return gettext('Latitude');
         },
         coordinatesHelpLabel: function () {
             return gettext('Type coordinates or move maker');
         },
+        longitudeErrorMessages: function () {
+            return (this.$root.formErrorMessages && this.$root.formErrorMessages.hasOwnProperty('longitude')) ? this.$root.formErrorMessages.longitude.map(x => gettext(x.message)) : []
+        },
         longitudeLabel: function () {
             return gettext('Longitude');
+        },
+        addressErrorMessages: function () {
+            return (this.$root.formErrorMessages && this.$root.formErrorMessages.hasOwnProperty('address')) ? this.$root.formErrorMessages.address.map(x => gettext(x.message)) : [];
         },
         addressLabel: function () {
             return gettext('Address');
@@ -1115,20 +1124,26 @@ var VwLocationSelectorCoordinates = {
                 <div class="form-group col-6">
                     <label for="id_latitude">{{latitudeLabel}}<span>*</span></label>
                     <input type="text" :class="latInputClasses()" id="id_latitude" name="latitude" v-model="lat">
-                    <p id="error_1_id_latitude" class="invalid-feedback"><strong>{{ errorMsg }}</strong></p>
+                    <p v-for="error in latitudeErrorMessages" class="invalid-feedback">
+                        <strong>{{error}}</strong>
+                    </p>
                     <small class="form-text text-muted">{{coordinatesHelpLabel}}</small>
                 </div>
                 <div class="form-group col-6">
                     <label for="id_longitude">{{longitudeLabel}}<span>*</span></label>
                     <input type="text" :class="lonInputClasses()" id="id_longitude" name="longitude" v-model="long">
-                    <p id="error_1_id_longitude" class="invalid-feedback"><strong>{{ errorMsg }}</strong></p>
+                    <p v-for="error in longitudeErrorMessages" class="invalid-feedback">
+                        <strong>{{error}}</strong>
+                    </p>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-12">
                     <label for="id_address">{{addressLabel}}<span v-if="addressRequired">*</span></label>
                     <input type="text" :class="addressInputClasses()" id="id_address" name="address" v-model="_address">
-                    <p id="error_1_id_address" class="invalid-feedback"><strong>{{ errorMsg }}</strong></p>
+                    <p v-for="error in addressErrorMessages" class="invalid-feedback">
+                        <strong>{{error}}</strong>
+                    </p>
                     <small class="form-text text-muted">{{addressHelpLabel}}</small>
                 </div>
             </div>
@@ -1162,8 +1177,8 @@ var VwDatetimeSelector = {
         }
     },
     computed: {
-        errorMsg: function () {
-            return gettext('This field is required.')
+        errorMessages: function () {
+            return (this.$root.formErrorMessages && this.$root.formErrorMessages.hasOwnProperty('observation_time')) ? this.$root.formErrorMessages.observation_time.map(x => gettext(x.message)) : [];
         },
         observationTimeLabel: function () {
             return gettext('Observation date');
@@ -1179,7 +1194,9 @@ var VwDatetimeSelector = {
                     <datetime v-model="observationTime" type="datetime" 
                               :input-class="inputClasses()" :max-datetime="nowIsoFormat()">
                         <label for="startDate" slot="before">[[ observationTimeLabel ]]<span v-if="isRequired">*</span></label>
-                    <p slot="after" id="error_1_id_observation_time" class="invalid-feedback"><strong>[[ errorMsg ]]</strong></p>
+                    <p slot="after" v-for="error in errorMessages" class="invalid-feedback">
+                        <strong>[[ error ]]</strong>
+                    </p>
           
                     </datetime>
                     <input type="hidden" :name="hiddenFieldName" :value="observationTime"/>
@@ -1284,14 +1301,24 @@ var app = new Vue({
         'vw-management-table': VwManagementTable,
         'vw-recent-obs-table': VwRecentObsTable
     },
+    computed: {
+        formErrorMessages: function () {
+            return formErrorMessagesRaw ? JSON.parse(this.htmlDecode(formErrorMessagesRaw)) : null;
+        }
+    },
     data: {
         individuals: null,
         nests: null,
-        currentlyLoading: false
+        currentlyLoading: false,
     },
     delimiters: ['[[', ']]'],
     el: '#vw-main-app',
     methods: {
+        htmlDecode: function (input) {
+            // from https://stackoverflow.com/a/34064434/1805725
+            var doc = new DOMParser().parseFromString(input, "text/html");
+            return doc.documentElement.textContent;
+        },
         loadNests: function (zone) {
             this.$refs.viz.getData();  // call getData on the ObservationViz component
             this.currentlyLoading = true;

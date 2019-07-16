@@ -19,6 +19,7 @@ class ReportObservationForm(ModelForm):
 
     def clean(self):
         cleaned_data = self.cleaned_data
+        self.errors_as_json = self.errors.as_json()
 
         for vue_field in OBS_FORM_VUE_FIELDS:
             if vue_field['field_name'] in self.errors:
