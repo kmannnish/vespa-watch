@@ -1275,6 +1275,14 @@ var VwImageDropZone = {
                 thumbnailWidth: 150,
                 maxFilesize: 5  // MB
             }
+        },
+        errorMessage: function () {
+            return gettext("This field is required.");
+        },
+        errorClasses: function () {
+            if (this.validationError) {
+                return "form-control is-invalid";
+            }
         }
     },
     data: function () {
@@ -1284,7 +1292,7 @@ var VwImageDropZone = {
             urls: {'nest': '/api/nest_pictures/', 'individual': '/api/individual_pictures/'},
         }
     },
-    props: ['csrfToken', 'type'],
+    props: ['csrfToken', 'type', 'validationError'],
     methods: {
         addToForm: function (file, response) {
             var imgId = response.imageId;
@@ -1337,9 +1345,13 @@ var VwImageDropZone = {
             });
         }
     },
-    template: `<div>
-                <vue-dropzone ref="myVueDropzone" id="dropzone" :options="dropzoneOptions" v-on:vdropzone-success="addToForm" v-on:vdropzone-removed-file="removeFromForm" v-on:vdropzone-error="showError"></vue-dropzone>
-            </div>`
+    template: `
+        <div>
+            <vue-dropzone :class="errorClasses" ref="myVueDropzone" id="dropzone" :options="dropzoneOptions" v-on:vdropzone-success="addToForm" v-on:vdropzone-removed-file="removeFromForm" v-on:vdropzone-error="showError"></vue-dropzone>
+            <p v-if="validationError" class="invalid-feedback">
+                <strong>{{ errorMessage }}</strong>
+            </p>
+        </div>`
 
 };
 

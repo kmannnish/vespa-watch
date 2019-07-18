@@ -54,6 +54,7 @@ class IndividualForm(ReportObservationForm):
         if 'image_ids' not in cleaned_data or not cleaned_data['image_ids']:
             msg = 'You must add at least one picture'
             self.add_error(None, msg)
+            setattr(self, "image_is_invalid", True)
 
         return cleaned_data
 
@@ -103,6 +104,7 @@ class NestForm(ReportObservationForm):
         if 'image_ids' not in cleaned_data or not cleaned_data['image_ids']:
             msg = 'You must add at least one picture'
             self.add_error(None, msg)
+            setattr(self, "image_is_invalid", True)
         return cleaned_data
 
     def save(self, *args, **kwargs):
