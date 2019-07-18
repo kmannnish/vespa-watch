@@ -7,7 +7,6 @@ from .models import ManagementAction, Nest, Individual, NestPicture, IndividualP
 OBS_FORM_VUE_FIELDS = ({'field_name': 'observation_time', 'attribute_if_error': 'date_is_invalid'},
                        {'field_name': 'latitude', 'attribute_if_error': 'latitude_is_invalid'},
                        {'field_name': 'longitude', 'attribute_if_error': 'longitude_is_invalid'},
-                       {'field_name': 'address', 'attribute_if_error': 'address_is_invalid'}
                        )
 
 
@@ -32,11 +31,12 @@ class IndividualForm(ReportObservationForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
     terms_of_service = BooleanField(label=_('Accept the privacy policy'), required=False)
+    location = CharField(max_length=255, required=False)
     image_ids = CharField(max_length=255)
 
     class Meta:
         model = Individual
-        fields = ['taxon', 'individual_count', 'behaviour', 'address', 'latitude', 'longitude',
+        fields = ['taxon', 'individual_count', 'behaviour', 'latitude', 'longitude',
                   'observation_time', 'comments',
                   'observer_name', 'observer_email', 'observer_phone'
         ]
@@ -72,7 +72,7 @@ class IndividualFormUnauthenticated(IndividualForm):
 
     class Meta:
         model = Individual
-        fields = ['taxon', 'individual_count', 'behaviour', 'address', 'latitude', 'longitude',
+        fields = ['taxon', 'individual_count', 'behaviour', 'latitude', 'longitude',
                   'observation_time', 'comments',
                   'observer_email', 'observer_name', 'observer_phone',
         ]
@@ -85,12 +85,12 @@ class NestForm(ReportObservationForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
     height = ChoiceField(label=_('Nest height'), choices=[('', '--------')] + list(Nest.HEIGHT_CHOICES))
-    address = CharField(max_length=255)
+    location = CharField(max_length=255, required=False)
     image_ids = CharField(max_length=255)
 
     class Meta:
         model = Nest
-        fields = ['taxon', 'address', 'latitude', 'longitude',
+        fields = ['taxon', 'latitude', 'longitude',
                   'observation_time', 'size', 'height', 'comments',
                   'observer_name', 'observer_email', 'observer_phone'
         ]
@@ -124,7 +124,7 @@ class NestFormUnauthenticated(NestForm):
 
     class Meta:
         model = Nest
-        fields = ['taxon', 'address', 'latitude', 'longitude',
+        fields = ['taxon', 'latitude', 'longitude',
                   'observation_time', 'size', 'height', 'comments',
                   'observer_email', 'observer_name', 'observer_phone'
         ]
