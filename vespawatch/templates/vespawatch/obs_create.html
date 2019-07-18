@@ -8,7 +8,8 @@
   <p>
     {% url 'vespawatch:identification' as identification_page %}
     {% blocktrans %}
-      For more information on these species, see the <a href="{{ identification_page }}">identification page</a>.
+      Your observation will be verified by the <a href="https://www.inaturalist.org/">iNaturalist</a> community. 
+      Want to help and/or submit observations under your own name? <a href="https://www.inaturalist.org/signup">Create an iNaturalist account</a>.
     {% endblocktrans %}
   </p>
 
@@ -23,5 +24,12 @@
       </div>
     {% endfor %}
   </div>
+
+  <p>
+    {% url 'vespawatch:identification' as identification_page %}
+    {% blocktrans %}
+      For more information on these species, see the <a href="{{ identification_page }}">identification page</a>.
+    {% endblocktrans %}
+  </p>
 </main>
 {% endblock %}
