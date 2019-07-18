@@ -1059,7 +1059,7 @@ var VwLocationSelectorInput = {
             return gettext('Search');
         },
         addressHelpLabel: function () {
-            return gettext('Type the address and move the maker on the map to where you observed the nest/individual');
+            return gettext('Search for the address and move the marker on the map to where you saw your observation.');
         },
         addressIsInvalid: function () {
             return this.latitudeIsInvalid || this.longitudeIsInvalid;
@@ -1070,7 +1070,7 @@ var VwLocationSelectorInput = {
             }
         },
         searchPositionLabel: function () {
-            return gettext('type a location...')
+            return gettext('Type a location name and click search...')
         },
         _location: {
             get: function () {
@@ -1148,7 +1148,7 @@ var VwLocationSelectorCoordinates = {
     },
     props: ['longitude', 'latitude'],
     template: `
-        <small>{{longitudeLabel}}: {{roundCoordinate(longitude)}} \ {{latitudeLabel}}: {{roundCoordinate(latitude)}}</small>
+        <small class="form-text text-muted">{{longitudeLabel}}: {{roundCoordinate(longitude)}} / {{latitudeLabel}}: {{roundCoordinate(latitude)}}</small>
 `
 };
 
