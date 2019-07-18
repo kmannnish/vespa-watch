@@ -15,7 +15,6 @@
   {% if form.errors %}
     <div class="alert alert-danger">
       {% trans 'Please correct the errors below.' %}
-      {{ form.errors }}
     </div>
   {% endif %}
 
@@ -27,6 +26,7 @@
     {{ form.card_id.as_hidden }}
     {{ form.taxon.as_hidden }}
     {{ form.redirect_to.as_hidden }}
+    {{ form.image_ids.as_hidden }}
 
     <div class="row">
       <div class="col-lg-6">
@@ -34,20 +34,16 @@
       </div>
     </div>
 
-    <h5>{% trans 'Photos' %}</h5>
+    <h5>{% trans 'Photos' %}*</h5>
 
-    {{ image_formset.management_form }}
     <small class="form-text text-muted">{% trans 'Upload at least one photo of your observation' %}</small>
-    <div class="row">
-      {% for image_form in image_formset %}
-        <div class="col-md-6">
-          {{ image_form.image|as_crispy_field }}
-          {{ image_form.DELETE|as_crispy_field }}
-        </div>
-      {% endfor %}
-    </div>
-
-    <h5>{% trans 'Location' %}</h5>
+    <vw-image-dropzone type="nest" csrf-token="{{ csrf_token }}"
+      {% if form.data %}
+        :validation-error={{ form.image_is_invalid|boolean_to_string }}
+      {% endif %}>
+    </vw-image-dropzone>
+    
+    <h5>{% trans 'Location' %}*</h5>
     
     <vw-location-selector
       {% if form.data %}

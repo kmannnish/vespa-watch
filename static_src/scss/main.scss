@@ -213,6 +213,10 @@ body > footer {
     color: $link-color;
 }
 
+.vue-dropzone.form-control {
+    height: initial; // Revert .form-control calculated height, so dropzone can scale
+}
+
 // Customize modal
 
 .modal-mask {

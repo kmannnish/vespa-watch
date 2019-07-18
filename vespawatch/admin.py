@@ -35,6 +35,14 @@ class TaxonAdmin(admin.ModelAdmin):
     inlines = (IdentificationCardInline, )
 
 
+@admin.register(NestPicture)
+class NestPictureAdmin(admin.ModelAdmin):
+    list_display = ('observation', 'image', 'datetime')
+
+@admin.register(IndividualPicture)
+class IndividualPictureAdmin(admin.ModelAdmin):
+    list_display = ('observation', 'image', 'datetime')
+
 class NestPictureInline(admin.TabularInline):
     # We cannot add/edit/delete pictures of non-editable observations
     def has_add_permission(self, request, obj=None):

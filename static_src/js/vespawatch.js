@@ -1142,11 +1142,11 @@ var VwLocationSelectorCoordinates = {
 
     },
     methods: {
-        commontInputClasses: function () {
+        commonInputClasses: function () {
             return ['numberinput', 'form-control'];
         },
         addressInputClasses: function() {
-            var cssClasses =  this.commontInputClasses();
+            var cssClasses =  this.commonInputClasses();
             console.log('address is invalid: ');
             console.log(this.addressIsInvalid);
             if (this.addressIsInvalid === true) {
@@ -1155,7 +1155,7 @@ var VwLocationSelectorCoordinates = {
             return cssClasses.join(' ');
         },
         latInputClasses: function() {
-            var cssClasses =  this.commontInputClasses();
+            var cssClasses =  this.commonInputClasses();
             if (this.latitudeIsInvalid === true) {
                 cssClasses.push('is-invalid');
             }
@@ -1163,7 +1163,7 @@ var VwLocationSelectorCoordinates = {
 
         },
         lonInputClasses: function() {
-            var cssClasses =  this.commontInputClasses();
+            var cssClasses =  this.commonInputClasses();
             if (this.longitudeIsInvalid) {
                 cssClasses.push('is-invalid');
             }
@@ -1206,7 +1206,6 @@ var VwLocationSelectorCoordinates = {
 };
 
 var VwDatetimeSelector = {
-    delimiters: ['[[', ']]'],
     props: {
         'initDateTime': String,
         'isRequired': Boolean,
@@ -1218,25 +1217,23 @@ var VwDatetimeSelector = {
             observationTime: undefined, // As ISO3166
         }
     },
-    methods: {
+    computed: {
+        observationTimeLabel: function () {
+            return gettext('Observation date');
+        },
         nowIsoFormat: function () {
             return new Date().toISOString();
         },
-        inputClasses: function () {
+        errorMessages: function () {
+            return (this.$root.formErrorMessages && this.$root.formErrorMessages.hasOwnProperty('observation_time')) ? this.$root.formErrorMessages.observation_time.map(x => gettext(x.message)) : [];
+        },
+        errorClasses: function () {
             var cssClasses =  ['datetimeinput', 'form-control'];
             if (this.validationError) {
                 cssClasses.push('is-invalid');
             }
             return cssClasses.join(' ');
         }
-    },
-    computed: {
-        errorMessages: function () {
-            return (this.$root.formErrorMessages && this.$root.formErrorMessages.hasOwnProperty('observation_time')) ? this.$root.formErrorMessages.observation_time.map(x => gettext(x.message)) : [];
-        },
-        observationTimeLabel: function () {
-            return gettext('Observation date');
-        },
     },
 
     mounted: function () {
@@ -1245,16 +1242,114 @@ var VwDatetimeSelector = {
         }
     },
     template: `<div class="form-group">
-                    <datetime v-model="observationTime" type="datetime" 
-                              :input-class="inputClasses()" :max-datetime="nowIsoFormat()">
-                        <label for="startDate" slot="before">[[ observationTimeLabel ]]<span v-if="isRequired">*</span></label>
-                    <p slot="after" v-for="error in errorMessages" class="invalid-feedback">
-                        <strong>[[ error ]]</strong>
-                    </p>
-          
+                    <datetime v-model="observationTime" type="datetime" :max-datetime="nowIsoFormat" :input-class="errorClasses">
+                        <label for="startDate" slot="before">{{ observationTimeLabel }}<span v-if="isRequired">*</span></label>
+                        <p slot="after" v-for="error in errorMessages" class="invalid-feedback">
+                            <strong>{{ error }}</strong>
+                        </p>
                     </datetime>
                     <input type="hidden" :name="hiddenFieldName" :value="observationTime"/>
                </div>`
+};
+
+var VwImageDropZone = {
+    components: {
+        vueDropzone: vue2Dropzone
+      },
+    computed: {
+        url: function () {
+            return this.urls[this.type];
+        },
+        dropzoneOptions: function () {
+            // See https://www.dropzonejs.com/#configuration-options
+            return {
+                addRemoveLinks: true,
+                params: {'csrfmiddlewaretoken': this.csrfToken},
+                url: this.url,
+                paramName: 'image',
+                thumbnailWidth: 150,
+                maxFiles: 3,
+                maxFilesize: 5  // MB
+
+            }
+        },
+        errorMessage: function () {
+            return gettext("This field is required.");
+        },
+        errorClasses: function () {
+            if (this.validationError) {
+                return "form-control is-invalid";
+            }
+        }
+    },
+    data: function () {
+        return {
+            imageFieldElement: null,
+            uploadedImages: {},
+            urls: {'nest': '/api/nest_pictures/', 'individual': '/api/individual_pictures/'},
+        }
+    },
+    props: ['csrfToken', 'type', 'validationError'],
+    methods: {
+        addToForm: function (file, response) {
+            var imgId = response.imageId;
+            this.uploadedImages[response.name] = imgId;
+            var oldVal = this.imageFieldElement.val();  // pity: I have to fall back to jQuery here, otherwise the entire form should go into a Vue component
+            this.imageFieldElement.val(oldVal + "," + imgId);
+
+        },
+        removeFromForm: function (file, error, xhr) {
+            // Make sure to remove the image from the form when the user deletes it from the dropzone
+            var imgId = this.uploadedImages[file.name];
+            var oldVal = this.imageFieldElement.val();
+            var newIdList = oldVal.split(',').filter(x => x !== "").filter(x => parseInt(x) !== imgId);
+            this.imageFieldElement.val(newIdList.join(","));
+            delete this.uploadedImages[file.name];
+
+        },
+        showError: function (file, message, xhr) {
+            if (message.hasOwnProperty('errors')) {
+                if (message.errors.hasOwnProperty('image')) {
+                    $(file.previewElement).find(".dz-error-message span").text( message.errors.image[0] )
+                }
+            }
+        }
+    },
+    mounted: function () {
+        this.imageFieldElement = $("#id_image_ids");
+        var el = this;
+        var preloadImageObj = this.imageFieldElement.val();  // pity: I have to fall back to jQuery here, otherwise the entire form should go into a Vue component
+        if (preloadImageObj != null) {
+            var preloadImageIds = preloadImageObj.split(',').filter(x => x !== "").map(x => parseInt(x));  // remove empty elements from the list and parse integers
+            console.log(preloadImageIds);
+            preloadImageIds.forEach(function (x) {
+                // For every image url, get the image (meta)data from the API
+                axios.get(el.url + x)
+                    .then(response => {
+                        var file = {size: 123, name: response.data.name, type: "image/png"};
+                        var sep = VWConfig.staticRoot[VWConfig.staticRoot.length - 1] === '/' ? '' : '/';
+                        var path;
+                        if (response.data.url[0] === '/') {
+                            path = response.data.url.slice(1, response.data.url.length - 1);
+                        } else {
+                            path = response.data.url;
+                        }
+                        var url = VWConfig.staticRoot + sep + path;
+                        // Use the image data to preload images in the dropzone element
+                        el.$refs.myVueDropzone.manuallyAddFile(file, url);
+                        el.uploadedImages[file.name] = x;
+                    });
+            });
+        }
+    },
+    template: `
+        <div>
+            <vue-dropzone :class="errorClasses" ref="myVueDropzone" id="dropzone" :options="dropzoneOptions" v-on:vdropzone-success="addToForm" v-on:vdropzone-removed-file="removeFromForm" v-on:vdropzone-error="showError"></vue-dropzone>
+            <p v-if="validationError" class="invalid-feedback">
+                <strong>{{ errorMessage }}</strong>
+            </p>
+        </div>`
+
 };
 
 var VwLocationSelector = {
@@ -1353,17 +1448,20 @@ var app = new Vue({
         'vw-location-selector': VwLocationSelector,
         'vw-datetime-selector': VwDatetimeSelector,
         'vw-management-table': VwManagementTable,
-        'vw-recent-obs-table': VwRecentObsTable
+        'vw-recent-obs-table': VwRecentObsTable,
+        'vw-image-dropzone': VwImageDropZone
     },
     computed: {
         formErrorMessages: function () {
             return formErrorMessagesRaw ? JSON.parse(this.htmlDecode(formErrorMessagesRaw)) : null;
         }
     },
-    data: {
-        individuals: null,
-        nests: null,
-        currentlyLoading: false,
+    data: function () {
+        return {
+            individuals: null,
+            nests: null,
+            currentlyLoading: false
+        };
     },
     delimiters: ['[[', ']]'],
     el: '#vw-main-app',
