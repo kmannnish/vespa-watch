@@ -54,7 +54,7 @@ python manage.py migrate
 1. Fire brigade users are responsible for a specific geographic area (= zone). Import the polygons for those zones:
 
     ```bash
-    python manage.py import_firefighters_zones static_src/data/brandweerzones_2019.geojson
+    python manage.py import_firefighters_zones assets/data/brandweerzones_2019.geojson
     ```
 
     <details>
@@ -63,7 +63,7 @@ python manage.py migrate
     The initial fire brigade zone data was received as an ESRI shapefile and converted to GeoJSON with:
 
     ```bash
-    ogr2ogr -f GeoJSON -t_srs EPSG:4326 static_src/data/brandweerzones_2019.geojson <path_to_received_shapefile>/Brandweerzones_2019.shp
+    ogr2ogr -f GeoJSON -t_srs EPSG:4326 assets/data/brandweerzones_2019.geojson <path_to_received_shapefile>/Brandweerzones_2019.shp
     ```
     </details>
 
@@ -108,7 +108,7 @@ HTML is defined in [templates](https://docs.djangoproject.com/en/2.1/topics/temp
 
 ### Node package manager (npm) for static files
 
-**Important**: static files in the Django accessible directory [`vespawatch/static/vespawatch`](vespawatch/static/vespawatch) should not be edited manually: those are all generated! They are managed in [`static_src`](static_src) and copied or compiled with Node Package Manager using `npm run build:all`. To start:
+**Important**: static files in the Django accessible directory [`vespawatch/static/vespawatch`](vespawatch/static/vespawatch) should not be edited manually: those are all generated! They are managed in [`assets`](assets) and copied or compiled with Node Package Manager using `npm run build:all`. To start:
 
 1. Verify [npm](https://www.npmjs.com/get-npm) is installed: `node -v`
 2. Go to the root of this repository
@@ -118,7 +118,7 @@ HTML is defined in [templates](https://docs.djangoproject.com/en/2.1/topics/temp
 
 CSS is managed as SCSS, starting from Bootstrap's SCSS, with custom variable overwrites in `_variables.scss` and custom CSS in `main.scss`. These get bundled together with Bootstrap in a single `vespawatch/static/vespawatch/css/main.css`.
 
-1. Go to [`static_src/scss`](static_src/scss)
+1. Go to [`assets/scss`](assets/scss)
 2. Update the relevant `.scss` files
 3. Generate the CSS automatically on every change with `npm run watch:css` (or once with `npm run create:css`).
 
@@ -138,13 +138,13 @@ External Javascript libraries (and their CSS) are defined in [`package.json`](pa
     
 ### Update Javascript
 
-1. Go to [`static_src/js`](static_src/js)
+1. Go to [`assets/js`](assets/js)
 2. Update the relevant `.js` files
 3. Copy the files automatically on every changes with `npm run watch:js` (or once with `npm run copy:custom-js`)
 
 ### Update images
 
-1. Go to [`static_src/img`](static_src/img)
+1. Go to [`assets/img`](assets/img)
 2. Add or update the relevant image files
 3. Copy the files with `npm run copy:img`
 
