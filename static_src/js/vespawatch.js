@@ -1268,7 +1268,9 @@ var VwImageDropZone = {
                 url: this.url,
                 paramName: 'image',
                 thumbnailWidth: 150,
+                maxFiles: 3,
                 maxFilesize: 5  // MB
+
             }
         },
         errorMessage: function () {
