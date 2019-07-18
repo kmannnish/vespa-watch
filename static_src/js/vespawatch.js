@@ -39,6 +39,9 @@ if (!VWConfig.debug) {
     }
 }
 
+// Declare global variable that can be filled in by a Django view
+var formErrorMessagesRaw;
+
 // 2. Vue.JS components
 
 // The map of the visualization.
@@ -1104,14 +1107,23 @@ var VwLocationSelectorCoordinates = {
                 this.$emit('lon-updated', v);
             }
         },
+        latitudeErrorMessages: function () {
+            return (this.$root.formErrorMessages && this.$root.formErrorMessages.hasOwnProperty('latitude')) ? this.$root.formErrorMessages.latitude.map(x => gettext(x.message)) : []
+        },
         latitudeLabel: function () {
             return gettext('Latitude');
         },
         coordinatesHelpLabel: function () {
             return gettext('Type coordinates or move maker');
         },
+        longitudeErrorMessages: function () {
+            return (this.$root.formErrorMessages && this.$root.formErrorMessages.hasOwnProperty('longitude')) ? this.$root.formErrorMessages.longitude.map(x => gettext(x.message)) : []
+        },
         longitudeLabel: function () {
             return gettext('Longitude');
+        },
+        addressErrorMessages: function () {
+            return (this.$root.formErrorMessages && this.$root.formErrorMessages.hasOwnProperty('address')) ? this.$root.formErrorMessages.address.map(x => gettext(x.message)) : [];
         },
         addressLabel: function () {
             return gettext('Address');
@@ -1129,24 +1141,63 @@ var VwLocationSelectorCoordinates = {
         }
 
     },
-    props: ['longitude', 'latitude', 'address', 'addressRequired'],
+    methods: {
+        commontInputClasses: function () {
+            return ['numberinput', 'form-control'];
+        },
+        addressInputClasses: function() {
+            var cssClasses =  this.commontInputClasses();
+            console.log('address is invalid: ');
+            console.log(this.addressIsInvalid);
+            if (this.addressIsInvalid === true) {
+                cssClasses.push('is-invalid');
+            }
+            return cssClasses.join(' ');
+        },
+        latInputClasses: function() {
+            var cssClasses =  this.commontInputClasses();
+            if (this.latitudeIsInvalid === true) {
+                cssClasses.push('is-invalid');
+            }
+            return cssClasses.join(' ');
+
+        },
+        lonInputClasses: function() {
+            var cssClasses =  this.commontInputClasses();
+            if (this.longitudeIsInvalid) {
+                cssClasses.push('is-invalid');
+            }
+            return cssClasses.join(' ');
+
+        }
+    },
+    props: ['longitude', 'latitude', 'address', 'addressRequired', 'addressIsInvalid', 'latitudeIsInvalid', 'longitudeIsInvalid'],
     template: `
         <div>
             <div class="form-row">
                 <div class="form-group col-6">
                     <label for="id_latitude">{{latitudeLabel}}<span>*</span></label>
-                    <input type="text" class="form-control numberinput" id="id_latitude" name="latitude" v-model="lat">
+                    <input type="text" :class="latInputClasses()" id="id_latitude" name="latitude" v-model="lat">
+                    <p v-for="error in latitudeErrorMessages" class="invalid-feedback">
+                        <strong>{{error}}</strong>
+                    </p>
                     <small class="form-text text-muted">{{coordinatesHelpLabel}}</small>
                 </div>
                 <div class="form-group col-6">
                     <label for="id_longitude">{{longitudeLabel}}<span>*</span></label>
-                    <input type="text" class="form-control numberinput" id="id_longitude" name="longitude" v-model="long">
+                    <input type="text" :class="lonInputClasses()" id="id_longitude" name="longitude" v-model="long">
+                    <p v-for="error in longitudeErrorMessages" class="invalid-feedback">
+                        <strong>{{error}}</strong>
+                    </p>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-12">
                     <label for="id_address">{{addressLabel}}<span v-if="addressRequired">*</span></label>
-                    <input type="text" class="form-control numberinput" id="id_address" name="address" v-model="_address">
+                    <input type="text" :class="addressInputClasses()" id="id_address" name="address" v-model="_address">
+                    <p v-for="error in addressErrorMessages" class="invalid-feedback">
+                        <strong>{{error}}</strong>
+                    </p>
                     <small class="form-text text-muted">{{addressHelpLabel}}</small>
                 </div>
             </div>
@@ -1160,6 +1211,7 @@ var VwDatetimeSelector = {
         'initDateTime': String,
         'isRequired': Boolean,
         'hiddenFieldName': String,
+        'validationError': Boolean
     },
     data: function () {
         return {
@@ -1169,9 +1221,19 @@ var VwDatetimeSelector = {
     methods: {
         nowIsoFormat: function () {
             return new Date().toISOString();
+        },
+        inputClasses: function () {
+            var cssClasses =  ['datetimeinput', 'form-control'];
+            if (this.validationError) {
+                cssClasses.push('is-invalid');
+            }
+            return cssClasses.join(' ');
         }
     },
     computed: {
+        errorMessages: function () {
+            return (this.$root.formErrorMessages && this.$root.formErrorMessages.hasOwnProperty('observation_time')) ? this.$root.formErrorMessages.observation_time.map(x => gettext(x.message)) : [];
+        },
         observationTimeLabel: function () {
             return gettext('Observation date');
         },
@@ -1184,8 +1246,12 @@ var VwDatetimeSelector = {
     },
     template: `<div class="form-group">
                     <datetime v-model="observationTime" type="datetime" 
-                              input-class="datetimeinput form-control" :max-datetime="nowIsoFormat()">
-                        <label for="startDate" slot="before">[[ observationTimeLabel ]]<span v-if="isRequired">*</span></label>          
+                              :input-class="inputClasses()" :max-datetime="nowIsoFormat()">
+                        <label for="startDate" slot="before">[[ observationTimeLabel ]]<span v-if="isRequired">*</span></label>
+                    <p slot="after" v-for="error in errorMessages" class="invalid-feedback">
+                        <strong>[[ error ]]</strong>
+                    </p>
+          
                     </datetime>
                     <input type="hidden" :name="hiddenFieldName" :value="observationTime"/>
                </div>`
@@ -1266,13 +1332,13 @@ var VwLocationSelector = {
         },
     },
 
-    props: ['initCoordinates', 'initializeCoordinates', 'initMarker', 'address', 'addressRequired'],
+    props: ['initCoordinates', 'initializeCoordinates', 'initMarker', 'address', 'addressRequired', 'addressIsInvalid', 'latitudeIsInvalid', 'longitudeIsInvalid'],
 
     template: `
         <div class="row">
             <div class="col-lg-6">
                 <vw-location-selector-location-input v-bind:init-address="address" v-on:autodetect-btn="autodetectPosition" v-on:search="getCoordinates"></vw-location-selector-location-input>
-                <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:address="modelAddress" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude" v-bind:address-required="addressRequired"></vw-location-selector-coordinates>
+                <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:address="modelAddress" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude" v-bind:address-required="addressRequired" v-bind:latitude-is-invalid="latitudeIsInvalid" v-bind:longitude-is-invalid="longitudeIsInvalid" v-bind:address-is-invalid="addressIsInvalid"></vw-location-selector-coordinates>
             </div>
             <div class="col-lg-6">
                 <vw-location-selector-map v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
@@ -1289,14 +1355,24 @@ var app = new Vue({
         'vw-management-table': VwManagementTable,
         'vw-recent-obs-table': VwRecentObsTable
     },
+    computed: {
+        formErrorMessages: function () {
+            return formErrorMessagesRaw ? JSON.parse(this.htmlDecode(formErrorMessagesRaw)) : null;
+        }
+    },
     data: {
         individuals: null,
         nests: null,
-        currentlyLoading: false
+        currentlyLoading: false,
     },
     delimiters: ['[[', ']]'],
     el: '#vw-main-app',
     methods: {
+        htmlDecode: function (input) {
+            // from https://stackoverflow.com/a/34064434/1805725
+            var doc = new DOMParser().parseFromString(input, "text/html");
+            return doc.documentElement.textContent;
+        },
         loadNests: function (zone) {
             this.$refs.viz.getData();  // call getData on the ObservationViz component
             this.currentlyLoading = true;

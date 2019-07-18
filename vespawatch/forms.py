@@ -4,7 +4,31 @@ from vespawatch.fields import ISODateTimeField
 from .models import ManagementAction, Nest, Individual, NestPicture, IndividualPicture
 
 
-class IndividualForm(ModelForm):
+OBS_FORM_VUE_FIELDS = ({'field_name': 'observation_time', 'attribute_if_error': 'date_is_invalid'},
+                       {'field_name': 'latitude', 'attribute_if_error': 'latitude_is_invalid'},
+                       {'field_name': 'longitude', 'attribute_if_error': 'longitude_is_invalid'},
+                       {'field_name': 'address', 'attribute_if_error': 'address_is_invalid'}
+                       )
+
+
+class ReportObservationForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for vue_field in OBS_FORM_VUE_FIELDS:
+            setattr(self, vue_field['attribute_if_error'], False)
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        self.errors_as_json = self.errors.as_json()
+
+        for vue_field in OBS_FORM_VUE_FIELDS:
+            if vue_field['field_name'] in self.errors:
+                setattr(self, vue_field['attribute_if_error'], True)
+
+        return cleaned_data
+
+
+class IndividualForm(ReportObservationForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
     terms_of_service = BooleanField(label=_('Accept the privacy policy'), required=False)
@@ -20,7 +44,7 @@ class IndividualForm(ModelForm):
         }
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super().clean()
         toc = cleaned_data.get('terms_of_service')
         print('Toc: {}'.format(toc))
         if not toc:
@@ -53,7 +77,7 @@ class IndividualFormUnauthenticated(IndividualForm):
         }
 
 
-class NestForm(ModelForm):
+class NestForm(ReportObservationForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
     height = ChoiceField(label=_('Nest height'), choices=[('', '--------')] + list(Nest.HEIGHT_CHOICES))
@@ -70,7 +94,7 @@ class NestForm(ModelForm):
         }
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super().clean()
 
         if len(self.files) is 0:
             msg = 'You must add at least one picture'
@@ -111,6 +135,7 @@ class NestFormUnauthenticated(NestForm):
 
         return cleaned_data
 
+
 class IndividualPictureForm(ModelForm):
     class Meta:
         model = IndividualPicture
@@ -125,6 +150,7 @@ class NestPictureForm(ModelForm):
 
 IndividualImageFormset = inlineformset_factory(Individual, IndividualPicture, fields=('image',), extra=2)
 NestImageFormset = inlineformset_factory(Nest, NestPicture, fields=('image',), extra=2)
+
 
 class ManagementActionForm(ModelForm):
     class Meta:

@@ -5,6 +5,10 @@
 {% load custom_tags %}
 
 {% block content %}
+    <script>
+        // set a global variable, accessible for JS
+        var formErrorMessagesRaw = "{{ form.errors_as_json }}";
+    </script>
 <main class="container" id="vw-main-app">
     <h1>{% trans 'Report observation' %}</h1>
 
@@ -44,32 +48,31 @@
         </div>
 
         <h5>{% trans 'Location' %}</h5>
-        {% if object %}
-            <vw-location-selector v-bind:init-coordinates="[{{ object.longitude }}, {{ object.latitude }}]"
+        <vw-location-selector
+            {% if form.data %}
+                v-bind:init-coordinates="[{{ form.data.longitude|default_if_none:'' }}, {{ form.data.latitude|default_if_none:'' }}]"
                 init-marker="true"
-                address="{{ object.address }}">
-            </vw-location-selector>
-        {% else %}
-            <vw-location-selector
-                {% if form.data %}
-                    v-bind:init-coordinates="[{{ form.data.longitude|default_if_none:'' }}, {{ form.data.latitude|default_if_none:'' }}]"
-                    init-marker="true"
-                {% else %}
-                    v-bind:init-coordinates="['', '']"
-                    init-marker="false"
-                {% endif %}
-                    address="{{ form.data.address|default_if_none:'' }}">
-            </vw-location-selector>
-        {% endif %}
+                :latitude-is-invalid={{ form.latitude_is_invalid|boolean_to_string }}
+                :longitude-is-invalid={{ form.longitude_is_invalid|boolean_to_string }}
+            {% else %}
+                v-bind:init-coordinates="['', '']"
+                init-marker="false"
+                :latitude-is-invalid={{ form.latitude_is_invalid|boolean_to_string }}
+                :longitude-is-invalid={{ form.longitude_is_invalid|boolean_to_string }}
+            {% endif %}
+                address="{{ form.data.address|default_if_none:'' }}">
+        </vw-location-selector>
 
         <h5>{% trans 'Date' %}</h5>
         {% if object %}
             <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
-                init-date-time="{{ object.observation_time_iso }}">
+                init-date-time="{{ object.observation_time_iso }}"
+                :validation-error="true">
             </vw-datetime-selector>
         {% else %}
             <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
-                init-date-time="{{ form.data.observation_time|default_if_none:'' }}">
+                init-date-time="{{ form.data.observation_time|default_if_none:'' }}"
+                :validation-error={{ form.date_is_invalid|boolean_to_string }}>
             </vw-datetime-selector>
         {% endif %}
 
