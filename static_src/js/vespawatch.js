@@ -131,7 +131,7 @@ var VwObservationsVizMap = {
                     var obsData = response.data;
                     var url = new URL(obsData.detailsUrl, VWConfig.baseUrl);
                     var sep = VWConfig.staticRoot[VWConfig.staticRoot.length - 1] === '/' ? '' : '/';
-                    var no_image_url = VWConfig.staticRoot + sep + "vespawatch/img/no_image_rectangular.png";
+                    var no_image_url = VWConfig.staticRoot + sep + 'vespawatch/img/no_image_rectangular.png';
 
                     if (this.editRedirect) {
                         url.searchParams.append('redirect_to', this.editRedirect);
@@ -180,11 +180,11 @@ var VwObservationsVizMap = {
             this.map.spin(true);
 
             // Add legend
-            var legend = L.control({ position: "topright" });
+            var legend = L.control({ position: 'topright' });
             var nest_size = (conf.circle.nestRadius + conf.circle.strokeWidth) * 2;
             var indiv_size = (conf.circle.individualRadius + conf.circle.strokeWidth) * 2;          
             legend.onAdd = function(map) {
-                var div = L.DomUtil.create("div", "legend");
+                var div = L.DomUtil.create('div', 'legend');
                 div.innerHTML +=
                     '<svg ' +
                         'width="' + nest_size + '" ' +
@@ -1269,16 +1269,16 @@ var VwImageDropZone = {
                 paramName: 'image',
                 thumbnailWidth: 150,
                 maxFiles: 3,
-                maxFilesize: 5  // MB
-
+                maxFilesize: 5, // MB
+                dictDefaultMessage: gettext('Drop up to 3 photos here to upload')
             }
         },
         errorMessage: function () {
-            return gettext("This field is required.");
+            return gettext('This field is required.');
         },
         errorClasses: function () {
             if (this.validationError) {
-                return "form-control is-invalid";
+                return 'form-control is-invalid';
             }
         }
     },
@@ -1316,17 +1316,17 @@ var VwImageDropZone = {
         }
     },
     mounted: function () {
-        this.imageFieldElement = $("#id_image_ids");
+        this.imageFieldElement = $('#id_image_ids');
         var el = this;
         var preloadImageObj = this.imageFieldElement.val();  // pity: I have to fall back to jQuery here, otherwise the entire form should go into a Vue component
         if (preloadImageObj != null) {
-            var preloadImageIds = preloadImageObj.split(',').filter(x => x !== "").map(x => parseInt(x));  // remove empty elements from the list and parse integers
+            var preloadImageIds = preloadImageObj.split(',').filter(x => x !== '').map(x => parseInt(x));  // remove empty elements from the list and parse integers
             console.log(preloadImageIds);
             preloadImageIds.forEach(function (x) {
                 // For every image url, get the image (meta)data from the API
                 axios.get(el.url + x)
                     .then(response => {
-                        var file = {size: 123, name: response.data.name, type: "image/png"};
+                        var file = {size: 123, name: response.data.name, type: 'image/png'};
                         var sep = VWConfig.staticRoot[VWConfig.staticRoot.length - 1] === '/' ? '' : '/';
                         var path;
                         if (response.data.url[0] === '/') {
@@ -1367,10 +1367,10 @@ var VwLocationSelector = {
     },
     computed: {
         locationLng: function () {
-            return this.locationCoordinates ? this.locationCoordinates[0] : "";
+            return this.locationCoordinates ? this.locationCoordinates[0] : '';
         },
         locationLat: function () {
-            return this.locationCoordinates ? this.locationCoordinates[1] : "";
+            return this.locationCoordinates ? this.locationCoordinates[1] : '';
         }
     },
     components: {
@@ -1468,7 +1468,7 @@ var app = new Vue({
     methods: {
         htmlDecode: function (input) {
             // from https://stackoverflow.com/a/34064434/1805725
-            var doc = new DOMParser().parseFromString(input, "text/html");
+            var doc = new DOMParser().parseFromString(input, 'text/html');
             return doc.documentElement.textContent;
         },
         loadNests: function (zone) {

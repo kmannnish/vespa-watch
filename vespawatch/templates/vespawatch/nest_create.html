@@ -34,12 +34,14 @@
 
     <h5>{% trans 'Photos' %}*</h5>
 
-    <small class="form-text text-muted">{% trans 'Upload at least one photo of your observation' %}</small>
     <vw-image-dropzone type="nest" csrf-token="{{ csrf_token }}"
       {% if form.data %}
         :validation-error={{ form.image_is_invalid|boolean_to_string }}
       {% endif %}>
     </vw-image-dropzone>
+    <small class="form-text text-muted">
+      {% trans 'Upload at least one photo you took of your observation, to allow verification. Observations with photos that are unusable or not yours will be deleted.' %}
+    </small>
 
     <h5>{% trans 'Location' %}*</h5>
 

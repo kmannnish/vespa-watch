@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-18 15:11+0200\n"
+"POT-Creation-Date: 2019-07-18 16:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -157,6 +157,12 @@ msgstr "Corrigeer het adres indien nodig"
 #: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Observation date"
 msgstr "Datum van observatie"
+
+#: static_src/js/vespawatch.js:1273
+#: vespawatch/static/vespawatch/js/app.min.js:1
+#| msgid "Drop up to 3 photos here to upload."
+msgid "Drop up to 3 photos here to upload"
+msgstr "Laad tot 3 foto's op door ze hierheen te slepen"
 
 #: static_src/js/vespawatch.js:1277
 #: vespawatch/static/vespawatch/js/app.min.js:1
