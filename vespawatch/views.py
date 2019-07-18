@@ -178,6 +178,9 @@ def create_nest(request):
             form.data = form_data_copy
         else:
             form = NestFormUnauthenticated(request.POST, request.FILES)
+            print('location set on form:')
+            print(form.fields['location'])
+        print(request.POST.get('location'))
         if form.is_valid():
             form.save()
             image_formset = NestImageFormset(request.POST, request.FILES, instance=form.instance)

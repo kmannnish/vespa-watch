@@ -981,53 +981,6 @@ var VwRecentObsTable = {
         </div>`
 };
 
-var VwLocationSelectorLocationInput = {
-    data: function () {
-        return {
-            location: this.initAddress ? '' + this.initAddress : ''
-        }
-    },
-    computed: {
-        positionLabel: function () {
-            return gettext('Position');
-        },
-        searchLabel: function () {
-            return gettext('Search');
-        },
-        detectPositionLabel: function () {
-            return gettext('Detect current position');
-        },
-        orLabel: function () {
-            return gettext('or')
-        },
-        searchPositionLabel: function () {
-            return gettext('type a location...')
-        },
-        searchPositionHelpLabel: function () {
-            return gettext('This will populate the fields below')
-        }
-    },
-    methods: {
-        search: function () {
-            this.$emit('search', this.location);
-        }
-    },
-    props: ['initAddress'],
-    template: `
-        <div class="form-group">
-            <div class="input-group">
-                <button class="btn btn-secondary" v-on:click.stop.prevent="$emit('autodetect-btn')">{{ detectPositionLabel }}</button>
-                <span class="form-text mx-2">{{ orLabel }}</span>
-                <input type="text" class="form-control" id="id_position" name="position" v-model="location" :placeholder="searchPositionLabel">
-                <div class="input-group-append">
-                    <button type="button" class="btn btn-secondary" v-on:click="search" >{{ searchLabel }}</button>
-                </div>
-            </div>
-            <small class="form-text text-muted">{{searchPositionHelpLabel}}</small>
-        </div>
-        `
-};
-
 var VwLocationSelectorMap = {
     computed: {
         leafletPosition: function () {
@@ -1089,120 +1042,114 @@ var VwLocationSelectorMap = {
     }
 };
 
-var VwLocationSelectorCoordinates = {
+var VwLocationSelectorInput = {
+    data: function () {
+        return {
+            input_location: null
+        };
+    },
     computed: {
-        lat: {
-            get: function () {
-                return this.latitude
-            },
-            set: function (v) {
-                this.$emit('lat-updated', v);
-            }
+        lat: function () {
+            return this.latitude
         },
-        long: {
-            get: function () {
-                return this.longitude
-            },
-            set: function (v) {
-                this.$emit('lon-updated', v);
-            }
+        long: function () {
+            return this.longitude
         },
-        latitudeErrorMessages: function () {
-            return (this.$root.formErrorMessages && this.$root.formErrorMessages.hasOwnProperty('latitude')) ? this.$root.formErrorMessages.latitude.map(x => gettext(x.message)) : []
-        },
-        latitudeLabel: function () {
-            return gettext('Latitude');
-        },
-        coordinatesHelpLabel: function () {
-            return gettext('Type coordinates or move maker');
-        },
-        longitudeErrorMessages: function () {
-            return (this.$root.formErrorMessages && this.$root.formErrorMessages.hasOwnProperty('longitude')) ? this.$root.formErrorMessages.longitude.map(x => gettext(x.message)) : []
-        },
-        longitudeLabel: function () {
-            return gettext('Longitude');
-        },
-        addressErrorMessages: function () {
-            return (this.$root.formErrorMessages && this.$root.formErrorMessages.hasOwnProperty('address')) ? this.$root.formErrorMessages.address.map(x => gettext(x.message)) : [];
-        },
-        addressLabel: function () {
-            return gettext('Address');
+        searchLabel: function () {
+            return gettext('Search');
         },
         addressHelpLabel: function () {
-            return gettext('Correct the address if necessary');
+            return gettext('Type the address and move the maker on the map to where you observed the nest/individual');
         },
-        _address: {
+        addressIsInvalid: function () {
+            return this.latitudeIsInvalid || this.longitudeIsInvalid;
+        },
+        addressErrorMessage: function () {
+            if (this.addressIsInvalid) {
+                return gettext('This field is required.');
+            }
+        },
+        searchPositionLabel: function () {
+            return gettext('type a location...')
+        },
+        _location: {
             get: function () {
-                return this.address;
+                return this.input_location || this.location;
             },
-            set: function () {
-                // do nothing
+            set: function (x) {
+                this.input_location = x;
             }
         }
 
     },
     methods: {
+        blockLocationDetection: function () {
+            if (!this.detectionBlocked) {
+                this.detectionBlocked = true;
+                this.$emit('block-location-detection');
+            }
+        },
         commontInputClasses: function () {
-            return ['numberinput', 'form-control'];
+            return ['form-control'];
         },
         addressInputClasses: function() {
             var cssClasses =  this.commontInputClasses();
-            console.log('address is invalid: ');
-            console.log(this.addressIsInvalid);
             if (this.addressIsInvalid === true) {
                 cssClasses.push('is-invalid');
             }
             return cssClasses.join(' ');
         },
-        latInputClasses: function() {
-            var cssClasses =  this.commontInputClasses();
-            if (this.latitudeIsInvalid === true) {
-                cssClasses.push('is-invalid');
-            }
-            return cssClasses.join(' ');
-
+        search: function () {
+            this.$emit('search', this._location);
         },
-        lonInputClasses: function() {
-            var cssClasses =  this.commontInputClasses();
-            if (this.longitudeIsInvalid) {
-                cssClasses.push('is-invalid');
-            }
-            return cssClasses.join(' ');
-
+    },
+    props: ['detectionBlocked', 'longitude', 'latitude', 'location', 'latitudeIsInvalid', 'longitudeIsInvalid'],
+    watch: {
+        location: function (n, o) {
+            this._location = n;
         }
     },
-    props: ['longitude', 'latitude', 'address', 'addressRequired', 'addressIsInvalid', 'latitudeIsInvalid', 'longitudeIsInvalid'],
     template: `
         <div>
             <div class="form-row">
-                <div class="form-group col-6">
-                    <label for="id_latitude">{{latitudeLabel}}<span>*</span></label>
-                    <input type="text" :class="latInputClasses()" id="id_latitude" name="latitude" v-model="lat">
-                    <p v-for="error in latitudeErrorMessages" class="invalid-feedback">
-                        <strong>{{error}}</strong>
-                    </p>
-                    <small class="form-text text-muted">{{coordinatesHelpLabel}}</small>
-                </div>
-                <div class="form-group col-6">
-                    <label for="id_longitude">{{longitudeLabel}}<span>*</span></label>
-                    <input type="text" :class="lonInputClasses()" id="id_longitude" name="longitude" v-model="long">
-                    <p v-for="error in longitudeErrorMessages" class="invalid-feedback">
-                        <strong>{{error}}</strong>
-                    </p>
-                </div>
-            </div>
-            <div class="form-row">
+                <input type="hidden" id="id_latitude" name="latitude" v-model="lat">
+                <input type="hidden" id="id_longitude" name="longitude" v-model="long">
                 <div class="form-group col-12">
-                    <label for="id_address">{{addressLabel}}<span v-if="addressRequired">*</span></label>
-                    <input type="text" :class="addressInputClasses()" id="id_address" name="address" v-model="_address">
-                    <p v-for="error in addressErrorMessages" class="invalid-feedback">
-                        <strong>{{error}}</strong>
-                    </p>
+                    <div class="input-group">
+                        <input type="text" :class="addressInputClasses()" id="id_location" name="location" v-model="_location" :placeholder="searchPositionLabel" v-on:input="blockLocationDetection">
+                        <div class="input-group-append">
+                            <button class="btn btn-secondary" v-on:click.stop.prevent="search" >{{ searchLabel }}</button>
+                        </div>
+                        <p v-if="addressIsInvalid" class="invalid-feedback"><strong>{{addressErrorMessage}}</strong></p>
+                    </div>
                     <small class="form-text text-muted">{{addressHelpLabel}}</small>
                 </div>
             </div>
         </div>
         `
+};
+
+var VwLocationSelectorCoordinates = {
+    computed: {
+        latitudeLabel: function () {
+            return gettext('Latitude');
+        },
+        longitudeLabel: function () {
+            return gettext('Longitude');
+        },
+    },
+    methods: {
+        roundCoordinate: function (nr) {
+            if (nr) {
+                return Math.round(nr * 100000) / 100000;
+            }
+            return 0;
+        }
+    },
+    props: ['longitude', 'latitude'],
+    template: `
+        <small>{{longitudeLabel}}: {{roundCoordinate(longitude)}} \ {{latitudeLabel}}: {{roundCoordinate(latitude)}}</small>
+`
 };
 
 var VwDatetimeSelector = {
@@ -1261,8 +1208,11 @@ var VwLocationSelector = {
     data: function () {
         return {
             locationCoordinates: [this.initCoordinates[0], this.initCoordinates[1]],  // the coordinates that will be passed to the long lat fields
+            locationDetectionBlocked: false,
+            geolocationFailed: false,
+            geolocationRunning: true,
             markerCoordinates: this.initCoordinates[0] ? [this.initCoordinates[0], this.initCoordinates[1]] : [4.5, 50.7],  // the coordinates that will be passed to the map
-            modelAddress: this.address ? '' + this.address : '',
+            modelAddress: this.location ? '' + this.location : '',
             provider: new GeoSearch.OpenStreetMapProvider({
                 params: {
                     countrycodes: 'BE'
@@ -1272,25 +1222,44 @@ var VwLocationSelector = {
     },
     computed: {
         locationLng: function () {
-            return this.locationCoordinates ? this.locationCoordinates[0] : "";
+            return this.locationCoordinates ? this.locationCoordinates[0] : null;
         },
         locationLat: function () {
-            return this.locationCoordinates ? this.locationCoordinates[1] : "";
+            return this.locationCoordinates ? this.locationCoordinates[1] : null;
         }
     },
     components: {
-        'vw-location-selector-location-input': VwLocationSelectorLocationInput,
         'vw-location-selector-map': VwLocationSelectorMap,
-        'vw-location-selector-coordinates': VwLocationSelectorCoordinates
+        'vw-location-selector-coordinates': VwLocationSelectorCoordinates,
+        'vw-location-selector-input': VwLocationSelectorInput
     },
 
     methods: {
         autodetectPosition: function () {
             var that = this;
-            navigator.geolocation.getCurrentPosition(function (position) {
-                that.setCoordinates([position.coords.longitude, position.coords.latitude]);
-                that.markerCoordinates = [position.coords.longitude, position.coords.latitude];
-            });
+            if ("geolocation" in navigator) {
+                /* geolocation is available */
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    if (that.locationDetectionBlocked) {
+                        return;
+                    }
+                    that.geolocationRunning = false;
+                    that.setCoordinates([position.coords.longitude, position.coords.latitude]);
+                    that.markerCoordinates = [position.coords.longitude, position.coords.latitude];
+                    that.reverseGeocode();
+                },
+                    function () {
+                    that.geolocationFailed = true;
+                    that.geolocationRunning = false;
+                });
+            } else {
+                /* geolocation IS NOT available */
+                that.geolocationFailed = true;
+            }
+
+        },
+        blockLocationDetection: function () {
+            this.locationDetectionBlocked = true;
         },
         getCoordinates: function (address) {
             console.log('Address input changed to ' + address + '+\n -> get coordinates and update locationCoordinates and markerCoordinates');
@@ -1320,28 +1289,31 @@ var VwLocationSelector = {
         setCoordinates: function (coordinates) {
             console.log('Marker moved. Set locationCoordinates and update address.');
             this.locationCoordinates = coordinates;
-            this.reverseGeocode();
-        },
-        updateLatitude: function (lat) {
-            console.log('Latitude was updated');
-            this.markerCoordinates = [this.markerCoordinates[0], lat];
-        },
-        updateLongitude: function (long) {
-            console.log('Longitude was updated');
-            this.markerCoordinates = [long, this.markerCoordinates[1]];
         },
     },
+    mounted: function () {
+        if (this.locationLng !== "") {
+            this.locationDetectionBlocked = true;
+        } else {
+            this.autodetectPosition();
 
-    props: ['initCoordinates', 'initializeCoordinates', 'initMarker', 'address', 'addressRequired', 'addressIsInvalid', 'latitudeIsInvalid', 'longitudeIsInvalid'],
+        }
+    },
+
+    props: ['location', 'initCoordinates', 'initMarker', 'latitudeIsInvalid', 'longitudeIsInvalid'],
 
     template: `
         <div class="row">
-            <div class="col-lg-6">
-                <vw-location-selector-location-input v-bind:init-address="address" v-on:autodetect-btn="autodetectPosition" v-on:search="getCoordinates"></vw-location-selector-location-input>
-                <vw-location-selector-coordinates v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:address="modelAddress" v-on:lon-updated="updateLongitude" v-on:lat-updated="updateLatitude" v-bind:address-required="addressRequired" v-bind:latitude-is-invalid="latitudeIsInvalid" v-bind:longitude-is-invalid="longitudeIsInvalid" v-bind:address-is-invalid="addressIsInvalid"></vw-location-selector-coordinates>
-            </div>
-            <div class="col-lg-6">
+            <div class="col-lg-12">
+                <vw-location-selector-input 
+                v-on:search="getCoordinates"
+                v-on:block-location-detection="blockLocationDetection"
+                detection-blocked="true"
+                v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:location="modelAddress"
+                v-bind:latitude-is-invalid="latitudeIsInvalid" v-bind:longitude-is-invalid="longitudeIsInvalid">
+                </vw-location-selector-input>
                 <vw-location-selector-map v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
+                <vw-location-selector-coordinates :longitude="locationLng" :latitude="locationLat"></vw-location-selector-coordinates>
             </div>
         </div>
         `
