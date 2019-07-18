@@ -35,11 +35,11 @@
     </div>
 
     <h5>{% trans 'Photos' %}*</h5>
-    
+
     <small class="form-text text-muted">{% trans 'Upload at least one photo of your observation' %}</small>
     <vw-image-dropzone type="nest" csrf-token="{{ csrf_token }}"
       {% if form.data %}
-        validation-error={{ form.image_is_invalid|boolean_to_string }}
+        :validation-error={{ form.image_is_invalid|boolean_to_string }}
       {% endif %}>
     </vw-image-dropzone>
     
