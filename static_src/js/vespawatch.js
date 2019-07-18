@@ -1142,11 +1142,11 @@ var VwLocationSelectorCoordinates = {
 
     },
     methods: {
-        commontInputClasses: function () {
+        commonInputClasses: function () {
             return ['numberinput', 'form-control'];
         },
         addressInputClasses: function() {
-            var cssClasses =  this.commontInputClasses();
+            var cssClasses =  this.commonInputClasses();
             console.log('address is invalid: ');
             console.log(this.addressIsInvalid);
             if (this.addressIsInvalid === true) {
@@ -1155,7 +1155,7 @@ var VwLocationSelectorCoordinates = {
             return cssClasses.join(' ');
         },
         latInputClasses: function() {
-            var cssClasses =  this.commontInputClasses();
+            var cssClasses =  this.commonInputClasses();
             if (this.latitudeIsInvalid === true) {
                 cssClasses.push('is-invalid');
             }
@@ -1163,7 +1163,7 @@ var VwLocationSelectorCoordinates = {
 
         },
         lonInputClasses: function() {
-            var cssClasses =  this.commontInputClasses();
+            var cssClasses =  this.commonInputClasses();
             if (this.longitudeIsInvalid) {
                 cssClasses.push('is-invalid');
             }
