@@ -54,7 +54,7 @@ python manage.py migrate
 1. Fire brigade users are responsible for a specific geographic area (= zone). Import the polygons for those zones:
 
     ```bash
-    python manage.py import_firefighters_zones data/Brandweerzones_2019.geojson
+    python manage.py import_firefighters_zones static_src/data/brandweerzones_2019.geojson
     ```
 
     <details>
@@ -63,7 +63,7 @@ python manage.py migrate
     The initial fire brigade zone data was received as an ESRI shapefile and converted to GeoJSON with:
 
     ```bash
-    ogr2ogr -f GeoJSON -t_srs EPSG:4326 data/Brandweerzones_2019.geojson <path_to_received_shapefile>/Brandweerzones_2019.shp
+    ogr2ogr -f GeoJSON -t_srs EPSG:4326 static_src/data/brandweerzones_2019.geojson <path_to_received_shapefile>/Brandweerzones_2019.shp
     ```
     </details>
 
