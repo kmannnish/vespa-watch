@@ -1206,7 +1206,6 @@ var VwLocationSelectorCoordinates = {
 };
 
 var VwDatetimeSelector = {
-    delimiters: ['[[', ']]'],
     props: {
         'initDateTime': String,
         'isRequired': Boolean,
@@ -1218,25 +1217,23 @@ var VwDatetimeSelector = {
             observationTime: undefined, // As ISO3166
         }
     },
-    methods: {
+    computed: {
+        observationTimeLabel: function () {
+            return gettext('Observation date');
+        },
         nowIsoFormat: function () {
             return new Date().toISOString();
         },
-        inputClasses: function () {
+        errorMessages: function () {
+            return (this.$root.formErrorMessages && this.$root.formErrorMessages.hasOwnProperty('observation_time')) ? this.$root.formErrorMessages.observation_time.map(x => gettext(x.message)) : [];
+        },
+        errorClasses: function () {
             var cssClasses =  ['datetimeinput', 'form-control'];
             if (this.validationError) {
                 cssClasses.push('is-invalid');
             }
             return cssClasses.join(' ');
         }
-    },
-    computed: {
-        errorMessages: function () {
-            return (this.$root.formErrorMessages && this.$root.formErrorMessages.hasOwnProperty('observation_time')) ? this.$root.formErrorMessages.observation_time.map(x => gettext(x.message)) : [];
-        },
-        observationTimeLabel: function () {
-            return gettext('Observation date');
-        },
     },
 
     mounted: function () {
@@ -1245,13 +1242,11 @@ var VwDatetimeSelector = {
         }
     },
     template: `<div class="form-group">
-                    <datetime v-model="observationTime" type="datetime" 
-                              :input-class="inputClasses()" :max-datetime="nowIsoFormat()">
-                        <label for="startDate" slot="before">[[ observationTimeLabel ]]<span v-if="isRequired">*</span></label>
-                    <p slot="after" v-for="error in errorMessages" class="invalid-feedback">
-                        <strong>[[ error ]]</strong>
-                    </p>
-          
+                    <datetime v-model="observationTime" type="datetime" :max-datetime="nowIsoFormat" :input-class="errorClasses">
+                        <label for="startDate" slot="before">{{ observationTimeLabel }}<span v-if="isRequired">*</span></label>
+                        <p slot="after" v-for="error in errorMessages" class="invalid-feedback">
+                            <strong>{{ error }}</strong>
+                        </p>
                     </datetime>
                     <input type="hidden" :name="hiddenFieldName" :value="observationTime"/>
                </div>`
