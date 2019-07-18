@@ -40,8 +40,13 @@ urlpatterns = [
     path('api/observations/', views.observations_json, name='api_observations'),
     path('api/individuals/', views.individuals_json, name='api_individuals'),
     path('api/individuals/<int:pk>', views.single_individual_json, name='api_single_individual'),
+    path('api/individual_pictures/', views.save_individual_picture, name='api_individual_picture'),
+    path('api/individual_pictures/<int:pk>', views.get_individual_picture, name='api_single_individual_picture'),
     path('api/nests/', views.nests_json, name='api_nests'),
     path('api/nests/<int:pk>/', views.single_nest_json, name='api_single_nest'),
+    path('api/nest_pictures/', views.save_nest_picture, name='api_nest_picture'),
+    path('api/nest_pictures/<int:pk>', views.get_nest_picture, name='api_single_nest_picture'),
+
     path('api/action_outcomes/', views.management_actions_outcomes_json, name='api_action_outcomes'),
     path('api/save_management_action/', views.save_management_action, name='api_action_save'),
     path('api/get_management_action/', views.get_management_action, name='api_action_get'),

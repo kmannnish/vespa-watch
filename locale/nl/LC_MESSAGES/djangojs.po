@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-24 17:26+0200\n"
+"POT-Creation-Date: 2019-07-18 16:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,16 +32,16 @@ msgstr ""
 msgid "<div>"
 msgstr ""
 
-#: static_src/js/vespawatch.js:144 vespawatch/static/vespawatch/js/app.min.js:1
+#: static_src/js/vespawatch.js:147 vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Confirmed"
 msgstr "Bevestigd"
 
-#: static_src/js/vespawatch.js:200 static_src/js/vespawatch.js:256
+#: static_src/js/vespawatch.js:201 static_src/js/vespawatch.js:256
 #: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Nest"
 msgstr "Nest"
 
-#: static_src/js/vespawatch.js:215 static_src/js/vespawatch.js:260
+#: static_src/js/vespawatch.js:216 static_src/js/vespawatch.js:260
 #: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Individual"
 msgstr "Individu"
@@ -128,35 +128,46 @@ msgstr "toevoegen"
 msgid "edit / delete"
 msgstr "wijzig / verwijder"
 
-#: static_src/js/vespawatch.js:1111
+#: static_src/js/vespawatch.js:1114
 #: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Latitude"
 msgstr "Latitude"
 
-#: static_src/js/vespawatch.js:1114
+#: static_src/js/vespawatch.js:1117
 #: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Type coordinates or move maker"
 msgstr "Typ coordinaten of verplaats pin"
 
-#: static_src/js/vespawatch.js:1117
+#: static_src/js/vespawatch.js:1123
 #: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Longitude"
 msgstr "Longitude"
 
-#: static_src/js/vespawatch.js:1120
+#: static_src/js/vespawatch.js:1129
 #: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Address"
 msgstr "Adres"
 
-#: static_src/js/vespawatch.js:1123
+#: static_src/js/vespawatch.js:1132
 #: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Correct the address if necessary"
 msgstr "Corrigeer het adres indien nodig"
 
-#: static_src/js/vespawatch.js:1179
+#: static_src/js/vespawatch.js:1222
 #: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Observation date"
 msgstr "Datum van observatie"
+
+#: static_src/js/vespawatch.js:1273
+#: vespawatch/static/vespawatch/js/app.min.js:1
+#| msgid "Drop up to 3 photos here to upload."
+msgid "Drop up to 3 photos here to upload"
+msgstr "Laad tot 3 foto's op door ze hierheen te slepen"
+
+#: static_src/js/vespawatch.js:1277
+#: vespawatch/static/vespawatch/js/app.min.js:1
+msgid "This field is required."
+msgstr "Dit veld is verplicht."
 
 #: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "date"

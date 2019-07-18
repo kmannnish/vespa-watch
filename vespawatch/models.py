@@ -306,7 +306,7 @@ class AbstractObservation(models.Model):
     taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT, blank=True, null=True)
     address = models.CharField(verbose_name=_("Address"), max_length=255, blank=True)
     observation_time = models.DateTimeField(verbose_name=_("Observation date"), validators=[no_future])
-    comments = models.TextField(verbose_name=_("Comments"), blank=True)
+    comments = models.TextField(verbose_name=_("Comments"), blank=True, help_text=_("Comments are public: use them to describe your observation and help verification."))
 
     latitude = models.FloatField(validators=[MinValueValidator(-90), MaxValueValidator(90)], verbose_name=_("Latitude"))
     longitude = models.FloatField(validators=[MinValueValidator(-180), MaxValueValidator(180)], verbose_name=_("Longitude"))
@@ -769,24 +769,32 @@ class IndividualPicture(models.Model):
     def get_file_path(instance, filename):
         return os.path.join('pictures/individuals/', make_unique_filename(filename))
 
-    observation = models.ForeignKey(Individual, on_delete=models.CASCADE, related_name='pictures')
+    observation = models.ForeignKey(Individual, on_delete=models.CASCADE, related_name='pictures', blank=True, null=True)
+    datetime = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(verbose_name=_("Photo"), upload_to=get_file_path)
     thumbnail = ImageSpecField(source='image',
                                processors=[SmartResize(600, 300)],
                                format='JPEG',
                                options={'quality': 90})
+
+    def to_dict(self):
+        return {'url': self.image.url, 'name': self.image.name}
 
 
 class NestPicture(models.Model):
     def get_file_path(instance, filename):
         return os.path.join('pictures/nests/', make_unique_filename(filename))
 
-    observation = models.ForeignKey(Nest, on_delete=models.CASCADE, related_name='pictures')
+    observation = models.ForeignKey(Nest, on_delete=models.CASCADE, related_name='pictures', blank=True, null=True)
+    datetime = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(verbose_name=_("Photo"), upload_to=get_file_path)
     thumbnail = ImageSpecField(source='image',
                                processors=[SmartResize(600, 300)],
                                format='JPEG',
                                options={'quality': 90})
+
+    def to_dict(self):
+        return {'url': self.image.url, 'name': self.image.name}
 
 
 class ObservationWarningBase(models.Model):

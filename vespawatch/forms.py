@@ -32,6 +32,7 @@ class IndividualForm(ReportObservationForm):
     card_id = IntegerField()
     terms_of_service = BooleanField(label=_('Accept the privacy policy'), required=False)
     location = CharField(max_length=255, required=False)
+    image_ids = CharField(max_length=255)
 
     class Meta:
         model = Individual
@@ -50,17 +51,20 @@ class IndividualForm(ReportObservationForm):
         if not toc:
             msg = _("You must accept the privacy policy.")
             self.add_error('terms_of_service', msg)
-        if len(self.files) is 0:
+        if 'image_ids' not in cleaned_data or not cleaned_data['image_ids']:
             msg = 'You must add at least one picture'
             self.add_error(None, msg)
+            setattr(self, "image_is_invalid", True)
 
         return cleaned_data
 
     def save(self, *args, **kwargs):
         observation = super().save(*args, **kwargs)
-        if hasattr(self.files, 'getlist'):
-            for image in self.files.getlist('images'):
-                IndividualPicture.objects.create(observation=observation, image=image)
+        image_ids = [x for x in self.cleaned_data['image_ids'].strip().split(',') if x]
+        for image_id in image_ids:
+            np = IndividualPicture.objects.get(pk=image_id)
+            np.observation = observation
+            np.save()
 
 
 class IndividualFormUnauthenticated(IndividualForm):
@@ -82,6 +86,7 @@ class NestForm(ReportObservationForm):
     card_id = IntegerField()
     height = ChoiceField(label=_('Nest height'), choices=[('', '--------')] + list(Nest.HEIGHT_CHOICES))
     location = CharField(max_length=255, required=False)
+    image_ids = CharField(max_length=255)
 
     class Meta:
         model = Nest
@@ -96,17 +101,19 @@ class NestForm(ReportObservationForm):
     def clean(self):
         cleaned_data = super().clean()
 
-        if len(self.files) is 0:
+        if 'image_ids' not in cleaned_data or not cleaned_data['image_ids']:
             msg = 'You must add at least one picture'
             self.add_error(None, msg)
-
+            setattr(self, "image_is_invalid", True)
         return cleaned_data
 
     def save(self, *args, **kwargs):
         observation = super().save(*args, **kwargs)
-        if hasattr(self.files, 'getlist'):
-            for image in self.files.getlist('images'):
-                NestPicture.objects.create(observation=observation, image=image)
+        image_ids = [x for x in self.cleaned_data['image_ids'].strip().split(',') if x]
+        for image_id in image_ids:
+            np = NestPicture.objects.get(pk=image_id)
+            np.observation = observation
+            np.save()
 
 
 class NestFormUnauthenticated(NestForm):
