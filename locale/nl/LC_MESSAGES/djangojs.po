@@ -160,7 +160,7 @@ msgstr "Datum van observatie"
 #: static_src/js/vespawatch.js:1220
 #: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Drop up to 3 photos here to upload"
-msgstr "Laad tot 3 foto's op door ze hierheen te slepen"
+msgstr "Sleep tot 3 foto's hierheen om ze op te laden"
 
 #: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "date"
