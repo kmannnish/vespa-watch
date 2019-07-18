@@ -90,6 +90,17 @@ msgstr "Datum van observatie"
 msgid "Comments"
 msgstr "Opmerkingen"
 
+#: vespawatch/models.py:309
+#| msgid ""
+#| "Your comments will be public: use them to describe your observation and "
+#| "help verification."
+msgid ""
+"Comments are public: use them to describe your observation and help "
+"verification."
+msgstr ""
+"Opmerkingen zijn publiek: gebruik ze om je observatie te beschrijven en "
+"verificatie te vergemakkelijken."
+
 #: vespawatch/models.py:311
 msgid "Latitude"
 msgstr "Latitude"
