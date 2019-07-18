@@ -33,12 +33,12 @@
       </div>
     </div>
 
-    <h5>{% trans 'Photos' %}</h5>
+    <h5>{% trans 'Photos' %}*</h5>
 
     <small class="form-text text-muted">{% trans 'Upload at least one photo of your observation' %}</small>
     <vw-image-dropzone type="nest" csrf-token="{{ csrf_token }}"></vw-image-dropzone>
 
-    <h5>{% trans 'Location' %}</h5>
+    <h5>{% trans 'Location' %}*</h5>
 
     <vw-location-selector
       {% if form.data %}
