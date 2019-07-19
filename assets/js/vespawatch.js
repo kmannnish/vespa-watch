@@ -1290,12 +1290,16 @@ var VwImageDropZone = {
                         var file = {size: 123, name: response.data.name, type: 'image/png'};
                         var sep = VWConfig.staticRoot[VWConfig.staticRoot.length - 1] === '/' ? '' : '/';
                         var path;
+                        var url;
                         if (response.data.url[0] === '/') {
                             path = response.data.url.slice(1, response.data.url.length - 1);
+                            url = VWConfig.staticRoot + sep + path;
+                        } else if (response.data.url.slice(0, 4) === "http") {
+                            url = response.data.url
                         } else {
                             path = response.data.url;
+                            url = VWConfig.staticRoot + sep + path;
                         }
-                        var url = VWConfig.staticRoot + sep + path;
                         // Use the image data to preload images in the dropzone element
                         el.$refs.myVueDropzone.manuallyAddFile(file, url);
                         el.uploadedImages[file.name] = x;
