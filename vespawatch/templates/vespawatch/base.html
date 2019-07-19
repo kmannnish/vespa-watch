@@ -47,7 +47,7 @@
           <ul class="navbar-nav mr-auto">
             {% if user.profile.zone or user.is_staff %}
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'vespawatch:management' %}">{% trans 'Fire department' %}</a>
+                <a class="nav-link" href="{% url 'vespawatch:management' %}">{% trans 'Management' %}</a>
               </li>
             {% endif %}
             <li class="nav-item">

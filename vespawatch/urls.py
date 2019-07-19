@@ -37,7 +37,7 @@ urlpatterns = [
     path('obs/nest/<int:pk>/delete/', views.NestDelete.as_view(), name='nest-delete'),
 
     # API paths
-    path('api/observations/', views.observations_json, name='api_observations'),
+    #path('api/observations/', views.observations_json, name='api_observations'),  TODO can we remove this one?
     path('api/individuals/', views.individuals_json, name='api_individuals'),
     path('api/individuals/<int:pk>', views.single_individual_json, name='api_single_individual'),
     path('api/individual_pictures/', views.save_individual_picture, name='api_individual_picture'),
@@ -51,5 +51,4 @@ urlpatterns = [
     path('api/save_management_action/', views.save_management_action, name='api_action_save'),
     path('api/get_management_action/', views.get_management_action, name='api_action_get'),
     path('api/delete_management_action/', views.delete_management_action, name='api_action_delete'),
-    path('api/get_zone/', views.get_zone, name='api_zone_get')
 ]

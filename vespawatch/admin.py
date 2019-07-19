@@ -6,8 +6,8 @@ from import_export.admin import ExportMixin
 from import_export.fields import Field
 from modeltranslation.admin import TranslationAdmin, TranslationTabularInline
 
-from .models import Taxon, Nest, Individual, NestPicture, IndividualPicture, ManagementAction, Profile, \
-    FirefightersZone, IdentificationCard, IndividualObservationWarning, NestObservationWarning
+from .models import Taxon, Nest, Individual, NestPicture, IndividualPicture, ManagementAction, IdentificationCard, \
+    IndividualObservationWarning, NestObservationWarning
 
 
 class NestResource(resources.ModelResource):
@@ -150,34 +150,15 @@ class IndividualAdmin(DeleteObjectsOneByOneMixin, ExportMixin, admin.ModelAdmin)
         IndividualObservationWarningInline
     ]
 
+
 @admin.register(ManagementAction)
 class ManagementActionAdmin(admin.ModelAdmin):
     pass
 
 
-class ProfileInline(admin.StackedInline):
-    model = Profile
-    can_delete = False
-    verbose_name_plural = 'Profile'
-    fk_name = 'user'
-
-
 class CustomUserAdmin(UserAdmin):
-    inlines = (ProfileInline, )
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'get_zone')
-    list_select_related = ('profile',)
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
 
-    def get_zone(self, instance):
-        try:
-            return instance.profile.zone.name
-        except AttributeError:
-            return '-'
-    get_zone.short_description = 'Zone'
-
-    def get_inline_instances(self, request, obj=None):
-        if not obj:
-            return list()
-        return super(CustomUserAdmin, self).get_inline_instances(request, obj)
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
@@ -185,7 +166,3 @@ admin.site.register(User, CustomUserAdmin)
 @admin.register(IdentificationCard)
 class IdentificationCardAdmin(TranslationAdmin):
     list_display = ('order', 'represented_taxon', 'represents_nest')
-
-@admin.register(FirefightersZone)
-class ZoneAdmin(admin.ModelAdmin):
-    pass

@@ -19,7 +19,7 @@ from django.urls import reverse_lazy
 from vespawatch.utils import ajax_login_required
 from .forms import ManagementActionForm, IndividualForm, IndividualFormUnauthenticated, IndividualPictureForm, \
     NestForm, NestPictureForm, NestFormUnauthenticated
-from .models import Individual, Nest, ManagementAction, Taxon, FirefightersZone, IdentificationCard, \
+from .models import Individual, Nest, ManagementAction, Taxon, IdentificationCard, \
     get_observations, get_individuals, get_nests, IndividualPicture, NestPicture
 
 
@@ -71,22 +71,6 @@ def about_vespavelutina(request):
 
 def latest_observations(request):
     return render(request, 'vespawatch/obs.html', {'observations': get_observations(limit=40)})
-
-@login_required
-def management(request):
-    profile = request.user.profile
-    zone = profile.zone
-    if not (zone or request.user.is_staff):
-        raise Http404()
-    print(zone)
-    if zone:
-        nests = Nest.objects.filter(zone=zone).order_by('-observation_time')
-    else:
-        nests = Nest.objects.all().order_by('-observation_time')
-    context = {'nests': json.dumps([x.as_dict() for x in nests]), 'zone': zone}
-    print(context)
-
-    return render(request, 'vespawatch/management.html', context)
 
 
 # CREATE UPDATE INDIVIDUAL OBSERVATIONS
@@ -230,6 +214,11 @@ class NestDelete(LoginRequiredMixin, CustomDeleteView):
         return super(NestDelete, self).delete(request, *args, **kwargs)
 
 
+@login_required
+def management(request):
+    return render(request, 'vespawatch/management.html')
+
+
 # CREATE/UPDATE/DELETE MANAGEMENT ACTIONS
 # TODO: Check if those 3 actions are still used.
 @login_required
@@ -280,8 +269,6 @@ def observations_json(request):
     Return all observations as JSON data.
     """
     # TODO: can we deprecate this function? + If so, can we remove the prefetch_related('pictures') from the get_observations function?
-    zone = request.GET.get('zone', '')
-    zone_id = int(zone) if zone else None
 
     obs_type = request.GET.get('type', None)
     include_individuals = (obs_type == 'individual' or obs_type is None)
@@ -292,7 +279,6 @@ def observations_json(request):
 
     obs = get_observations(include_individuals=include_individuals,
                            include_nests=include_nests,
-                           zone_id=zone_id,
                            limit=limit)
 
     light = request.GET.get('light', None)
@@ -410,15 +396,6 @@ def get_management_action(request):
                              'outcome':action.outcome,
                              'duration': action.duration_in_seconds,
                              'person_name': action.person_name})
-
-def get_zone(request):
-    if request.method == 'GET':
-        zone_id = request.GET.get('zone_id')
-        zone = get_object_or_404(FirefightersZone, pk=zone_id)
-
-        return HttpResponse(serialize('geojson', [zone],
-                  geometry_field='mpolygon',
-                  fields=('pk', 'name')))
 
 
 def get_nest_picture(request, pk=None):

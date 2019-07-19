@@ -424,14 +424,8 @@ var VwObservationsViz = {
             // Call the API to get observations
             var urls = [];
 
-            if (this.zone != null) {
-                console.log('Only requesting observations for zone ' + this.zone);
-                urls.push(axios.get(this.observationsUrl + '&zone=' + this.zone + '&type=nest'));
-            } else {
-                urls.push(axios.get(this.individualsUrl + '?light=true&vvOnly=true'));
-                urls.push(axios.get(this.nestsUrl + '?light=true&vvOnly=true'));
-                console.log('No zone set');
-            }
+            urls.push(axios.get(this.individualsUrl + '?light=true&vvOnly=true'));
+            urls.push(axios.get(this.nestsUrl + '?light=true&vvOnly=true'));
             axios.all(urls)
               .then(axios.spread((indivRes, nestRes) => {
                     console.log(indivRes.data);
@@ -800,8 +794,8 @@ var VwManagementTableNestRow = {
     template: ` 
         <tr :class="nestClass">
             <td>{{ observationTimeStr }}</td>
-            
-            <td>{{ nest.address }}</td>
+            <td>long</td>
+            <td>lat</td>
             
             <td>
                 <span v-if="hasManagementAction">
@@ -832,8 +826,11 @@ var VwManagementTable = {
         dateStr: function () {
             return gettext('date');
         },
-        addressStr: function () {
-            return gettext('address');
+        latitudeStr: function () {
+            return gettext('latitude');
+        },
+        longitudeStr: function () {
+            return gettext('longitude');
         },
         managementStr: function () {
             return gettext('management');
@@ -843,35 +840,36 @@ var VwManagementTable = {
         },
         noNestsStr: function () {
             return gettext('No nests yet!')
-        },
-        nestClass: function () {
-            return 'table-danger';
         }
     },
     data: function () {
         return {
-            _nests: []
+            nests: []
         }
     },
     methods: {
-        loadData: function () {
-            if (this.zone != null) {
-                this.$root.loadNests(this.zone);
-            } else {
-                this.$root.loadNests();
-            }
-            this.$emit('data-changed');
-        }
+        loadNests: function () {
+            this.$root.currentlyLoading = true;
+            let url = VWConfig.apis.nestsUrl + '?type=nest';
+            axios.get(url)
+                .then(response => {
+                    if (response.data.nests) {
+                        this.nests = response.data.nests;
+                        this.$emit('nests updated', 1);
+                        this.$emit('data-changed');
+                    }
+                    this.$root.currentlyLoading = false;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+
+        },
     },
     mounted: function () {
-        this.loadData();
+        this.loadNests();
     },
-    props: ['nests', 'zone', 'currentlyLoading'],
-    watch: {
-        nests: function (n, o) {
-            this._nests = n;
-        }
-    },
+    props: ['currentlyLoading'],
     template: `
         <div class="row">
             <span v-if="currentlyLoading">{{ loadingStr }}</span>
@@ -879,11 +877,11 @@ var VwManagementTable = {
                 <table v-if="nests && nests.length > 0" class="table">
                     <thead>
                         <tr>
-                            <th>{{ dateStr }}</th><th>{{ addressStr }}</th><th>{{ managementStr }}</th><th></th>
+                            <th>{{ dateStr }}</th><th>{{ longitudeStr }}</th><th>{{ latitudeStr }}</th><th>{{ managementStr }}</th><th></th>
                         </tr>
                     </thead>
 
-                    <vw-management-table-nest-row v-for="nest in nests" :nest="nest" :key="nest.id" v-on:data-changed="loadData"></vw-management-table-nest-row>
+                    <vw-management-table-nest-row v-for="nest in nests" :nest="nest" :key="nest.id" v-on:data-changed="loadNests"></vw-management-table-nest-row>
                 </table>
                 <div v-else>{{ noNestsStr }}</div>
             </template>
@@ -1475,27 +1473,6 @@ var app = new Vue({
             // from https://stackoverflow.com/a/34064434/1805725
             var doc = new DOMParser().parseFromString(input, 'text/html');
             return doc.documentElement.textContent;
-        },
-        loadNests: function (zone) {
-            this.$refs.viz.getData();  // call getData on the ObservationViz component
-            this.currentlyLoading = true;
-            this.nests = [];
-            let url = VWConfig.apis.observationsUrl + '?type=nest';
-            if (zone != null) {
-                url = url + '&zone=' + zone;
-            }
-            axios.get(url)
-                .then(response => {
-                    if (response.data.observations) {
-                        this.nests = response.data.observations;
-                        this.$emit('nests updated', 1);
-                    }
-                    this.currentlyLoading = false;
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
-
         }
     }
 });

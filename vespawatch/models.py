@@ -4,15 +4,11 @@ from datetime import datetime, date
 import dateparser
 import requests
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.contrib.gis.geos import Point
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.base import ContentFile
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.template import defaultfilters
 from django.urls import reverse
 from django.utils import timezone
@@ -278,23 +274,6 @@ def inat_observation_comes_from_vespawatch_DEPRECATED(inat_observation_id):
     return False
 
 
-class FirefightersZone(models.Model):
-    name = models.CharField(max_length=100)
-    mpolygon = models.MultiPolygonField(null=True)
-
-    def __str__(self):
-        return self.name
-
-
-def get_zone_for_coordinates(lat, lon):
-    """Returns the Firefighters zone instance given (point) coordinates. lat/lon in EPSG4326.
-
-    :raises FirefightersZone.DoesNotExist:
-    """
-    point = Point(x=lon, y=lat)
-    return FirefightersZone.objects.get(mpolygon__intersects=point)
-
-
 def no_future(value):
     today = date.today()
     if value.date() > today:
@@ -310,7 +289,6 @@ class AbstractObservation(models.Model):
 
     latitude = models.FloatField(validators=[MinValueValidator(-90), MaxValueValidator(90)], verbose_name=_("Latitude"))
     longitude = models.FloatField(validators=[MinValueValidator(-180), MaxValueValidator(180)], verbose_name=_("Longitude"))
-    zone = models.ForeignKey(FirefightersZone, blank=True, null=True, on_delete=models.PROTECT)
 
     inaturalist_id = models.BigIntegerField(verbose_name=_("iNaturalist ID"), blank=True, null=True)
     inaturalist_species = models.CharField(verbose_name=_("iNaturalist species"), max_length=100, blank=True, null=True)  # TODO: check if this is still in use or useful
@@ -334,17 +312,6 @@ class AbstractObservation(models.Model):
         # We got some duplicates and don't exactly know why, this is an attempt to block them without being too
         # aggresive and introduce bugs (hence the limited number of fields).
         unique_together = ['taxon', 'observation_time', 'latitude', 'longitude', 'comments']
-
-    def auto_assign_zone(self):
-        """Sets the zone attribute, according to the latitude/longitude. You'll need to manually save the model instance.
-
-        !! overwrite existing values !!
-        """
-        if self.latitude and self.longitude:
-            try:
-                self.zone = get_zone_for_coordinates(self.latitude, self.longitude)
-            except FirefightersZone.DoesNotExist:
-                pass
 
     @property
     def vernacular_names_in_all_languages(self):
@@ -625,9 +592,6 @@ class AbstractObservation(models.Model):
         # Let's make sure model.clean() is called on each save(), for validation
         self.full_clean()
 
-        if not self.zone:  # Automatically sets a zone if we don't have one.
-            self.auto_assign_zone()
-
         return super(AbstractObservation, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -845,24 +809,6 @@ class ManagementAction(models.Model):
         return f'{self.action_time.strftime("%Y-%m-%d")} {self.get_outcome_display()}'
 
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    # Firefighters have a zone, other users (Admin, ...) don't.
-    zone = models.ForeignKey(FirefightersZone, on_delete=models.PROTECT, null=True, blank=True)
-
-
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
-
-
 class InatObsToDelete(models.Model):
     """This model is used to store iNaturalist IDs for deleted observation, so they can be also deleted @inat on the
     subsequent push operation"""
@@ -872,19 +818,13 @@ class InatObsToDelete(models.Model):
         return str(self.inaturalist_id)
 
 
-def get_observations(include_individuals=True, include_nests=True, zone_id=None, limit=None):
+def get_observations(include_individuals=True, include_nests=True, limit=None):
     obs = []
 
     if include_individuals:
-        if zone_id is None:
-            obs = obs + list(Individual.objects.select_related('taxon').prefetch_related('pictures').all().order_by('-observation_time')[:limit])
-        else:
-            obs = obs + list(Individual.objects.select_related('taxon').prefetch_related('pictures').filter(zone_id__exact=zone_id).order_by('-observation_time')[:limit])
+        obs = obs + list(Individual.objects.select_related('taxon').prefetch_related('pictures').all().order_by('-observation_time')[:limit])
     if include_nests:
-        if zone_id is None:
-            obs = obs + list(Nest.objects.select_related('taxon').prefetch_related('pictures').all().order_by('-observation_time')[:limit])
-        else:
-            obs = obs + list(Nest.objects.select_related('taxon').prefetch_related('pictures').filter(zone_id__exact=zone_id).order_by('-observation_time')[:limit])
+        obs = obs + list(Nest.objects.select_related('taxon').prefetch_related('pictures').all().order_by('-observation_time')[:limit])
 
     obs.sort(key=lambda x: x.observation_time, reverse=True)
 
