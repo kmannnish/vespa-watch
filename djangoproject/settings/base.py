@@ -30,7 +30,7 @@ JS_DEBUG = False
 
 ALLOWED_HOSTS = ['.localhost']
 
-# add private ip from AWS
+# Add private IP from AWS
 # cfr. https://hashedin.com/blog/5-gotchas-with-elastic-beanstalk-and-django/
 def is_ec2_linux():
     """Detect if we are running on an EC2 Linux Instance
@@ -63,7 +63,6 @@ def get_linux_ec2_private_ip():
 private_ip = get_linux_ec2_private_ip()
 if private_ip:
     ALLOWED_HOSTS.append(private_ip)
-
 
 # Application definition
 
@@ -125,7 +124,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'djangoproject.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
@@ -135,7 +133,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -154,7 +151,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
@@ -207,7 +203,6 @@ MAP_TILELAYER_OPTIONS = {
     'maxZoom': 20
 }
 
-
 # iNaturalist
 
 INAT_USER_USERNAME = 'vespawatch'
@@ -216,7 +211,16 @@ INAT_APP_ID = 'd1d0f541791be42e234ce82a5bb8332ab816ff7ab35c6e27b12c0455939a5ea8'
 INAT_APP_SECRET = ''
 INATURALIST_PUSH = False
 
-INATURALIST_PUSH = False  # Set it to true if we want to REALLY push data to iNaturalist
+# Notification emails
+
+EMAIL_SENDER = 'vespawatch@inbo.be'
+EMAIL_SUBJECT = ''
+EMAIL_TEMPLATE = """<html>
+<body>
+
+</body>
+</html>
+"""
 
 # Other
 
@@ -243,7 +247,6 @@ VESPAWATCH_PROJECT_URL = f"https://inaturalist.org/projects/{VESPAWATCH_PROJECT_
 VESPAWATCH_USER_ID = 1263313  # vespawatch user ID @ iNaturalist
 
 WEBSITE_NAME = "Vespa-Watch"
-
 
 # Exported to templates
 

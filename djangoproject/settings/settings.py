@@ -107,18 +107,6 @@ AWS_S3_OBJECT_PARAMETERS = {
 AWS_S3_FILE_OVERWRITE = True
 AWS_S3_REGION_NAME = 'eu-west-1'
 
-# Email settings
-EMAIL_CHARSET = "UTF-8"
-EMAIL_TEMPLATE = """<html>
-<head></head>
-<body>
-  <h1>{title}</h1>
-  <p>{message}
-</body>
-</html>
-"""
-EMAIL_SENDER = 'vespawatch@inbo.be'
-
 # s3 static file settings
 STATICFILES_LOCATION = 'static'
 STATICFILES_STORAGE = 'custom_s3_storage.StaticStorage'
@@ -127,7 +115,6 @@ STATIC_URL = 'https://{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
 # S3 media file settings
 MEDIAFILES_LOCATION = 'media'
 DEFAULT_FILE_STORAGE = 'custom_s3_storage.MediaStorage'
-
 
 # Other
 VESPAWATCH_BASE_SITE_URL = "http://vespawatch-{}.eu-west-1.elasticbeanstalk.com/".format(os.environ['ENVIRONMENT'])
