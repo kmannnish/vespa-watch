@@ -1312,7 +1312,8 @@ var VwLocationSelector = {
                 params: {
                     countrycodes: 'BE'
                 }
-            })
+            }),
+            searchFailed: false
         }
     },
     computed: {
@@ -1321,6 +1322,9 @@ var VwLocationSelector = {
         },
         locationLat: function () {
             return this.locationCoordinates ? this.locationCoordinates[1] : null;
+        },
+        locationNotFoundText: function () {
+            return gettext("Sorry, we could not find that location.");
         }
     },
     components: {
@@ -1360,11 +1364,16 @@ var VwLocationSelector = {
             console.log('Address input changed to ' + address + '+\n -> get coordinates and update locationCoordinates and markerCoordinates');
             this.provider.search({query: address})
                 .then(result => {
-                    var firstResult = result[0];
-                    console.log(result);
-                    this.locationCoordinates = [firstResult.x, firstResult.y];
-                    this.markerCoordinates = [firstResult.x, firstResult.y];
-                    this.modelAddress = firstResult.label;
+                    if (result.length < 1) {
+                        this.searchFailed = true;
+                    } else {
+                        console.log(result);
+                        var firstResult = result[0];
+                        this.locationCoordinates = [firstResult.x, firstResult.y];
+                        this.markerCoordinates = [firstResult.x, firstResult.y];
+                        this.modelAddress = firstResult.label;
+                    }
+
                 })
         },
         reverseGeocode: function () {
@@ -1407,6 +1416,12 @@ var VwLocationSelector = {
                 v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:location="modelAddress"
                 v-bind:latitude-is-invalid="latitudeIsInvalid" v-bind:longitude-is-invalid="longitudeIsInvalid">
                 </vw-location-selector-input>
+                <div v-if="searchFailed" class="alert alert-warning alert-dismissible " role="alert">
+                  {{ locationNotFoundText }}
+                  <button type="button" class="close" v-on:click="searchFailed = false" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
                 <vw-location-selector-map v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
                 <vw-location-selector-coordinates :longitude="locationLng" :latitude="locationLat"></vw-location-selector-coordinates>
             </div>
