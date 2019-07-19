@@ -2,6 +2,7 @@ import logging
 from json import JSONDecodeError
 
 from django.conf import settings
+import pyinaturalist
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.node_api import get_all_observations, get_observation
 from pyinaturalist.rest_api import get_access_token, delete_observation
@@ -12,6 +13,8 @@ from vespawatch.models import Individual, Nest, InatObsToDelete, get_local_obser
     create_observation_from_inat_data, get_missing_at_inat_observations
 
 OBSERVATION_MODELS = [Individual, Nest]
+
+USER_AGENT = f'VespaWatch (using Pyinaturalist {pyinaturalist.__version__})'
 
 
 class Command(VespaWatchCommand):
@@ -55,7 +58,7 @@ class Command(VespaWatchCommand):
         for obs in local_observations_from_vespawatch:
             self.w(f"... Creating {obs.subject} #{obs.pk} on iNaturalist")
             try:
-                obs.create_at_inaturalist(access_token=access_token)
+                obs.create_at_inaturalist(access_token=access_token, user_agent=USER_AGENT)
             except HTTPError:
                 self.w('HTTP Error received, check logs.')
                 logging.exception("HTTPError while pushing observation.")
@@ -111,6 +114,8 @@ class Command(VespaWatchCommand):
             self.check_missing_obs(obs)
 
     def handle(self, *args, **options):
+        pyinaturalist.user_agent = USER_AGENT
+
         if settings.INATURALIST_PUSH:
             token = get_access_token(username=settings.INAT_USER_USERNAME, password=settings.INAT_USER_PASSWORD,
                                      app_id=settings.INAT_APP_ID,
