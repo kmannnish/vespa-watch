@@ -198,7 +198,7 @@ body > footer {
     padding: 5px;
 }
 
-// Customize vue-datetime
+// Customize vue
 
 .vdatetime-popup__header {
     background: $link-color;
@@ -215,6 +215,14 @@ body > footer {
 
 .vue-dropzone.form-control {
     height: initial; // Revert .form-control calculated height, so dropzone can scale
+}
+
+// Customize crispy
+
+.form-check {
+    .invalid-feedback {
+        display: block; // Show error message for checkboxes (seems like a crispy bug)
+    }
 }
 
 // Customize modal
