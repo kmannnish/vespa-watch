@@ -7,12 +7,14 @@ defusedxml==0.6.0
 diff-match-patch==20181111
 Django==2.1.8
 django-appconf==1.0.2
+django-constance==2.4.0
 django-crispy-forms==1.7.2
 django-debug-toolbar==1.11
--e git+https://github.com/niconoe/django-imagekit.git@b09496b05d84577d43751a10f838d0c527b6db32#egg=django-imagekit
+-e git+https://github.com/niconoe/django-imagekit.git@b09496b05d84577d43751a10f838d0c527b6db32#egg=django_imagekit
 django-import-export==1.2.0
 django-markdownx==2.0.28
 django-modeltranslation==0.13b1
+django-picklefield==2.0
 django-settings-export==1.2.1
 django-storages==1.7.1
 et-xmlfile==1.0.1
