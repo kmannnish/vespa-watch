@@ -1045,7 +1045,8 @@ var VwLocationSelectorMap = {
 var VwLocationSelectorInput = {
     data: function () {
         return {
-            input_location: null
+            input_location: null,
+            internalDetectionBlocked: null
         };
     },
     computed: {
@@ -1072,6 +1073,19 @@ var VwLocationSelectorInput = {
         searchPositionLabel: function () {
             return gettext('Type a location name and click search...')
         },
+        _detectionBlocked: {
+            get: function () {
+                if (this.internalDetectionBlocked != null) {
+                    return this.internalDetectionBlocked;
+                } else {
+                    return this.detectionBlocked;
+                }
+            },
+            set: function (x) {
+                this.internalDetectionBlocked = x;
+            }
+        },
+
         _location: {
             get: function () {
                 return this.input_location || this.location;
@@ -1084,8 +1098,8 @@ var VwLocationSelectorInput = {
     },
     methods: {
         blockLocationDetection: function () {
-            if (!this.detectionBlocked) {
-                this.detectionBlocked = true;
+            if (!this._detectionBlocked) {
+                this._detectionBlocked = true;
                 this.$emit('block-location-detection');
             }
         },
@@ -1412,7 +1426,7 @@ var VwLocationSelector = {
                 <vw-location-selector-input 
                 v-on:search="getCoordinates"
                 v-on:block-location-detection="blockLocationDetection"
-                detection-blocked="true"
+                :detection-blocked="locationDetectionBlocked"
                 v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:location="modelAddress"
                 v-bind:latitude-is-invalid="latitudeIsInvalid" v-bind:longitude-is-invalid="longitudeIsInvalid">
                 </vw-location-selector-input>
