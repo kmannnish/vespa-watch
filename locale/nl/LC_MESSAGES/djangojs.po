@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-18 15:11+0200\n"
+"POT-Creation-Date: 2019-07-18 17:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -128,40 +128,39 @@ msgstr "toevoegen"
 msgid "edit / delete"
 msgstr "wijzig / verwijder"
 
-#: static_src/js/vespawatch.js:1114
+#: static_src/js/vespawatch.js:1059
 #: vespawatch/static/vespawatch/js/app.min.js:1
-msgid "Latitude"
-msgstr "Latitude"
+msgid "Search"
+msgstr "Zoek"
 
-#: static_src/js/vespawatch.js:1117
+#: static_src/js/vespawatch.js:1062
 #: vespawatch/static/vespawatch/js/app.min.js:1
-msgid "Type coordinates or move maker"
-msgstr "Typ coordinaten of verplaats pin"
+msgid ""
+"Search for the address and move the marker on the map to where you saw your "
+"observation."
+msgstr ""
+"Zoek het adres en verplaats de pin op de kaart naar waar je je observatie "
+"zag."
 
-#: static_src/js/vespawatch.js:1123
+#: static_src/js/vespawatch.js:1069 static_src/js/vespawatch.js:1224
 #: vespawatch/static/vespawatch/js/app.min.js:1
-msgid "Longitude"
-msgstr "Longitude"
+msgid "This field is required."
+msgstr "Dit veld is verplicht."
 
-#: static_src/js/vespawatch.js:1129
+#: static_src/js/vespawatch.js:1073
 #: vespawatch/static/vespawatch/js/app.min.js:1
-msgid "Address"
-msgstr "Adres"
+msgid "Type a location name and click search..."
+msgstr "Typ een plaatsnaam en klik zoek..."
 
-#: static_src/js/vespawatch.js:1132
-#: vespawatch/static/vespawatch/js/app.min.js:1
-msgid "Correct the address if necessary"
-msgstr "Corrigeer het adres indien nodig"
-
-#: static_src/js/vespawatch.js:1222
+#: static_src/js/vespawatch.js:1169
 #: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "Observation date"
 msgstr "Datum van observatie"
 
-#: static_src/js/vespawatch.js:1277
+#: static_src/js/vespawatch.js:1220
 #: vespawatch/static/vespawatch/js/app.min.js:1
-msgid "This field is required."
-msgstr "Dit veld is verplicht."
+msgid "Drop up to 3 photos here to upload"
+msgstr "Sleep tot 3 foto's hierheen om ze op te laden"
 
 #: vespawatch/static/vespawatch/js/app.min.js:1
 msgid "date"
@@ -192,28 +191,12 @@ msgid "subject"
 msgstr "onderwerp"
 
 #: vespawatch/static/vespawatch/js/app.min.js:1
-msgid "Position"
-msgstr "Positie"
+msgid "Latitude"
+msgstr "Latitude"
 
 #: vespawatch/static/vespawatch/js/app.min.js:1
-msgid "Search"
-msgstr "Zoek"
-
-#: vespawatch/static/vespawatch/js/app.min.js:1
-msgid "Detect current position"
-msgstr "Detecteer huidige positie"
-
-#: vespawatch/static/vespawatch/js/app.min.js:1
-msgid "or"
-msgstr "of"
-
-#: vespawatch/static/vespawatch/js/app.min.js:1
-msgid "type a location..."
-msgstr "typ een plaatsnaam..."
-
-#: vespawatch/static/vespawatch/js/app.min.js:1
-msgid "This will populate the fields below"
-msgstr "Dit zal de velden hieronder invullen"
+msgid "Longitude"
+msgstr "Longitude"
 
 #: vespawatch/static/vespawatch/libraries/moment/moment.min.js:1
 msgid ": "

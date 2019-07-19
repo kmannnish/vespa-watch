@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-18 15:11+0200\n"
+"POT-Creation-Date: 2019-07-18 17:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,7 +28,7 @@ msgstr "Miniatuurafbeelding"
 msgid "Enter a valid date/time."
 msgstr "Vul een correcte datum/tijd in."
 
-#: vespawatch/forms.py:34 vespawatch/forms.py:123
+#: vespawatch/forms.py:33 vespawatch/forms.py:123
 msgid "Accept the privacy policy"
 msgstr "Accepteer het privacybeleid"
 
@@ -89,6 +89,14 @@ msgstr "Datum van observatie"
 #: vespawatch/models.py:309
 msgid "Comments"
 msgstr "Opmerkingen"
+
+#: vespawatch/models.py:309
+msgid ""
+"Comments are public: use them to describe your observation and help "
+"verification."
+msgstr ""
+"Opmerkingen zijn publiek: gebruik ze om je observatie te beschrijven en "
+"verificatie te vergemakkelijken."
 
 #: vespawatch/models.py:311
 msgid "Latitude"
@@ -278,17 +286,17 @@ msgstr "Uitloggen"
 #: vespawatch/templates/vespawatch/base.html:115
 msgid ""
 "\n"
-"                This project was funded by <a href=\"https://www.ewi-"
-"vlaanderen.be/oproep-citizen-science-geselecteerde-projecten\">EWI</a><br>\n"
-"                Developed by the <a href=\"https://twitter.com/oscibio"
-"\">Open science lab for biodiversity</a>\n"
+"                This project was funded by <a "
+"href=\"https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten\">EWI</a><br>\n"
+"                Developed by the <a "
+"href=\"https://twitter.com/oscibio\">Open science lab for biodiversity</a>\n"
 "              "
 msgstr ""
 "\n"
-"               Dit project is gefinancierd door <a href=\"https://www.ewi-"
-"vlaanderen.be/oproep-citizen-science-geselecteerde-projecten\">EWI</a><br>\n"
-"                Ontwikkeld door het <a href=\"https://twitter.com/oscibio"
-"\">Open science lab for biodiversity</a>\n"
+"                Dit project is gefinancierd door <a "
+"href=\"https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten\">EWI</a><br>\n"
+"                Ontwikkeld door het <a "
+"href=\"https://twitter.com/oscibio\">Open science lab for biodiversity</a>\n"
 "              "
 
 #: vespawatch/templates/vespawatch/base.html:123
@@ -378,13 +386,19 @@ msgstr "Gelieve insecten niet onnodig te doden."
 msgid "Photos"
 msgstr "Foto's"
 
-#: vespawatch/templates/vespawatch/individual_create.html:39
-#: vespawatch/templates/vespawatch/nest_create.html:37
-msgid "Upload at least one photo of your observation"
-msgstr "Gelieve ten minste één foto van je observatie op te laden"
+#: vespawatch/templates/vespawatch/individual_create.html:45
+#: vespawatch/templates/vespawatch/nest_create.html:43
+msgid ""
+"Upload at least one photo you took of your observation, to allow "
+"verification. Observations with photos that are unusable or not yours will "
+"be deleted."
+msgstr ""
+"Laad ten minste één foto op die je maakte van je observatie, om verificatie "
+"mogelijk te maken. Observaties met onbruikbare of niet zelfgenomen foto's "
+"zullen worden verwijderd."
 
-#: vespawatch/templates/vespawatch/individual_create.html:46
-#: vespawatch/templates/vespawatch/nest_create.html:44
+#: vespawatch/templates/vespawatch/individual_create.html:48
+#: vespawatch/templates/vespawatch/nest_create.html:46
 msgid "Location"
 msgstr "Locatie"
 
@@ -403,8 +417,8 @@ msgstr "Contactinformatie"
 #, python-format
 msgid ""
 "\n"
-"              I agree with the <a href=\"%(privacypolicy_page)s\" target="
-"\"_blank\">privacy policy</a>*.\n"
+"              I agree with the <a href=\"%(privacypolicy_page)s\" "
+"target=\"_blank\">privacy policy</a>*.\n"
 "            "
 msgstr ""
 "\n"
@@ -455,25 +469,43 @@ msgid "What did you see?"
 msgstr "Wat heb je gezien?"
 
 #: vespawatch/templates/vespawatch/obs_create.html:10
-#, python-format
 msgid ""
 "\n"
-"      For more information on these species, see the <a href="
-"\"%(identification_page)s\">identification page</a>.\n"
+"      Your observation will be verified by the <a "
+"href=\"https://www.inaturalist.org/\">iNaturalist</a> community. \n"
+"      Want to help and/or submit observations under your own name? <a "
+"href=\"https://www.inaturalist.org/signup\">Create an iNaturalist "
+"account</a>.\n"
 "    "
 msgstr ""
 "\n"
-"      Meer informatie over deze soorten vind je op de <a href="
-"\"%(identification_page)s\">identificatie pagina</a>.\n"
+"      Je observatie zal worden geverifieerd door de <a "
+"href=\"https://www.inaturalist.org/\">iNaturalist</a> gemeenschap. \n"
+"      Zin om te helpen en/of observaties onder je eigen naam door te sturen? "
+"<a href=\"https://www.inaturalist.org/signup\">Maak een iNaturalist account "
+"aan</a>.\n"
 "    "
 
-#: vespawatch/templates/vespawatch/obs_create.html:16
+#: vespawatch/templates/vespawatch/obs_create.html:17
 msgid "No identification cards defined. Create these in the admin interface."
 msgstr ""
 "Geen \"identification cards\" gedefinieerd. Gelieve deze aan te maken in de "
 "admin interface."
 
-#: vespawatch/views.py:110 vespawatch/views.py:181
+#: vespawatch/templates/vespawatch/obs_create.html:30
+#, python-format
+msgid ""
+"\n"
+"      For more information on these species, see the <a "
+"href=\"%(identification_page)s\">identification page</a>.\n"
+"    "
+msgstr ""
+"\n"
+"      Meer informatie over deze soorten vind je op de <a "
+"href=\"%(identification_page)s\">identificatie pagina</a>.\n"
+"    "
+
+#: vespawatch/views.py:110 vespawatch/views.py:184
 msgid ""
 "Your observation was successfully created. Thanks for your contribution!"
 msgstr "Jouw observatie werd succesvol bewaard. Bedankt voor je bijdrage!"

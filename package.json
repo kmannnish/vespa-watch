@@ -14,13 +14,13 @@
     "copy:vue": "dir='vespawatch/static/vespawatch/libraries/vue' && mkdir -p $dir && cp node_modules/vue/dist/vue.js $dir/vue.js && cp node_modules/vue/dist/vue.min.js $dir/vue.min.js && cp node_modules/vue-datetime/dist/vue-datetime.min.js $dir/vue-datetime.min.js && cp node_modules/vue-datetime/dist/vue-datetime.min.css $dir/vue-datetime.min.css && cp node_modules/luxon/build/global/luxon.min.js $dir/luxon.min.js && cp node_modules/vue2-dropzone/dist/vue2Dropzone.js $dir/vue2Dropzone.js && cp node_modules/vue2-dropzone/dist/vue2Dropzone.min.css $dir/vue2Dropzone.min.css",
     "copy:wnumb": "dir='vespawatch/static/vespawatch/libraries/wnumb' && mkdir -p $dir && cp node_modules/wnumb/wNumb.js $dir/wnumb.js",
     "copy:libraries": "npm run copy:bootstrap && npm run copy:axios && npm run copy:crossfilter && npm run copy:leaflet && npm run copy:moment && npm run copy:vue && npm run copy:wnumb",
-    "copy:custom-js": "dir='vespawatch/static/vespawatch/js/' && mkdir -p $dir && uglifyjs static_src/js/*.js --compress --mangle --warn --output $dir/app.min.js",
-    "copy:img": "dir='vespawatch/static/vespawatch/img/' && mkdir -p $dir && cp -r static_src/img/* $dir",
-    "copy:icons": "dir='vespawatch/static/vespawatch/icons/' && mkdir -p $dir && cp -r static_src/icons/* $dir",
-    "create:css": "dir='vespawatch/static/vespawatch/css/' && mkdir -p $dir && node-sass static_src/scss --output-style nested --source-map true --output $dir",
+    "copy:custom-js": "dir='vespawatch/static/vespawatch/js/' && mkdir -p $dir && uglifyjs assets/js/*.js --compress --mangle --warn --output $dir/app.min.js",
+    "copy:img": "dir='vespawatch/static/vespawatch/img/' && mkdir -p $dir && cp -r assets/img/* $dir",
+    "copy:icons": "dir='vespawatch/static/vespawatch/icons/' && mkdir -p $dir && cp -r assets/icons/* $dir",
+    "create:css": "dir='vespawatch/static/vespawatch/css/' && mkdir -p $dir && node-sass assets/scss --output-style nested --source-map true --output $dir",
     "build:all": "npm run wipe:static && npm run copy:libraries && npm run copy:custom-js && npm run copy:icons && npm run copy:img && npm run create:css",
-    "watch:js": "onchange 'static_src/js/*.js' -- npm run copy:custom-js",
-    "watch:css": "onchange 'static_src/scss/*.scss' -- npm run create:css"
+    "watch:js": "onchange 'assets/js/*.js' -- npm run copy:custom-js",
+    "watch:css": "onchange 'assets/scss/*.scss' -- npm run create:css"
   },
   "dependencies": {
     "axios": "0.19.0-beta.1",

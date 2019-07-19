@@ -306,7 +306,7 @@ class AbstractObservation(models.Model):
     taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT, blank=True, null=True)
     address = models.CharField(verbose_name=_("Address"), max_length=255, blank=True)
     observation_time = models.DateTimeField(verbose_name=_("Observation date"), validators=[no_future])
-    comments = models.TextField(verbose_name=_("Comments"), blank=True)
+    comments = models.TextField(verbose_name=_("Comments"), blank=True, help_text=_("Comments are public: use them to describe your observation and help verification."))
 
     latitude = models.FloatField(validators=[MinValueValidator(-90), MaxValueValidator(90)], verbose_name=_("Latitude"))
     longitude = models.FloatField(validators=[MinValueValidator(-180), MaxValueValidator(180)], verbose_name=_("Longitude"))
