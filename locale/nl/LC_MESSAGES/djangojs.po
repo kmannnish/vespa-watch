@@ -143,7 +143,6 @@ msgid "Drop up to 3 photos here to upload"
 msgstr "Sleep tot 3 foto's hierheen om ze op te laden"
 
 #: assets/js/vespawatch.js:1345
-#, fuzzy
 msgid "Sorry, we could not find that location."
 msgstr "Sorry, deze locatie konden we niet vinden."
 
