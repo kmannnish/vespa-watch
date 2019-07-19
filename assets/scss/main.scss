@@ -108,6 +108,7 @@ main.container-fluid {
 
   .card {
     margin-bottom: $grid-gutter-width; // Add spacing between rows of cards
+    min-width: 100%; // Use allowed width even if content is smaller
   }
 
   .theme-card-horizontal { // Used for identification cards and tips
@@ -137,8 +138,8 @@ main.container-fluid {
     // stretching width when there are fewer cards on one row (cards remain equal width).
 
     div[class*="col"] {
-      display: flex!important;
-      align-items: stretch!important; 
+      display: flex;
+      align-items: stretch; 
     }
   }
 }
