@@ -49,6 +49,7 @@
       {% if form.data %}
         v-bind:init-coordinates="[{{ form.data.longitude|default_if_none:'' }}, {{ form.data.latitude|default_if_none:'' }}]"
         init-marker={% if form.data.longitude %}"true"{% else %}"false"{% endif %}
+        location="{{ form.data.location|default_if_none:'' }}"
         :latitude-is-invalid={{ form.latitude_is_invalid|boolean_to_string }}
         :longitude-is-invalid={{ form.longitude_is_invalid|boolean_to_string }}
       {% else %}
