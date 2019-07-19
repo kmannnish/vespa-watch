@@ -36,7 +36,7 @@
 
     <h5>{% trans 'Photos' %}*</h5>
 
-    <vw-image-dropzone type="nest" csrf-token="{{ csrf_token }}"
+    <vw-image-dropzone type="individual" csrf-token="{{ csrf_token }}"
       {% if form.data %}
         :validation-error={{ form.image_is_invalid|boolean_to_string }}
       {% endif %}>
