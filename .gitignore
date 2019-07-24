@@ -111,9 +111,14 @@ node_modules
 
 # Vespa-watch specific
 djangoproject/settings/settings_local.py
+djangoproject/CACHE/*
+djangoproject/pictures
+djangoproject/species_identification_pictures
 .idea/
 testbed_inat_interactions.py
 pictures/
+set_local_env.sh
+src/
 
 # deployment exclusions
 
