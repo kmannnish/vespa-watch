@@ -36,7 +36,7 @@
 
     <h5>{% trans 'Photos' %}*</h5>
 
-    <vw-image-dropzone type="nest" csrf-token="{{ csrf_token }}"
+    <vw-image-dropzone type="individual" csrf-token="{{ csrf_token }}"
       {% if form.data %}
         :validation-error={{ form.image_is_invalid|boolean_to_string }}
       {% endif %}>
@@ -101,17 +101,7 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <div class="form-check">
-          <input class="form-check-input" name="terms_of_service" type="checkbox" id="id_terms_of_service" {% if form.terms_of_service.value %}checked{% endif %}>
-          <label class="form-check-label" for="id_terms_of_service">
-            {% url 'vespawatch:about_privacypolicy' as privacypolicy_page %}
-            {% blocktrans %}
-              I agree with the <a href="{{ privacypolicy_page }}" target="_blank">privacy policy</a>*.
-            {% endblocktrans %}
-          </label>
-        </div>
-      </div>
+      {{ form.terms_of_service|as_crispy_field }}
     {% endif %}
 
     <button type="submit" class="btn btn-success">{% trans 'Report observation' %}</button>

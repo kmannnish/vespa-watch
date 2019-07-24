@@ -288,7 +288,7 @@ def no_future(value):
 class AbstractObservation(models.Model):
     originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
     taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT, blank=True, null=True)
-    address = models.CharField(verbose_name=_("Address"), max_length=255, blank=True)
+    address = models.CharField(verbose_name=_("Address"), max_length=255, blank=True)  # Keeping this field for old data, but is is not filled in anymore as of #297
     observation_time = models.DateTimeField(verbose_name=_("Observation date"), validators=[no_future])
     comments = models.TextField(verbose_name=_("Comments"), blank=True, help_text=_("Comments are public: use them to describe your observation and help verification."))
 

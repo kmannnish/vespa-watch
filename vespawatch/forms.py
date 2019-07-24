@@ -11,6 +11,8 @@ OBS_FORM_VUE_FIELDS = ({'field_name': 'observation_time', 'attribute_if_error': 
 
 
 class ReportObservationForm(ModelForm):
+    terms_of_service = BooleanField(label=_('I agree with the <a href="/about/privacy-policy/" target="_blank">privacy policy</a>'))
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for vue_field in OBS_FORM_VUE_FIELDS:
@@ -30,7 +32,6 @@ class ReportObservationForm(ModelForm):
 class IndividualForm(ReportObservationForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
-    terms_of_service = BooleanField(label=_('Accept the privacy policy'), required=False)
     location = CharField(max_length=255, required=False)
     image_ids = CharField(max_length=255)
 
@@ -46,11 +47,6 @@ class IndividualForm(ReportObservationForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        toc = cleaned_data.get('terms_of_service')
-        print('Toc: {}'.format(toc))
-        if not toc:
-            msg = _("You must accept the privacy policy.")
-            self.add_error('terms_of_service', msg)
         if 'image_ids' not in cleaned_data or not cleaned_data['image_ids']:
             msg = 'You must add at least one picture'
             self.add_error(None, msg)
@@ -120,7 +116,6 @@ class NestFormUnauthenticated(NestForm):
     observer_name = CharField(label=_('Name'), max_length=255)
     observer_email = EmailField(label=_('Email address'))
     observer_phone = CharField(label=_('Telephone number'), max_length=20)
-    terms_of_service = BooleanField(label=_('Accept the privacy policy'))
 
     class Meta:
         model = Nest
@@ -131,16 +126,6 @@ class NestFormUnauthenticated(NestForm):
         field_classes = {
             'observation_time': ISODateTimeField,
         }
-
-    def clean(self):
-        cleaned_data = super().clean()
-
-        toc = cleaned_data.get('terms_of_service')
-        if not toc:
-            msg = _("You must accept the privacy policy.")
-            self.add_error('terms_of_service', msg)
-
-        return cleaned_data
 
 
 class IndividualPictureForm(ModelForm):

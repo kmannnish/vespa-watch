@@ -49,6 +49,7 @@
       {% if form.data %}
         v-bind:init-coordinates="[{{ form.data.longitude|default_if_none:'' }}, {{ form.data.latitude|default_if_none:'' }}]"
         init-marker={% if form.data.longitude %}"true"{% else %}"false"{% endif %}
+        location="{{ form.data.location|default_if_none:'' }}"
         :latitude-is-invalid={{ form.latitude_is_invalid|boolean_to_string }}
         :longitude-is-invalid={{ form.longitude_is_invalid|boolean_to_string }}
       {% else %}
@@ -99,17 +100,7 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <div class="form-check">
-          <input class="form-check-input" name="terms_of_service" type="checkbox" id="id_terms_of_service" {% if form.terms_of_service.value %}checked{% endif %}>
-          <label class="form-check-label" for="id_terms_of_service">
-            {% url 'vespawatch:about_privacypolicy' as privacypolicy_page %}
-            {% blocktrans %}
-              I agree with the <a href="{{ privacypolicy_page }}" target="_blank">privacy policy</a>*.
-            {% endblocktrans %}
-          </label>
-        </div>
-      </div>
+      {{ form.terms_of_service|as_crispy_field }}
     {% endif %}
 
     <button type="submit" class="btn btn-success">{% trans 'Report nest' %}</button>

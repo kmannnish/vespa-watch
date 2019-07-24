@@ -11,82 +11,82 @@
 // OVERWRITES
 
 body {
-    // Customize Bootstrap
+  // Customize Bootstrap
 
-    .btn {
-        white-space: normal; // Wrap button within container
-    }
+  .btn {
+    white-space: normal; // Wrap button within container
+  }
 }
 
 
 // COVER IMAGE
 
 figure {
-    margin-bottom: 0;
-    position: relative;
+  margin-bottom: 0;
+  position: relative;
 }
 
 div.jumbotron {
-    // background-image: applied in template
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    margin-bottom: 0;
-    padding-bottom: 4rem;
+  // background-image: applied in template
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin-bottom: 0;
+  padding-bottom: 4rem;
 
-    .container {
-        h1 {
-            color: $white;
-            font-size: 3rem;
-            margin-bottom: 2rem;
-            text-shadow: 0.5px 0.5px 2px rgba(theme-color("dark"), 0.75);
-        }
+  .container {
+    h1 {
+      color: $white;
+      font-size: 3rem;
+      margin-bottom: 2rem;
+      text-shadow: 0.5px 0.5px 2px rgba(theme-color("dark"), 0.75);
     }
+  }
 }
 
 figcaption {
-    background-color: rgba($white, 0.75);
-    bottom: 0;
-    color: $body-color;
-    font-size: $small-font-size;
-    padding: 0 0.5rem;
-    position: absolute;
-    right: 0;
+  background-color: rgba($white, 0.75);
+  bottom: 0;
+  color: $body-color;
+  font-size: $small-font-size;
+  padding: 0 0.5rem;
+  position: absolute;
+  right: 0;
 
-    a {
-        color: $body-color;
-    }
+  a {
+    color: $body-color;
+  }
 }
 
 
 // NAVBAR
 
 .navbar-dark {
-    .navbar-brand img {
-        border: 2px solid $white;
-        border-radius: 30px;
-        height: 30px;
-        margin-right: 5px;
-        width: 30px;
-    }
+  .navbar-brand img {
+    border: 2px solid $white;
+    border-radius: 30px;
+    height: 30px;
+    margin-right: 5px;
+    width: 30px;
+  }
 
-    select,
-    select:focus {
-        background-color: $dark;
-        border: 1px solid $navbar-dark-color;
-        color: $navbar-dark-color;
-    }
+  select,
+  select:focus {
+    background-color: $dark;
+    border: 1px solid $navbar-dark-color;
+    color: $navbar-dark-color;
+  }
 }
 
 // ALL CONTAINERS
 
 .container {
-    @include media-breakpoint-down(sm) {
-        // Use container-fluid behaviour on small screens, so the content (including collapsed 
-        // .theme-sidebar if present) can use the full width. Jump between .xs and .sm will also 
-        // disappear.
-        max-width: 100%!important;
-    }
+  @include media-breakpoint-down(sm) {
+    // Use container-fluid behaviour on small screens, so the content (including collapsed 
+    // .theme-sidebar if present) can use the full width. Jump between .xs and .sm will also 
+    // disappear.
+    max-width: 100%!important;
+  }
 }
 
 
@@ -94,66 +94,67 @@ figcaption {
 
 main.container,
 main.container-fluid {
-    min-height: calc(100vh - 54px);
-    padding-top: $grid-gutter-width; // Don't stick to top
-    padding-bottom: $grid-gutter-width; // Don't stick to footer
+  min-height: calc(100vh - 54px);
+  padding-top: $grid-gutter-width; // Don't stick to top
+  padding-bottom: $grid-gutter-width; // Don't stick to footer
 
-    h1,
-    h2 {
-        margin-bottom: 1rem;
-    }
-    form h5 {
-        margin-top: 1.5rem;
-    }
+  h1,
+  h2 {
+    margin-bottom: 1rem;
+  }
+  form h5 {
+    margin-top: 1.5rem;
+  }
 
-    .card {
-        margin-bottom: $grid-gutter-width; // Add spacing between rows of cards
-    }
+  .card {
+    margin-bottom: $grid-gutter-width; // Add spacing between rows of cards
+    min-width: 100%; // Use allowed width even if content is smaller
+  }
 
-    .theme-card-horizontal { // Used for identification cards and tips
-        // Stack vertical by default (useful on small screens)
-        flex-direction: column;
-        // Stack horizontal on wider screens
-        @include media-breakpoint-up(sm) {
-            flex-direction: row!important;
-        }
-
-        overflow: hidden!important; // Same as .overflow-hidden
-        width: 100%!important; // Same as .w-100
-
-        &.border-primary,
-        &.border-success {
-            border-width: 3px; // Use thicker border
-        }
-
-        img {
-            height: 200px;
-            width: 200px;
-        }
+  .theme-card-horizontal { // Used for identification cards and tips
+    // Stack vertical by default (useful on small screens)
+    flex-direction: column;
+    // Stack horizontal on wider screens
+    @include media-breakpoint-up(sm) {
+      flex-direction: row!important;
     }
 
-    .theme-card-deck {
-        // Apply to .row: mimics Bootstrap .card-deck, stretching cards to equal height, but without
-        // stretching width when there are fewer cards on one row (cards remain equal width).
+    overflow: hidden!important; // Same as .overflow-hidden
+    width: 100%!important; // Same as .w-100
 
-        div[class*="col"] {
-            display: flex!important;
-            align-items: stretch!important; 
-        }
+    &.border-primary,
+    &.border-success {
+      border-width: 3px; // Use thicker border
     }
+
+    img {
+      height: 200px;
+      width: 200px;
+    }
+  }
+
+  .theme-card-deck {
+    // Apply to .row: mimics Bootstrap .card-deck, stretching cards to equal height, but without
+    // stretching width when there are fewer cards on one row (cards remain equal width).
+
+    div[class*="col"] {
+      display: flex;
+      align-items: stretch; 
+    }
+  }
 }
 
 // FOOTER
 
 body > footer {
-    background-color: theme-color("dark");
-    color: $white;
-    font-size: 0.95rem;
-    padding: $grid-gutter-width / 2 0;
+  background-color: theme-color("dark");
+  color: $white;
+  font-size: 0.95rem;
+  padding: $grid-gutter-width / 2 0;
 
-    a, a:hover {
-        color: $white;
-    }
+  a, a:hover {
+    color: $white;
+  }
 }
 
 // OTHER
@@ -161,77 +162,85 @@ body > footer {
 // Customize Django form errors
 
 .errorlist {
-    // List the errors on the top of the forms as:
-    // bolded field: error message(s)
-    font-weight: bold;
-    
-    ul {
-        display: inline;
-        font-weight: normal;
-        list-style: none;
-        padding-left: 0;
+  // List the errors on the top of the forms as:
+  // bolded field: error message(s)
+  font-weight: bold;
+  
+  ul {
+    display: inline;
+    font-weight: normal;
+    list-style: none;
+    padding-left: 0;
 
-        li {
-            display: inline;
-            padding-right: 0.1rem;
-        }
-
-        &:before {
-            content: ": ";
-        }
+    li {
+      display: inline;
+      padding-right: 0.1rem;
     }
+
+    &:before {
+        content: ": ";
+    }
+  }
+}
+
+// Customize crispy
+
+.form-check {
+  .invalid-feedback {
+    display: block; // Show error message for checkboxes (seems like a crispy bug)
+  }
 }
 
 // Customize leaflet
 
 .leaflet-popup a,
 .leaflet-control-attribution a {
-    color: $link-color;
+  color: $link-color;
 
-    &:hover {
-        color: $link-hover-color;
-    }
+  &:hover {
+    color: $link-hover-color;
+  }
 }
 
 .leaflet-control.legend {
-    background-color: $white;
-    padding: 5px;
+  background-color: $white;
+  padding: 5px;
 }
 
-// Customize vue-datetime
+// Customize vue
 
 .vdatetime-popup__header {
-    background: $link-color;
+  background: $link-color;
 }
 .vdatetime-calendar__month__day--selected > span > span,
 .vdatetime-calendar__month__day--selected:hover > span > span {
-    background: $link-color;
+  background: $link-color;
 }
 .vdatetime-popup__actions__button,
 .vdatetime-time-picker__item--selected,
 .vdatetime-year-picker__item--selected {
-    color: $link-color;
+  color: $link-color;
 }
 
 .vue-dropzone.form-control {
-    height: initial; // Revert .form-control calculated height, so dropzone can scale
+  height: initial; // Revert .form-control calculated height, so dropzone can scale
 }
 
 // Customize modal
 
 .modal-mask {
-    position: fixed;
-    z-index: 9998;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, .5);
-    display: table;
-    transition: opacity .3s ease;
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  display: table;
+  transition: opacity .3s ease;
 }
 
 .modal-wrapper {
-    display: table-cell;
-    vertical-align: middle;
+  display: table-cell;
+  vertical-align: middle;
 }
