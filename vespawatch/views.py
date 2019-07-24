@@ -339,8 +339,9 @@ def nests_json(request):
 
     light = request.GET.get('light', None)
     vv_only = request.GET.get('vvOnly', False) == 'true'
+    vv_confirmed_only = request.GET.get('confirmedOnly', False) == 'true'
 
-    obs = get_nests(limit=limit, vv_only=vv_only)
+    obs = get_nests(limit=limit, vv_only=vv_only, vv_confirmed_only=vv_confirmed_only)
 
     if light:
         response = JsonResponse({
@@ -384,6 +385,7 @@ def save_management_action(request):
             return JsonResponse({'result': 'OK'}, status=201)
         except ValueError:
             return JsonResponse({'result': 'NOTOK', 'errors': form.errors}, status=422)
+
 
 def get_management_action(request):
     if request.method == 'GET':

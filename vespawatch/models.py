@@ -843,8 +843,10 @@ def get_individuals(limit=None, vv_only=True):
     return obs
 
 
-def get_nests(limit=None, vv_only=True):
+def get_nests(limit=None, vv_only=True, vv_confirmed_only=False):
     qs = Nest.objects.all()
+    if vv_confirmed_only:
+        qs = qs.filter(inat_vv_confirmed=True)
     if vv_only:
         qs = qs.filter(taxon__inaturalist_push_taxon_id__in=INAT_VV_TAXONS_IDS)
     obs = list(qs.select_related('taxon').prefetch_related('pictures').all())
