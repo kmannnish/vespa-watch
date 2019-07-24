@@ -1,6 +1,8 @@
+import datetime
 import logging
 from json import JSONDecodeError
 
+from constance import config
 from django.conf import settings
 import pyinaturalist
 from pyinaturalist.exceptions import ObservationNotFound
@@ -105,7 +107,7 @@ class Command(VespaWatchCommand):
     def check_all_missing(self, missing_inat_ids):
         """
         Get all observations from vespawatch that have an iNaturalist id, but are not found in the
-        data of the iNaturlist pull. Check the observations one by one.
+        data of the iNaturalist pull. Check the observations one by one.
         """
         missing_obs = get_missing_at_inat_observations(missing_inat_ids)
         self.w("\n4. Check the observations that were not returned from iNaturalist")
@@ -132,4 +134,6 @@ class Command(VespaWatchCommand):
         if not options['pushonly']:
             pulled_inat_ids = self.pull()
             self.check_all_missing(pulled_inat_ids)
+
+            config.LAST_PULL_COMPLETED_AT = datetime.datetime.now()
         self.w("\ndone\n")
