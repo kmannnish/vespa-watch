@@ -794,8 +794,8 @@ var VwManagementTableNestRow = {
     template: ` 
         <tr :class="nestClass">
             <td>{{ observationTimeStr }}</td>
-            <td>long</td>
-            <td>lat</td>
+            <td>{{ nest.longitude }}</td>
+            <td>{{ nest.latitude }}</td>
             
             <td>
                 <span v-if="hasManagementAction">
@@ -850,7 +850,7 @@ var VwManagementTable = {
     methods: {
         loadNests: function () {
             this.$root.currentlyLoading = true;
-            let url = VWConfig.apis.nestsUrl + '?type=nest';
+            let url = VWConfig.apis.nestsUrl + '?type=nest&vvOnly=true';
             axios.get(url)
                 .then(response => {
                     if (response.data.nests) {

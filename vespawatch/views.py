@@ -3,9 +3,7 @@ import json
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.serializers import serialize
 from django.forms.models import model_to_dict
-from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ugettext as _
 from django.http import JsonResponse, HttpResponseRedirect
@@ -340,7 +338,7 @@ def nests_json(request):
     limit = int(limit) if limit is not None else None
 
     light = request.GET.get('light', None)
-    vv_only = request.GET.get('vvOnly', False)
+    vv_only = request.GET.get('vvOnly', False) == 'true'
 
     obs = get_nests(limit=limit, vv_only=vv_only)
 
