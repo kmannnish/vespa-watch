@@ -288,7 +288,6 @@ def no_future(value):
 class AbstractObservation(models.Model):
     originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
     taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT, blank=True, null=True)
-    address = models.CharField(verbose_name=_("Address"), max_length=255, blank=True)  # Keeping this field for old data, but is is not filled in anymore as of #297
     observation_time = models.DateTimeField(verbose_name=_("Observation date"), validators=[no_future])
     comments = models.TextField(verbose_name=_("Comments"), blank=True, help_text=_("Comments are public: use them to describe your observation and help verification."))
 
@@ -411,7 +410,6 @@ class AbstractObservation(models.Model):
                 'description': self.comments,
                 'latitude': self.latitude,
                 'longitude': self.longitude,
-                'place_guess': self.address,
 
                 'observation_field_values_attributes':
                     [{'observation_field_id': settings.VESPAWATCH_ID_OBS_FIELD_ID, 'value': self.pk},
@@ -660,7 +658,6 @@ class Nest(AbstractObservation):
             'display_scientific_name': self.display_scientific_name,
             'display_vernacular_name': self.display_vernacular_name,
             'subject': self.subject,
-            'address': self.address,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,
@@ -722,7 +719,6 @@ class Individual(AbstractObservation):
             'display_scientific_name': self.display_scientific_name,
             'display_vernacular_name': self.display_vernacular_name,
             'subject': self.subject,
-            'address': self.address,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,
