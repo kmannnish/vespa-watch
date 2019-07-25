@@ -228,11 +228,49 @@ EMAIL_TO_REPORTER_SUBJECT = 'Bedankt voor je observatie op vespawatch.be'
 EMAIL_TO_REPORTER_BODY = """
 <html>
 <body>
-    <p>Beste,</p>
+    <p>Beste {observer_name}</p>
+
     <p>
-        Bedankt voor je observatie op <a href="https://vespawatch.be">vespawatch.be</a>. 
-        Deze werd nu gepubliceerd op <a href="https://www.inaturalist.org/observations/{ inat_id }.
+    Bedankt voor je melding op <a href="https://vespawatch.be">Vespa-Watch</a>. Dankzij jou houden 
+    we de vinger aan de pols van de hoornaarinvasie in Vlaanderen.</p>
+    
+    <p>
+    Je observatie is nu ook beschikbaar op 
+    <a href="https://www.inaturalist.org/observations/{inat_id}">iNaturalist</a>, waar deze door 
+    vrijwilligers kan worden geverifieerd. Observaties met onbruikbare of niet zelfgenomen foto's 
+    zullen worden verwijderd. Hou 
+    <a href="https://www.inaturalist.org/observations/{inat_id}">deze pagina</a> in de gaten om te 
+    weten welke soort je hebt gezien. Wil je deelnemen aan de identificatie en/of observaties onder 
+    je eigen naam doorsturen? <a href="https://www.inaturalist.org/signup">Maak dan een iNaturalist 
+    account aan.</a>
     </p>
+
+    <p>
+    Feedback? Laat het ons weten door op deze email te antwoorden. Vertel vrienden en kennissen 
+    over de Aziatische hoornaar en <a href="https://vespawatch.be/get-involved/">lees hier</a> hoe 
+    je verder kan deelnemen aan dit project</a>.
+    </p>
+
+    <p>Met vriendelijke groeten,</p>
+
+    <p>Het Vespa-Watch team</p>
+
+    <small>
+        <p>
+        Dit is een éénmalige, automatische email die wordt verstuurd bij het melden van een 
+        observatie op Vespa-Watch. We zullen je verder geen emails sturen. Bij een geverifieerde 
+        melding van een <strong>nest</strong> van Aziatische hoornaars, kan je worden gecontacteerd 
+        door bestrijders. Zie ons 
+        <a href="https://vespawatch.be/about/privacy-policy/">privacybeleid</a>.
+        </p>
+    
+        <p>
+        Elke melding op Vespa-Watch is publiek beschikbaar als open data, maar we voor bestrijding 
+        worden enkel observaties in Vlaanderen gebruikt. Andere regio's hebben vaak hun 
+        <a href="https://vespawatch.be/about/links/">eigen invoerportalen</a> en 
+        bestrijdingsprogramma's voor Aziatische hoornaar.
+        </p>
+    </small>
 </body>
 </html>
 """
