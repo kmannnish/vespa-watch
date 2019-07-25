@@ -26,16 +26,6 @@ class Migration(migrations.Migration):
             model_name='nest',
             name='zone',
         ),
-        migrations.AlterField(
-            model_name='individual',
-            name='comments',
-            field=models.TextField(blank=True, help_text='Comments are public: use them to describe your observation and help verification.', verbose_name='Comments'),
-        ),
-        migrations.AlterField(
-            model_name='nest',
-            name='comments',
-            field=models.TextField(blank=True, help_text='Comments are public: use them to describe your observation and help verification.', verbose_name='Comments'),
-        ),
         migrations.DeleteModel(
             name='FirefightersZone',
         ),
