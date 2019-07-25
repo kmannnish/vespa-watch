@@ -27,8 +27,6 @@ from vespawatch.utils import make_unique_filename
 
 INAT_VV_TAXONS_IDS = (119019, 560197) # At iNaturalist, those taxon IDS represents Vespa velutina and subspecies
 
-# TODO Remove code marked with DEPRECATED
-
 
 def get_taxon_from_inat_taxon_id(inaturalist_taxon_id):
     """ Raises Taxon.DoesNotExists().
@@ -225,38 +223,6 @@ def get_local_obs_matching_inat_id(inat_id):
             pass
 
     raise ObjectDoesNotExist
-
-# TODO: check if this is still needed for the new sync
-def update_loc_obs_taxon_according_to_inat_DEPRECATED(inaturalist_data):
-    """Takes data coming from iNaturalist about one of our local observation, and update the taxon of said local obs,
-    if necessary.
-
-    :returns: either
-        - 'no_community_id' (we have no community id, so we didn't change)
-        - 'matching_community_id' (the community id is agreement with our local database, we didn't change it
-        - 'updated' (we updated to match the community!)
-
-    :raises
-        - SpeciesMatchError: if we don't know this inaturalist taxon id (so nothing was updated)
-        - ObjectDoesNotExist: we can't find the local observation that match iNaturalist data
-    """
-    community_taxon_id = inaturalist_data['community_taxon_id']
-
-    # TODO: test this more (new code, some path are not frequently used)
-    if community_taxon_id is not None:
-        local_obs = get_local_obs_matching_inat_id(inaturalist_data['id'])
-        if community_taxon_id not in local_obs.taxon.inaturalist_pull_taxon_ids:
-            # we have to update our observation to follow the community identification
-            try:
-                local_obs.taxon = get_taxon_from_inat_taxon_id(community_taxon_id)
-                local_obs.save()
-                return 'updated'
-            except Taxon.DoesNotExist:
-                raise TaxonMatchError
-        else:
-            return 'matching_community_id'
-
-    return 'no_community_id'
 
 
 class FirefightersZone(models.Model):
