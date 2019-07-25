@@ -49,15 +49,12 @@ class Taxon(models.Model):
                                             help_text="When pulling observations from iNaturalist, reconcile according "
                                                       "to those IDs.")
 
-    # TODO: get_file_path and identification_* should be removed after we fully migrated to the new identification card/
-    # TODO: two page submission form
     def get_file_path(instance, filename):
+        """
+        This function is no longer used, but we have to keep it to avoid breaking our migrations
+        (in particular, this function is used in 0001_initial.py)
+        """
         return os.path.join('taxon_identification_pictures/', make_unique_filename(filename))
-
-    identification_picture_individual = models.ImageField(upload_to=get_file_path, blank=True, null=True)
-    identification_picture_nest = models.ImageField(upload_to=get_file_path, blank=True, null=True)
-
-    identification_priority = models.BooleanField()  # Should appear first in the taxon selector
 
     @property
     def inat_pictures_link(self):
