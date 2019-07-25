@@ -47,14 +47,17 @@
           <ul class="navbar-nav mr-auto">
             {% if user.profile.zone or user.is_staff %}
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'vespawatch:management' %}">{% trans 'Fire department' %}</a>
+                {% url 'vespawatch:management' as management_url %}
+                <a class="nav-link {% if request.path == management_url %}active{% endif %}" href="{% url 'vespawatch:management' %}">{% trans 'Fire department' %}</a>
               </li>
             {% endif %}
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'vespawatch:getinvolved' %}">{% trans 'Get involved' %}</a>
+                {% url 'vespawatch:getinvolved' as getinvolved_url %}
+                <a class="nav-link {% if request.path == getinvolved_url %}active{% endif %}" href="{% url 'vespawatch:getinvolved' %}">{% trans 'Get involved' %}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'vespawatch:identification' %}">{% trans 'Identification' %}</a>
+                {% url 'vespawatch:identification' as identification_url %}
+                <a class="nav-link {% if request.path == identification_url %}active{% endif %}" href="{% url 'vespawatch:identification' %}">{% trans 'Identification' %}</a>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="about-dropdown" role="button" data-toggle="dropdown">{% trans 'About' %}</a>
