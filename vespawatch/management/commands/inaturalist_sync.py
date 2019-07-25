@@ -26,32 +26,33 @@ class Command(VespaWatchCommand):
             self.email_client = boto3.client('ses', region_name=settings.AWS_S3_REGION_NAME)
 
         self.w('sending email')
-        body = settings.EMAIL_TEMPLATE.format(
-            title='Vespawatch email',
-            message='Beste, bedankt voor uw waarneming. Deze werd nu gepubliceerd op iNaturalist met id {}'.format(obs.inaturalist_id)
+
+        subject = settings.EMAIL_TO_REPORTER_SUBJECT
+        body = settings.EMAIL_TO_REPORTER_BODY.format(
+            inat_id = obs.inaturalist_id
         )
-        subject = 'Thank you for your Vespawatch observation'
+        
         try:
             # Provide the contents of the email.
             response = self.email_client.send_email(
+                Source=settings.EMAIL_TO_REPORTER_SENDER,
                 Destination={
                     'ToAddresses': [
-                        obs.observer_email,
+                        "peter.desmet@inbo.be" # TODO: update to obs.observer_email
                     ],
                 },
                 Message={
-                    'Body': {
-                        'Html': {
-                            'Charset': settings.EMAIL_CHARSET,
-                            'Data': body,
-                        },
-                    },
                     'Subject': {
-                        'Charset': settings.EMAIL_CHARSET,
+                        'Charset': 'UTF-8',
                         'Data': subject,
                     },
-                },
-                Source=settings.EMAIL_SENDER,
+                    'Body': {
+                        'Html': {
+                            'Charset': 'UTF-8',
+                            'Data': body,
+                        },
+                    }
+                }
             )
         # Display an error if something goes wrong.
         except ClientError as e:
