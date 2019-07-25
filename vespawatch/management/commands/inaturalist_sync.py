@@ -97,6 +97,7 @@ class Command(VespaWatchCommand):
         the observation to no longer match the filter criteria. Flag the observation with the appropriate warning.
         """
         try:
+            self.w(f"DEBUG: will perform a get_observation() for obs #{observation.pk} (iNaturalist ID: {observation.inaturalist_id})")
             inat_obs_data = get_observation(observation.inaturalist_id)
             observation.flag_based_on_inat_data(inat_obs_data)
             observation.update_from_inat_data(inat_obs_data)
