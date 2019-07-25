@@ -44,6 +44,14 @@ var formErrorMessagesRaw;
 
 // 2. Vue.JS components
 
+// global function to round coordinates on the front end
+var roundCoordinate = function (nr) {
+    if (nr) {
+        return Math.round(nr * 100000) / 100000;
+    }
+    return 0;
+};
+
 // The map of the visualization.
 // This contains an observations prop. When this property is updated, (when data is retrieved
 // from the API or when the user filters the data) the map is cleared and new circles are drawn.
@@ -758,6 +766,12 @@ var VwManagementTableNestRow = {
             }
             return 'table-danger';
         },
+        nestLatitude: function () {
+            return roundCoordinate(this.nest.latitude)
+        },
+        nestLongitude: function () {
+            return roundCoordinate(this.nest.longitude)
+        },
         observationTimeStr: function () {
             return moment(this.nest.observation_time).format('lll');
         }
@@ -794,8 +808,8 @@ var VwManagementTableNestRow = {
     template: ` 
         <tr :class="nestClass">
             <td>{{ observationTimeStr }}</td>
-            <td>{{ nest.longitude }}</td>
-            <td>{{ nest.latitude }}</td>
+            <td>{{ nestLongitude}}</td>
+            <td>{{ nestLatitude }}</td>
             
             <td>
                 <span v-if="hasManagementAction">
@@ -1149,14 +1163,6 @@ var VwLocationSelectorCoordinates = {
         longitudeLabel: function () {
             return gettext('Longitude');
         },
-    },
-    methods: {
-        roundCoordinate: function (nr) {
-            if (nr) {
-                return Math.round(nr * 100000) / 100000;
-            }
-            return 0;
-        }
     },
     props: ['longitude', 'latitude'],
     template: `
