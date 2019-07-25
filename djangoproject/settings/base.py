@@ -213,11 +213,16 @@ INATURALIST_PUSH = False
 
 # Notification emails
 
-EMAIL_SENDER = 'vespawatch@inbo.be'
-EMAIL_SUBJECT = ''
-EMAIL_TEMPLATE = """<html>
+EMAIL_TO_REPORTER_SENDER = 'vespawatch@inbo.be'
+EMAIL_TO_REPORTER_SUBJECT = 'Bedankt voor je observatie op vespawatch.be'
+EMAIL_TO_REPORTER_BODY = """
+<html>
 <body>
-
+    <p>Beste,</p>
+    <p>
+        Bedankt voor je observatie op <a href="https://vespawatch.be">vespawatch.be</a>. 
+        Deze werd nu gepubliceerd op <a href="https://www.inaturalist.org/observations/{ inat_id }.
+    </p>
 </body>
 </html>
 """
