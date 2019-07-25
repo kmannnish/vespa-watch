@@ -17,8 +17,7 @@ from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
 from markdownx.models import MarkdownxField
 from pilkit.processors import SmartResize
-from pyinaturalist.node_api import get_observation
-from pyinaturalist.rest_api import create_observations, update_observation, add_photo_to_observation
+from pyinaturalist.rest_api import create_observations, add_photo_to_observation
 
 from vespawatch.utils import make_unique_filename
 
@@ -258,21 +257,6 @@ def update_loc_obs_taxon_according_to_inat_DEPRECATED(inaturalist_data):
 
     return 'no_community_id'
 
-def inat_observation_comes_from_vespawatch_DEPRECATED(inat_observation_id):
-    """ Takes an observation_id from iNat API and returns True if this observation was first created from the
-    VespaWatch website.
-
-    Slow, since we need an API call to retrieve the observation_field_values
-    """
-    obs_data = get_observation(observation_id=inat_observation_id)
-
-    # We simply check if there's a vespawatch_id observation field on this observation
-    for ofv in obs_data['ofvs']:
-        if ofv['field_id'] == settings.VESPAWATCH_ID_OBS_FIELD_ID:
-            return True
-
-    return False
-
 
 def no_future(value):
     today = date.today()
@@ -283,7 +267,6 @@ def no_future(value):
 class AbstractObservation(models.Model):
     originates_in_vespawatch = models.BooleanField(default=True, help_text="The observation was first created in VespaWatch, not iNaturalist")
     taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT, blank=True, null=True)
-    address = models.CharField(verbose_name=_("Address"), max_length=255, blank=True)  # Keeping this field for old data, but is is not filled in anymore as of #297
     observation_time = models.DateTimeField(verbose_name=_("Observation date"), validators=[no_future])
     comments = models.TextField(verbose_name=_("Comments"), blank=True, help_text=_("Comments are public: use them to describe your observation and help verification."))
 
@@ -394,23 +377,11 @@ class AbstractObservation(models.Model):
                 'description': self.comments,
                 'latitude': self.latitude,
                 'longitude': self.longitude,
-                'place_guess': self.address,
 
                 'observation_field_values_attributes':
                     [{'observation_field_id': settings.VESPAWATCH_ID_OBS_FIELD_ID, 'value': self.pk},
                     {'observation_field_id': settings.VESPAWATCH_EVIDENCE_OBS_FIELD_ID, 'value': vespawatch_evidence_value}]
                 }
-
-    def update_at_inaturalist_DEPRECATED(self, access_token):  # Naming this DEPRECATED. See if it is called somewhere
-        """Update the iNaturalist observation for this obs
-
-        :param access_token:
-        :return:
-        """
-        p = {'observation': self._params_for_inat()}  # Pictures will be removed because we don't pass ignore_photos
-
-        update_observation(observation_id=self.inaturalist_id, params=p, access_token=access_token)
-        self.push_attached_pictures_at_inaturalist(access_token=access_token)
 
     def flag_warning(self, text):
         if text in [x.text for x in self.warnings.all()]:
@@ -521,7 +492,7 @@ class AbstractObservation(models.Model):
 
         self.save()
 
-    def create_at_inaturalist(self, access_token):
+    def create_at_inaturalist(self, access_token, user_agent):
         """Creates a new observation at iNaturalist for this observation
 
         It will update the current object so self.inaturalist_id is properly set.
@@ -537,10 +508,10 @@ class AbstractObservation(models.Model):
             'observation': {**params_only_for_create, **self._params_for_inat()}
         }
 
-        r = create_observations(params=params, access_token=access_token)
+        r = create_observations(params=params, access_token=access_token, user_agent=user_agent)
         self.inaturalist_id = r[0]['id']
         self.save()
-        self.push_attached_pictures_at_inaturalist(access_token=access_token)
+        self.push_attached_pictures_at_inaturalist(access_token=access_token, user_agent=user_agent)
 
     def get_photo_filename(self, photo_url):
         # TODO: Find a cleaner solution to this
@@ -566,12 +537,13 @@ class AbstractObservation(models.Model):
             photo_obj.image.save(photo_filename, photo_content)
             photo_obj.save()
 
-    def push_attached_pictures_at_inaturalist(self, access_token):
+    def push_attached_pictures_at_inaturalist(self, access_token, user_agent):
         if self.inaturalist_id:
             for picture in self.pictures.all():
                 add_photo_to_observation(observation_id=self.inaturalist_id,
                                          file_object=picture.image.read(),
-                                         access_token=access_token)
+                                         access_token=access_token,
+                                         user_agent=user_agent)
 
     def get_taxon_name(self):
         if self.taxon:
@@ -650,7 +622,6 @@ class Nest(AbstractObservation):
             'display_scientific_name': self.display_scientific_name,
             'display_vernacular_name': self.display_vernacular_name,
             'subject': self.subject,
-            'address': self.address,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,
@@ -712,7 +683,6 @@ class Individual(AbstractObservation):
             'display_scientific_name': self.display_scientific_name,
             'display_vernacular_name': self.display_vernacular_name,
             'subject': self.subject,
-            'address': self.address,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'inaturalist_id': self.inaturalist_id,
@@ -862,6 +832,7 @@ def get_local_observation_with_inaturalist_id(inaturalist_id):
             return obs
 
     return None
+
 
 def get_missing_at_inat_observations(pulled_inat_ids):
     """

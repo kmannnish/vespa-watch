@@ -106,19 +106,21 @@
     <footer>
       <div class="container">
         <div class="row">
-          <div class="col-md-9">
+          <div class="col-lg-9">
             <p>
               <a class="mr-3" href="https://www.inbo.be"><img src="{% static 'vespawatch/img/logo_inbo.png' %}" height="40" alt=""></a>
               <a href="https://www.honeybeevalley.eu/"><img src="{% static 'vespawatch/img/logo_honeybeevalley.png' %}" height="40" alt=""></a>
             </p>
             <p>
               {% blocktrans %}
-                This project was funded by <a href="https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten">EWI</a><br>
-                Developed by the <a href="https://twitter.com/oscibio">Open science lab for biodiversity</a>
+                This project was funded by <a href="https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten">EWI</a>
+                and developed by the <a href="https://oscibio.inbo.be">Open science lab for biodiversity</a>.
+                Thanks to the <a href="https://www.inaturalist.org/">iNaturalist community</a> for verifying observations.
+                INBO is a member of the <a href="http://ecsa.citizen-science.net/">European Citizen Science Association (ECSA)</a>.
               {% endblocktrans %}
             </p>
           </div>
-          <div class="col-md-3">
+          <div class="col-lg-3">
             <ul class="list-unstyled">
               <li><a href="{% url 'vespawatch:about_project' %}">{% trans 'About this project' %}</a></li>
               <li><a href="{% url 'vespawatch:about_privacypolicy' %}">{% trans 'Privacy policy' %}</a></li>

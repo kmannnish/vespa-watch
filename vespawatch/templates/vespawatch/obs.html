@@ -3,10 +3,14 @@
 
 {% block content %}
 <main class="container" id="vw-main-app">
-  <h1 class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-end">
+  <h1>
     {% trans 'Latest observations' %}
-    <a class="btn btn-primary" href="{% url 'vespawatch:observation-add' %}">{% trans 'Add your observation' %}</a>
   </h1>
+  <p>
+      <a class="btn btn-primary" href="{% url 'vespawatch:observation-add' %}">{% trans 'Add your observation' %}</a>
+      <a class="btn btn-secondary" href="https://www.inaturalist.org/observations/identify?user_id=vespawatch">{% trans 'Verify observations' %}</a>
+    </div>
+  </p>
 
   {% include 'vespawatch/includes/obs_cards.html' %}
     

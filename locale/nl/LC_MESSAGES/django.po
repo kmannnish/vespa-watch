@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-19 12:44+0200\n"
+"POT-Creation-Date: 2019-07-19 15:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,11 +29,6 @@ msgid "Enter a valid date/time."
 msgstr "Vul een correcte datum/tijd in."
 
 #: vespawatch/forms.py:14
-#| msgid ""
-#| "\n"
-#| "              I agree with the <a href=\"%(privacypolicy_page)s\" "
-#| "target=\"_blank\">privacy policy</a>*.\n"
-#| "            "
 msgid ""
 "I agree with the <a href=\"/about/privacy-policy/\" "
 "target=\"_blank\">privacy policy</a>"
@@ -239,7 +234,7 @@ msgstr "Bewaar actie"
 #: vespawatch/templates/vespawatch/action_create.html:23
 #: vespawatch/templates/vespawatch/action_update.html:24
 #: vespawatch/templates/vespawatch/individual_create.html:108
-#: vespawatch/templates/vespawatch/nest_create.html:108
+#: vespawatch/templates/vespawatch/nest_create.html:107
 msgid "Cancel"
 msgstr "Annuleer"
 
@@ -276,7 +271,7 @@ msgid "Project"
 msgstr "Project"
 
 #: vespawatch/templates/vespawatch/base.html:65
-#: vespawatch/templates/vespawatch/base.html:124
+#: vespawatch/templates/vespawatch/base.html:126
 msgid "Privacy policy"
 msgstr "Privacybeleid"
 
@@ -289,30 +284,50 @@ msgid "Log out"
 msgstr "Uitloggen"
 
 #: vespawatch/templates/vespawatch/base.html:115
+#| msgid ""
+#| "\n"
+#| "                This project was funded by <a "
+#| "href=\"https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten\">EWI</a><br>\n"
+#| "                Developed by the <a "
+#| "href=\"https://twitter.com/oscibio\">Open science lab for "
+#| "biodiversity</a>\n"
+#| "              "
 msgid ""
 "\n"
 "                This project was funded by <a "
-"href=\"https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten\">EWI</a><br>\n"
-"                Developed by the <a "
-"href=\"https://twitter.com/oscibio\">Open science lab for biodiversity</a>\n"
+"href=\"https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten\">EWI</a>\n"
+"                and developed by the <a "
+"href=\"https://oscibio.inbo.be\">Open science lab for biodiversity</a>.\n"
+"                Thanks to the <a "
+"href=\"https://www.inaturalist.org/\">iNaturalist community</a> for "
+"verifying observations.\n"
+"                INBO is a member of the <a "
+"href=\"http://ecsa.citizen-science.net/\">European Citizen Science "
+"Association (ECSA)</a>.\n"
 "              "
 msgstr ""
 "\n"
-"                Dit project is gefinancierd door <a "
-"href=\"https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten\">EWI</a><br>\n"
-"                Ontwikkeld door het <a "
-"href=\"https://twitter.com/oscibio\">Open science lab for biodiversity</a>\n"
+"                Dit project werd gefinancierd door <a "
+"href=\"https://www.ewi-vlaanderen.be/oproep-citizen-science-geselecteerde-projecten\">EWI</a>\n"
+"                en ontwikkeld door het <a "
+"href=\"https://oscibio.inbo.be\">Open science lab for biodiversity</a>.\n"
+"                Dank aan de <a "
+"href=\"https://www.inaturalist.org/\">iNaturalist gemeenschap</a> voor het "
+"verifiëren van observaties.\n"
+"                INBO is lid van de <a "
+"href=\"http://ecsa.citizen-science.net/\">European Citizen Science "
+"Association (ECSA)</a>.\n"
 "              "
 
-#: vespawatch/templates/vespawatch/base.html:123
+#: vespawatch/templates/vespawatch/base.html:125
 msgid "About this project"
 msgstr "Over dit project"
 
-#: vespawatch/templates/vespawatch/base.html:125
+#: vespawatch/templates/vespawatch/base.html:127
 msgid "Contact us"
 msgstr "Contacteer ons"
 
-#: vespawatch/templates/vespawatch/base.html:126
+#: vespawatch/templates/vespawatch/base.html:128
 msgid "Source code"
 msgstr "Broncode"
 
@@ -326,7 +341,7 @@ msgstr "Meld iets anders"
 
 #: vespawatch/templates/vespawatch/includes/identification_card.html:25
 #: vespawatch/templates/vespawatch/nest_create.html:13
-#: vespawatch/templates/vespawatch/nest_create.html:107
+#: vespawatch/templates/vespawatch/nest_create.html:106
 msgid "Report nest"
 msgstr "Meld nest"
 
@@ -438,11 +453,16 @@ msgstr "Mijn nesten"
 msgid "No zone associated to your user."
 msgstr "Geen zone geassocieerd met uw gebruikersnaam."
 
-#: vespawatch/templates/vespawatch/obs.html:8
+#: vespawatch/templates/vespawatch/obs.html:10
 msgid "Add your observation"
 msgstr "Voeg observatie toe"
 
-#: vespawatch/templates/vespawatch/obs.html:14
+#: vespawatch/templates/vespawatch/obs.html:11
+#| msgid "Report observation"
+msgid "Verify observations"
+msgstr "Verifieer observaties"
+
+#: vespawatch/templates/vespawatch/obs.html:18
 #, python-format
 msgid ""
 "\n"
@@ -500,4 +520,3 @@ msgstr ""
 msgid ""
 "Your observation was successfully created. Thanks for your contribution!"
 msgstr "Jouw observatie werd succesvol bewaard. Bedankt voor je bijdrage!"
-
