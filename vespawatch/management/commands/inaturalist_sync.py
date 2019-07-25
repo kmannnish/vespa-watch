@@ -30,20 +30,20 @@ class Command(VespaWatchCommand):
             self.w('set up email client')
             self.email_client = boto3.client('ses', region_name=settings.AWS_S3_REGION_NAME)
 
-        self.w('sending email')
-
+        from_email = settings.EMAIL_TO_REPORTER_SENDER
+        to_email = 'peter.desmet@inbo.be' # TODO: update to obs.observer_email
         subject = settings.EMAIL_TO_REPORTER_SUBJECT
         body = settings.EMAIL_TO_REPORTER_BODY.format(
+            observer_name = str(obs.observer_name or ''),
             inat_id = obs.inaturalist_id
         )
         
         try:
-            # Provide the contents of the email.
             response = self.email_client.send_email(
-                Source=settings.EMAIL_TO_REPORTER_SENDER,
+                Source=from_email,
                 Destination={
-                    'ToAddresses': [
-                        "peter.desmet@inbo.be" # TODO: update to obs.observer_email
+                    'ToAddresses': [ 
+                        to_email 
                     ],
                 },
                 Message={
@@ -63,8 +63,7 @@ class Command(VespaWatchCommand):
         except ClientError as e:
             self.w(e.response['Error']['Message'])
         else:
-            self.w("Email sent! Message ID:"),
-            self.w(response['MessageId'])
+            self.w(f'Email sent to {to_email} for observation {obs.inaturalist_id} with message ID: {response["MessageId"]}')
 
     def add_arguments(self, parser):
         parser.add_argument('--pushonly', type=bool, default=False)
@@ -120,6 +119,7 @@ class Command(VespaWatchCommand):
         self.w("\n3. Pull all observations from iNaturalist")
         observations = get_all_observations(params={'project_id': settings.VESPAWATCH_PROJECT_ID})
         pulled_inat_ids = []
+        local_obs = None
         for inat_observation_data in observations:
             pulled_inat_ids.append(inat_observation_data['id'])
             local_obs = get_local_observation_with_inaturalist_id(inat_observation_data['id'])
@@ -132,11 +132,6 @@ class Command(VespaWatchCommand):
                 # We already have an observation for this id. Update it
                 self.w(f'updating observation {type(local_obs).__name__} {local_obs.pk}')
                 local_obs.update_from_inat_data(inat_observation_data)
-        
-        # TODO: remove this, is just a test
-        if local_obs:
-            self.send_email_to_reporter(local_obs)
-        
         return pulled_inat_ids
 
     def check_missing_obs(self, observation):
