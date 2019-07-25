@@ -666,7 +666,6 @@ class Individual(AbstractObservation):
     # Fields
     individual_count = models.IntegerField(verbose_name=_("Individual count"), blank=True, null=True)
     behaviour = models.CharField(verbose_name=_("Behaviour"), max_length=2, choices=BEHAVIOUR_CHOICES, blank=True, null=True)
-    nest = models.ForeignKey(Nest, on_delete=models.CASCADE, blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse('vespawatch:individual-detail', kwargs={'pk': self.pk})
