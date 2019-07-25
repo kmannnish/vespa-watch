@@ -748,11 +748,13 @@ class ManagementAction(models.Model):
     FULL_DESTRUCTION_NO_DEBRIS = 'FD'
     PARTIAL_DESTRUCTION_DEBRIS_LEFT = 'PD'
     EMPTY_NEST_NOTHING_DONE = 'ND'
+    UNKNOWN = 'UK'
 
     OUTCOME_CHOICE = (
         (FULL_DESTRUCTION_NO_DEBRIS, _('Full destruction, no debris')),
         (PARTIAL_DESTRUCTION_DEBRIS_LEFT, _('Partial destruction/debris left')),
         (EMPTY_NEST_NOTHING_DONE, _('Empty nest, nothing done')),
+        (UNKNOWN, _('Unknown')),
     )
 
     nest = models.ForeignKey(Nest, on_delete=models.CASCADE)
