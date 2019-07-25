@@ -127,6 +127,11 @@ class Command(VespaWatchCommand):
                 # We already have an observation for this id. Update it
                 self.w(f'updating observation {type(local_obs).__name__} {local_obs.pk}')
                 local_obs.update_from_inat_data(inat_observation_data)
+        
+        # TODO: remove this, is just a test
+        if local_obs:
+            self.send_email_to_reporter(local_obs)
+        
         return pulled_inat_ids
 
     def check_missing_obs(self, observation):
