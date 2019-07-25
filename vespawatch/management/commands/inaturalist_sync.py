@@ -1,9 +1,12 @@
 import boto3
+import datetime
 import logging
 from botocore.exceptions import ClientError
 from json import JSONDecodeError
 
+from constance import config
 from django.conf import settings
+import pyinaturalist
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.node_api import get_all_observations, get_observation
 from pyinaturalist.rest_api import get_access_token, delete_observation
@@ -14,6 +17,8 @@ from vespawatch.models import Individual, Nest, InatObsToDelete, get_local_obser
     create_observation_from_inat_data, get_missing_at_inat_observations
 
 OBSERVATION_MODELS = [Individual, Nest]
+
+USER_AGENT = f'VespaWatch (using Pyinaturalist {pyinaturalist.__version__})'
 
 
 class Command(VespaWatchCommand):
@@ -99,7 +104,7 @@ class Command(VespaWatchCommand):
         for obs in local_observations_from_vespawatch:
             self.w(f"... Creating {obs.subject} #{obs.pk} on iNaturalist")
             try:
-                obs.create_at_inaturalist(access_token=access_token)
+                obs.create_at_inaturalist(access_token=access_token, user_agent=USER_AGENT)
                 self.send_email_to_reporter(obs)
             except HTTPError:
                 self.w('HTTP Error received, check logs.')
@@ -142,6 +147,7 @@ class Command(VespaWatchCommand):
         the observation to no longer match the filter criteria. Flag the observation with the appropriate warning.
         """
         try:
+            self.w(f"DEBUG: will perform a get_observation() for obs #{observation.pk} (iNaturalist ID: {observation.inaturalist_id})")
             inat_obs_data = get_observation(observation.inaturalist_id)
             observation.flag_based_on_inat_data(inat_obs_data)
             observation.update_from_inat_data(inat_obs_data)
@@ -152,7 +158,7 @@ class Command(VespaWatchCommand):
     def check_all_missing(self, missing_inat_ids):
         """
         Get all observations from vespawatch that have an iNaturalist id, but are not found in the
-        data of the iNaturlist pull. Check the observations one by one.
+        data of the iNaturalist pull. Check the observations one by one.
         """
         missing_obs = get_missing_at_inat_observations(missing_inat_ids)
         self.w("\n4. Check the observations that were not returned from iNaturalist")
@@ -161,6 +167,8 @@ class Command(VespaWatchCommand):
             self.check_missing_obs(obs)
 
     def handle(self, *args, **options):
+        pyinaturalist.user_agent = USER_AGENT
+
         if settings.INATURALIST_PUSH:
             token = get_access_token(username=settings.INAT_USER_USERNAME, password=settings.INAT_USER_PASSWORD,
                                      app_id=settings.INAT_APP_ID,
@@ -177,4 +185,6 @@ class Command(VespaWatchCommand):
         if not options['pushonly']:
             pulled_inat_ids = self.pull()
             self.check_all_missing(pulled_inat_ids)
+
+            config.LAST_PULL_COMPLETED_AT = datetime.datetime.now()
         self.w("\ndone\n")

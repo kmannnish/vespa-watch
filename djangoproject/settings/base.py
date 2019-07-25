@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
-
+from datetime import datetime
 import os
 
 from django.utils.translation import gettext_lazy as _
@@ -66,6 +66,8 @@ if private_ip:
 
 # Application definition
 
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+
 INSTALLED_APPS = [
     'modeltranslation',  # MUST be before Admin, see https://github.com/deschler/django-modeltranslation/issues/408
 
@@ -83,13 +85,21 @@ INSTALLED_APPS = [
     'crispy_forms',
     'markdownx',
     'imagekit',
+    'import_export',
+    'constance',
+    'constance.backends.database',
 
     # Local helpers
     'page_fragments',
 
-
-    'vespawatch'
+    'vespawatch',
 ]
+
+
+CONSTANCE_CONFIG = {
+    'LAST_PULL_COMPLETED_AT': (datetime(2019, 7, 15, 0, 0, 0),
+                              'The last time the iNaturalist sync pull operation successfully completed'),
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

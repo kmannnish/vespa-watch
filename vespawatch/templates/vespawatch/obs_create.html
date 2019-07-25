@@ -3,25 +3,33 @@
 
 {% block content %}
 <main class="container" id="vw-main-app">
-    <h1>{% trans 'What did you see?' %}</h1>
+  <h1>{% trans 'What did you see?' %}</h1>
 
-    <p>
-        {% url 'vespawatch:identification' as identification_page %}
-        {% blocktrans %}
-            For more information on these species, see the <a href="{{ identification_page }}">identification page</a>.
-        {% endblocktrans %}
-    </p>
+  <p>
+    {% url 'vespawatch:identification' as identification_page %}
+    {% blocktrans %}
+      Your observation will be verified by the <a href="https://www.inaturalist.org/">iNaturalist</a> community. 
+      Want to help and/or submit observations under your own name? <a href="https://www.inaturalist.org/signup">Create an iNaturalist account</a>.
+    {% endblocktrans %}
+  </p>
 
-    {% if identification_cards|length == 0 %}
-        {% trans 'No identification cards defined. Create these in the admin interface.' %}
-    {% endif %}
+  {% if identification_cards|length == 0 %}
+    {% trans 'No identification cards defined. Create these in the admin interface.' %}
+  {% endif %}
 
-    <div class="row theme-card-deck">
+  <div class="row theme-card-deck">
     {% for identif_card in identification_cards %}
-        <div class="col-lg-6">
-            {% include 'vespawatch/includes/identification_card.html' with taxon_selected=False %}
-        </div>
+      <div class="col-lg-6">
+        {% include 'vespawatch/includes/identification_card.html' with taxon_selected=False %}
+      </div>
     {% endfor %}
-    </div>
+  </div>
+
+  <p>
+    {% url 'vespawatch:identification' as identification_page %}
+    {% blocktrans %}
+      For more information on these species, see the <a href="{{ identification_page }}">identification page</a>.
+    {% endblocktrans %}
+  </p>
 </main>
 {% endblock %}

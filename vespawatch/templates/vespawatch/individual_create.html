@@ -5,118 +5,107 @@
 {% load custom_tags %}
 
 {% block content %}
+<script>
+  // set a global variable, accessible for JS
+  var formErrorMessagesRaw = "{{ form.errors_as_json }}";
+</script>
 <main class="container" id="vw-main-app">
-    <h1>{% trans 'Report observation' %}</h1>
+  <h1>{% trans 'Report observation' %}</h1>
 
-    {% if form.errors %}
-        <div class="alert alert-danger">
-            {% trans 'Please correct the errors below.' %}
-            {{ form.errors }}
+  {% if form.errors %}
+    <div class="alert alert-danger">
+      {% trans 'Please correct the errors below.' %}
+    </div>
+  {% endif %}
+
+  <p>{% trans "Please do not unnecessarily kill insects." %}</p>
+
+  <form method="post" action="{% url 'vespawatch:individual-add' %}"enctype='multipart/form-data' novalidate>
+    {% csrf_token %}
+
+    {{ form.card_id.as_hidden }}
+    {{ form.taxon.as_hidden }}
+    {{ form.redirect_to.as_hidden }}
+    {{ form.image_ids.as_hidden }}
+
+    <div class="row">
+      <div class="col-lg-6">
+        {% include 'vespawatch/includes/identification_card.html' with taxon_selected=True %}
+      </div>
+    </div>
+
+    <h5>{% trans 'Photos' %}*</h5>
+
+    <vw-image-dropzone type="individual" csrf-token="{{ csrf_token }}"
+      {% if form.data %}
+        :validation-error={{ form.image_is_invalid|boolean_to_string }}
+      {% endif %}>
+    </vw-image-dropzone>
+    <small class="form-text text-muted">
+        {% trans 'Upload at least one photo you took of your observation, to allow verification. Observations with photos that are unusable or not yours will be deleted.' %}
+    </small>
+    
+    <h5>{% trans 'Location' %}*</h5>
+    <vw-location-selector
+      {% if form.data %}
+        v-bind:init-coordinates="[{{ form.data.longitude|default_if_none:'' }}, {{ form.data.latitude|default_if_none:'' }}]"
+        init-marker={% if form.data.longitude %}"true"{% else %}"false"{% endif %}
+        location="{{ form.data.location|default_if_none:'' }}"
+        :latitude-is-invalid={{ form.latitude_is_invalid|boolean_to_string }}
+        :longitude-is-invalid={{ form.longitude_is_invalid|boolean_to_string }}
+      {% else %}
+        v-bind:init-coordinates="['', '']"
+        init-marker="false"
+      {% endif %}
+    >
+    </vw-location-selector>
+
+    <h5>{% trans 'Date' %}</h5>
+      {% if object %}
+        <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
+          init-date-time="{{ object.observation_time_iso }}"
+          :validation-error="true">
+        </vw-datetime-selector>
+      {% else %}
+        <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
+          init-date-time="{{ form.data.observation_time|default_if_none:'' }}"
+          :validation-error={{ form.date_is_invalid|boolean_to_string }}>
+        </vw-datetime-selector>
+      {% endif %}
+
+      <h5>{% trans 'Description' %}</h5>
+      
+      <div class="row">
+        <div class="col-lg-6">
+          {{ form.individual_count|as_crispy_field }}
         </div>
+        <div class="col-lg-6">
+          {{ form.behaviour|as_crispy_field }}
+        </div>
+    </div>
+    
+    {{ form.comments|as_crispy_field }}
+        
+    {% if not user.is_authenticated %}
+      <h5>{% trans 'Contact information' %}</h5>
+
+      <div class="row">
+        <div class="col-lg-3 col-md-6">
+          {{ form.observer_name|as_crispy_field }}
+        </div>
+        <div class="col-lg-3 col-md-6">
+          {{ form.observer_phone|as_crispy_field }}
+        </div>
+        <div class="col-lg-3 col-md-6">
+          {{ form.observer_email|as_crispy_field }}
+        </div>
+      </div>
+
+      {{ form.terms_of_service|as_crispy_field }}
     {% endif %}
 
-    <p>{% trans "Please do not kill insects unnecessarily." %}</p>
-
-    <form method="post" action="{% url 'vespawatch:individual-add' %}"enctype='multipart/form-data' novalidate>
-        {% csrf_token %}
-
-        {{ form.card_id.as_hidden }}
-        {{ form.taxon.as_hidden }}
-        {{ form.redirect_to.as_hidden }}
-
-        <div class="row">
-            <div class="col-lg-6">
-                {% include 'vespawatch/includes/identification_card.html' with taxon_selected=True %}
-            </div>
-        </div>
-
-        <h5>{% trans 'Photos' %}</h5>
-
-        {{ image_formset.management_form }}
-        <small class="form-text text-muted">{% trans 'Upload at least one photo of your observation' %}</small>
-        <div class="row">
-            {% for image_form in image_formset %}
-                <div class="col-md-6">
-                    {{ image_form.image|as_crispy_field }}
-                    {{ image_form.DELETE|as_crispy_field }}
-                </div>
-            {% endfor %}
-        </div>
-
-        <h5>{% trans 'Location' %}</h5>
-        {% if object %}
-            <vw-location-selector v-bind:init-coordinates="[{{ object.longitude }}, {{ object.latitude }}]"
-                init-marker="true"
-                address="{{ object.address }}">
-            </vw-location-selector>
-        {% else %}
-            <vw-location-selector
-                {% if form.data %}
-                    v-bind:init-coordinates="[{{ form.data.longitude|default_if_none:'' }}, {{ form.data.latitude|default_if_none:'' }}]"
-                    init-marker="true"
-                {% else %}
-                    v-bind:init-coordinates="['', '']"
-                    init-marker="false"
-                {% endif %}
-                    address="{{ form.data.address|default_if_none:'' }}">
-            </vw-location-selector>
-        {% endif %}
-
-        <h5>{% trans 'Date' %}</h5>
-        {% if object %}
-            <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
-                init-date-time="{{ object.observation_time_iso }}">
-            </vw-datetime-selector>
-        {% else %}
-            <vw-datetime-selector :is-required="true" hidden-field-name="observation_time"
-                init-date-time="{{ form.data.observation_time|default_if_none:'' }}">
-            </vw-datetime-selector>
-        {% endif %}
-
-        <h5>{% trans 'Description' %}</h5>
-        <div class="row">
-            <div class="col-lg-6">
-                {{ form.individual_count|as_crispy_field }}
-            </div>
-            <div class="col-lg-6">
-                {{ form.behaviour|as_crispy_field }}
-            </div>
-        </div>
-        {{ form.comments|as_crispy_field }}
-        
-        {% if not user.is_authenticated %}
-            <h5>{% trans 'Contact information' %}</h5>
-            <div class="row">
-                <div class="col-lg-3 col-md-6">
-                    {{ form.observer_name|as_crispy_field }}
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    {{ form.observer_phone|as_crispy_field }}
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    {{ form.observer_email|as_crispy_field }}
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div id="div_id_terms_of_service" class="form-check">
-                    <label class="form-check-label" for="id_terms_of_service">
-                        <input type="checkbox" name="terms_of_service" id="id_terms_of_service" class="checkboxinput form-check-input">
-
-                    {% url 'vespawatch:about_privacypolicy' as privacypolicy_page %}
-                        {% blocktrans %}
-                            I agree with the <a href="{{ privacypolicy_page }}" target="_blank">privacy policy</a>*.
-                        {% endblocktrans %}
-
-
-
-                    </label>
-                </div>
-            </div>
-        {% endif %}
-
-        <button type="submit" class="btn btn-success">{% trans 'Report observation' %}</button>
-        <a class="btn btn-light" href="{% url 'vespawatch:index' %}">{% trans 'Cancel' %}</a>
-    </form>
+    <button type="submit" class="btn btn-success">{% trans 'Report observation' %}</button>
+    <a class="btn btn-light" href="{% url 'vespawatch:index' %}">{% trans 'Cancel' %}</a>
+  </form>
 </main>
 {% endblock %}

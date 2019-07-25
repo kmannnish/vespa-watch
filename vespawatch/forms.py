@@ -4,14 +4,40 @@ from vespawatch.fields import ISODateTimeField
 from .models import ManagementAction, Nest, Individual, NestPicture, IndividualPicture
 
 
-class IndividualForm(ModelForm):
+OBS_FORM_VUE_FIELDS = ({'field_name': 'observation_time', 'attribute_if_error': 'date_is_invalid'},
+                       {'field_name': 'latitude', 'attribute_if_error': 'latitude_is_invalid'},
+                       {'field_name': 'longitude', 'attribute_if_error': 'longitude_is_invalid'},
+                       )
+
+
+class ReportObservationForm(ModelForm):
+    terms_of_service = BooleanField(label=_('I agree with the <a href="/about/privacy-policy/" target="_blank">privacy policy</a>'))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for vue_field in OBS_FORM_VUE_FIELDS:
+            setattr(self, vue_field['attribute_if_error'], False)
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        self.errors_as_json = self.errors.as_json()
+
+        for vue_field in OBS_FORM_VUE_FIELDS:
+            if vue_field['field_name'] in self.errors:
+                setattr(self, vue_field['attribute_if_error'], True)
+
+        return cleaned_data
+
+
+class IndividualForm(ReportObservationForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
-    terms_of_service = BooleanField(label=_('Accept the privacy policy'), required=False)
+    location = CharField(max_length=255, required=False)
+    image_ids = CharField(max_length=255)
 
     class Meta:
         model = Individual
-        fields = ['taxon', 'individual_count', 'behaviour', 'address', 'latitude', 'longitude',
+        fields = ['taxon', 'individual_count', 'behaviour', 'latitude', 'longitude',
                   'observation_time', 'comments',
                   'observer_name', 'observer_email', 'observer_phone'
         ]
@@ -20,23 +46,21 @@ class IndividualForm(ModelForm):
         }
 
     def clean(self):
-        cleaned_data = self.cleaned_data
-        toc = cleaned_data.get('terms_of_service')
-        print('Toc: {}'.format(toc))
-        if not toc:
-            msg = _("You must accept the privacy policy.")
-            self.add_error('terms_of_service', msg)
-        if len(self.files) is 0:
+        cleaned_data = super().clean()
+        if 'image_ids' not in cleaned_data or not cleaned_data['image_ids']:
             msg = 'You must add at least one picture'
             self.add_error(None, msg)
+            setattr(self, "image_is_invalid", True)
 
         return cleaned_data
 
     def save(self, *args, **kwargs):
         observation = super().save(*args, **kwargs)
-        if hasattr(self.files, 'getlist'):
-            for image in self.files.getlist('images'):
-                IndividualPicture.objects.create(observation=observation, image=image)
+        image_ids = [x for x in self.cleaned_data['image_ids'].strip().split(',') if x]
+        for image_id in image_ids:
+            np = IndividualPicture.objects.get(pk=image_id)
+            np.observation = observation
+            np.save()
 
 
 class IndividualFormUnauthenticated(IndividualForm):
@@ -44,7 +68,7 @@ class IndividualFormUnauthenticated(IndividualForm):
 
     class Meta:
         model = Individual
-        fields = ['taxon', 'individual_count', 'behaviour', 'address', 'latitude', 'longitude',
+        fields = ['taxon', 'individual_count', 'behaviour', 'latitude', 'longitude',
                   'observation_time', 'comments',
                   'observer_email', 'observer_name', 'observer_phone',
         ]
@@ -53,15 +77,16 @@ class IndividualFormUnauthenticated(IndividualForm):
         }
 
 
-class NestForm(ModelForm):
+class NestForm(ReportObservationForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
     height = ChoiceField(label=_('Nest height'), choices=[('', '--------')] + list(Nest.HEIGHT_CHOICES))
-    address = CharField(max_length=255)
+    location = CharField(max_length=255, required=False)
+    image_ids = CharField(max_length=255)
 
     class Meta:
         model = Nest
-        fields = ['taxon', 'address', 'latitude', 'longitude',
+        fields = ['taxon', 'latitude', 'longitude',
                   'observation_time', 'size', 'height', 'comments',
                   'observer_name', 'observer_email', 'observer_phone'
         ]
@@ -70,30 +95,31 @@ class NestForm(ModelForm):
         }
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super().clean()
 
-        if len(self.files) is 0:
+        if 'image_ids' not in cleaned_data or not cleaned_data['image_ids']:
             msg = 'You must add at least one picture'
             self.add_error(None, msg)
-
+            setattr(self, "image_is_invalid", True)
         return cleaned_data
 
     def save(self, *args, **kwargs):
         observation = super().save(*args, **kwargs)
-        if hasattr(self.files, 'getlist'):
-            for image in self.files.getlist('images'):
-                NestPicture.objects.create(observation=observation, image=image)
+        image_ids = [x for x in self.cleaned_data['image_ids'].strip().split(',') if x]
+        for image_id in image_ids:
+            np = NestPicture.objects.get(pk=image_id)
+            np.observation = observation
+            np.save()
 
 
 class NestFormUnauthenticated(NestForm):
     observer_name = CharField(label=_('Name'), max_length=255)
     observer_email = EmailField(label=_('Email address'))
     observer_phone = CharField(label=_('Telephone number'), max_length=20)
-    terms_of_service = BooleanField(label=_('Accept the privacy policy'))
 
     class Meta:
         model = Nest
-        fields = ['taxon', 'address', 'latitude', 'longitude',
+        fields = ['taxon', 'latitude', 'longitude',
                   'observation_time', 'size', 'height', 'comments',
                   'observer_email', 'observer_name', 'observer_phone'
         ]
@@ -101,15 +127,6 @@ class NestFormUnauthenticated(NestForm):
             'observation_time': ISODateTimeField,
         }
 
-    def clean(self):
-        cleaned_data = super().clean()
-
-        toc = cleaned_data.get('terms_of_service')
-        if not toc:
-            msg = _("You must accept the privacy policy.")
-            self.add_error('terms_of_service', msg)
-
-        return cleaned_data
 
 class IndividualPictureForm(ModelForm):
     class Meta:
@@ -125,6 +142,7 @@ class NestPictureForm(ModelForm):
 
 IndividualImageFormset = inlineformset_factory(Individual, IndividualPicture, fields=('image',), extra=2)
 NestImageFormset = inlineformset_factory(Nest, NestPicture, fields=('image',), extra=2)
+
 
 class ManagementActionForm(ModelForm):
     class Meta:
