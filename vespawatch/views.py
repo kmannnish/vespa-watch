@@ -381,6 +381,9 @@ def save_management_action(request):
             form = ManagementActionForm(request.POST)
 
         try:
+            form_data_copy = form.data.copy()
+            form_data_copy['user'] = request.user.id
+            form.data = form_data_copy
             form.save()
             return JsonResponse({'result': 'OK'}, status=201)
         except ValueError:

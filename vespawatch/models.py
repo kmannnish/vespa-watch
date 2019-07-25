@@ -4,6 +4,7 @@ from datetime import datetime, date
 import dateparser
 import requests
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -758,6 +759,7 @@ class ManagementAction(models.Model):
     )
 
     nest = models.ForeignKey(Nest, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     outcome = models.CharField(verbose_name=_("Outcome"), max_length=2, choices=OUTCOME_CHOICE)
     action_time = models.DateTimeField(verbose_name=_("Action time"))
     person_name = models.CharField(verbose_name=_("Person name"), max_length=255, blank=True)
