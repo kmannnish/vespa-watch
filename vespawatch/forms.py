@@ -11,7 +11,7 @@ OBS_FORM_VUE_FIELDS = ({'field_name': 'observation_time', 'attribute_if_error': 
 
 
 class ReportObservationForm(ModelForm):
-    terms_of_service = BooleanField(label=_('I agree with the <a href="/about/privacy-policy/" target="_blank">privacy policy</a>'))
+    privacy_policy = BooleanField(label=_('I agree with the <a href="/about/privacy-policy/" target="_blank">privacy policy</a>'))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

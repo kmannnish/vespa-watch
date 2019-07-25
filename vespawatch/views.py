@@ -80,10 +80,10 @@ def create_individual(request):
         print(f'2: {card_id}')
         identif_card = IdentificationCard.objects.get(pk=card_id)
         if request.user.is_authenticated:
-            # set to terms_of_service to true if the user is authenticated
+            # set to privacy_policy to true if the user is authenticated
             form = IndividualForm(request.POST, request.FILES)
             form_data_copy = form.data.copy()
-            form_data_copy['terms_of_service'] = True
+            form_data_copy['privacy_policy'] = True
             form.data = form_data_copy
         else:
             form = IndividualFormUnauthenticated(request.POST, request.FILES)
@@ -151,9 +151,9 @@ def create_nest(request):
         identif_card = IdentificationCard.objects.get(pk=card_id)
         if request.user.is_authenticated:
             form = NestForm(request.POST, request.FILES)
-            # set to terms_of_service to true if the user is authenticated
+            # set to privacy_policy to true if the user is authenticated
             form_data_copy = form.data.copy()
-            form_data_copy['terms_of_service'] = True
+            form_data_copy['privacy_policy'] = True
             form.data = form_data_copy
         else:
             form = NestFormUnauthenticated(request.POST, request.FILES)
