@@ -190,18 +190,6 @@ def create_nest(request):
     return render(request, 'vespawatch/nest_create.html',
                   {'form': form, 'type': 'nest', 'identif_card': identif_card})
 
-
-class NestDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
-    model = Nest
-
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super().get_context_data(**kwargs)
-        r = kwargs.get('redirect_to', ['index'])
-        context['redirect_to'] = r[0]
-        return context
-
-
 class NestDelete(LoginRequiredMixin, CustomDeleteView):
     model = Nest
     success_url = reverse_lazy('vespawatch:index')
@@ -215,6 +203,16 @@ class NestDelete(LoginRequiredMixin, CustomDeleteView):
 @login_required
 def management(request):
     return render(request, 'vespawatch/management.html')
+
+
+@login_required
+def nest_detail(request, pk=None):
+    nest = get_object_or_404(Nest, pk=pk)
+    action_id = nest.get_management_action_id()
+    action = None
+    if action_id:
+        action = get_object_or_404(ManagementAction, pk=action_id)
+    return render(request, 'vespawatch/nest_detail.html', {'nest': nest, 'action': action})
 
 
 # CREATE/UPDATE/DELETE MANAGEMENT ACTIONS
@@ -397,6 +395,7 @@ def get_management_action(request):
 
         return JsonResponse({'action_time': action.action_time,
                              'outcome':action.outcome,
+                             'outcome_display':action.get_outcome_display(),
                              'duration': action.duration_in_seconds,
                              'person_name': action.person_name})
 

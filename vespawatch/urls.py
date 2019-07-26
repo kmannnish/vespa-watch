@@ -33,17 +33,17 @@ urlpatterns = [
 
     path('obs/nest/', RedirectView.as_view(pattern_name='vespawatch:nest-add')),
     path('obs/nest/add/', views.create_nest, name='nest-add'),
-    path('obs/nest/<int:pk>/', views.NestDetail.as_view(), name='nest-detail'),
+    path('management/nest/<int:pk>/', views.nest_detail, name='nest-detail'),
     path('obs/nest/<int:pk>/delete/', views.NestDelete.as_view(), name='nest-delete'),
 
     # API paths
     #path('api/observations/', views.observations_json, name='api_observations'),  TODO can we remove this one?
     path('api/individuals/', views.individuals_json, name='api_individuals'),
-    path('api/individuals/<int:pk>', views.single_individual_json, name='api_single_individual'),
+    path('api/individuals/<int:pk>', views.single_individual_json, name='api_single_individual'), # TODO can we remove this one?
     path('api/individual_pictures/', views.save_individual_picture, name='api_individual_picture'),
     path('api/individual_pictures/<int:pk>', views.get_individual_picture, name='api_single_individual_picture'),
     path('api/nests/', views.nests_json, name='api_nests'),
-    path('api/nests/<int:pk>/', views.single_nest_json, name='api_single_nest'),
+    path('api/nests/<int:pk>/', views.single_nest_json, name='api_single_nest'), # TODO can we remove this one?
     path('api/nest_pictures/', views.save_nest_picture, name='api_nest_picture'),
     path('api/nest_pictures/<int:pk>', views.get_nest_picture, name='api_single_nest_picture'),
 

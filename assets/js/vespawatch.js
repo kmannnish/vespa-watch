@@ -727,56 +727,40 @@ var VwManagementActionModal = {
     </transition>`
 };
 
-// A row in the management table that displays the
-// information of a single nest.
-var VwManagementTableNestRow = {
+
+// Contains edit/delete button or create button. These buttons will open a VwManagementActionModal
+var VwManagementActionEditButtons = {
     components: {
         'vw-management-action-modal': VwManagementActionModal
     },
     computed: {
-        hasManagementAction: function () {
-            // Does this Nest has a management action?
-            return (this.nest.action !== '')
-        },
-        managementActionID: function () {
-            // If this nest has a management action, return its ID
-            return this.nest.actionId;
-        },
-        cannotEditLabel: function () {
-            return gettext('You cannot edit this observation');
-        },
-        cannotEditTitle: function () {
-            return gettext('This observation was created on iNaturalist. You cannot edit it here');
-        },
-        editStr: function () {
-            return gettext('edit');
+        actionIdNr: function () {
+            return parseInt(this.actionId);
         },
         addStr: function () {
             return gettext('add');
         },
+        editStr: function () {
+            return gettext('edit');
+        },
         editDeleteStr: function () {
             return gettext('edit / delete');
         },
+        hasManagementAction: function () {
+            // Does this Nest has a management action?
+            return (this.actionId != null && this.actionId !== '')
+        },
         managementAction: function () {
-            return gettext(this.nest.action);
+            return gettext(this.actionDisplay);
         },
-        nestClass: function () {
-            if (this.nest.action) {
-                return '';
-            }
-            return 'table-danger';
+        managementActionID: function () {
+            // If this nest has a management action, return its ID
+            return this.actionId;
         },
-        nestLatitude: function () {
-            return roundCoordinate(this.nest.latitude)
+        nestIdNr: function () {
+            return parseInt(this.nestId);
         },
-        nestLongitude: function () {
-            return roundCoordinate(this.nest.longitude)
-        },
-        observationTimeStr: function () {
-            return moment(this.nest.observation_time).format('lll');
-        }
     },
-    props: ['nest'],
     data: function () {
         return {
             addActionModalOpened: false,
@@ -805,6 +789,63 @@ var VwManagementTableNestRow = {
             }
         }
     },
+    props: ['actionId', 'nestId'],
+    template: `
+    <p>
+        <span >
+            <button v-if="hasManagementAction" v-on:click="showEditActionModal()" class="btn btn-outline-info btn-sm">{{ editDeleteStr }}</button>
+            <button v-else v-on:click="showNewActionModal()" class="btn btn-outline-info btn-sm">{{ addStr }}</button>
+        </span>
+        <vw-management-action-modal v-if="editActionModalOpened" v-on:close="hideEditActionModal" mode="edit" :nest-id="nestIdNr" :action-id="actionIdNr"></vw-management-action-modal>
+        <vw-management-action-modal v-if="addActionModalOpened" v-on:close="hideNewActionModal" mode="add" :nest-id="nestIdNr"></vw-management-action-modal>
+    </p>
+    `
+};
+
+
+// A row in the management table that displays the
+// information of a single nest.
+var VwManagementTableNestRow = {
+    components: {
+        'vw-management-action-edit-buttons': VwManagementActionEditButtons,
+        'vw-management-action-modal': VwManagementActionModal,
+    },
+    computed: {
+        cannotEditLabel: function () {
+            return gettext('You cannot edit this observation');
+        },
+        cannotEditTitle: function () {
+            return gettext('This observation was created on iNaturalist. You cannot edit it here');
+        },
+        detailsStr: function () {
+            return gettext('details');
+        },
+        editStr: function () {
+            return gettext('edit');
+        },
+        nestClass: function () {
+            if (this.nest.action) {
+                return '';
+            }
+            return 'table-danger';
+        },
+        nestLatitude: function () {
+            return roundCoordinate(this.nest.latitude)
+        },
+        nestLongitude: function () {
+            return roundCoordinate(this.nest.longitude)
+        },
+        observationTimeStr: function () {
+            return moment(this.nest.observation_time).format('lll');
+        }
+    },
+    methods: {
+        dataChanged: function () {
+            this.$emit('data-changed');
+        }
+    },
+    props: ['nest'],
+
     template: ` 
         <tr :class="nestClass">
             <td>{{ observationTimeStr }}</td>
@@ -812,19 +853,12 @@ var VwManagementTableNestRow = {
             <td>{{ nestLatitude }}</td>
             
             <td>
-                <span v-if="hasManagementAction">
-                    {{ managementAction }}
-                    <button v-on:click="showEditActionModal()" class="btn btn-outline-info btn-sm">{{ editDeleteStr }}</button>
-                </span>
-                
-                <button v-else v-on:click="showNewActionModal()" class="btn btn-outline-info btn-sm">{{ addStr }}</button>
-                
-                <vw-management-action-modal v-if="editActionModalOpened" v-on:close="hideEditActionModal" mode="edit" :nest-id="nest.id" :action-id="nest.actionId"></vw-management-action-modal>
-                <vw-management-action-modal v-if="addActionModalOpened" v-on:close="hideNewActionModal" mode="add" :nest-id="nest.id"></vw-management-action-modal>
+                {{ nest.action }}
+                <vw-management-action-edit-buttons :nest-id="nest.id" :action-id="nest.actionId" v-on:data-changed="dataChanged"></vw-management-action-edit-buttons>
             </td>
             
             <td>
-                    <span v-if="!nest.originates_in_vespawatch" v-bind:title="cannotEditTitle">{{ cannotEditLabel }}</span>
+                <a :href="nest.detailsUrl" class="btn btn-outline-info btn-sm">{{ detailsStr }}</a>
             </td>
         </tr>
         `
@@ -839,6 +873,9 @@ var VwManagementTable = {
     computed: {
         dateStr: function () {
             return gettext('date');
+        },
+        detailsStr: function () {
+            return gettext('details');
         },
         latitudeStr: function () {
             return gettext('latitude');
@@ -891,7 +928,7 @@ var VwManagementTable = {
                 <table v-if="nests && nests.length > 0" class="table">
                     <thead>
                         <tr>
-                            <th>{{ dateStr }}</th><th>{{ longitudeStr }}</th><th>{{ latitudeStr }}</th><th>{{ managementStr }}</th><th></th>
+                            <th>{{ dateStr }}</th><th>{{ longitudeStr }}</th><th>{{ latitudeStr }}</th><th>{{ managementStr }}</th><th>{{ detailsStr }}</th>
                         </tr>
                     </thead>
 
@@ -899,6 +936,122 @@ var VwManagementTable = {
                 </table>
                 <div v-else>{{ noNestsStr }}</div>
             </template>
+    </div>
+    `
+};
+
+var VwManagementActionDisplay = {
+    components: {
+        'vw-management-action-edit-buttons': VwManagementActionEditButtons
+    },
+    computed: {
+        actionLabel: function () {
+            return gettext('Management action');
+        },
+        actionTimeLabel: function () {
+            return gettext('Action time');
+        },
+        durationInMinutes: {
+            get: function () {
+                if (this.duration !== '') {
+                    return this.duration / 60;
+                }
+            },
+            set: function (newValue) {
+                if (newValue !== '') {
+                    this.duration = newValue * 60;
+                } else {
+                    this.duration = '';
+                }
+            }
+        },
+        durationLabel: function () {
+            return gettext('Duration');
+        },
+        inMinutesLabel: function () {
+            return gettext('in minutes');
+        },
+        localActiontime: function () {
+            return moment(this.actionTime).format('lll');  //  todo this is not necessarily the same as the django language setting
+        },
+        nameLabel: function () {
+            return gettext('Person name');
+        },
+        noActionLabel: function () {
+            return gettext('No action');
+        },
+        outcomeLabel: function () {
+            return gettext('Outcome');
+        }
+    },
+    data: function () {
+        return {
+            action: null,
+            actionTime: null,
+            duration: null,
+            loadActionUrl: VWConfig.apis.actionLoadUrl,
+            outcome: null,
+            personName: null
+        }
+    },
+    methods: {
+
+        getAction: function () {
+            axios.get(this.loadActionUrl, {params: {'action_id': this.actionId}})
+                .then(response => {
+                    console.log('Received response', response);
+                    this.actionTime = response.data.action_time;
+                    this.outcome = response.data.outcome_display;
+                    this.duration = response.data.duration;
+                    this.personName = response.data.person_name;
+                })
+        }
+    },
+    mounted: function () {
+        this.getAction();
+    },
+    props: ['nestId', 'nestUrl', 'actionId', ],
+    template: `
+    <div>
+      <h1>{{actionLabel}}</h1>
+
+      <div v-if="actionId">
+        <h5>{{outcomeLabel}}</h5>
+        <div class="row">
+          <div class="col-lg-12">
+              <p>{{ outcome }}</p>
+          </div>
+        </div>
+
+        <h5>{{nameLabel}}</h5>
+        <div class="row">
+          <div class="col-lg-12">
+              <p>{{ personName }}</p>
+          </div>
+        </div>
+
+        <h5>{{actionTimeLabel}}</h5>
+        <div class="row">
+          <div class="col-lg-12">
+              <p>{{ localActiontime }}</p>
+          </div>
+        </div>
+
+        <h5>{{durationLabel}} <small>({{inMinutesLabel}})</small></h5>
+        <div class="row">
+          <div class="col-lg-12">
+              <p>{{ durationInMinutes }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div v-else class="row">
+        <div class="col-lg-12">
+            <p>{{noActionLabel}}</p>
+        </div>
+      </div>
+
+      <vw-management-action-edit-buttons :nest-id="nestId" :action-id="actionId" v-on:data-changed="getAction"></vw-management-action-edit-buttons>
     </div>
     `
 };
@@ -1019,7 +1172,7 @@ var VwLocationSelectorMap = {
 
             // Create the marker
             this.marker = L.marker([lng, lat], {
-                draggable: true
+                draggable: this.editable === "true"
             }).addTo(this.map);
 
 
@@ -1041,7 +1194,7 @@ var VwLocationSelectorMap = {
             console.log('Don\'t add a marker');
         }
     },
-    props: ['position', 'initMarker'],
+    props: ['editable', 'position', 'initMarker'],
     template: '<div class="mb-2" id="vw-location-selector-map-map" style="height: 300px;"></div>',
     watch: {
         position: function (n, o) {
@@ -1163,10 +1316,16 @@ var VwLocationSelectorCoordinates = {
         longitudeLabel: function () {
             return gettext('Longitude');
         },
+        roundedLatitude: function () {
+            return roundCoordinate(this.latitude);
+        },
+        roundedLongitude: function () {
+            return roundCoordinate(this.longitude);
+        }
     },
     props: ['longitude', 'latitude'],
     template: `
-        <small class="form-text text-muted">{{longitudeLabel}}: {{roundCoordinate(longitude)}} / {{latitudeLabel}}: {{roundCoordinate(latitude)}}</small>
+        <small class="form-text text-muted">{{longitudeLabel}}: {{roundedLongitude}} / {{latitudeLabel}}: {{roundedLatitude}}</small>
 `
 };
 
@@ -1444,7 +1603,7 @@ var VwLocationSelector = {
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
-                <vw-location-selector-map v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
+                <vw-location-selector-map editable="true" v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
                 <vw-location-selector-coordinates :longitude="locationLng" :latitude="locationLat"></vw-location-selector-coordinates>
             </div>
         </div>
@@ -1455,8 +1614,11 @@ var app = new Vue({
     components: {
         'vw-observations-viz': VwObservationsViz,
         'vw-location-selector': VwLocationSelector,
+        'vw-location-selector-map': VwLocationSelectorMap,
         'vw-datetime-selector': VwDatetimeSelector,
         'vw-management-table': VwManagementTable,
+        'vw-management-action-edit-buttons': VwManagementActionEditButtons,
+        'vw-management-action-display': VwManagementActionDisplay,
         'vw-recent-obs-table': VwRecentObsTable,
         'vw-image-dropzone': VwImageDropZone
     },
