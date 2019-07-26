@@ -224,7 +224,7 @@ INATURALIST_PUSH = False
 # Notification emails
 
 EMAIL_TO_REPORTER_SENDER = 'vespawatch@inbo.be'
-EMAIL_TO_REPORTER_SUBJECT = 'Bedankt voor je observatie op vespawatch.be'
+EMAIL_TO_REPORTER_SUBJECT = 'Bedankt voor je melding op Vespa-Watch'
 EMAIL_TO_REPORTER_BODY = """
 <html>
 <body>
@@ -232,7 +232,7 @@ EMAIL_TO_REPORTER_BODY = """
 
     <p>
     Bedankt voor je melding op <a href="https://vespawatch.be">Vespa-Watch</a>. Dankzij jou houden 
-    we de vinger aan de pols van de hoornaarinvasie in Vlaanderen.</p>
+    we de vinger aan de pols van de Aziatische hoornaarinvasie in Vlaanderen.</p>
     
     <p>
     Je observatie is nu ook beschikbaar op 
@@ -241,14 +241,14 @@ EMAIL_TO_REPORTER_BODY = """
     zullen worden verwijderd. Hou 
     <a href="https://www.inaturalist.org/observations/{inat_id}">deze pagina</a> in de gaten om te 
     weten welke soort je hebt gezien. Wil je deelnemen aan de identificatie en/of observaties onder 
-    je eigen naam doorsturen? <a href="https://www.inaturalist.org/signup">Maak dan een iNaturalist 
-    account aan.</a>
+    je eigen naam doorsturen? Maak dan een <a href="https://www.inaturalist.org/signup">iNaturalist 
+    account</a> aan.
     </p>
 
     <p>
-    Feedback? Laat het ons weten door op deze email te antwoorden. Vertel vrienden en kennissen 
-    over de Aziatische hoornaar en <a href="https://vespawatch.be/get-involved/">lees hier</a> hoe 
-    je verder kan deelnemen aan dit project</a>.
+    Vertel vrienden en kennissen over de Aziatische hoornaar en 
+    <a href="https://vespawatch.be/get-involved/">lees hier</a> hoe je verder kan deelnemen aan dit 
+    project</a>. Feedback? Laat het ons weten door op deze email te antwoorden. 
     </p>
 
     <p>Met vriendelijke groeten,</p>

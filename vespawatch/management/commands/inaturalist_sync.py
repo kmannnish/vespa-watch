@@ -119,7 +119,6 @@ class Command(VespaWatchCommand):
         self.w("\n3. Pull all observations from iNaturalist")
         observations = get_all_observations(params={'project_id': settings.VESPAWATCH_PROJECT_ID})
         pulled_inat_ids = []
-        local_obs = None
         for inat_observation_data in observations:
             pulled_inat_ids.append(inat_observation_data['id'])
             local_obs = get_local_observation_with_inaturalist_id(inat_observation_data['id'])
