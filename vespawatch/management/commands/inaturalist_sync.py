@@ -34,7 +34,7 @@ class Command(VespaWatchCommand):
         to_email = 'peter.desmet@inbo.be' # TODO: update to obs.observer_email
         subject = settings.EMAIL_TO_REPORTER_SUBJECT
         body = settings.EMAIL_TO_REPORTER_BODY.format(
-            observer_name = str(obs.observer_name or ''),
+            observer_name = ' ' + obs.observer_name if type(obs.observer_name) is str else '',
             inat_id = obs.inaturalist_id
         )
         

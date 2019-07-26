@@ -228,7 +228,7 @@ EMAIL_TO_REPORTER_SUBJECT = 'Bedankt voor je observatie op vespawatch.be'
 EMAIL_TO_REPORTER_BODY = """
 <html>
 <body>
-    <p>Beste {observer_name}</p>
+    <p>Beste{observer_name},</p>
 
     <p>
     Bedankt voor je melding op <a href="https://vespawatch.be">Vespa-Watch</a>. Dankzij jou houden 
@@ -265,8 +265,8 @@ EMAIL_TO_REPORTER_BODY = """
         </p>
     
         <p>
-        Elke melding op Vespa-Watch is publiek beschikbaar als open data, maar we voor bestrijding 
-        worden enkel observaties in Vlaanderen gebruikt. Andere regio's hebben vaak hun 
+        Elke melding op Vespa-Watch is publiek beschikbaar als open data, maar voor bestrijding 
+        worden enkel observaties in Vlaanderen gebruikt. Andere regio's en landen hebben vaak hun 
         <a href="https://vespawatch.be/about/links/">eigen invoerportalen</a> en 
         bestrijdingsprogramma's voor Aziatische hoornaar.
         </p>
