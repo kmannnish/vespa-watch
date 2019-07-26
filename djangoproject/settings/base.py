@@ -237,7 +237,7 @@ EMAIL_TO_REPORTER_BODY = """
     <p>
     Je observatie is nu ook beschikbaar op 
     <a href="https://www.inaturalist.org/observations/{inat_id}">iNaturalist</a>, waar deze door 
-    vrijwilligers kan worden geverifieerd. Observaties met onbruikbare of niet zelfgenomen foto's 
+    vrijwilligers kan worden geverifieerd. Observaties met onbruikbare of niet zelf genomen foto's 
     zullen worden verwijderd. Hou 
     <a href="https://www.inaturalist.org/observations/{inat_id}">deze pagina</a> in de gaten om te 
     weten welke soort je hebt gezien. Wil je deelnemen aan de identificatie en/of observaties onder 
