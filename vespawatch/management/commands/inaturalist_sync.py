@@ -1,5 +1,7 @@
+import boto3
 import datetime
 import logging
+from botocore.exceptions import ClientError
 from json import JSONDecodeError
 
 from constance import config
@@ -21,6 +23,47 @@ USER_AGENT = f'VespaWatch (using Pyinaturalist {pyinaturalist.__version__})'
 
 class Command(VespaWatchCommand):
     help = 'Synchronize VespaWatch and iNaturalist. Full description: https://github.com/inbo/vespa-watch/issues/2'
+    email_client = None
+
+    def send_email_to_reporter(self, obs):
+        if not self.email_client:
+            self.w('set up email client')
+            self.email_client = boto3.client('ses', region_name=settings.AWS_S3_REGION_NAME)
+
+        from_email = settings.EMAIL_TO_REPORTER_SENDER
+        to_email = 'peter.desmet@inbo.be' # TODO: update to obs.observer_email
+        subject = settings.EMAIL_TO_REPORTER_SUBJECT
+        body = settings.EMAIL_TO_REPORTER_BODY.format(
+            observer_name = ' ' + obs.observer_name if type(obs.observer_name) is str else '',
+            inat_id = obs.inaturalist_id
+        )
+        
+        try:
+            response = self.email_client.send_email(
+                Source=from_email,
+                Destination={
+                    'ToAddresses': [ 
+                        to_email 
+                    ],
+                },
+                Message={
+                    'Subject': {
+                        'Charset': 'UTF-8',
+                        'Data': subject,
+                    },
+                    'Body': {
+                        'Html': {
+                            'Charset': 'UTF-8',
+                            'Data': body,
+                        },
+                    }
+                }
+            )
+        # Display an error if something goes wrong.
+        except ClientError as e:
+            self.w(e.response['Error']['Message'])
+        else:
+            self.w(f'Email sent to {to_email} for observation {obs.inaturalist_id} with message ID: {response["MessageId"]}')
 
     def add_arguments(self, parser):
         parser.add_argument('--pushonly', type=bool, default=False)
@@ -61,6 +104,7 @@ class Command(VespaWatchCommand):
             self.w(f"... Creating {obs.subject} #{obs.pk} on iNaturalist")
             try:
                 obs.create_at_inaturalist(access_token=access_token, user_agent=USER_AGENT)
+                self.send_email_to_reporter(obs)
             except HTTPError:
                 self.w('HTTP Error received, check logs.')
                 logging.exception("HTTPError while pushing observation.")

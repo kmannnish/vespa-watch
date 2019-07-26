@@ -116,6 +116,5 @@ STATIC_URL = 'https://{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
 MEDIAFILES_LOCATION = 'media'
 DEFAULT_FILE_STORAGE = 'custom_s3_storage.MediaStorage'
 
-
 # Other
 VESPAWATCH_BASE_SITE_URL = "http://vespawatch-{}.eu-west-1.elasticbeanstalk.com/".format(os.environ['ENVIRONMENT'])

@@ -30,7 +30,7 @@ JS_DEBUG = False
 
 ALLOWED_HOSTS = ['.localhost']
 
-# add private ip from AWS
+# Add private IP from AWS
 # cfr. https://hashedin.com/blog/5-gotchas-with-elastic-beanstalk-and-django/
 def is_ec2_linux():
     """Detect if we are running on an EC2 Linux Instance
@@ -63,7 +63,6 @@ def get_linux_ec2_private_ip():
 private_ip = get_linux_ec2_private_ip()
 if private_ip:
     ALLOWED_HOSTS.append(private_ip)
-
 
 # Application definition
 
@@ -135,7 +134,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'djangoproject.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
@@ -145,7 +143,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -164,7 +161,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
@@ -217,7 +213,6 @@ MAP_TILELAYER_OPTIONS = {
     'maxZoom': 20
 }
 
-
 # iNaturalist
 
 INAT_USER_USERNAME = 'vespawatch'
@@ -226,7 +221,59 @@ INAT_APP_ID = 'd1d0f541791be42e234ce82a5bb8332ab816ff7ab35c6e27b12c0455939a5ea8'
 INAT_APP_SECRET = ''
 INATURALIST_PUSH = False
 
-INATURALIST_PUSH = False  # Set it to true if we want to REALLY push data to iNaturalist
+# Notification emails
+
+EMAIL_TO_REPORTER_SENDER = 'vespawatch@inbo.be'
+EMAIL_TO_REPORTER_SUBJECT = 'Bedankt voor je melding op Vespa-Watch'
+EMAIL_TO_REPORTER_BODY = """
+<html>
+<body>
+    <p>Beste{observer_name},</p>
+
+    <p>
+    Bedankt voor je melding op <a href="https://vespawatch.be">Vespa-Watch</a>. Dankzij jou houden 
+    we de vinger aan de pols van de Aziatische hoornaarinvasie in Vlaanderen.</p>
+    
+    <p>
+    Je observatie is nu ook beschikbaar op 
+    <a href="https://www.inaturalist.org/observations/{inat_id}">iNaturalist</a>, waar deze door 
+    vrijwilligers kan worden geverifieerd. Observaties met onbruikbare of niet zelf genomen foto's 
+    zullen worden verwijderd. Hou 
+    <a href="https://www.inaturalist.org/observations/{inat_id}">deze pagina</a> in de gaten om te 
+    weten welke soort je hebt gezien. Wil je deelnemen aan de identificatie en/of observaties onder 
+    je eigen naam doorsturen? Maak dan een <a href="https://www.inaturalist.org/signup">iNaturalist 
+    account</a> aan.
+    </p>
+
+    <p>
+    Vertel vrienden en kennissen over de Aziatische hoornaar en 
+    <a href="https://vespawatch.be/get-involved/">lees hier</a> hoe je verder kan deelnemen aan dit 
+    project</a>. Feedback? Laat het ons weten door op deze email te antwoorden. 
+    </p>
+
+    <p>Met vriendelijke groeten,</p>
+
+    <p>Het Vespa-Watch team</p>
+
+    <small>
+        <p>
+        Dit is een éénmalige, automatische email die wordt verstuurd bij het melden van een 
+        observatie op Vespa-Watch. We zullen je verder geen emails sturen. Bij een geverifieerde 
+        melding van een <strong>nest</strong> van Aziatische hoornaars, kan je worden gecontacteerd 
+        door bestrijders. Zie ons 
+        <a href="https://vespawatch.be/about/privacy-policy/">privacybeleid</a>.
+        </p>
+    
+        <p>
+        Elke melding op Vespa-Watch is publiek beschikbaar als open data, maar voor bestrijding 
+        worden enkel observaties in Vlaanderen gebruikt. Andere regio's en landen hebben vaak hun 
+        <a href="https://vespawatch.be/about/links/">eigen invoerportalen</a> en 
+        bestrijdingsprogramma's voor Aziatische hoornaar.
+        </p>
+    </small>
+</body>
+</html>
+"""
 
 # Other
 
@@ -253,7 +300,6 @@ VESPAWATCH_PROJECT_URL = f"https://inaturalist.org/projects/{VESPAWATCH_PROJECT_
 VESPAWATCH_USER_ID = 1263313  # vespawatch user ID @ iNaturalist
 
 WEBSITE_NAME = "Vespa-Watch"
-
 
 # Exported to templates
 
