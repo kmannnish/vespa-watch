@@ -866,9 +866,15 @@ var VwManagementTableNestRow = {
 // The table on the management page that lists the nests
 var VwManagementTable = {
     components: {
+        'paginate': VuejsPaginate,
         'vw-management-table-nest-row': VwManagementTableNestRow
     },
     computed: {
+        currentPage: function () {
+            let currentPageStart = this.pageIndex * this.pageSize;
+            let currentPageEnd = currentPageStart + this.pageSize;
+            return this.nests.slice(currentPageStart, currentPageEnd);
+        },
         dateStr: function () {
             return gettext('date');
         },
@@ -885,15 +891,26 @@ var VwManagementTable = {
             return gettext('management');
         },
         loadingStr: function () {
-            return gettext('Loading...')
+            return gettext('Loading...');
+        },
+        nextStr: function () {
+            return gettext('Next');
         },
         noNestsStr: function () {
-            return gettext('No nests yet!')
+            return gettext('No nests yet!');
+        },
+        nrPages: function () {
+            return Math.ceil(this.nests.length /this.pageSize);
+        },
+        previousStr: function () {
+            return gettext('Previous');
         }
     },
     data: function () {
         return {
-            nests: []
+            nests: [],
+            pageSize: 10,
+            pageIndex: 0
         }
     },
     methods: {
@@ -914,6 +931,9 @@ var VwManagementTable = {
                 });
 
         },
+        showPage: function (pageNr) {
+            this.pageIndex = pageNr - 1;
+        }
     },
     mounted: function () {
         this.loadNests();
@@ -923,6 +943,9 @@ var VwManagementTable = {
         <div class="row">
             <span v-if="currentlyLoading">{{ loadingStr }}</span>
             <template v-else>
+            <paginate :page-count="nrPages" :click-handler="showPage" :prev-text="previousStr" :next-text="nextStr"
+              container-class="pagination" page-class="page-item" prev-class="page-item" next-class="page-item"
+              page-link-class="page-link" prev-link-class="page-link" next-link-class="page-link" ></paginate>
                 <table v-if="nests && nests.length > 0" class="table">
                     <thead>
                         <tr>
@@ -930,7 +953,7 @@ var VwManagementTable = {
                         </tr>
                     </thead>
 
-                    <vw-management-table-nest-row v-for="nest in nests" :nest="nest" :key="nest.id" v-on:data-changed="loadNests"></vw-management-table-nest-row>
+                    <vw-management-table-nest-row v-for="nest in currentPage" :nest="nest" :key="nest.id" v-on:data-changed="loadNests"></vw-management-table-nest-row>
                 </table>
                 <div v-else>{{ noNestsStr }}</div>
             </template>
