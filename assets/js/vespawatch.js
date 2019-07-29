@@ -870,10 +870,16 @@ var VwManagementTable = {
         'vw-management-table-nest-row': VwManagementTableNestRow
     },
     computed: {
+        allLabel: function () {
+            return gettext('All');
+        },
+        controlledLabel: function () {
+            return gettext('Controlled');
+        },
         currentPage: function () {
             let currentPageStart = this.pageIndex * this.pageSize;
             let currentPageEnd = currentPageStart + this.pageSize;
-            return this.nests.slice(currentPageStart, currentPageEnd);
+            return this.filteredNests.slice(currentPageStart, currentPageEnd);
         },
         dateStr: function () {
             return gettext('date');
@@ -881,8 +887,21 @@ var VwManagementTable = {
         detailsStr: function () {
             return gettext('details');
         },
+        filteredNests: function () {
+            if (this.controlFilter == null) {
+                return this.nests;
+            } else {
+                return this.nests.filter(n => n.actionFinished === this.controlFilter);
+            }
+        },
+        filterLabel: function () {
+            return gettext('Filter');
+        },
         latitudeStr: function () {
             return gettext('latitude');
+        },
+        loadingStr: function () {
+            return gettext('Loading...');
         },
         longitudeStr: function () {
             return gettext('longitude');
@@ -890,30 +909,40 @@ var VwManagementTable = {
         managementStr: function () {
             return gettext('management');
         },
-        loadingStr: function () {
-            return gettext('Loading...');
-        },
         nextStr: function () {
             return gettext('Next');
+        },
+        filterSet: function () {
+            return this.controlFilter != null;
         },
         noNestsStr: function () {
             return gettext('No nests yet!');
         },
         nrPages: function () {
-            return Math.ceil(this.nests.length /this.pageSize);
+            return Math.ceil(this.filteredNests.length /this.pageSize);
         },
         previousStr: function () {
             return gettext('Previous');
+        },
+        unControlledLabel: function () {
+            return gettext('Uncontrolled')
         }
     },
     data: function () {
         return {
+            controlFilter: false,  // set to true to filter on controlled nests or false to filter on uncontrolled nests.
             nests: [],
             pageSize: 10,
             pageIndex: 0
         }
     },
     methods: {
+        filterControlled: function () {
+            this.controlFilter = true;
+        },
+        filterUncontrolled: function () {
+            this.controlFilter = false;
+        },
         loadNests: function () {
             this.$root.currentlyLoading = true;
             let url = VWConfig.apis.nestsUrl + '?type=nest&vvOnly=true&confirmedOnly=true';
@@ -931,6 +960,12 @@ var VwManagementTable = {
                 });
 
         },
+        resetFilter: function () {
+            this.controlFilter = null;
+        },
+        sayHi: function () {
+            console.log('Hi');
+        },
         showPage: function (pageNr) {
             this.pageIndex = pageNr - 1;
         }
@@ -946,6 +981,18 @@ var VwManagementTable = {
             <paginate :page-count="nrPages" :click-handler="showPage" :prev-text="previousStr" :next-text="nextStr"
               container-class="pagination" page-class="page-item" prev-class="page-item" next-class="page-item"
               page-link-class="page-link" prev-link-class="page-link" next-link-class="page-link" ></paginate>
+            
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{filterLabel}}
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <a class="dropdown-item" v-on:click="filterUncontrolled" :class="{active: filterSet && !controlFilter}" href="#">{{unControlledLabel}}</a>
+                  <a class="dropdown-item" v-on:click="filterControlled" :class="{active: controlFilter}" href="#">{{controlledLabel}}</a>
+                  <a class="dropdown-item" v-on:click="resetFilter" :class="{active: !filterSet}" href="#">{{allLabel}}</a>
+              
+              </div>
+            </div>  
                 <table v-if="nests && nests.length > 0" class="table">
                     <thead>
                         <tr>
