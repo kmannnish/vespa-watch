@@ -334,9 +334,8 @@ def nests_json(request):
 
     light = request.GET.get('light', None)
     vv_only = request.GET.get('vvOnly', False) == 'true'
-    vv_confirmed_only = request.GET.get('confirmedOnly', False) == 'true'
-
-    obs = get_nests(limit=limit, vv_only=vv_only, vv_confirmed_only=vv_confirmed_only)
+    confirmed_only = request.GET.get('confirmedOnly', False) == 'true'
+    obs = get_nests(limit=limit, vv_only=vv_only, confirmed_only=confirmed_only)
 
     if light:
         response = JsonResponse({

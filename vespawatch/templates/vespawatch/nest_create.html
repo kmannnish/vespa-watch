@@ -82,6 +82,11 @@
         {{ form.size|as_crispy_field }}
       </div>
     </div>
+
+    {% if user.is_authenticated %}
+      {{ form.expert_vv_confirmed|as_crispy_field }}
+    {% endif %}
+
     
     {{ form.comments|as_crispy_field }}
 

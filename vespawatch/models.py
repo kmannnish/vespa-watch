@@ -10,6 +10,7 @@ from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.base import ContentFile
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import Q
 from django.template import defaultfilters
 from django.urls import reverse
 from django.utils import timezone
@@ -589,6 +590,7 @@ class Nest(AbstractObservation):
         (ABOVE_4_METER, _("Above 4 meters"))
     )
     height = models.CharField(verbose_name=_("Nest height"), max_length=50, choices=HEIGHT_CHOICES, blank=True)  # Will be set to required in the form, but can be empty for iNaturalist observations
+    expert_vv_confirmed = models.BooleanField(verbose_name=_('Confirmed by expert'), blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
@@ -798,10 +800,11 @@ def get_individuals(limit=None, vv_only=True):
     return obs
 
 
-def get_nests(limit=None, vv_only=True, vv_confirmed_only=False):
+def get_nests(limit=None, vv_only=True, confirmed_only=False):
     qs = Nest.objects.all()
-    if vv_confirmed_only:
-        qs = qs.filter(inat_vv_confirmed=True)
+    if confirmed_only:
+        # When you request confirmed_only=True, this can either be iNaturalist confirmed OR expert confirmed
+        qs = qs.filter(Q(inat_vv_confirmed=True) | Q(expert_vv_confirmed=True))
     if vv_only:
         qs = qs.filter(taxon__inaturalist_push_taxon_id__in=INAT_VV_TAXONS_IDS)
     obs = list(qs.select_related('taxon').prefetch_related('pictures').all())

@@ -88,7 +88,8 @@ class NestForm(ReportObservationForm):
         model = Nest
         fields = ['taxon', 'latitude', 'longitude',
                   'observation_time', 'size', 'height', 'comments',
-                  'observer_name', 'observer_email', 'observer_phone'
+                  'observer_name', 'observer_email', 'observer_phone',
+                  'expert_vv_confirmed'
         ]
         field_classes = {
             'observation_time': ISODateTimeField,

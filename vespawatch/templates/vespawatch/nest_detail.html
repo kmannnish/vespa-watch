@@ -52,6 +52,10 @@
       <p>{% trans 'Nest size' %}: {{ nest.get_size_display|default_if_none:'-'  }}</p>
     </div>
   </div>
+
+  <div class="row">
+      <p>{% trans 'Confirmed by expert' %}: {{ nest.expert_vv_confirmed|default_if_none:'-' }}</p>
+  </div>
     
   <h5>{% trans 'Comments' %}</h5>
 
