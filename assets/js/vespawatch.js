@@ -612,7 +612,8 @@ var VwManagementActionModal = {
             axios.delete(this.deleteActionUrl, {params: {'action_id': this.actionId}})
                 .then(response => {
                     if (response.data.result === 'OK') {
-                        vm.$emit('close', true);
+                        vm.$emit('data-changed');
+                        vm.$emit('close');
                     }
                 }, error => {
                     console.log('Error');
@@ -635,7 +636,9 @@ var VwManagementActionModal = {
             axios.post(this.saveActionUrl, params)
                 .then(function (response) {
                     if (response.data.result === 'OK') {
-                        vm.$emit('close', true);
+                        actionId = response.data.actionId;
+                        vm.$emit('data-changed', actionId);
+                        vm.$emit('close');
                     }
                 })
                 .catch(function (error) {
@@ -714,7 +717,7 @@ var VwManagementActionModal = {
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-dark" @click="$emit('close', false)">{{ cancelLabel }}</button>
+                        <button type="button" class="btn btn-dark" @click="$emit('close')">{{ cancelLabel }}</button>
                         <button type="button" class="btn btn-primary" @click="save()">{{ saveLabel }}</button>
                         <button v-if="mode === 'edit'" type="button" @click="deleteConfirmation=true" class="btn btn-danger">{{ deleteLabel }}</button>
                     </div>
@@ -768,25 +771,20 @@ var VwManagementActionEditButtons = {
         }
     },
     methods: {
+        emitDataChanged: function (actionId) {
+            this.$emit('data-changed', actionId);
+        },
         showNewActionModal: function () {
             this.addActionModalOpened = true;
         },
-        hideNewActionModal: function (dataChanged) {
+        hideNewActionModal: function () {
             this.addActionModalOpened = false;
-            if (dataChanged) {
-                // Data has been changed by the modal, ask the parent for refreshed data
-                this.$emit('data-changed');
-            }
         },
         showEditActionModal: function () {
             this.editActionModalOpened = true;
         },
-        hideEditActionModal: function (dataChanged) {
+        hideEditActionModal: function () {
             this.editActionModalOpened = false;
-            if (dataChanged) {
-                // Data has been changed by the modal, ask the parent for refreshed data
-                this.$emit('data-changed');
-            }
         }
     },
     props: ['actionId', 'nestId'],
@@ -796,8 +794,8 @@ var VwManagementActionEditButtons = {
             <button v-if="hasManagementAction" v-on:click="showEditActionModal()" class="btn btn-outline-info btn-sm">{{ editDeleteStr }}</button>
             <button v-else v-on:click="showNewActionModal()" class="btn btn-outline-info btn-sm">{{ addStr }}</button>
         </span>
-        <vw-management-action-modal v-if="editActionModalOpened" v-on:close="hideEditActionModal" mode="edit" :nest-id="nestIdNr" :action-id="actionIdNr"></vw-management-action-modal>
-        <vw-management-action-modal v-if="addActionModalOpened" v-on:close="hideNewActionModal" mode="add" :nest-id="nestIdNr"></vw-management-action-modal>
+        <vw-management-action-modal v-if="editActionModalOpened" v-on:close="hideEditActionModal" v-on:data-changed="emitDataChanged" mode="edit" :nest-id="nestIdNr" :action-id="actionIdNr"></vw-management-action-modal>
+        <vw-management-action-modal v-if="addActionModalOpened" v-on:close="hideNewActionModal" v-on:data-changed="emitDataChanged" mode="add" :nest-id="nestIdNr"></vw-management-action-modal>
     </p>
     `
 };
@@ -968,6 +966,13 @@ var VwManagementActionDisplay = {
         durationLabel: function () {
             return gettext('Duration');
         },
+        _actionId : function () {
+            if (this.newActionId == null) {
+                return this.actionId;
+            } else {
+                return this.newActionId;
+            }
+        },
         inMinutesLabel: function () {
             return gettext('in minutes');
         },
@@ -990,14 +995,17 @@ var VwManagementActionDisplay = {
             actionTime: null,
             duration: null,
             loadActionUrl: VWConfig.apis.actionLoadUrl,
+            newActionId: null,  // can be mutated when a user adds a new action. Avoids overwriting the actionId prop
             outcome: null,
             personName: null
         }
     },
     methods: {
-
         getAction: function () {
-            axios.get(this.loadActionUrl, {params: {'action_id': this.actionId}})
+            if (this._actionId === "" || this._actionId == null) {
+                return;  // don't try to get action data if the action Id is empty.
+            }
+            axios.get(this.loadActionUrl, {params: {'action_id': this._actionId}})
                 .then(response => {
                     console.log('Received response', response);
                     this.actionTime = response.data.action_time;
@@ -1005,6 +1013,15 @@ var VwManagementActionDisplay = {
                     this.duration = response.data.duration;
                     this.personName = response.data.person_name;
                 })
+        },
+        reloadAction: function (actionId) {
+            if (actionId != null) {
+                this.newActionId = actionId;
+                this.getAction();
+            } else {
+                this.newActionId = ""; // by setting this to an empty string, _actionId will return this empty string instead of the initial value of the actionId prop
+                this.clearAction();
+            }
         }
     },
     mounted: function () {
@@ -1015,7 +1032,7 @@ var VwManagementActionDisplay = {
     <div>
       <h1>{{actionLabel}}</h1>
 
-      <div v-if="actionId">
+      <div v-if="_actionId">
         <h5>{{outcomeLabel}}</h5>
         <div class="row">
           <div class="col-lg-12">
@@ -1051,7 +1068,7 @@ var VwManagementActionDisplay = {
         </div>
       </div>
 
-      <vw-management-action-edit-buttons :nest-id="nestId" :action-id="actionId" v-on:data-changed="getAction"></vw-management-action-edit-buttons>
+      <vw-management-action-edit-buttons :nest-id="nestId" :action-id="_actionId" v-on:data-changed="reloadAction"></vw-management-action-edit-buttons>
     </div>
     `
 };
