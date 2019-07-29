@@ -593,21 +593,9 @@ class Nest(AbstractObservation):
     def get_absolute_url(self):
         return reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
 
-    def get_management_action_finished(self):
-        action = self.managementaction_set.first()
-        return action.finished if action else False
-
-    def get_management_action_display(self):
-        action = self.managementaction_set.first()
-        return str(action) if action else ''
-
-    def get_management_action_code(self):
-        action = self.managementaction_set.first()
-        return action.outcome if action else None
-
-    def get_management_action_id(self):
-        action = self.managementaction_set.first()
-        return action.pk if action else None
+    @property
+    def controlled(self):
+        return hasattr(self, 'managementaction')
 
     @property
     def subject(self):
@@ -629,11 +617,11 @@ class Nest(AbstractObservation):
             'comments': self.comments,
             'images': [x.image.url for x in self.pictures.all()],
             'thumbnails': [x.thumbnail.url for x in self.pictures.all()],
-            'action': self.get_management_action_display(),
-            'actionCode': self.get_management_action_code(),
-            'actionId': self.get_management_action_id(),
-            'actionFinished': self.get_management_action_finished(),
-            'originates_in_vespawatch': self.originates_in_vespawatch,
+            'action': self.managementaction.get_outcome_display() if self.controlled else '',
+            'actionCode': self.managementaction.outcome if self.controlled else '',
+            'actionId': self.managementaction.pk if self.controlled else '',
+            'actionFinished': self.controlled,
+            'originates_in_vespawatch': self.  originates_in_vespawatch,
             'detailsUrl': reverse('vespawatch:nest-detail', kwargs={'pk': self.pk}),
         }
 
@@ -746,7 +734,7 @@ class NestObservationWarning(ObservationWarningBase):
 
 
 class ManagementAction(models.Model):
-    FULL_DESTRUCTION_NO_DEBRIS = 'CM'
+    FULL_DESTRUCTION_NO_DEBRIS = 'FD'
     PARTIAL_DESTRUCTION_DEBRIS_LEFT = 'PD'
     EMPTY_NEST_NOTHING_DONE = 'ND'
     UNKNOWN = 'UK'
@@ -771,10 +759,6 @@ class ManagementAction(models.Model):
             return self.duration.total_seconds()  # Positive val, but also 0!
         except AttributeError:
             return '' # NULL
-
-    @property
-    def finished(self):
-        return self.outcome in (self.FULL_DESTRUCTION_NO_DEBRIS, self.EMPTY_NEST_NOTHING_DONE)
 
     def __str__(self):
         return f'{self.action_time.strftime("%Y-%m-%d")} {self.get_outcome_display()}'

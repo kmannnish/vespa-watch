@@ -208,10 +208,7 @@ def management(request):
 @login_required
 def nest_detail(request, pk=None):
     nest = get_object_or_404(Nest, pk=pk)
-    action_id = nest.get_management_action_id()
-    action = None
-    if action_id:
-        action = get_object_or_404(ManagementAction, pk=action_id)
+    action = nest.managementaction if nest.controlled else None
     return render(request, 'vespawatch/nest_detail.html', {'nest': nest, 'action': action})
 
 
@@ -383,11 +380,12 @@ def save_management_action(request):
             form_data_copy['user'] = request.user.id
             form.data = form_data_copy
             action = form.save()
-            return JsonResponse({'result': 'OK', 'actionId': action.id}, status=201)
+            return JsonResponse({'result': 'OK', 'actionId': action.pk}, status=201)
         except ValueError:
             return JsonResponse({'result': 'NOTOK', 'errors': form.errors}, status=422)
 
 
+@ajax_login_required
 def get_management_action(request):
     if request.method == 'GET':
         action_id = request.GET.get('action_id')
