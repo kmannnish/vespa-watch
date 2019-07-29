@@ -746,7 +746,7 @@ class NestObservationWarning(ObservationWarningBase):
 
 
 class ManagementAction(models.Model):
-    FULL_DESTRUCTION_NO_DEBRIS = 'FD'
+    FULL_DESTRUCTION_NO_DEBRIS = 'CM'
     PARTIAL_DESTRUCTION_DEBRIS_LEFT = 'PD'
     EMPTY_NEST_NOTHING_DONE = 'ND'
     UNKNOWN = 'UK'
@@ -758,7 +758,7 @@ class ManagementAction(models.Model):
         (UNKNOWN, _('Unknown')),
     )
 
-    nest = models.ForeignKey(Nest, on_delete=models.CASCADE)
+    nest = models.OneToOneField(Nest, on_delete=models.CASCADE, primary_key=True)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     outcome = models.CharField(verbose_name=_("Outcome"), max_length=2, choices=OUTCOME_CHOICE)
     action_time = models.DateTimeField(verbose_name=_("Action time"))
