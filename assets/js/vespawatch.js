@@ -842,9 +842,9 @@ var VwManagementTableNestRow = {
         },
         nestClass: function () {
             if (this.nest.action) {
-                return '';
+                return 'table-success';
             }
-            return 'table-danger';
+            return '';
         },
         nestLatitude: function () {
             return roundCoordinate(this.nest.latitude)
