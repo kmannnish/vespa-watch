@@ -26,6 +26,8 @@
 
   <h5>{% trans 'Location' %}</h5>
 
+  <p>{% trans 'Municipality' %}: {{ nest.municipality }}</p>
+
   {% localize off %}
     {# turn off localization. Otherwise, longitude and latitude might get a comma as thousands separator, breaking #}
     {# the position array #}

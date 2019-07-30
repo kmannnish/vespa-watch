@@ -617,6 +617,7 @@ class Nest(AbstractObservation):
             'inaturalist_url': self.inaturalist_obs_url,
             'inat_vv_confirmed': self.inat_vv_confirmed,
             'observation_time': self.observation_time.timestamp() * 1000,
+            'municipality': self.municipality,
             'comments': self.comments,
             'images': [x.image.url for x in self.pictures.all()],
             'thumbnails': [x.thumbnail.url for x in self.pictures.all()],

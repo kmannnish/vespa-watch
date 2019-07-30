@@ -868,6 +868,7 @@ var VwManagementTableNestRow = {
             <td>{{ observationTimeStr }}</td>
             <td>{{ nestLongitude}}</td>
             <td>{{ nestLatitude }}</td>
+            <td>{{ nest.municipality }}</td>
             
             <td>
                 {{ nest.action }}
@@ -927,6 +928,9 @@ var VwManagementTable = {
         },
         managementStr: function () {
             return gettext('management');
+        },
+        municipalityStr: function () {
+            return gettext('municipality');
         },
         nextStr: function () {
             return gettext('Next');
@@ -1015,7 +1019,7 @@ var VwManagementTable = {
                 <table v-if="nests && nests.length > 0" class="table">
                     <thead>
                         <tr>
-                            <th>{{ dateStr }}</th><th>{{ longitudeStr }}</th><th>{{ latitudeStr }}</th><th>{{ managementStr }}</th><th>{{ detailsStr }}</th>
+                            <th>{{ dateStr }}</th><th>{{ longitudeStr }}</th><th>{{ latitudeStr }}</th><th>{{ municipalityStr }}</th><th>{{ managementStr }}</th><th>{{ detailsStr }}</th>
                         </tr>
                     </thead>
 
