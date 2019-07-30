@@ -86,7 +86,7 @@ class NestForm(ReportObservationForm):
 
     class Meta:
         model = Nest
-        fields = ['taxon', 'latitude', 'longitude',
+        fields = ['taxon', 'latitude', 'longitude', 'municipality',
                   'observation_time', 'size', 'height', 'comments',
                   'observer_name', 'observer_email', 'observer_phone',
                   'expert_vv_confirmed'
@@ -120,7 +120,7 @@ class NestFormUnauthenticated(NestForm):
 
     class Meta:
         model = Nest
-        fields = ['taxon', 'latitude', 'longitude',
+        fields = ['taxon', 'latitude', 'longitude', 'municipality',
                   'observation_time', 'size', 'height', 'comments',
                   'observer_email', 'observer_name', 'observer_phone'
         ]

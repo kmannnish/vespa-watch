@@ -1618,6 +1618,7 @@ var VwLocationSelector = {
             geolocationRunning: true,
             markerCoordinates: this.initCoordinates[0] ? [this.initCoordinates[0], this.initCoordinates[1]] : [4.5, 50.7],  // the coordinates that will be passed to the map
             modelAddress: this.location ? '' + this.location : '',
+            municipality: '',
             provider: new GeoSearch.OpenStreetMapProvider({
                 params: {
                     countrycodes: 'BE'
@@ -1697,12 +1698,15 @@ var VwLocationSelector = {
             })
                 .then(response => {
                     that.modelAddress = response.data.display_name;
+                    let address = response.data.address;
+                    that.municipality = address.city ? address.city : address.town;
                 });
         },
 
         setCoordinates: function (coordinates) {
             console.log('Marker moved. Set locationCoordinates and update address.');
             this.locationCoordinates = coordinates;
+            this.reverseGeocode();
         },
     },
     mounted: function () {
@@ -1726,6 +1730,8 @@ var VwLocationSelector = {
                 v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:location="modelAddress"
                 v-bind:latitude-is-invalid="latitudeIsInvalid" v-bind:longitude-is-invalid="longitudeIsInvalid">
                 </vw-location-selector-input>
+                <input type="hidden" id="id_municipality" name="municipality" v-model="municipality">
+
                 <div v-if="searchFailed" class="alert alert-warning alert-dismissible " role="alert">
                   {{ locationNotFoundText }}
                   <button type="button" class="close" v-on:click="searchFailed = false" aria-label="Close">

@@ -591,6 +591,7 @@ class Nest(AbstractObservation):
     )
     height = models.CharField(verbose_name=_("Nest height"), max_length=50, choices=HEIGHT_CHOICES, blank=True)  # Will be set to required in the form, but can be empty for iNaturalist observations
     expert_vv_confirmed = models.BooleanField(verbose_name=_('Confirmed by expert'), blank=True, null=True)
+    municipality = models.CharField(max_length=255, verbose_name=_('Municipality'), blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
