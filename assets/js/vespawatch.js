@@ -1699,7 +1699,7 @@ var VwLocationSelector = {
                 .then(response => {
                     that.modelAddress = response.data.display_name;
                     let address = response.data.address;
-                    that.municipality = address.city ? address.city : address.town;
+                    that.municipality = address.city ? address.city : address.town ? address.town : address.county;
                 });
         },
 
