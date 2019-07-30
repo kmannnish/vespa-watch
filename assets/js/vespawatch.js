@@ -531,6 +531,8 @@ var VwManagementActionModal = {
             errors: [],
 
             actionTime: '',  // As ISO3166
+            comments: '',
+            nrPersons: '', // number
             outcome: '',
             personName: '',
             duration: '',  // In seconds
@@ -571,6 +573,9 @@ var VwManagementActionModal = {
         cancelLabel: function () {
             return gettext('Cancel')
         },
+        commentsLabel: function () {
+            return gettext('Comments');
+        },
         deleteLabel: function () {
             return gettext('Delete')
         },
@@ -579,6 +584,9 @@ var VwManagementActionModal = {
         },
         nameLabel: function () {
             return gettext('Person name')
+        },
+        nrPersonsLabel: function () {
+            return gettext('Number of persons');
         },
         actionTimeLabel: function () {
             return gettext('Action time')
@@ -604,7 +612,10 @@ var VwManagementActionModal = {
                     this.actionTime = response.data.action_time;
                     this.outcome = response.data.outcome;
                     this.duration = response.data.duration;
+                    this.nrPersons = response.data.number_of_persons;
                     this.personName = response.data.person_name;
+                    this.comments = response.data.comments;
+
                 })
         },
         deleteAction: function () {
@@ -623,6 +634,8 @@ var VwManagementActionModal = {
             const params = new URLSearchParams();
             params.append('nest', this.nestId);
             params.append('action_time', this.actionTime);
+            params.append('comments', this.comments);
+            params.append('number_of_persons', this.nrPersons);
             params.append('outcome', this.outcome);
             params.append('person_name', this.personName);
             params.append('duration', this.duration);
@@ -705,6 +718,9 @@ var VwManagementActionModal = {
                                 <label for="personName">{{ nameLabel }}</label>
                                 <input v-model="personName" class="form-control" type="text" id="personName">
                                 
+                                <label for="number_of_persons">{{ nrPersonsLabel }}</label>
+                                <input v-model="nrPersons" class="form-control" type="number" id="number_of_persons">
+                                
                                 <datetime v-model="actionTime" type="datetime" 
                                     input-class="datetimeinput form-control">
                                     <label for="startDate" slot="before">{{ actionTimeLabel }}*</label>          
@@ -713,6 +729,9 @@ var VwManagementActionModal = {
                                 <label for="duration">{{ durationLabel }}</label>
                                 <input v-model="durationInMinutes" class="form-control" type="number" id="duration">
                                 <small class="form-text text-muted">({{ inMinutesLabel }})</small>
+                                
+                                <label for="comments">{{ commentsLabel }}</label>
+                                <textarea v-model="comments" class="form-control" type="text" id="comments" rows="3"></textarea>
                             </div>
                         </form>
                     </div>
@@ -1019,6 +1038,9 @@ var VwManagementActionDisplay = {
         actionTimeLabel: function () {
             return gettext('Action time');
         },
+        commentsLabel: function () {
+            return gettext('Comments');
+        },
         durationInMinutes: {
             get: function () {
                 if (this.duration !== '') {
@@ -1055,6 +1077,9 @@ var VwManagementActionDisplay = {
         noActionLabel: function () {
             return gettext('No action');
         },
+        nrPersonsLabel: function () {
+            return gettext('Number of persons');
+        },
         outcomeLabel: function () {
             return gettext('Outcome');
         }
@@ -1063,9 +1088,11 @@ var VwManagementActionDisplay = {
         return {
             action: null,
             actionTime: null,
+            comments: null,
             duration: null,
             loadActionUrl: VWConfig.apis.actionLoadUrl,
             newActionId: null,  // can be mutated when a user adds a new action. Avoids overwriting the actionId prop
+            nrPersons: null,
             outcome: null,
             personName: null
         }
@@ -1079,6 +1106,8 @@ var VwManagementActionDisplay = {
                 .then(response => {
                     console.log('Received response', response);
                     this.actionTime = response.data.action_time;
+                    this.comments = response.data.comments;
+                    this.nrPersons = response.data.number_of_persons;
                     this.outcome = response.data.outcome_display;
                     this.duration = response.data.duration;
                     this.personName = response.data.person_name;
@@ -1117,6 +1146,13 @@ var VwManagementActionDisplay = {
           </div>
         </div>
 
+        <h5>{{nrPersonsLabel}}</h5>
+        <div class="row">
+          <div class="col-lg-12">
+              <p>{{ nrPersons }}</p>
+          </div>
+        </div>
+
         <h5>{{actionTimeLabel}}</h5>
         <div class="row">
           <div class="col-lg-12">
@@ -1130,6 +1166,13 @@ var VwManagementActionDisplay = {
               <p>{{ durationInMinutes }}</p>
           </div>
         </div>
+        
+        <h5>{{commentsLabel}}</h5>
+        <div class="row">
+            <div class="col-lg-12">
+                <textarea class="form-control" disabled rows="5">{{comments}}</textarea>
+            </div>
+        </div>
       </div>
       
       <div v-else class="row">
@@ -1142,7 +1185,6 @@ var VwManagementActionDisplay = {
     </div>
     `
 };
-
 
 // A row from the "Recent observations" table
 var VwRecentObsTableRow = {

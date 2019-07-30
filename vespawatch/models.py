@@ -754,6 +754,8 @@ class ManagementAction(models.Model):
     action_time = models.DateTimeField(verbose_name=_("Action time"))
     person_name = models.CharField(verbose_name=_("Person name"), max_length=255, blank=True)
     duration = models.DurationField(verbose_name=_("Duration"), null=True, blank=True)
+    number_of_persons = models.IntegerField(verbose_name=_("Number of persons"), null=True)
+    comments = models.TextField(verbose_name=_("Comments"), blank=True)
 
     @property
     def duration_in_seconds(self):

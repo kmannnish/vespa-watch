@@ -403,9 +403,11 @@ def get_management_action(request):
         action = get_object_or_404(ManagementAction, pk=action_id)
 
         return JsonResponse({'action_time': action.action_time,
+                             'comments': action.comments,
                              'outcome':action.outcome,
                              'outcome_display':action.get_outcome_display(),
                              'duration': action.duration_in_seconds,
+                             'number_of_persons': action.number_of_persons,
                              'person_name': action.person_name})
 
 
