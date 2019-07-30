@@ -596,6 +596,11 @@ class Nest(AbstractObservation):
     def get_absolute_url(self):
         return reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
 
+    def editable_by_user(self, user):
+        if self.controlled and self.managementaction.user.pk is not user.pk and not user.is_staff:
+            return False
+        return True
+
     @property
     def controlled(self):
         return hasattr(self, 'managementaction')
@@ -604,12 +609,13 @@ class Nest(AbstractObservation):
     def subject(self):
         return 'nest'
 
-    def as_dict(self):
+    def as_dict(self, request_user=None):
         return {
             'id': self.pk,
             'key': f'nest-{self.pk}',  # Handy when you need a unique key in a batch of Observations (nests and individuals)
             'display_scientific_name': self.display_scientific_name,
             'display_vernacular_name': self.display_vernacular_name,
+            'editable': self.editable_by_user(request_user),  # the management action of this nest is only editable by the user who created it, or by an admin (=staff) user
             'subject': self.subject,
             'latitude': self.latitude,
             'longitude': self.longitude,

@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms.models import model_to_dict
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ugettext as _
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DeleteView
 from django.views.generic.base import View
@@ -320,7 +320,7 @@ def nests_json(request):
         })
     else:
         response = JsonResponse({
-            'nests': [x.as_dict() for x in obs]
+            'nests': [x.as_dict(request_user=request.user) for x in obs]
         })
 
     return response
@@ -337,7 +337,11 @@ def management_actions_outcomes_json(request):
 @csrf_exempt
 def delete_management_action(request):
     if request.method == 'DELETE':
-        ManagementAction.objects.get(pk=request.GET.get('action_id')).delete()
+        action = get_object_or_404(ManagementAction, pk=request.GET.get('action_id'))
+        if request.user.is_staff or request.user is action.user:
+            action.delete()
+        else:
+            return HttpResponseForbidden('Unauthorized')
         return JsonResponse({'result': 'OK'})
 
 @ajax_login_required
@@ -347,7 +351,12 @@ def save_management_action(request):
         existing_action_id = request.POST.get('action_id', None)
 
         if existing_action_id:  # We want to update an existing action
-            form = ManagementActionForm(request.POST, instance=get_object_or_404(ManagementAction, pk=existing_action_id))
+            action = get_object_or_404(ManagementAction, pk=existing_action_id)
+            if request.user.is_staff or request.user is action.user:
+
+                form = ManagementActionForm(request.POST, instance=action)
+            else:
+                return HttpResponseForbidden('Unauthorized')
         else:  # We want to create a new action
             form = ManagementActionForm(request.POST)
 

@@ -782,6 +782,9 @@ var VwManagementActionEditButtons = {
         nestIdNr: function () {
             return parseInt(this.nestId);
         },
+        showEditButtons: function () {
+            return this.hasManagementAction && this.editable;
+        }
     },
     data: function () {
         return {
@@ -806,12 +809,12 @@ var VwManagementActionEditButtons = {
             this.editActionModalOpened = false;
         }
     },
-    props: ['actionId', 'nestId'],
+    props: ['actionId', 'editable', 'nestId'],
     template: `
     <p>
         <span >
-            <button v-if="hasManagementAction" v-on:click="showEditActionModal()" class="btn btn-outline-info btn-sm">{{ editDeleteStr }}</button>
-            <button v-else v-on:click="showNewActionModal()" class="btn btn-outline-info btn-sm">{{ addStr }}</button>
+            <button v-if="showEditButtons" v-on:click="showEditActionModal()" class="btn btn-outline-info btn-sm">{{ editDeleteStr }}</button>
+            <button v-if="!hasManagementAction" v-on:click="showNewActionModal()" class="btn btn-outline-info btn-sm">{{ addStr }}</button>
         </span>
         <vw-management-action-modal v-if="editActionModalOpened" v-on:close="hideEditActionModal" v-on:data-changed="emitDataChanged" mode="edit" :nest-id="nestIdNr" :action-id="actionIdNr"></vw-management-action-modal>
         <vw-management-action-modal v-if="addActionModalOpened" v-on:close="hideNewActionModal" v-on:data-changed="emitDataChanged" mode="add" :nest-id="nestIdNr"></vw-management-action-modal>
@@ -872,7 +875,7 @@ var VwManagementTableNestRow = {
             
             <td>
                 {{ nest.action }}
-                <vw-management-action-edit-buttons :nest-id="nest.id" :action-id="nest.actionId" v-on:data-changed="dataChanged"></vw-management-action-edit-buttons>
+                <vw-management-action-edit-buttons :nest-id="nest.id" :action-id="nest.actionId" v-on:data-changed="dataChanged" :editable="nest.editable"></vw-management-action-edit-buttons>
             </td>
             
             <td>
