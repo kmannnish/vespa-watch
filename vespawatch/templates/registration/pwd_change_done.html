@@ -1,0 +1,14 @@
+{% extends 'vespawatch/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<main class="container">
+  <div class="row justify-content-lg-center">
+    <div class="col-lg-8 col-lg-auto">
+      <h5>{% trans 'Your password was changed successfully' %}</h5>
+        <a class="btn btn-primary" href="{% url 'vespawatch:index' %}">{% trans 'Back to the site' %}</a>
+    </div>
+  </div>
+</main>
+{% endblock %}
