@@ -1,7 +1,7 @@
 from django.forms import inlineformset_factory, ModelForm, BooleanField, ChoiceField, IntegerField, EmailField, CharField
 from django.utils.translation import ugettext_lazy as _
 from vespawatch.fields import ISODateTimeField
-from .models import ManagementAction, Nest, Individual, NestPicture, IndividualPicture
+from .models import ManagementAction, Nest, Individual, NestPicture, IndividualPicture, Profile
 
 
 OBS_FORM_VUE_FIELDS = ({'field_name': 'observation_time', 'attribute_if_error': 'date_is_invalid'},
@@ -153,3 +153,9 @@ class ManagementActionForm(ModelForm):
         field_classes = {
             'action_time': ISODateTimeField,
         }
+
+
+class ProfileForm(ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['organization', 'description', 'phone', 'email_notification']

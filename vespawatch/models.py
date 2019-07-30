@@ -775,6 +775,18 @@ class InatObsToDelete(models.Model):
         return str(self.inaturalist_id)
 
 
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    organization = models.CharField(verbose_name=_('Organization'), max_length=255, null=True, blank=True)
+    description = models.TextField(verbose_name=_('Description'), blank=True, help_text=_('Description of your '
+                                                                                          '(organizations) activities'))
+    phone = models.CharField(verbose_name=_("Telephone number"), max_length=20, blank=True, null=True)
+    email_notification = models.BooleanField(default=True)
+
+    def __str__(self):
+        return str(self.user)
+
+
 def get_observations(include_individuals=True, include_nests=True, limit=None):
     obs = []
 

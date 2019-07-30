@@ -16,9 +16,9 @@ from django.urls import reverse_lazy
 
 from vespawatch.utils import ajax_login_required
 from .forms import ManagementActionForm, IndividualForm, IndividualFormUnauthenticated, IndividualPictureForm, \
-    NestForm, NestPictureForm, NestFormUnauthenticated
+    NestForm, NestPictureForm, NestFormUnauthenticated, ProfileForm
 from .models import Individual, Nest, ManagementAction, Taxon, IdentificationCard, \
-    get_observations, get_individuals, get_nests, IndividualPicture, NestPicture
+    get_observations, get_individuals, get_nests, IndividualPicture, NestPicture, Profile
 
 
 class CustomBaseDetailView(SingleObjectMixin, View):
@@ -198,6 +198,23 @@ class NestDelete(LoginRequiredMixin, CustomDeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, _(self.success_message))
         return super(NestDelete, self).delete(request, *args, **kwargs)
+
+
+@login_required
+def profile(request):
+    if hasattr(request.user, 'profile'):
+        profile = request.user.profile
+    else:
+        profile = Profile(user=request.user)
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _('Your profile was successfully updated.'))
+            return HttpResponseRedirect(reverse_lazy(f'vespawatch:index'))
+    else:
+        form = ProfileForm(instance=profile)
+    return render(request, 'vespawatch/profile.html', {'form': form, 'username': request.user.username})
 
 
 @login_required

@@ -36,6 +36,8 @@ urlpatterns = [
     path('management/nest/<int:pk>/', views.nest_detail, name='nest-detail'),
     path('obs/nest/<int:pk>/delete/', views.NestDelete.as_view(), name='nest-delete'),
 
+    path('profile', views.profile, name='profile'),
+
     # API paths
     #path('api/observations/', views.observations_json, name='api_observations'),  TODO can we remove this one?
     path('api/individuals/', views.individuals_json, name='api_individuals'),

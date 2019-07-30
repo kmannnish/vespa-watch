@@ -7,7 +7,7 @@ from import_export.fields import Field
 from modeltranslation.admin import TranslationAdmin, TranslationTabularInline
 
 from .models import Taxon, Nest, Individual, NestPicture, IndividualPicture, ManagementAction, IdentificationCard, \
-    IndividualObservationWarning, NestObservationWarning
+    IndividualObservationWarning, NestObservationWarning, Profile
 
 
 class NestResource(resources.ModelResource):
@@ -156,12 +156,25 @@ class ManagementActionAdmin(admin.ModelAdmin):
     pass
 
 
+class ProfileInline(admin.TabularInline):
+    model = Profile
+
+
 class CustomUserAdmin(UserAdmin):
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'profile')
+    inlines = [ProfileInline]
 
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
+
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'email_notification')
+    readonly_fields = ('user',)
+
+
 
 @admin.register(IdentificationCard)
 class IdentificationCardAdmin(TranslationAdmin):

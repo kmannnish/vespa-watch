@@ -1,0 +1,45 @@
+{% extends 'vespawatch/base.html' %}
+{% load static %}
+{% load i18n %}
+{% load page_fragments %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<main class="container" id="vw-main-app">
+
+  {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if form.errors %}
+    <div class="alert alert-danger">
+      {% trans 'Please correct the errors below.' %}
+    </div>
+  {% endif %}
+
+<h1>{% trans 'My profile' %}</h1>
+
+<div class="row">
+    <div class="col-lg-12">
+          <form method="post" action="{% url 'vespawatch:profile' %}" enctype='multipart/form-data' novalidate>
+            {% csrf_token %}
+
+            <p>{% trans 'Username' %}: {{ username }}</p>
+
+            {{ form|crispy }}
+
+            <button type="submit" class="btn btn-success">{% trans 'Save' %}</button>
+            <a class="btn btn-light" href="{% url 'vespawatch:index' %}">{% trans 'Cancel' %}</a>
+
+          </form>
+    </div>
+</div>
+</main>
+{% endblock %}
