@@ -50,6 +50,7 @@
         v-bind:init-coordinates="[{{ form.data.longitude|default_if_none:'' }}, {{ form.data.latitude|default_if_none:'' }}]"
         init-marker={% if form.data.longitude %}"true"{% else %}"false"{% endif %}
         location="{{ form.data.location|default_if_none:'' }}"
+        municipality="{{ form.data.municipality|default_if_none:'' }}"
         :latitude-is-invalid={{ form.latitude_is_invalid|boolean_to_string }}
         :longitude-is-invalid={{ form.longitude_is_invalid|boolean_to_string }}
       {% else %}
@@ -90,23 +91,21 @@
     
     {{ form.comments|as_crispy_field }}
 
-    {% if not user.is_authenticated %}
-      <h5>{% trans 'Contact information' %}</h5>
+    <h5>{% trans 'Contact information' %}</h5>
 
-      <div class="row">
-        <div class="col-lg-3 col-md-6">
-          {{ form.observer_name|as_crispy_field }}
-        </div>
-        <div class="col-lg-3 col-md-6">
-          {{ form.observer_phone|as_crispy_field }}
-        </div>
-        <div class="col-lg-3 col-md-6">
-          {{ form.observer_email|as_crispy_field }}
-        </div>
+    <div class="row">
+      <div class="col-lg-3 col-md-6">
+        {{ form.observer_name|as_crispy_field }}
       </div>
+      <div class="col-lg-3 col-md-6">
+        {{ form.observer_phone|as_crispy_field }}
+      </div>
+      <div class="col-lg-3 col-md-6">
+        {{ form.observer_email|as_crispy_field }}
+      </div>
+    </div>
 
-      {{ form.privacy_policy|as_crispy_field }}
-    {% endif %}
+    {{ form.privacy_policy|as_crispy_field }}
 
     <button type="submit" class="btn btn-success">{% trans 'Report nest' %}</button>
     <a class="btn btn-light" href="{% url 'vespawatch:index' %}">{% trans 'Cancel' %}</a>

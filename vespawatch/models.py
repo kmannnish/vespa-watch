@@ -597,7 +597,11 @@ class Nest(AbstractObservation):
         return reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
 
     def editable_by_user(self, user):
-        if self.controlled and self.managementaction.user.pk is not user.pk and not user.is_staff:
+        if not user:
+            return False
+        if not self.controlled:
+            return True
+        if self.managementaction.user.pk is not user.pk and not user.is_staff:
             return False
         return True
 
@@ -687,8 +691,7 @@ class Individual(AbstractObservation):
             'observation_time': self.observation_time.timestamp() * 1000,
             'comments': self.comments,
             'images': [x.image.url for x in self.pictures.all()],
-            'thumbnails': [x.thumbnail.url for x in self.pictures.all()],
-            'detailsUrl': reverse('vespawatch:individual-detail', kwargs={'pk': self.pk})
+            'thumbnails': [x.thumbnail.url for x in self.pictures.all()]
         }
 
     def __str__(self):

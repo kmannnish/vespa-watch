@@ -1625,7 +1625,7 @@ var VwLocationSelector = {
             geolocationRunning: true,
             markerCoordinates: this.initCoordinates[0] ? [this.initCoordinates[0], this.initCoordinates[1]] : [4.5, 50.7],  // the coordinates that will be passed to the map
             modelAddress: this.location ? '' + this.location : '',
-            municipality: '',
+            _municipality: null,
             provider: new GeoSearch.OpenStreetMapProvider({
                 params: {
                     countrycodes: 'BE'
@@ -1643,7 +1643,7 @@ var VwLocationSelector = {
         },
         locationNotFoundText: function () {
             return gettext("Sorry, we could not find that location.");
-        }
+        },
     },
     components: {
         'vw-location-selector-map': VwLocationSelectorMap,
@@ -1706,7 +1706,7 @@ var VwLocationSelector = {
                 .then(response => {
                     that.modelAddress = response.data.display_name;
                     let address = response.data.address;
-                    that.municipality = address.city ? address.city : address.town ? address.town : address.county;
+                    that._municipality = address.city ? address.city : address.town ? address.town : address.county;
                 });
         },
 
@@ -1717,6 +1717,7 @@ var VwLocationSelector = {
         },
     },
     mounted: function () {
+        this._municipality = this.municipality;
         if (this.locationLng !== "") {
             this.locationDetectionBlocked = true;
         } else {
@@ -1725,7 +1726,7 @@ var VwLocationSelector = {
         }
     },
 
-    props: ['location', 'initCoordinates', 'initMarker', 'latitudeIsInvalid', 'longitudeIsInvalid'],
+    props: ['location', 'initCoordinates', 'initMarker', 'latitudeIsInvalid', 'longitudeIsInvalid', 'municipality'],
 
     template: `
         <div class="row">
@@ -1737,7 +1738,7 @@ var VwLocationSelector = {
                 v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:location="modelAddress"
                 v-bind:latitude-is-invalid="latitudeIsInvalid" v-bind:longitude-is-invalid="longitudeIsInvalid">
                 </vw-location-selector-input>
-                <input type="hidden" id="id_municipality" name="municipality" v-model="municipality">
+                <input type="hidden" id="id_municipality" name="municipality" v-bind:value="_municipality">
 
                 <div v-if="searchFailed" class="alert alert-warning alert-dismissible " role="alert">
                   {{ locationNotFoundText }}

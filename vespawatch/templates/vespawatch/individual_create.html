@@ -86,23 +86,21 @@
     
     {{ form.comments|as_crispy_field }}
         
-    {% if not user.is_authenticated %}
-      <h5>{% trans 'Contact information' %}</h5>
+    <h5>{% trans 'Contact information' %}</h5>
 
-      <div class="row">
-        <div class="col-lg-3 col-md-6">
-          {{ form.observer_name|as_crispy_field }}
-        </div>
-        <div class="col-lg-3 col-md-6">
-          {{ form.observer_phone|as_crispy_field }}
-        </div>
-        <div class="col-lg-3 col-md-6">
-          {{ form.observer_email|as_crispy_field }}
-        </div>
+    <div class="row">
+      <div class="col-lg-3 col-md-6">
+        {{ form.observer_name|as_crispy_field }}
       </div>
+      <div class="col-lg-3 col-md-6">
+        {{ form.observer_phone|as_crispy_field }}
+      </div>
+      <div class="col-lg-3 col-md-6">
+        {{ form.observer_email|as_crispy_field }}
+      </div>
+    </div>
 
-      {{ form.privacy_policy|as_crispy_field }}
-    {% endif %}
+    {{ form.privacy_policy|as_crispy_field }}
 
     <button type="submit" class="btn btn-success">{% trans 'Report observation' %}</button>
     <a class="btn btn-light" href="{% url 'vespawatch:index' %}">{% trans 'Cancel' %}</a>

@@ -34,6 +34,7 @@ class IndividualForm(ReportObservationForm):
     card_id = IntegerField()
     location = CharField(max_length=255, required=False)
     image_ids = CharField(max_length=255)
+    observer_email = EmailField(label=_('Email address'))
 
     class Meta:
         model = Individual
@@ -63,26 +64,15 @@ class IndividualForm(ReportObservationForm):
             np.save()
 
 
-class IndividualFormUnauthenticated(IndividualForm):
-    observer_email = EmailField(label=_('Email address'))
-
-    class Meta:
-        model = Individual
-        fields = ['taxon', 'individual_count', 'behaviour', 'latitude', 'longitude',
-                  'observation_time', 'comments',
-                  'observer_email', 'observer_name', 'observer_phone',
-        ]
-        field_classes = {
-            'observation_time': ISODateTimeField,
-        }
-
-
 class NestForm(ReportObservationForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
     height = ChoiceField(label=_('Nest height'), choices=[('', '--------')] + list(Nest.HEIGHT_CHOICES))
     location = CharField(max_length=255, required=False)
     image_ids = CharField(max_length=255)
+    observer_name = CharField(label=_('Name'), max_length=255)
+    observer_email = EmailField(label=_('Email address'))
+    observer_phone = CharField(label=_('Telephone number'), max_length=20)
 
     class Meta:
         model = Nest
@@ -111,22 +101,6 @@ class NestForm(ReportObservationForm):
             np = NestPicture.objects.get(pk=image_id)
             np.observation = observation
             np.save()
-
-
-class NestFormUnauthenticated(NestForm):
-    observer_name = CharField(label=_('Name'), max_length=255)
-    observer_email = EmailField(label=_('Email address'))
-    observer_phone = CharField(label=_('Telephone number'), max_length=20)
-
-    class Meta:
-        model = Nest
-        fields = ['taxon', 'latitude', 'longitude', 'municipality',
-                  'observation_time', 'size', 'height', 'comments',
-                  'observer_email', 'observer_name', 'observer_phone'
-        ]
-        field_classes = {
-            'observation_time': ISODateTimeField,
-        }
 
 
 class IndividualPictureForm(ModelForm):

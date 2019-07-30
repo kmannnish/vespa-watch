@@ -15,8 +15,8 @@ from django.views.generic.edit import DeletionMixin
 from django.urls import reverse_lazy
 
 from vespawatch.utils import ajax_login_required
-from .forms import ManagementActionForm, IndividualForm, IndividualFormUnauthenticated, IndividualPictureForm, \
-    NestForm, NestPictureForm, NestFormUnauthenticated, ProfileForm
+from .forms import ManagementActionForm, IndividualForm, IndividualPictureForm, \
+    NestForm, NestPictureForm, ProfileForm
 from .models import Individual, Nest, ManagementAction, IdentificationCard, \
     get_observations, get_individuals, get_nests, IndividualPicture, NestPicture, Profile
 
@@ -78,14 +78,7 @@ def create_individual(request):
         redirect_to = request.POST.get('redirect_to')
         card_id = request.POST.get('card_id')
         identif_card = IdentificationCard.objects.get(pk=card_id)
-        if request.user.is_authenticated:
-            # set to privacy_policy to true if the user is authenticated
-            form = IndividualForm(request.POST, request.FILES)
-            form_data_copy = form.data.copy()
-            form_data_copy['privacy_policy'] = True
-            form.data = form_data_copy
-        else:
-            form = IndividualFormUnauthenticated(request.POST, request.FILES)
+        form = IndividualForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, _("Your observation was successfully created. Thanks for your contribution!"))
@@ -96,48 +89,13 @@ def create_individual(request):
         identif_card = IdentificationCard.objects.get(pk=identif_card_id)
         image_ids = request.GET.get('image_ids', '')
         taxon = identif_card.represented_taxon
-        if request.user.is_authenticated:
-            form = IndividualForm(initial={
-                'redirect_to': redirect_to,
-                'card_id': identif_card_id,
-                'image_ids': image_ids,
-                'taxon': taxon})
-        else:
-            form = IndividualFormUnauthenticated(initial={
-                'redirect_to': redirect_to,
-                'card_id': identif_card_id,
-                'image_ids': image_ids,
-                'taxon': taxon})
+        form = IndividualForm(initial={
+            'redirect_to': redirect_to,
+            'card_id': identif_card_id,
+            'image_ids': image_ids,
+            'taxon': taxon})
     return render(request, 'vespawatch/individual_create.html',
                   {'form': form, 'type': 'individual', 'identif_card': identif_card})
-
-
-class IndividualDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
-    model = Individual
-
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super().get_context_data(**kwargs)
-        r = kwargs.get('redirect_to', ['index'])
-        context['redirect_to'] = r[0]
-        return context
-
-
-class IndividualDelete(LoginRequiredMixin, CustomDeleteView):
-    model = Individual
-    success_url = reverse_lazy('vespawatch:index')
-    success_message = "The observation was successfully deleted."
-    requested_success_url = None
-
-    def get_success_url(self, **kwargs):
-        if self.requested_success_url:
-            return reverse_lazy(f'vespawatch:{self.requested_success_url}').format(**self.object.__dict__)
-
-        return super(IndividualDelete, self).get_success_url()
-
-    def delete(self, request, *args, **kwargs):
-        messages.success(self.request, _(self.success_message))
-        return super(IndividualDelete, self).delete(request, *args, **kwargs)
 
 
 # CREATE UPDATE NEST OBSERVATIONS
@@ -147,17 +105,9 @@ def create_nest(request):
         redirect_to = request.POST.get('redirect_to')
         card_id = request.POST.get('card_id')
         identif_card = IdentificationCard.objects.get(pk=card_id)
-        if request.user.is_authenticated:
-            form = NestForm(request.POST, request.FILES)
-            # set to privacy_policy to true if the user is authenticated
-            form_data_copy = form.data.copy()
-            form_data_copy['privacy_policy'] = True
-            form.data = form_data_copy
-        else:
-            form = NestFormUnauthenticated(request.POST, request.FILES)
+        form = NestForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-
             messages.success(request, _("Your observation was successfully created. Thanks for your contribution!"))
             return HttpResponseRedirect(reverse_lazy(f'vespawatch:{redirect_to}'))
     else:
@@ -166,33 +116,14 @@ def create_nest(request):
         image_ids = request.GET.get('image_ids', '')
         identif_card = IdentificationCard.objects.get(pk=identif_card_id)
         taxon = identif_card.represented_taxon
-        if request.user.is_authenticated:
-            form = NestForm(initial={
-                'redirect_to': redirect_to,
-                'card_id': identif_card_id,
-                'image_ids': image_ids,
-                'taxon': taxon
-            })
-        else:
-            form = NestFormUnauthenticated(
-                initial={
-                    'redirect_to': redirect_to,
-                    'card_id': identif_card_id,
-                    'image_ids': image_ids,
-                    'taxon': taxon
-                }
-            )
+        form = NestForm(initial={
+            'redirect_to': redirect_to,
+            'card_id': identif_card_id,
+            'image_ids': image_ids,
+            'taxon': taxon
+        })
     return render(request, 'vespawatch/nest_create.html',
                   {'form': form, 'type': 'nest', 'identif_card': identif_card})
-
-class NestDelete(LoginRequiredMixin, CustomDeleteView):
-    model = Nest
-    success_url = reverse_lazy('vespawatch:index')
-    success_message = "The observation was successfully deleted."
-
-    def delete(self, request, *args, **kwargs):
-        messages.success(self.request, _(self.success_message))
-        return super(NestDelete, self).delete(request, *args, **kwargs)
 
 
 @login_required
