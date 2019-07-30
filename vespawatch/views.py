@@ -17,7 +17,7 @@ from django.urls import reverse_lazy
 from vespawatch.utils import ajax_login_required
 from .forms import ManagementActionForm, IndividualForm, IndividualFormUnauthenticated, IndividualPictureForm, \
     NestForm, NestPictureForm, NestFormUnauthenticated, ProfileForm
-from .models import Individual, Nest, ManagementAction, Taxon, IdentificationCard, \
+from .models import Individual, Nest, ManagementAction, IdentificationCard, \
     get_observations, get_individuals, get_nests, IndividualPicture, NestPicture, Profile
 
 
@@ -77,7 +77,6 @@ def create_individual(request):
     if request.method == 'POST':
         redirect_to = request.POST.get('redirect_to')
         card_id = request.POST.get('card_id')
-        print(f'2: {card_id}')
         identif_card = IdentificationCard.objects.get(pk=card_id)
         if request.user.is_authenticated:
             # set to privacy_policy to true if the user is authenticated
@@ -97,7 +96,6 @@ def create_individual(request):
         identif_card = IdentificationCard.objects.get(pk=identif_card_id)
         image_ids = request.GET.get('image_ids', '')
         taxon = identif_card.represented_taxon
-        print(f'1: {identif_card_id}')
         if request.user.is_authenticated:
             form = IndividualForm(initial={
                 'redirect_to': redirect_to,
@@ -157,9 +155,6 @@ def create_nest(request):
             form.data = form_data_copy
         else:
             form = NestFormUnauthenticated(request.POST, request.FILES)
-            print('location set on form:')
-            print(form.fields['location'])
-        print(request.POST.get('location'))
         if form.is_valid():
             form.save()
 
