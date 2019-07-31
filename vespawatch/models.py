@@ -613,8 +613,8 @@ class Nest(AbstractObservation):
     def subject(self):
         return 'nest'
 
-    def as_dict(self, request_user=None):
-        return {
+    def as_dict(self, request_user=None, include_pictures=True):
+        d = {
             'id': self.pk,
             'key': f'nest-{self.pk}',  # Handy when you need a unique key in a batch of Observations (nests and individuals)
             'display_scientific_name': self.display_scientific_name,
@@ -629,8 +629,6 @@ class Nest(AbstractObservation):
             'observation_time': self.observation_time.timestamp() * 1000,
             'municipality': self.municipality,
             'comments': self.comments,
-            'images': [x.image.url for x in self.pictures.all()],
-            'thumbnails': [x.thumbnail.url for x in self.pictures.all()],
             'action': self.managementaction.get_outcome_display() if self.controlled else '',
             'actionCode': self.managementaction.outcome if self.controlled else '',
             'actionId': self.managementaction.pk if self.controlled else '',
@@ -638,6 +636,10 @@ class Nest(AbstractObservation):
             'originates_in_vespawatch': self.  originates_in_vespawatch,
             'detailsUrl': reverse('vespawatch:nest-detail', kwargs={'pk': self.pk}),
         }
+        if include_pictures:
+            d['images'] = [x.image.url for x in self.pictures.all()]
+            d['thumbnails'] = [x.thumbnail.url for x in self.pictures.all()]
+        return d
 
     def __str__(self):
         return f'Nest of {self.get_taxon_name()}, {self.formatted_observation_date}'

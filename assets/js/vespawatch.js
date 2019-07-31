@@ -971,7 +971,7 @@ var VwManagementTable = {
         },
         loadNests: function () {
             this.$root.currentlyLoading = true;
-            let url = VWConfig.apis.nestsUrl + '?type=nest&vvOnly=true&confirmedOnly=true';
+            let url = VWConfig.apis.nestsUrl + '?type=nest&vvOnly=true&confirmedOnly=true&includePictures=false';
             axios.get(url)
                 .then(response => {
                     if (response.data.nests) {

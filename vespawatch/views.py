@@ -243,6 +243,7 @@ def nests_json(request):
     light = request.GET.get('light', None)
     vv_only = request.GET.get('vvOnly', False) == 'true'
     confirmed_only = request.GET.get('confirmedOnly', False) == 'true'
+    include_pictures = request.GET.get('includePictures', 'true') == 'true'
     obs = get_nests(limit=limit, vv_only=vv_only, confirmed_only=confirmed_only)
 
     if light:
@@ -251,7 +252,7 @@ def nests_json(request):
         })
     else:
         response = JsonResponse({
-            'nests': [x.as_dict(request_user=request.user) for x in obs]
+            'nests': [x.as_dict(request_user=request.user, include_pictures=include_pictures) for x in obs]
         })
 
     return response
