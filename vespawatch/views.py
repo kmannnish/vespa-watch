@@ -195,6 +195,7 @@ def observations_json(request):
 
     return response
 
+
 def individuals_json(request):
     """
     Return all individuals as JSON data.
@@ -204,8 +205,9 @@ def individuals_json(request):
 
     light = request.GET.get('light', None)
     vv_only = request.GET.get('vvOnly', None)
+    flanders_only = request.GET.get('flOnly', 'false') == 'true'
 
-    obs = get_individuals(limit=limit, vv_only=vv_only)
+    obs = get_individuals(limit=limit, vv_only=vv_only, flanders_only=flanders_only)
 
     if light:
         response = JsonResponse({
@@ -244,7 +246,9 @@ def nests_json(request):
     vv_only = request.GET.get('vvOnly', False) == 'true'
     confirmed_only = request.GET.get('confirmedOnly', False) == 'true'
     include_pictures = request.GET.get('includePictures', 'true') == 'true'
-    obs = get_nests(limit=limit, vv_only=vv_only, confirmed_only=confirmed_only)
+    flanders_only = request.GET.get('flOnly', 'false') == 'true'
+
+    obs = get_nests(limit=limit, vv_only=vv_only, confirmed_only=confirmed_only, flanders_only=flanders_only)
 
     if light:
         response = JsonResponse({

@@ -817,23 +817,27 @@ def get_observations(include_individuals=True, include_nests=True, limit=None):
     return obs
 
 
-def get_individuals(limit=None, vv_only=True):
+def get_individuals(limit=None, vv_only=True, flanders_only=False):
     qs = Individual.objects.all()
     if vv_only:
         qs = qs.filter(taxon__inaturalist_push_taxon_id__in=INAT_VV_TAXONS_IDS)
+    if flanders_only:
+        qs = qs.filter(longitude__gte=2.53, longitude__lte=5.94, latitude__gte=50.67, latitude__lte=51.51)
     obs = list(qs.select_related('taxon').prefetch_related('pictures').all())
     obs.sort(key=lambda x: x.observation_time, reverse=True)
     obs = obs[:limit]
     return obs
 
 
-def get_nests(limit=None, vv_only=True, confirmed_only=False):
+def get_nests(limit=None, vv_only=True, confirmed_only=False, flanders_only=False):
     qs = Nest.objects.all()
     if confirmed_only:
         # When you request confirmed_only=True, this can either be iNaturalist confirmed OR expert confirmed
         qs = qs.filter(Q(inat_vv_confirmed=True) | Q(expert_vv_confirmed=True))
     if vv_only:
         qs = qs.filter(taxon__inaturalist_push_taxon_id__in=INAT_VV_TAXONS_IDS)
+    if flanders_only:
+        qs = qs.filter(longitude__gte=2.53, longitude__lte=5.94, latitude__gte=50.67, latitude__lte=51.51)
     obs = list(qs.select_related('taxon').prefetch_related('pictures').all())
     obs.sort(key=lambda x: x.observation_time, reverse=True)
     obs = obs[:limit]

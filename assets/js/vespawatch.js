@@ -432,8 +432,8 @@ var VwObservationsViz = {
             // Call the API to get observations
             var urls = [];
 
-            urls.push(axios.get(this.individualsUrl + '?light=true&vvOnly=true'));
-            urls.push(axios.get(this.nestsUrl + '?light=true&vvOnly=true'));
+            urls.push(axios.get(this.individualsUrl + '?light=true&vvOnly=true&flOnly=false'));
+            urls.push(axios.get(this.nestsUrl + '?light=true&vvOnly=true&flOnly=false'));
             axios.all(urls)
               .then(axios.spread((indivRes, nestRes) => {
                     console.log(indivRes.data);
@@ -971,7 +971,7 @@ var VwManagementTable = {
         },
         loadNests: function () {
             this.$root.currentlyLoading = true;
-            let url = VWConfig.apis.nestsUrl + '?type=nest&vvOnly=true&confirmedOnly=true&includePictures=false';
+            let url = VWConfig.apis.nestsUrl + '?type=nest&vvOnly=true&confirmedOnly=true&includePictures=false&flOnly=true';
             axios.get(url)
                 .then(response => {
                     if (response.data.nests) {
