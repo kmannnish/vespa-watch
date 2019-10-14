@@ -575,9 +575,6 @@ var VwManagementActionModal = {
         modalTitle: function () {
             return this.mode === 'add' ? gettext('New management action') : gettext('Edit management action')
         },
-        outcomeLabel: function () {
-            return gettext('Outcome')
-        },
         saveLabel: function () {
             return gettext('Save')
         },
@@ -593,20 +590,20 @@ var VwManagementActionModal = {
         yesDeleteLabel: function () {
             return gettext('Yes, delete')
         },
-        nameLabel: function () {
-            return gettext('Person name')
+        actionTimeLabel: function () {
+            return gettext('Date and time')
+        },
+        durationLabel: function () {
+            return gettext('Duration (in minutes)')
         },
         nrPersonsLabel: function () {
             return gettext('Number of persons');
         },
-        actionTimeLabel: function () {
-            return gettext('Action time')
+        outcomeLabel: function () {
+            return gettext('Outcome')
         },
-        durationLabel: function () {
-            return gettext('Duration')
-        },
-        inMinutesLabel: function () {
-            return gettext('in minutes')
+        nameLabel: function () {
+            return gettext('Reported by')
         },
         errorsLabel: function () {
             return gettext('Errors')
@@ -722,33 +719,38 @@ var VwManagementActionModal = {
                         </div>
                         <form>
                             <div class="form-group">
-                                <label for="outcome">{{ outcomeLabel }}*</label>
-                                <select v-model="outcome" class="form-control" id="outcome">
-                                    <option :value="outcome.value" v-for="outcome in availabeOutcomes">{{ outcome.label }}</option>
-                                </select>
-                                <label for="personName">{{ nameLabel }}</label>
-                                <input v-model="personName" class="form-control" type="text" id="personName">
-                                
-                                <label for="number_of_persons">{{ nrPersonsLabel }}*</label>
-                                <input v-model="nrPersons" class="form-control" type="number" id="number_of_persons">
-                                
                                 <datetime v-model="actionTime" type="datetime" 
                                     input-class="datetimeinput form-control">
                                     <label for="startDate" slot="before">{{ actionTimeLabel }}*</label>          
                                 </datetime>
-                
+                            </div>
+                            <div class="form-group">
                                 <label for="duration">{{ durationLabel }}</label>
                                 <input v-model="durationInMinutes" class="form-control" type="number" id="duration">
-                                <small class="form-text text-muted">({{ inMinutesLabel }})</small>
-                                
+                            </div>
+                            <div class="form-group">
+                                <label for="number_of_persons">{{ nrPersonsLabel }}*</label>
+                                <input v-model="nrPersons" class="form-control" type="number" id="number_of_persons">
+                            </div>
+                            <div class="form-group">
+                                <label for="outcome">{{ outcomeLabel }}*</label>
+                                <select v-model="outcome" class="form-control" id="outcome">
+                                    <option :value="outcome.value" v-for="outcome in availabeOutcomes">{{ outcome.label }}</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="personName">{{ nameLabel }}</label>
+                                <input v-model="personName" class="form-control" type="text" id="personName">
+                            </div>
+                            <div class="form-group">    
                                 <label for="comments">{{ commentsLabel }}</label>
                                 <textarea v-model="comments" class="form-control" type="text" id="comments" rows="3"></textarea>
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-dark" @click="$emit('close')">{{ cancelLabel }}</button>
-                        <button type="button" class="btn btn-primary" @click="save()">{{ saveLabel }}</button>
+                        <button type="button" class="btn btn-success" @click="save()">{{ saveLabel }}</button>    
+                        <button type="button" class="btn btn-light" @click="$emit('close')">{{ cancelLabel }}</button>
                         <button v-if="mode === 'edit'" type="button" @click="deleteConfirmation=true" class="btn btn-danger">{{ deleteLabel }}</button>
                     </div>
                 </div>
@@ -771,13 +773,13 @@ var VwManagementActionEditButtons = {
             return parseInt(this.actionId);
         },
         addStr: function () {
-            return gettext('add');
+            return gettext('Add');
         },
         editStr: function () {
-            return gettext('edit');
+            return gettext('Edit');
         },
         editDeleteStr: function () {
-            return gettext('edit / delete');
+            return gettext('Edit / delete');
         },
         hasManagementAction: function () {
             // Does this Nest has a management action?
@@ -849,10 +851,10 @@ var VwManagementTableNestRow = {
             return gettext('This observation was created on iNaturalist. You cannot edit it here');
         },
         detailsStr: function () {
-            return gettext('details');
+            return gettext('Details');
         },
         editStr: function () {
-            return gettext('edit');
+            return gettext('Edit');
         },
         nestClass: function () {
             if (this.nest.action) {
@@ -916,10 +918,10 @@ var VwManagementTable = {
             return this.filteredNests.slice(currentPageStart, currentPageEnd);
         },
         dateStr: function () {
-            return gettext('date');
+            return gettext('Date');
         },
         detailsStr: function () {
-            return gettext('details');
+            return gettext('Details');
         },
         filteredNests: function () {
             if (this.controlFilter == null) {
@@ -932,19 +934,19 @@ var VwManagementTable = {
             return gettext('Filter');
         },
         latitudeStr: function () {
-            return gettext('latitude');
+            return gettext('Latitude');
         },
         loadingStr: function () {
             return gettext('Loading...');
         },
         longitudeStr: function () {
-            return gettext('longitude');
+            return gettext('Longitude');
         },
         managementStr: function () {
-            return gettext('management');
+            return gettext('Management');
         },
         municipalityStr: function () {
-            return gettext('municipality');
+            return gettext('Municipality');
         },
         nextStr: function () {
             return gettext('Next');
@@ -987,7 +989,7 @@ var VwManagementTable = {
                 .then(response => {
                     if (response.data.nests) {
                         this.nests = response.data.nests;
-                        this.$emit('nests updated', 1);
+                        this.$emit('Nests updated', 1);
                         this.$emit('data-changed');
                     }
                     this.$root.currentlyLoading = false;
@@ -1012,24 +1014,26 @@ var VwManagementTable = {
     },
     props: ['currentlyLoading'],
     template: `
-        <div class="row">
+        <div>
             <span v-if="currentlyLoading">{{ loadingStr }}</span>
             <template v-else>
-            <paginate :page-count="nrPages" :click-handler="showPage" :prev-text="previousStr" :next-text="nextStr"
-              container-class="pagination" page-class="page-item" prev-class="page-item" next-class="page-item"
-              page-link-class="page-link" prev-link-class="page-link" next-link-class="page-link" ></paginate>
+                <div class="d-flex">
+                    <paginate :page-count="nrPages" :click-handler="showPage" :prev-text="previousStr" :next-text="nextStr"
+                        container-class="pagination" page-class="page-item" prev-class="page-item" next-class="page-item"
+                        page-link-class="page-link" prev-link-class="page-link" next-link-class="page-link" ></paginate>
             
-            <div class="dropdown">
-              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {{filterLabel}}
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <a class="dropdown-item" v-on:click="filterUncontrolled" :class="{active: filterSet && !controlFilter}" href="#">{{unControlledLabel}}</a>
-                  <a class="dropdown-item" v-on:click="filterControlled" :class="{active: controlFilter}" href="#">{{controlledLabel}}</a>
-                  <a class="dropdown-item" v-on:click="resetFilter" :class="{active: !filterSet}" href="#">{{allLabel}}</a>
-              
-              </div>
-            </div>  
+                    <div class="dropdown ml-2">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{filterLabel}}
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" v-on:click="filterUncontrolled" :class="{active: filterSet && !controlFilter}" href="#">{{unControlledLabel}}</a>
+                            <a class="dropdown-item" v-on:click="filterControlled" :class="{active: controlFilter}" href="#">{{controlledLabel}}</a>
+                            <a class="dropdown-item" v-on:click="resetFilter" :class="{active: !filterSet}" href="#">{{allLabel}}</a>
+                        </div>
+                    </div>
+                </div>
+                
                 <table v-if="nests && nests.length > 0" class="table">
                     <thead>
                         <tr>
@@ -1039,9 +1043,10 @@ var VwManagementTable = {
 
                     <vw-management-table-nest-row v-for="nest in currentPage" :nest="nest" :key="nest.id" v-on:data-changed="loadNests"></vw-management-table-nest-row>
                 </table>
+                
                 <div v-else>{{ noNestsStr }}</div>
             </template>
-    </div>
+        </div>
     `
 };
 
@@ -1054,7 +1059,7 @@ var VwManagementActionDisplay = {
             return gettext('Management action');
         },
         actionTimeLabel: function () {
-            return gettext('Action time');
+            return gettext('Date and time');
         },
         commentsLabel: function () {
             return gettext('Comments');
@@ -1074,7 +1079,7 @@ var VwManagementActionDisplay = {
             }
         },
         durationLabel: function () {
-            return gettext('Duration');
+            return gettext('Duration (in minutes)');
         },
         _actionId : function () {
             if (this.newActionId == null) {
@@ -1082,9 +1087,6 @@ var VwManagementActionDisplay = {
             } else {
                 return this.newActionId;
             }
-        },
-        inMinutesLabel: function () {
-            return gettext('in minutes');
         },
         localActiontime: function () {
             return moment(this.actionTime).format('lll');  //  todo this is not necessarily the same as the django language setting
@@ -1178,7 +1180,7 @@ var VwManagementActionDisplay = {
           </div>
         </div>
 
-        <h5>{{durationLabel}} <small>({{inMinutesLabel}})</small></h5>
+        <h5>{{durationLabel}}</h5>
         <div class="row">
           <div class="col-lg-12">
               <p>{{ durationInMinutes }}</p>
@@ -1237,10 +1239,10 @@ var VwRecentObsTable = {
     },
     computed: {
         dateStr: function () {
-            return gettext('date');
+            return gettext('Date');
         },
         addressStr: function () {
-            return gettext('address');
+            return gettext('Address');
         },
         recentObsStr: function () {
             return gettext('Recent observations')
@@ -1249,7 +1251,7 @@ var VwRecentObsTable = {
             return gettext('Loading...')
         },
         subjectStr: function () {
-            return gettext('subject')
+            return gettext('Subject')
         }
     },
     methods: {
