@@ -470,7 +470,7 @@ def send_test_email(request):
         'Test message from Django',
         'Here is the message.',
         settings.EMAIL_TO_REPORTER_SENDER,
-        ['peter.desmet@inbo.be', 'niconoe@gmail.com'],
+        ['peter.desmet@inbo.be', 'niconoe@gmail.com', 'nicolas@niconoe.org'],
         fail_silently=False,
     )
 
