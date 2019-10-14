@@ -60,6 +60,7 @@ var VwObservationsVizMap = {
         'managementMap': function () {
             return this.zoneId != null
         }
+
     },
     data: function () {
         return {
@@ -72,6 +73,15 @@ var VwObservationsVizMap = {
     },
 
     methods: {
+        observationTypeLabel: function(observationType) {
+            switch (observationType) {
+                case 'individual':
+                    return gettext('individual');
+                case 'nest':
+                    return gettext('nest');
+            }
+        },
+
         addObservationsToMap: function () {
             var conf = VWConfig.map.circle;
 
@@ -132,6 +142,7 @@ var VwObservationsVizMap = {
             // Get observation data from the API
             var url = obs.subject === 'individual' ? VWConfig.apis.individualsUrl : VWConfig.apis.nestsUrl;
             var sep = url[url.length - 1] === '/' ? '' : '/';
+            var vm = this;
             axios.get(url + sep + obs.id)
                 .then(response => {
                     console.log('Fetched individual data');
@@ -151,7 +162,7 @@ var VwObservationsVizMap = {
                                 <h5 class="card-title">` + obsData.display_vernacular_name + `</h5>
                                 <h6 class="card-subtitle text-muted mb-2"><em>` + obsData.display_scientific_name + `</em></h6>
                                 <p class="card-text">
-                                    <span class="badge badge-secondary text-lowercase">` + gettext(obsData.subject) + `</span>` +
+                                    <span class="badge badge-secondary text-lowercase">` + vm.observationTypeLabel(obsData.subject) + `</span>` +
                                     (obsData.inat_vv_confirmed ? ` <span class="badge badge-success text-lowercase">` + gettext('Confirmed') + `</span>` : "") + `
                                 </p>` + (obsData.inaturalist_id ? `<a class="card-link stretched-link" href="http://www.inaturalist.org/observations/` + obsData.inaturalist_id + `" target="_blank">iNaturalist</a>` : "") + `
                             </div>

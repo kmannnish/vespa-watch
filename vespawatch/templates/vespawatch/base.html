@@ -42,28 +42,37 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-content">
           <span class="navbar-toggler-icon"></span>
         </button>
-
+        
+        {% url 'vespawatch:management' as management_url %}
+        {% url 'vespawatch:getinvolved' as getinvolved_url %}
+        {% url 'vespawatch:identification' as identification_url %}
+        {% url 'vespawatch:about_vespavelutina' as about_vespavelutina_url %}
+        {% url 'vespawatch:about_management' as about_management_url %}
+        {% url 'vespawatch:about_project' as about_project_url %}
+        {% url 'vespawatch:about_privacypolicy' as about_privacypolicy_url %}
+        {% url 'vespawatch:about_links' as about_links_url %}
+        
         <div class="collapse navbar-collapse" id="navbar-content">
           <ul class="navbar-nav mr-auto">
             {% if user.is_authenticated %}
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'vespawatch:management' %}">{% trans 'Management' %}</a>
+                <a class="nav-link{% if request.path == management_url %} active{% endif %}" href="{{ management_url }}">{% trans 'Management' %}</a>
               </li>
             {% endif %}
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'vespawatch:getinvolved' %}">{% trans 'Get involved' %}</a>
+                <a class="nav-link{% if request.path == getinvolved_url %} active{% endif %}" href="{{ getinvolved_url }}">{% trans 'Get involved' %}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'vespawatch:identification' %}">{% trans 'Identification' %}</a>
+                <a class="nav-link{% if request.path == identification_url %} active{% endif %}" href="{{ identification_url }}">{% trans 'Identification' %}</a>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="about-dropdown" role="button" data-toggle="dropdown">{% trans 'About' %}</a>
-              <div class="dropdown-menu" aria-labelledby="about-dropdown">
-                <a class="dropdown-item" href="{% url 'vespawatch:about_vespavelutina' %}">{% trans 'Vespa velutina' %}</a>
-                <a class="dropdown-item" href="{% url 'vespawatch:about_management' %}">{% trans 'Management' %}</a>
-                <a class="dropdown-item" href="{% url 'vespawatch:about_project' %}">{% trans 'Project' %}</a>
-                <a class="dropdown-item" href="{% url 'vespawatch:about_privacypolicy' %}">{% trans 'Privacy policy' %}</a>
-                <a class="dropdown-item" href="{% url 'vespawatch:about_links' %}">{% trans 'Links' %}</a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item{% if request.path == about_vespavelutina_url %} active{% endif %}" href="{{ about_vespavelutina_url }}">{% trans 'Vespa velutina' %}</a>
+                <a class="dropdown-item{% if request.path == about_management_url %} active{% endif %}" href="{{ about_management_url }}">{% trans 'Management' %}</a>
+                <a class="dropdown-item{% if request.path == about_project_url %} active{% endif %}" href="{{ about_project_url }}">{% trans 'Project' %}</a>
+                <a class="dropdown-item{% if request.path == about_privacypolicy_url %} active{% endif %}" href="{{ about_privacypolicy_url }}">{% trans 'Privacy policy' %}</a>
+                <a class="dropdown-item{% if request.path == about_links_url %} active{% endif %}" href="{{ about_links_url }}">{% trans 'Links' %}</a>
               </div>
             </li>
           </ul>
@@ -72,7 +81,7 @@
             {% if user.is_authenticated %}
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="user-dropdown" role="button" data-toggle="dropdown">{{ user.first_name }} {{ user.last_name }} ({{ user.username }})</a>
-                <div class="dropdown-menu" aria-labelledby="user-dropdown">
+                <div class="dropdown-menu">
                   <a class="dropdown-item" href="{% url 'vespawatch:profile' %}">{% trans 'Profile' %}</a>
                   <a class="dropdown-item" href="{% url 'logout' %}">{% trans 'Log out' %}</a>
                 </div>
