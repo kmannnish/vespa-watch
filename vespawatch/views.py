@@ -16,6 +16,8 @@ from django.views.generic.detail import BaseDetailView, SingleObjectMixin, Singl
 from django.views.generic.edit import DeletionMixin
 from django.urls import reverse_lazy
 
+from django.conf import settings
+
 from vespawatch.utils import ajax_login_required
 from .forms import ManagementActionForm, IndividualForm, IndividualFormUnauthenticated, IndividualPictureForm, \
     NestForm, NestPictureForm, NestFormUnauthenticated
@@ -460,3 +462,16 @@ def save_individual_picture(request):
         else:
             return JsonResponse({'errors': form.errors}, status=400)
 
+
+def send_test_email(request):
+    from django.core.mail import send_mail
+
+    r = send_mail(
+        'Test message from Django',
+        'Here is the message.',
+        settings.EMAIL_TO_REPORTER_SENDER,
+        ['peter.desmet@inbo.be', 'niconoe@gmail.com'],
+        fail_silently=False,
+    )
+
+    return HttpResponse(f"Messages sent: {r}")
