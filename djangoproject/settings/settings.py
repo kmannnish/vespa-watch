@@ -118,3 +118,11 @@ DEFAULT_FILE_STORAGE = 'custom_s3_storage.MediaStorage'
 
 # Other
 VESPAWATCH_BASE_SITE_URL = "http://vespawatch-{}.eu-west-1.elasticbeanstalk.com/".format(os.environ['ENVIRONMENT'])
+
+if os.environ['ENVIRONMENT'] == "prd":
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.environ['EMAIL_HOST']
+    EMAIL_PORT = os.environ['EMAIL_PORT']
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.environ['SES_USER']
+    EMAIL_HOST_PASSWORD = os.environ['SES_PWD']

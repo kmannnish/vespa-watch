@@ -14,6 +14,8 @@ from django.views.generic.detail import BaseDetailView, SingleObjectMixin, Singl
 from django.views.generic.edit import DeletionMixin
 from django.urls import reverse_lazy
 
+from django.conf import settings
+
 from vespawatch.utils import ajax_login_required
 from .forms import ManagementActionForm, IndividualForm, IndividualPictureForm, \
     NestForm, NestPictureForm, ProfileForm
@@ -359,4 +361,3 @@ def save_individual_picture(request):
             return JsonResponse({'imageId': img.pk, 'type': 'IndividualPicture', 'name': img.image.name})
         else:
             return JsonResponse({'errors': form.errors}, status=400)
-
