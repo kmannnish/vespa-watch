@@ -9,7 +9,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.base import ContentFile
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from django.db.models import Q
 from django.template import defaultfilters
 from django.urls import reverse
@@ -760,7 +760,11 @@ class Profile(models.Model):
     organization = models.CharField(verbose_name=_('Organization'), max_length=255, null=True, blank=True)
     description = models.TextField(verbose_name=_('Description'), blank=True, help_text=_('Description of your '
                                                                                           '(organizations) activities'))
-    phone = models.CharField(verbose_name=_("Telephone number"), max_length=20, blank=True, null=True)
+
+    alphanumeric = RegexValidator(r'^[0-9]*$', _('Only numbers are allowed.'))
+
+    phone = models.CharField(verbose_name=_("Telephone number"), max_length=20, blank=True, null=True,
+                             validators=[alphanumeric])
     email_notification = models.BooleanField(default=True)
 
     def __str__(self):
