@@ -45,7 +45,8 @@ class Taxon(models.Model):
                                             help_text="When pulling observations from iNaturalist, reconcile according "
                                                       "to those IDs.")
 
-    def get_file_path(instance, filename):
+    @staticmethod
+    def get_file_path(filename):
         """
         This function is no longer used, but we have to keep it to avoid breaking our migrations
         (in particular, this function is used in 0001_initial.py)
@@ -84,7 +85,8 @@ class IdentificationCard(models.Model):
     represented_taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT)
     represents_nest = models.BooleanField()
 
-    def get_file_path(instance, filename):
+    @staticmethod
+    def get_file_path(filename):
         return os.path.join('pictures/identification_cards/', make_unique_filename(filename))
 
     identification_picture = models.ImageField(verbose_name=_("Photo for identification"), upload_to=get_file_path, blank=True, null=True)

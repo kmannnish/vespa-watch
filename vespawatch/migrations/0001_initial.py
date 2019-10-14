@@ -124,8 +124,8 @@ class Migration(migrations.Migration):
                 ('vernacular_name_en', models.CharField(blank=True, max_length=100, null=True)),
                 ('inaturalist_push_taxon_id', models.BigIntegerField(blank=True, help_text="When pushing an observation to iNaturalist, we'll use this taxon_id", null=True)),
                 ('inaturalist_pull_taxon_ids', django.contrib.postgres.fields.ArrayField(base_field=models.BigIntegerField(), blank=True, help_text='When pulling observations from iNaturalist, reconcile according to those IDs.', null=True, size=None)),
-                ('identification_picture_individual', models.ImageField(blank=True, null=True, upload_to=vespawatch.models.Taxon.get_file_path)),
-                ('identification_picture_nest', models.ImageField(blank=True, null=True, upload_to=vespawatch.models.Taxon.get_file_path)),
+                ('identification_picture_individual', models.ImageField(null=True, upload_to=vespawatch.models.Taxon.get_file_path)),
+                ('identification_picture_nest', models.ImageField(null=True, upload_to=vespawatch.models.Taxon.get_file_path)),
                 ('identification_priority', models.BooleanField()),
             ],
             options={
