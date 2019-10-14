@@ -6,47 +6,34 @@
 
 {% block content %}
 <main class="container" id="vw-main-app">
+  <div class="row justify-content-lg-center">
+    <div class="col-lg-6 col-lg-auto">
+      <h1>{% trans 'My profile' %}</h1>
 
-  {% if messages %}
-    <div class="messages">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {% if form.errors %}
+        <div class="alert alert-danger">
+          {% trans 'Please correct the errors below.' %}
         </div>
-      {% endfor %}
+      {% endif %}
+      
+      <form method="post" action="{% url 'vespawatch:profile' %}" enctype='multipart/form-data' novalidate>
+        {% csrf_token %}
+        
+        <div class="row">
+          <div class="col-lg-6">
+            {% trans 'Username' %}: <code>{{ username }}</code>
+          </div>
+          <div class="col-lg-6">
+            <a class="btn btn-primary float-right" href="{% url 'password_change' %}">{% trans 'Change password' %}</a>
+          </div>
+        </div>
+
+        {{ form|crispy }}
+
+        <button type="submit" class="btn btn-success">{% trans 'Save' %}</button>
+        <a class="btn btn-light" href="{% url 'vespawatch:index' %}">{% trans 'Cancel' %}</a>
+      </form>
     </div>
-  {% endif %}
-
-  {% if form.errors %}
-    <div class="alert alert-danger">
-      {% trans 'Please correct the errors below.' %}
-    </div>
-  {% endif %}
-
-<h1>{% trans 'My profile' %}</h1>
-
-<div class="row">
-    <div class="col-lg-12">
-          <form method="post" action="{% url 'vespawatch:profile' %}" enctype='multipart/form-data' novalidate>
-            {% csrf_token %}
-
-              <div class="row">
-                  <div class="col-lg-6">
-                    <p>{% trans 'Username' %}: {{ username }}</p>
-                  </div>
-                  <div class="col-lg-6">
-                    <a class="btn btn-primary float-right" href="{% url 'password_change' %}">{% trans 'Change password' %}</a>
-                  </div>
-              </div>
-
-            {{ form|crispy }}
-
-            <button type="submit" class="btn btn-success">{% trans 'Save' %}</button>
-            <a class="btn btn-light" href="{% url 'vespawatch:index' %}">{% trans 'Cancel' %}</a>
-
-          </form>
-    </div>
-</div>
+  </div>
 </main>
 {% endblock %}
