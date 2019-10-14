@@ -51,7 +51,5 @@ urlpatterns = [
     path('api/save_management_action/', views.save_management_action, name='api_action_save'),
     path('api/get_management_action/', views.get_management_action, name='api_action_get'),
     path('api/delete_management_action/', views.delete_management_action, name='api_action_delete'),
-    path('api/get_zone/', views.get_zone, name='api_zone_get'),
-
-    path('send_test_email', views.send_test_email)
+    path('api/get_zone/', views.get_zone, name='api_zone_get')
 ]
