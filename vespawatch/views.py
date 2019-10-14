@@ -461,17 +461,3 @@ def save_individual_picture(request):
             return JsonResponse({'imageId': img.pk, 'type': 'IndividualPicture', 'name': img.image.name})
         else:
             return JsonResponse({'errors': form.errors}, status=400)
-
-
-def send_test_email(request):
-    from django.core.mail import send_mail
-
-    r = send_mail(
-        'Test message from Django',
-        'Here is the message.',
-        settings.EMAIL_TO_REPORTER_SENDER,
-        ['peter.desmet@inbo.be', 'niconoe@gmail.com', 'nicolas@niconoe.org'],
-        fail_silently=False,
-    )
-
-    return HttpResponse(f"Messages sent: {r}")
