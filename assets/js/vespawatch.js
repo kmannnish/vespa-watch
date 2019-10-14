@@ -771,13 +771,13 @@ var VwManagementActionEditButtons = {
             return parseInt(this.actionId);
         },
         addStr: function () {
-            return gettext('add');
+            return gettext('Add');
         },
         editStr: function () {
-            return gettext('edit');
+            return gettext('Edit');
         },
         editDeleteStr: function () {
-            return gettext('edit / delete');
+            return gettext('Edit / delete');
         },
         hasManagementAction: function () {
             // Does this Nest has a management action?
@@ -849,10 +849,10 @@ var VwManagementTableNestRow = {
             return gettext('This observation was created on iNaturalist. You cannot edit it here');
         },
         detailsStr: function () {
-            return gettext('details');
+            return gettext('Details');
         },
         editStr: function () {
-            return gettext('edit');
+            return gettext('Edit');
         },
         nestClass: function () {
             if (this.nest.action) {
@@ -916,10 +916,10 @@ var VwManagementTable = {
             return this.filteredNests.slice(currentPageStart, currentPageEnd);
         },
         dateStr: function () {
-            return gettext('date');
+            return gettext('Date');
         },
         detailsStr: function () {
-            return gettext('details');
+            return gettext('Details');
         },
         filteredNests: function () {
             if (this.controlFilter == null) {
@@ -932,19 +932,19 @@ var VwManagementTable = {
             return gettext('Filter');
         },
         latitudeStr: function () {
-            return gettext('latitude');
+            return gettext('Latitude');
         },
         loadingStr: function () {
             return gettext('Loading...');
         },
         longitudeStr: function () {
-            return gettext('longitude');
+            return gettext('Longitude');
         },
         managementStr: function () {
-            return gettext('management');
+            return gettext('Management');
         },
         municipalityStr: function () {
-            return gettext('municipality');
+            return gettext('Municipality');
         },
         nextStr: function () {
             return gettext('Next');
@@ -987,7 +987,7 @@ var VwManagementTable = {
                 .then(response => {
                     if (response.data.nests) {
                         this.nests = response.data.nests;
-                        this.$emit('nests updated', 1);
+                        this.$emit('Nests updated', 1);
                         this.$emit('data-changed');
                     }
                     this.$root.currentlyLoading = false;
@@ -1237,10 +1237,10 @@ var VwRecentObsTable = {
     },
     computed: {
         dateStr: function () {
-            return gettext('date');
+            return gettext('Date');
         },
         addressStr: function () {
-            return gettext('address');
+            return gettext('Address');
         },
         recentObsStr: function () {
             return gettext('Recent observations')
@@ -1249,7 +1249,7 @@ var VwRecentObsTable = {
             return gettext('Loading...')
         },
         subjectStr: function () {
-            return gettext('subject')
+            return gettext('Subject')
         }
     },
     methods: {
