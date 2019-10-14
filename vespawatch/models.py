@@ -757,15 +757,14 @@ class InatObsToDelete(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    organization = models.CharField(verbose_name=_('Organization'), max_length=255, null=True, blank=True)
-    description = models.TextField(verbose_name=_('Description'), blank=True, help_text=_('Description of your '
-                                                                                          '(organizations) activities'))
+    organization = models.CharField(verbose_name=_('Organization / business'), max_length=255, null=True, blank=True)
+    description = models.TextField(verbose_name=_('Description'), blank=True, help_text=_('Describe the activities of your organization / business.'))
 
     alphanumeric = RegexValidator(r'^[0-9]*$', _('Only numbers are allowed.'))
 
     phone = models.CharField(verbose_name=_("Telephone number"), max_length=20, blank=True, null=True,
                              validators=[alphanumeric])
-    email_notification = models.BooleanField(default=True)
+    email_notification = models.BooleanField(verbose_name=_('Get email notifications for new nests'), default=True)
 
     def __str__(self):
         return str(self.user)
