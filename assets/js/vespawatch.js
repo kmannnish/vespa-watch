@@ -729,7 +729,7 @@ var VwManagementActionModal = {
                                 <label for="personName">{{ nameLabel }}</label>
                                 <input v-model="personName" class="form-control" type="text" id="personName">
                                 
-                                <label for="number_of_persons">{{ nrPersonsLabel }}</label>
+                                <label for="number_of_persons">{{ nrPersonsLabel }}*</label>
                                 <input v-model="nrPersons" class="form-control" type="number" id="number_of_persons">
                                 
                                 <datetime v-model="actionTime" type="datetime" 
