@@ -20,8 +20,9 @@
         {% csrf_token %}
 
         <p>
-          {% trans 'Username' %}: <code>{{ username }}</code>
           <a class="btn btn-primary btn-sm float-right" href="{% url 'password_change' %}">{% trans 'Change password' %}</a>
+          <code>{{ user.username }}</code> {% if user.first_name %}({{ user.first_name }} {{ user.last_name }}){% endif %}<br>
+          <span class="text-muted">{{ user.email }}</span>
         </p>
         
         {{ form|crispy }}
