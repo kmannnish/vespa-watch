@@ -18,16 +18,12 @@
       
       <form method="post" action="{% url 'vespawatch:profile' %}" enctype='multipart/form-data' novalidate>
         {% csrf_token %}
-        
-        <div class="row">
-          <div class="col-lg-6">
-            {% trans 'Username' %}: <code>{{ username }}</code>
-          </div>
-          <div class="col-lg-6">
-            <a class="btn btn-primary float-right" href="{% url 'password_change' %}">{% trans 'Change password' %}</a>
-          </div>
-        </div>
 
+        <p>
+          {% trans 'Username' %}: <code>{{ username }}</code>
+          <a class="btn btn-primary btn-sm float-right" href="{% url 'password_change' %}">{% trans 'Change password' %}</a>
+        </p>
+        
         {{ form|crispy }}
 
         <button type="submit" class="btn btn-success">{% trans 'Save' %}</button>
