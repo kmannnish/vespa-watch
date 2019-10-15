@@ -905,10 +905,10 @@ var VwManagementTable = {
   },
   computed: {
     allLabel: function () {
-      return gettext('All');
+      return gettext('All nests');
     },
-    controlledLabel: function () {
-      return gettext('Controlled');
+    managedLabel: function () {
+      return gettext('Managed nests');
     },
     currentPage: function () {
       let currentPageStart = this.pageIndex * this.pageSize;
@@ -922,10 +922,10 @@ var VwManagementTable = {
       return gettext('Details');
     },
     filteredNests: function () {
-      if (this.controlFilter == null) {
+      if (this.managementFilter == null) {
         return this.nests;
       } else {
-        return this.nests.filter(n => n.actionFinished === this.controlFilter);
+        return this.nests.filter(n => n.actionFinished === this.managementFilter);
       }
     },
     filterLabel: function () {
@@ -950,7 +950,7 @@ var VwManagementTable = {
       return gettext('Next');
     },
     filterSet: function () {
-      return this.controlFilter != null;
+      return this.managementFilter != null;
     },
     noNestsStr: function () {
       return gettext('No nests yet!');
@@ -961,24 +961,24 @@ var VwManagementTable = {
     previousStr: function () {
       return gettext('Previous');
     },
-    unControlledLabel: function () {
-      return gettext('Uncontrolled')
+    unManagedLabel: function () {
+      return gettext('Unmanaged nests')
     }
   },
   data: function () {
     return {
-      controlFilter: false,  // set to true to filter on controlled nests or false to filter on uncontrolled nests.
+      managementFilter: false,  // set to true to filter on managed nests or false to filter on unmanaged nests.
       nests: [],
       pageSize: 10,
       pageIndex: 0
     }
   },
   methods: {
-    filterControlled: function () {
-      this.controlFilter = true;
+    filterManaged: function () {
+      this.managementFilter = true;
     },
-    filterUncontrolled: function () {
-      this.controlFilter = false;
+    filterUnmanaged: function () {
+      this.managementFilter = false;
     },
     loadNests: function () {
       this.$root.currentlyLoading = true;
@@ -998,7 +998,7 @@ var VwManagementTable = {
 
     },
     resetFilter: function () {
-      this.controlFilter = null;
+      this.managementFilter = null;
     },
     sayHi: function () {
       console.log('Hi');
@@ -1025,8 +1025,8 @@ var VwManagementTable = {
               {{filterLabel}}
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" v-on:click="filterUncontrolled" :class="{active: filterSet && !controlFilter}" href="#">{{unControlledLabel}}</a>
-              <a class="dropdown-item" v-on:click="filterControlled" :class="{active: controlFilter}" href="#">{{controlledLabel}}</a>
+              <a class="dropdown-item" v-on:click="filterUnmanaged" :class="{active: filterSet && !managementFilter}" href="#">{{unManagedLabel}}</a>
+              <a class="dropdown-item" v-on:click="filterManaged" :class="{active: managementFilter}" href="#">{{managedLabel}}</a>
               <a class="dropdown-item" v-on:click="resetFilter" :class="{active: !filterSet}" href="#">{{allLabel}}</a>
             </div>
           </div>
