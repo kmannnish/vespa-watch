@@ -20,9 +20,8 @@ OBSERVATION_MODELS = [Individual, Nest]
 
 USER_AGENT = f'VespaWatch (using Pyinaturalist {pyinaturalist.__version__})'
 
-
 def send_email_to_reporter(obs):
-    to_email = 'peter.desmet@inbo.be'  # TODO: update to obs.observer_email
+    to_email = obs.observer_email
     subject = settings.EMAIL_TO_REPORTER_SUBJECT
     body = settings.EMAIL_TO_REPORTER_BODY.format(
         observer_name=' ' + obs.observer_name if type(obs.observer_name) is str else '',
