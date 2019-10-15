@@ -731,9 +731,9 @@ class ManagementAction(models.Model):
     nest = models.OneToOneField(Nest, on_delete=models.CASCADE, primary_key=True)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     outcome = models.CharField(verbose_name=_("Outcome"), max_length=2, choices=OUTCOME_CHOICE)
-    action_time = models.DateTimeField(verbose_name=_("Action time"))
-    person_name = models.CharField(verbose_name=_("Person name"), max_length=255, blank=True)
-    duration = models.DurationField(verbose_name=_("Duration"), null=True, blank=True)
+    action_time = models.DateTimeField(verbose_name=_("Date and time"))
+    person_name = models.CharField(verbose_name=_("Reported by"), max_length=255, blank=True)
+    duration = models.DurationField(verbose_name=_("Duration (in minutes)"), null=True, blank=True)
     number_of_persons = models.IntegerField(verbose_name=_("Number of persons"), null=True)
     comments = models.TextField(verbose_name=_("Comments"), blank=True)
 

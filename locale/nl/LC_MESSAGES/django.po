@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-15 11:35+0200\n"
+"POT-Creation-Date: 2019-10-15 12:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -209,16 +209,17 @@ msgid "Outcome"
 msgstr "Resultaat"
 
 #: vespawatch/models.py:734
-msgid "Action time"
-msgstr "Actietijd"
+msgid "Date and time"
+msgstr "Datum en tijd"
 
 #: vespawatch/models.py:735
-msgid "Person name"
-msgstr "Naam van persoon"
+#| msgid "Report nest"
+msgid "Reported by"
+msgstr "Gerapporteerd door"
 
 #: vespawatch/models.py:736
-msgid "Duration"
-msgstr "Duur"
+msgid "Duration (in minutes)"
+msgstr "Duur (in minuten)"
 
 #: vespawatch/models.py:737
 msgid "Number of persons"
