@@ -1,7 +1,7 @@
 from django.forms import inlineformset_factory, ModelForm, BooleanField, ChoiceField, IntegerField, EmailField, CharField
 from django.utils.translation import ugettext_lazy as _
 from vespawatch.fields import ISODateTimeField
-from .models import ManagementAction, Nest, Individual, NestPicture, IndividualPicture
+from .models import ManagementAction, Nest, Individual, NestPicture, IndividualPicture, Profile
 
 
 OBS_FORM_VUE_FIELDS = ({'field_name': 'observation_time', 'attribute_if_error': 'date_is_invalid'},
@@ -11,7 +11,7 @@ OBS_FORM_VUE_FIELDS = ({'field_name': 'observation_time', 'attribute_if_error': 
 
 
 class ReportObservationForm(ModelForm):
-    terms_of_service = BooleanField(label=_('I agree with the <a href="/about/privacy-policy/" target="_blank">privacy policy</a>'))
+    privacy_policy = BooleanField(label=_('I agree with the <a href="/about/privacy-policy/" target="_blank">privacy policy</a>'))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -34,6 +34,7 @@ class IndividualForm(ReportObservationForm):
     card_id = IntegerField()
     location = CharField(max_length=255, required=False)
     image_ids = CharField(max_length=255)
+    observer_email = EmailField(label=_('Email address'))
 
     class Meta:
         model = Individual
@@ -63,32 +64,22 @@ class IndividualForm(ReportObservationForm):
             np.save()
 
 
-class IndividualFormUnauthenticated(IndividualForm):
-    observer_email = EmailField(label=_('Email address'))
-
-    class Meta:
-        model = Individual
-        fields = ['taxon', 'individual_count', 'behaviour', 'latitude', 'longitude',
-                  'observation_time', 'comments',
-                  'observer_email', 'observer_name', 'observer_phone',
-        ]
-        field_classes = {
-            'observation_time': ISODateTimeField,
-        }
-
-
 class NestForm(ReportObservationForm):
     redirect_to = ChoiceField(choices=(('index', 'index'), ('management', 'management')), initial='index')
     card_id = IntegerField()
     height = ChoiceField(label=_('Nest height'), choices=[('', '--------')] + list(Nest.HEIGHT_CHOICES))
     location = CharField(max_length=255, required=False)
     image_ids = CharField(max_length=255)
+    observer_name = CharField(label=_('Name'), max_length=255)
+    observer_email = EmailField(label=_('Email address'))
+    observer_phone = CharField(label=_('Telephone number'), max_length=20)
 
     class Meta:
         model = Nest
-        fields = ['taxon', 'latitude', 'longitude',
+        fields = ['taxon', 'latitude', 'longitude', 'municipality',
                   'observation_time', 'size', 'height', 'comments',
-                  'observer_name', 'observer_email', 'observer_phone'
+                  'observer_name', 'observer_email', 'observer_phone',
+                  'expert_vv_confirmed'
         ]
         field_classes = {
             'observation_time': ISODateTimeField,
@@ -112,22 +103,6 @@ class NestForm(ReportObservationForm):
             np.save()
 
 
-class NestFormUnauthenticated(NestForm):
-    observer_name = CharField(label=_('Name'), max_length=255)
-    observer_email = EmailField(label=_('Email address'))
-    observer_phone = CharField(label=_('Telephone number'), max_length=20)
-
-    class Meta:
-        model = Nest
-        fields = ['taxon', 'latitude', 'longitude',
-                  'observation_time', 'size', 'height', 'comments',
-                  'observer_email', 'observer_name', 'observer_phone'
-        ]
-        field_classes = {
-            'observation_time': ISODateTimeField,
-        }
-
-
 class IndividualPictureForm(ModelForm):
     class Meta:
         model = IndividualPicture
@@ -147,8 +122,14 @@ NestImageFormset = inlineformset_factory(Nest, NestPicture, fields=('image',), e
 class ManagementActionForm(ModelForm):
     class Meta:
         model = ManagementAction
-        fields = ['nest', 'outcome', 'action_time', 'duration', 'person_name']
+        fields = ['user', 'nest', 'outcome', 'action_time', 'duration', 'person_name', 'comments', 'number_of_persons']
 
         field_classes = {
             'action_time': ISODateTimeField,
         }
+
+
+class ProfileForm(ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['organization', 'description', 'phone', 'email_notification']

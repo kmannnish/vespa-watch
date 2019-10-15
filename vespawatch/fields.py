@@ -2,7 +2,7 @@ from django import forms
 from django.utils.dateparse import parse_datetime
 from django.utils.encoding import force_str
 from django.forms.widgets import DateTimeInput
-from django.utils.translation import gettext_lazy as _, ngettext_lazy
+from django.utils.translation import gettext_lazy as _
 
 
 class ISODateTimeField(forms.Field):

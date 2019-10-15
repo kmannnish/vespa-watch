@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-26 11:02+0200\n"
+"POT-Creation-Date: 2019-10-15 11:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,27 +36,31 @@ msgstr ""
 "Ik ga akkoord met het <a href=\"/about/privacy-policy/\" "
 "target=\"_blank\">privacybeleid</a>"
 
-#: vespawatch/forms.py:67 vespawatch/forms.py:117 vespawatch/models.py:267
+#: vespawatch/forms.py:37 vespawatch/forms.py:74 vespawatch/models.py:249
+#: vespawatch/templates/vespawatch/nest_detail.html:56
 msgid "Email address"
 msgstr "E-mailadres"
 
-#: vespawatch/forms.py:83 vespawatch/models.py:592
+#: vespawatch/forms.py:70 vespawatch/models.py:560
+#: vespawatch/templates/vespawatch/nest_detail.html:31
 msgid "Nest height"
 msgstr "Nesthoogte"
 
-#: vespawatch/forms.py:116 vespawatch/models.py:266
+#: vespawatch/forms.py:73 vespawatch/models.py:248
+#: vespawatch/templates/vespawatch/nest_detail.html:48
 msgid "Name"
 msgstr "Naam"
 
-#: vespawatch/forms.py:118 vespawatch/models.py:268
+#: vespawatch/forms.py:75 vespawatch/models.py:250 vespawatch/models.py:767
+#: vespawatch/templates/vespawatch/nest_detail.html:52
 msgid "Telephone number"
 msgstr "Telefoonnummer"
 
-#: vespawatch/models.py:39
+#: vespawatch/models.py:37
 msgid "Scientific name"
 msgstr "Wetenschappelijke naam"
 
-#: vespawatch/models.py:41
+#: vespawatch/models.py:39
 msgid "Vernacular name"
 msgstr "Niet-wetenschappelijke naam"
 
@@ -68,25 +72,27 @@ msgstr "Foto voor herkenning"
 msgid "Order"
 msgstr "Volgorde"
 
-#: vespawatch/models.py:96
+#: vespawatch/models.py:96 vespawatch/models.py:763
 #: vespawatch/templates/vespawatch/individual_create.html:76
-#: vespawatch/templates/vespawatch/nest_create.html:75
+#: vespawatch/templates/vespawatch/nest_create.html:76
+#: vespawatch/templates/vespawatch/nest_detail.html:29
 msgid "Description"
 msgstr "Beschrijving"
 
-#: vespawatch/models.py:248
+#: vespawatch/models.py:231
 msgid "Observation date cannot be in the future."
 msgstr "Datum van observatie mag niet in de toekomst liggen."
 
-#: vespawatch/models.py:254
+#: vespawatch/models.py:237
 msgid "Observation date"
 msgstr "Datum van observatie"
 
-#: vespawatch/models.py:255
+#: vespawatch/models.py:238 vespawatch/models.py:738
+#: vespawatch/templates/vespawatch/nest_detail.html:43
 msgid "Comments"
 msgstr "Opmerkingen"
 
-#: vespawatch/models.py:255
+#: vespawatch/models.py:238
 msgid ""
 "Comments are public: use them to describe your observation and help "
 "verification."
@@ -94,153 +100,181 @@ msgstr ""
 "Opmerkingen zijn publiek: gebruik ze om je observatie te beschrijven en "
 "verificatie te vergemakkelijken."
 
-#: vespawatch/models.py:257
+#: vespawatch/models.py:240 vespawatch/templates/vespawatch/nest_detail.html:24
 msgid "Latitude"
 msgstr "Latitude"
 
-#: vespawatch/models.py:258
+#: vespawatch/models.py:241 vespawatch/templates/vespawatch/nest_detail.html:24
 msgid "Longitude"
 msgstr "Longitude"
 
-#: vespawatch/models.py:261
+#: vespawatch/models.py:243
 msgid "iNaturalist ID"
 msgstr "iNaturalist ID"
 
-#: vespawatch/models.py:262
+#: vespawatch/models.py:244
 msgid "iNaturalist species"
 msgstr "iNaturalist soort"
 
-#: vespawatch/models.py:316
+#: vespawatch/models.py:287 vespawatch/models.py:728
 msgid "Unknown"
 msgstr "Ongekend"
 
-#: vespawatch/models.py:581
+#: vespawatch/models.py:549
 msgid "Less than 25cm"
 msgstr "Minder dan 25cm"
 
-#: vespawatch/models.py:582
+#: vespawatch/models.py:550
 msgid "More than 25cm"
 msgstr "Meer dan 25cm"
 
-#: vespawatch/models.py:584
+#: vespawatch/models.py:552 vespawatch/templates/vespawatch/nest_detail.html:35
 msgid "Nest size"
 msgstr "Nestgrootte"
 
-#: vespawatch/models.py:589
+#: vespawatch/models.py:557
 msgid "Below 4 meters"
 msgstr "Lager dan 4 meter"
 
-#: vespawatch/models.py:590
+#: vespawatch/models.py:558
 msgid "Above 4 meters"
 msgstr "Hoger dan 4 meter"
 
-#: vespawatch/models.py:656
+#: vespawatch/models.py:561 vespawatch/templates/vespawatch/nest_detail.html:39
+msgid "Confirmed by expert"
+msgstr "Bevestigd door expert"
+
+#: vespawatch/models.py:562 vespawatch/templates/vespawatch/nest_detail.html:17
+msgid "Municipality"
+msgstr "Gemeente"
+
+#: vespawatch/models.py:627
 msgid "Hunting at beehive"
 msgstr "Jagend bij bijenkorf"
 
-#: vespawatch/models.py:657
+#: vespawatch/models.py:628
 msgid "Drinking nectar on flower"
 msgstr "Nectar drinkend op bloem"
 
-#: vespawatch/models.py:658
+#: vespawatch/models.py:629
 msgid "Near wood source"
 msgstr "Nabij hout"
 
-#: vespawatch/models.py:659
+#: vespawatch/models.py:630
 msgid "Near water source"
 msgstr "Nabij water"
 
-#: vespawatch/models.py:660
+#: vespawatch/models.py:631
 msgid "Flying"
 msgstr "Vliegend"
 
-#: vespawatch/models.py:661
+#: vespawatch/models.py:632
 msgid "Captured"
 msgstr "Gevangen"
 
-#: vespawatch/models.py:662
+#: vespawatch/models.py:633
 msgid "Dead"
 msgstr "Dood"
 
-#: vespawatch/models.py:663
+#: vespawatch/models.py:634
 msgid "Other"
 msgstr "Andere"
 
-#: vespawatch/models.py:667
+#: vespawatch/models.py:638
 msgid "Individual count"
 msgstr "Aantal individuen"
 
-#: vespawatch/models.py:668
+#: vespawatch/models.py:639
 msgid "Behaviour"
 msgstr "Gedrag"
 
-#: vespawatch/models.py:706 vespawatch/models.py:722
+#: vespawatch/models.py:676 vespawatch/models.py:692
 msgid "Photo"
 msgstr "Foto"
 
-#: vespawatch/models.py:754
+#: vespawatch/models.py:725
 msgid "Full destruction, no debris"
 msgstr "Volledige vernietiging, geen resten"
 
-#: vespawatch/models.py:755
+#: vespawatch/models.py:726
 msgid "Partial destruction/debris left"
 msgstr "Gedeeltelijke vernietiging/nog resten"
 
-#: vespawatch/models.py:756
+#: vespawatch/models.py:727
 msgid "Empty nest, nothing done"
 msgstr "Leeg nest, geen actie ondernomen"
 
-#: vespawatch/models.py:760
+#: vespawatch/models.py:733
 msgid "Outcome"
 msgstr "Resultaat"
 
-#: vespawatch/models.py:761
+#: vespawatch/models.py:734
 msgid "Action time"
 msgstr "Actietijd"
 
-#: vespawatch/models.py:762
+#: vespawatch/models.py:735
 msgid "Person name"
 msgstr "Naam van persoon"
 
-#: vespawatch/models.py:763
+#: vespawatch/models.py:736
 msgid "Duration"
 msgstr "Duur"
 
+#: vespawatch/models.py:737
+msgid "Number of persons"
+msgstr "Aantal personen"
+
+#: vespawatch/models.py:762
+msgid "Organization / business"
+msgstr "Organisatie / bedrijf"
+
+#: vespawatch/models.py:763
+msgid "Describe the activities of your organization / business."
+msgstr "Beschrijf de activiteiten van je organisatie / bedrijf."
+
+#: vespawatch/models.py:765
+msgid "Only numbers are allowed."
+msgstr "Enkel cijfers zijn toegelaten."
+
+#: vespawatch/models.py:769
+msgid "Get email notifications for new nests"
+msgstr "Ontvang een email voor nieuwe nesten"
+
 #: vespawatch/templates/registration/login.html:9
-#: vespawatch/templates/registration/login.html:29
-#: vespawatch/templates/vespawatch/base.html:90
+#: vespawatch/templates/registration/login.html:32
+#: vespawatch/templates/vespawatch/base.html:91
 msgid "Log in"
 msgstr "Inloggen"
 
-#: vespawatch/templates/vespawatch/action_create.html:9
-#: vespawatch/templates/vespawatch/action_update.html:9
-msgid "Management action"
-msgstr "Beheeractie"
+#: vespawatch/templates/registration/pwd_change_done.html:9
+msgid "Your password was changed successfully."
+msgstr "Je wachtwoord is gewijzigd."
 
-#: vespawatch/templates/vespawatch/action_create.html:14
-#: vespawatch/templates/vespawatch/action_update.html:14
-msgid "Please correct the errors below"
-msgstr "Gelieve de fouten hieronder te verbeteren"
+#: vespawatch/templates/registration/pwd_change_done.html:10
+msgid "Back to the site"
+msgstr "Terug naar de website"
 
-#: vespawatch/templates/vespawatch/action_create.html:22
-#: vespawatch/templates/vespawatch/action_update.html:22
-msgid "Save action"
-msgstr "Bewaar actie"
+#: vespawatch/templates/registration/pwd_change_form.html:10
+#: vespawatch/templates/registration/pwd_change_form.html:17
+#: vespawatch/templates/vespawatch/profile.html:23
+msgid "Change password"
+msgstr "Wijzig wachtwoord"
 
-#: vespawatch/templates/vespawatch/action_create.html:23
-#: vespawatch/templates/vespawatch/action_update.html:24
-#: vespawatch/templates/vespawatch/individual_create.html:108
-#: vespawatch/templates/vespawatch/nest_create.html:107
+#: vespawatch/templates/registration/pwd_change_form.html:14
+msgid "Please enter your old password, create a new one and confirm it."
+msgstr "Vul je oude wachtwoord in, creëer een nieuw en bevestig."
+
+#: vespawatch/templates/registration/pwd_change_form.html:18
+#: vespawatch/templates/vespawatch/individual_create.html:106
+#: vespawatch/templates/vespawatch/nest_create.html:111
+#: vespawatch/templates/vespawatch/profile.html:31
 msgid "Cancel"
 msgstr "Annuleer"
 
-#: vespawatch/templates/vespawatch/action_update.html:23
-msgid "Delete"
-msgstr "Verwijder"
-
 #: vespawatch/templates/vespawatch/base.html:59
-msgid "Fire department"
-msgstr "Brandweer"
+#: vespawatch/templates/vespawatch/base.html:72
+msgid "Management"
+msgstr "Bestrijding"
 
 #: vespawatch/templates/vespawatch/base.html:63
 msgid "Get involved"
@@ -258,16 +292,12 @@ msgstr "Over deze website"
 msgid "Vespa velutina"
 msgstr "Vespa velutina"
 
-#: vespawatch/templates/vespawatch/base.html:72
-msgid "Management"
-msgstr "Beheer"
-
 #: vespawatch/templates/vespawatch/base.html:73
 msgid "Project"
 msgstr "Project"
 
 #: vespawatch/templates/vespawatch/base.html:74
-#: vespawatch/templates/vespawatch/base.html:135
+#: vespawatch/templates/vespawatch/base.html:136
 msgid "Privacy policy"
 msgstr "Privacybeleid"
 
@@ -276,10 +306,15 @@ msgid "Links"
 msgstr "Linken"
 
 #: vespawatch/templates/vespawatch/base.html:85
+#: vespawatch/templates/vespawatch/profile.html:11
+msgid "My profile"
+msgstr "Mijn profiel"
+
+#: vespawatch/templates/vespawatch/base.html:86
 msgid "Log out"
 msgstr "Uitloggen"
 
-#: vespawatch/templates/vespawatch/base.html:124
+#: vespawatch/templates/vespawatch/base.html:125
 msgid ""
 "\n"
 "                This project was funded by <a "
@@ -307,15 +342,15 @@ msgstr ""
 "Association (ECSA)</a>.\n"
 "              "
 
-#: vespawatch/templates/vespawatch/base.html:134
+#: vespawatch/templates/vespawatch/base.html:135
 msgid "About this project"
 msgstr "Over dit project"
 
-#: vespawatch/templates/vespawatch/base.html:136
+#: vespawatch/templates/vespawatch/base.html:137
 msgid "Contact us"
 msgstr "Contacteer ons"
 
-#: vespawatch/templates/vespawatch/base.html:137
+#: vespawatch/templates/vespawatch/base.html:138
 msgid "Source code"
 msgstr "Broncode"
 
@@ -329,17 +364,18 @@ msgstr "Meld iets anders"
 
 #: vespawatch/templates/vespawatch/includes/identification_card.html:25
 #: vespawatch/templates/vespawatch/nest_create.html:13
-#: vespawatch/templates/vespawatch/nest_create.html:106
+#: vespawatch/templates/vespawatch/nest_create.html:110
 msgid "Report nest"
 msgstr "Meld nest"
 
 #: vespawatch/templates/vespawatch/includes/identification_card.html:27
 #: vespawatch/templates/vespawatch/individual_create.html:13
-#: vespawatch/templates/vespawatch/individual_create.html:107
+#: vespawatch/templates/vespawatch/individual_create.html:105
 msgid "Report observation"
 msgstr "Meld observatie"
 
 #: vespawatch/templates/vespawatch/includes/obs_cards.html:15
+#: vespawatch/templates/vespawatch/nest_detail.html:11
 msgid "Nest"
 msgstr "Nest"
 
@@ -372,7 +408,7 @@ msgid "Photo by"
 msgstr "Foto:"
 
 #: vespawatch/templates/vespawatch/index.html:45
-#: vespawatch/templates/vespawatch/obs.html:7
+#: vespawatch/templates/vespawatch/obs.html:6
 msgid "Latest observations"
 msgstr "Recente observaties"
 
@@ -382,6 +418,7 @@ msgstr "Meer observaties"
 
 #: vespawatch/templates/vespawatch/individual_create.html:17
 #: vespawatch/templates/vespawatch/nest_create.html:17
+#: vespawatch/templates/vespawatch/profile.html:15
 msgid "Please correct the errors below."
 msgstr "Gelieve de fouten hieronder te verbeteren."
 
@@ -407,49 +444,39 @@ msgstr ""
 
 #: vespawatch/templates/vespawatch/individual_create.html:48
 #: vespawatch/templates/vespawatch/nest_create.html:46
+#: vespawatch/templates/vespawatch/nest_detail.html:16
 msgid "Location"
 msgstr "Locatie"
 
 #: vespawatch/templates/vespawatch/individual_create.html:63
-#: vespawatch/templates/vespawatch/nest_create.html:62
+#: vespawatch/templates/vespawatch/nest_create.html:63
+#: vespawatch/templates/vespawatch/nest_detail.html:26
 msgid "Date"
 msgstr "Datum"
 
-#: vespawatch/templates/vespawatch/individual_create.html:90
-#: vespawatch/templates/vespawatch/nest_create.html:89
+#: vespawatch/templates/vespawatch/individual_create.html:89
+#: vespawatch/templates/vespawatch/nest_create.html:94
+#: vespawatch/templates/vespawatch/nest_detail.html:46
 msgid "Contact information"
 msgstr "Contactinformatie"
 
 #: vespawatch/templates/vespawatch/management.html:19
-msgid "Add individual"
-msgstr "Voeg individu toe"
+msgid "Reported nests of Asian hornet"
+msgstr "Gerapporteerde nesten van Aziatische hoornaar"
 
-#: vespawatch/templates/vespawatch/management.html:20
-msgid "Add nest"
-msgstr "Voeg nest toe"
+#: vespawatch/templates/vespawatch/nest_detail.html:13
+msgid "Taxon"
+msgstr "Taxon"
 
-#: vespawatch/templates/vespawatch/management.html:28
-msgid "Zone"
-msgstr "Zone"
-
-#: vespawatch/templates/vespawatch/management.html:32
-#: vespawatch/templates/vespawatch/management.html:40
-msgid "My nests"
-msgstr "Mijn nesten"
-
-#: vespawatch/templates/vespawatch/management.html:36
-msgid "No zone associated to your user."
-msgstr "Geen zone geassocieerd met uw gebruikersnaam."
-
-#: vespawatch/templates/vespawatch/obs.html:10
+#: vespawatch/templates/vespawatch/obs.html:8
 msgid "Add your observation"
 msgstr "Voeg observatie toe"
 
-#: vespawatch/templates/vespawatch/obs.html:11
+#: vespawatch/templates/vespawatch/obs.html:9
 msgid "Verify observations"
 msgstr "Verifieer observaties"
 
-#: vespawatch/templates/vespawatch/obs.html:18
+#: vespawatch/templates/vespawatch/obs.html:16
 #, python-format
 msgid ""
 "\n"
@@ -503,7 +530,15 @@ msgstr ""
 "href=\"%(identification_page)s\">identificatie pagina</a>.\n"
 "    "
 
-#: vespawatch/views.py:110 vespawatch/views.py:184
+#: vespawatch/templates/vespawatch/profile.html:30
+msgid "Save"
+msgstr "Bewaar"
+
+#: vespawatch/views.py:89 vespawatch/views.py:116
 msgid ""
 "Your observation was successfully created. Thanks for your contribution!"
-msgstr "Jouw observatie werd succesvol bewaard. Bedankt voor je bijdrage!"
+msgstr "Je observatie werd bewaard. Bedankt voor je bijdrage!"
+
+#: vespawatch/views.py:144
+msgid "Your profile was successfully updated."
+msgstr "Je profiel is gewijzigd."

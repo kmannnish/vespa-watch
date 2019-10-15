@@ -1,0 +1,36 @@
+{% extends 'vespawatch/base.html' %}
+{% load static %}
+{% load i18n %}
+{% load page_fragments %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<main class="container" id="vw-main-app">
+  <div class="row justify-content-lg-center">
+    <div class="col-lg-8 col-lg-auto">
+      <h1>{% trans 'My profile' %}</h1>
+
+      {% if form.errors %}
+        <div class="alert alert-danger">
+          {% trans 'Please correct the errors below.' %}
+        </div>
+      {% endif %}
+      
+      <form method="post" action="{% url 'vespawatch:profile' %}" enctype='multipart/form-data' novalidate>
+        {% csrf_token %}
+
+        <p>
+          <a class="btn btn-primary btn-sm float-right" href="{% url 'password_change' %}">{% trans 'Change password' %}</a>
+          <code>{{ user.username }}</code> {% if user.first_name %}({{ user.first_name }} {{ user.last_name }}){% endif %}<br>
+          <span class="text-muted">{{ user.email }}</span>
+        </p>
+        
+        {{ form|crispy }}
+
+        <button type="submit" class="btn btn-success">{% trans 'Save' %}</button>
+        <a class="btn btn-light" href="{% url 'vespawatch:index' %}">{% trans 'Cancel' %}</a>
+      </form>
+    </div>
+  </div>
+</main>
+{% endblock %}

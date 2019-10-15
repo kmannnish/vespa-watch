@@ -3,9 +3,7 @@
 
 {% block content %}
 <main class="container" id="vw-main-app">
-  <h1>
-    {% trans 'Latest observations' %}
-  </h1>
+  <h1>{% trans 'Latest observations' %}</h1>
   <p>
       <a class="btn btn-primary" href="{% url 'vespawatch:observation-add' %}">{% trans 'Add your observation' %}</a>
       <a class="btn btn-secondary" href="https://www.inaturalist.org/observations/identify?user_id=vespawatch">{% trans 'Verify observations' %}</a>

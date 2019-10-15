@@ -5,14 +5,12 @@ import dateparser
 import requests
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.gis.geos import Point
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.base import ContentFile
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
+from django.db.models import Q
 from django.template import defaultfilters
 from django.urls import reverse
 from django.utils import timezone
@@ -47,7 +45,8 @@ class Taxon(models.Model):
                                             help_text="When pulling observations from iNaturalist, reconcile according "
                                                       "to those IDs.")
 
-    def get_file_path(instance, filename):
+    @staticmethod
+    def get_file_path(filename):
         """
         This function is no longer used, but we have to keep it to avoid breaking our migrations
         (in particular, this function is used in 0001_initial.py)
@@ -86,7 +85,8 @@ class IdentificationCard(models.Model):
     represented_taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT)
     represents_nest = models.BooleanField()
 
-    def get_file_path(instance, filename):
+    @staticmethod
+    def get_file_path(filename):
         return os.path.join('pictures/identification_cards/', make_unique_filename(filename))
 
     identification_picture = models.ImageField(verbose_name=_("Photo for identification"), upload_to=get_file_path, blank=True, null=True)
@@ -225,23 +225,6 @@ def get_local_obs_matching_inat_id(inat_id):
     raise ObjectDoesNotExist
 
 
-class FirefightersZone(models.Model):
-    name = models.CharField(max_length=100)
-    mpolygon = models.MultiPolygonField(null=True)
-
-    def __str__(self):
-        return self.name
-
-
-def get_zone_for_coordinates(lat, lon):
-    """Returns the Firefighters zone instance given (point) coordinates. lat/lon in EPSG4326.
-
-    :raises FirefightersZone.DoesNotExist:
-    """
-    point = Point(x=lon, y=lat)
-    return FirefightersZone.objects.get(mpolygon__intersects=point)
-
-
 def no_future(value):
     today = date.today()
     if value.date() > today:
@@ -256,7 +239,6 @@ class AbstractObservation(models.Model):
 
     latitude = models.FloatField(validators=[MinValueValidator(-90), MaxValueValidator(90)], verbose_name=_("Latitude"))
     longitude = models.FloatField(validators=[MinValueValidator(-180), MaxValueValidator(180)], verbose_name=_("Longitude"))
-    zone = models.ForeignKey(FirefightersZone, blank=True, null=True, on_delete=models.PROTECT)
 
     inaturalist_id = models.BigIntegerField(verbose_name=_("iNaturalist ID"), blank=True, null=True)
     inaturalist_species = models.CharField(verbose_name=_("iNaturalist species"), max_length=100, blank=True, null=True)  # TODO: check if this is still in use or useful
@@ -280,17 +262,6 @@ class AbstractObservation(models.Model):
         # We got some duplicates and don't exactly know why, this is an attempt to block them without being too
         # aggresive and introduce bugs (hence the limited number of fields).
         unique_together = ['taxon', 'observation_time', 'latitude', 'longitude', 'comments']
-
-    def auto_assign_zone(self):
-        """Sets the zone attribute, according to the latitude/longitude. You'll need to manually save the model instance.
-
-        !! overwrite existing values !!
-        """
-        if self.latitude and self.longitude:
-            try:
-                self.zone = get_zone_for_coordinates(self.latitude, self.longitude)
-            except FirefightersZone.DoesNotExist:
-                pass
 
     @property
     def vernacular_names_in_all_languages(self):
@@ -560,9 +531,6 @@ class AbstractObservation(models.Model):
         # Let's make sure model.clean() is called on each save(), for validation
         self.full_clean()
 
-        if not self.zone:  # Automatically sets a zone if we don't have one.
-            self.auto_assign_zone()
-
         return super(AbstractObservation, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -590,36 +558,36 @@ class Nest(AbstractObservation):
         (ABOVE_4_METER, _("Above 4 meters"))
     )
     height = models.CharField(verbose_name=_("Nest height"), max_length=50, choices=HEIGHT_CHOICES, blank=True)  # Will be set to required in the form, but can be empty for iNaturalist observations
+    expert_vv_confirmed = models.BooleanField(verbose_name=_('Confirmed by expert'), blank=True, null=True)
+    municipality = models.CharField(max_length=255, verbose_name=_('Municipality'), blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse('vespawatch:nest-detail', kwargs={'pk': self.pk})
 
-    def get_management_action_finished(self):
-        action = self.managementaction_set.first()
-        return action.finished if action else False
+    def editable_by_user(self, user):
+        if not user:
+            return False
+        if not self.controlled:
+            return True
+        if self.managementaction.user.pk is not user.pk and not user.is_staff:
+            return False
+        return True
 
-    def get_management_action_display(self):
-        action = self.managementaction_set.first()
-        return str(action) if action else ''
-
-    def get_management_action_code(self):
-        action = self.managementaction_set.first()
-        return action.outcome if action else None
-
-    def get_management_action_id(self):
-        action = self.managementaction_set.first()
-        return action.pk if action else None
+    @property
+    def controlled(self):
+        return hasattr(self, 'managementaction')
 
     @property
     def subject(self):
         return 'nest'
 
-    def as_dict(self):
-        return {
+    def as_dict(self, request_user=None, include_pictures=True):
+        d = {
             'id': self.pk,
             'key': f'nest-{self.pk}',  # Handy when you need a unique key in a batch of Observations (nests and individuals)
             'display_scientific_name': self.display_scientific_name,
             'display_vernacular_name': self.display_vernacular_name,
+            'editable': self.editable_by_user(request_user),  # the management action of this nest is only editable by the user who created it, or by an admin (=staff) user
             'subject': self.subject,
             'latitude': self.latitude,
             'longitude': self.longitude,
@@ -627,16 +595,19 @@ class Nest(AbstractObservation):
             'inaturalist_url': self.inaturalist_obs_url,
             'inat_vv_confirmed': self.inat_vv_confirmed,
             'observation_time': self.observation_time.timestamp() * 1000,
+            'municipality': self.municipality,
             'comments': self.comments,
-            'images': [x.image.url for x in self.pictures.all()],
-            'thumbnails': [x.thumbnail.url for x in self.pictures.all()],
-            'action': self.get_management_action_display(),
-            'actionCode': self.get_management_action_code(),
-            'actionId': self.get_management_action_id(),
-            'actionFinished': self.get_management_action_finished(),
-            'originates_in_vespawatch': self.originates_in_vespawatch,
+            'action': self.managementaction.get_outcome_display() if self.controlled else '',
+            'actionCode': self.managementaction.outcome if self.controlled else '',
+            'actionId': self.managementaction.pk if self.controlled else '',
+            'actionFinished': self.controlled,
+            'originates_in_vespawatch': self.  originates_in_vespawatch,
             'detailsUrl': reverse('vespawatch:nest-detail', kwargs={'pk': self.pk}),
         }
+        if include_pictures:
+            d['images'] = [x.image.url for x in self.pictures.all()]
+            d['thumbnails'] = [x.thumbnail.url for x in self.pictures.all()]
+        return d
 
     def __str__(self):
         return f'Nest of {self.get_taxon_name()}, {self.formatted_observation_date}'
@@ -689,8 +660,7 @@ class Individual(AbstractObservation):
             'observation_time': self.observation_time.timestamp() * 1000,
             'comments': self.comments,
             'images': [x.image.url for x in self.pictures.all()],
-            'thumbnails': [x.thumbnail.url for x in self.pictures.all()],
-            'detailsUrl': reverse('vespawatch:individual-detail', kwargs={'pk': self.pk})
+            'thumbnails': [x.thumbnail.url for x in self.pictures.all()]
         }
 
     def __str__(self):
@@ -749,18 +719,23 @@ class ManagementAction(models.Model):
     FULL_DESTRUCTION_NO_DEBRIS = 'FD'
     PARTIAL_DESTRUCTION_DEBRIS_LEFT = 'PD'
     EMPTY_NEST_NOTHING_DONE = 'ND'
+    UNKNOWN = 'UK'
 
     OUTCOME_CHOICE = (
         (FULL_DESTRUCTION_NO_DEBRIS, _('Full destruction, no debris')),
         (PARTIAL_DESTRUCTION_DEBRIS_LEFT, _('Partial destruction/debris left')),
         (EMPTY_NEST_NOTHING_DONE, _('Empty nest, nothing done')),
+        (UNKNOWN, _('Unknown')),
     )
 
-    nest = models.ForeignKey(Nest, on_delete=models.CASCADE)
+    nest = models.OneToOneField(Nest, on_delete=models.CASCADE, primary_key=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     outcome = models.CharField(verbose_name=_("Outcome"), max_length=2, choices=OUTCOME_CHOICE)
     action_time = models.DateTimeField(verbose_name=_("Action time"))
     person_name = models.CharField(verbose_name=_("Person name"), max_length=255, blank=True)
     duration = models.DurationField(verbose_name=_("Duration"), null=True, blank=True)
+    number_of_persons = models.IntegerField(verbose_name=_("Number of persons"), null=True)
+    comments = models.TextField(verbose_name=_("Comments"), blank=True)
 
     @property
     def duration_in_seconds(self):
@@ -769,30 +744,8 @@ class ManagementAction(models.Model):
         except AttributeError:
             return '' # NULL
 
-    @property
-    def finished(self):
-        return self.outcome in (self.FULL_DESTRUCTION_NO_DEBRIS, self.EMPTY_NEST_NOTHING_DONE)
-
     def __str__(self):
         return f'{self.action_time.strftime("%Y-%m-%d")} {self.get_outcome_display()}'
-
-
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    # Firefighters have a zone, other users (Admin, ...) don't.
-    zone = models.ForeignKey(FirefightersZone, on_delete=models.PROTECT, null=True, blank=True)
-
-
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
 
 
 class InatObsToDelete(models.Model):
@@ -804,19 +757,28 @@ class InatObsToDelete(models.Model):
         return str(self.inaturalist_id)
 
 
-def get_observations(include_individuals=True, include_nests=True, zone_id=None, limit=None):
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    organization = models.CharField(verbose_name=_('Organization / business'), max_length=255, null=True, blank=True)
+    description = models.TextField(verbose_name=_('Description'), blank=True, help_text=_('Describe the activities of your organization / business.'))
+
+    alphanumeric = RegexValidator(r'^[0-9]*$', _('Only numbers are allowed.'))
+
+    phone = models.CharField(verbose_name=_("Telephone number"), max_length=20, blank=True, null=True,
+                             validators=[alphanumeric])
+    email_notification = models.BooleanField(verbose_name=_('Get email notifications for new nests'), default=True)
+
+    def __str__(self):
+        return str(self.user)
+
+
+def get_observations(include_individuals=True, include_nests=True, limit=None):
     obs = []
 
     if include_individuals:
-        if zone_id is None:
-            obs = obs + list(Individual.objects.select_related('taxon').prefetch_related('pictures').all().order_by('-observation_time')[:limit])
-        else:
-            obs = obs + list(Individual.objects.select_related('taxon').prefetch_related('pictures').filter(zone_id__exact=zone_id).order_by('-observation_time')[:limit])
+        obs = obs + list(Individual.objects.select_related('taxon').prefetch_related('pictures').all().order_by('-observation_time')[:limit])
     if include_nests:
-        if zone_id is None:
-            obs = obs + list(Nest.objects.select_related('taxon').prefetch_related('pictures').all().order_by('-observation_time')[:limit])
-        else:
-            obs = obs + list(Nest.objects.select_related('taxon').prefetch_related('pictures').filter(zone_id__exact=zone_id).order_by('-observation_time')[:limit])
+        obs = obs + list(Nest.objects.select_related('taxon').prefetch_related('pictures').all().order_by('-observation_time')[:limit])
 
     obs.sort(key=lambda x: x.observation_time, reverse=True)
 
@@ -825,20 +787,27 @@ def get_observations(include_individuals=True, include_nests=True, zone_id=None,
     return obs
 
 
-def get_individuals(limit=None, vv_only=True):
+def get_individuals(limit=None, vv_only=True, flanders_only=False):
     qs = Individual.objects.all()
     if vv_only:
         qs = qs.filter(taxon__inaturalist_push_taxon_id__in=INAT_VV_TAXONS_IDS)
+    if flanders_only:
+        qs = qs.filter(longitude__gte=2.53, longitude__lte=5.94, latitude__gte=50.67, latitude__lte=51.51)
     obs = list(qs.select_related('taxon').prefetch_related('pictures').all())
     obs.sort(key=lambda x: x.observation_time, reverse=True)
     obs = obs[:limit]
     return obs
 
 
-def get_nests(limit=None, vv_only=True):
+def get_nests(limit=None, vv_only=True, confirmed_only=False, flanders_only=False):
     qs = Nest.objects.all()
+    if confirmed_only:
+        # When you request confirmed_only=True, this can either be iNaturalist confirmed OR expert confirmed
+        qs = qs.filter(Q(inat_vv_confirmed=True) | Q(expert_vv_confirmed=True))
     if vv_only:
         qs = qs.filter(taxon__inaturalist_push_taxon_id__in=INAT_VV_TAXONS_IDS)
+    if flanders_only:
+        qs = qs.filter(longitude__gte=2.53, longitude__lte=5.94, latitude__gte=50.67, latitude__lte=51.51)
     obs = list(qs.select_related('taxon').prefetch_related('pictures').all())
     obs.sort(key=lambda x: x.observation_time, reverse=True)
     obs = obs[:limit]

@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='identificationcard',
             name='identification_picture',
-            field=models.ImageField(blank=True, null=True, upload_to=vespawatch.models.IdentificationCard.get_file_path, verbose_name='Photo for identification'),
+            field=models.ImageField(null=True, upload_to=vespawatch.models.IdentificationCard.get_file_path, verbose_name='Photo for identification'),
         ),
         migrations.AlterField(
             model_name='identificationcard',
