@@ -157,7 +157,8 @@ def management(request):
 def nest_detail(request, pk=None):
     nest = get_object_or_404(Nest, pk=pk)
     action = nest.managementaction if nest.controlled else None
-    return render(request, 'vespawatch/nest_detail.html', {'nest': nest, 'action': action})
+    return render(request, 'vespawatch/nest_detail.html', {'nest': nest, 'action': action,
+                                                           'editable': nest.editable_by_user(request.user)})
 
 
 def obs_create(request):

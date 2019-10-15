@@ -1144,7 +1144,7 @@ var VwManagementActionDisplay = {
   mounted: function () {
     this.getAction();
   },
-  props: ['nestId', 'nestUrl', 'actionId', ],
+  props: ['nestId', 'nestUrl', 'actionId', 'editable'],
   template: `
   <div class="mt-4">
     <h2>{{ actionLabel }}</h2>
@@ -1178,7 +1178,7 @@ var VwManagementActionDisplay = {
     <div v-else>
       <p>{{noActionLabel}}</p>
     </div>
-    <vw-management-action-edit-buttons :nest-id="nestId" :action-id="_actionId" v-on:data-changed="reloadAction">
+    <vw-management-action-edit-buttons :editable="editable" :nest-id="nestId" :action-id="_actionId" v-on:data-changed="reloadAction">
     </vw-management-action-edit-buttons>
   </div>
   `

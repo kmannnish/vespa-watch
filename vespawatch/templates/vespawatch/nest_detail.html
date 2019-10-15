@@ -58,7 +58,8 @@
   </div>
 
   <vw-management-action-display nest-id="{{ nest.id }}"
-                                nest-url="{{ nest.get_absolute_url }}" action-id="{{ action.pk }}">
+                                nest-url="{{ nest.get_absolute_url }}" action-id="{{ action.pk }}"
+                                editable="{{ editable }}">
   </vw-management-action-display>
 </main>
 {% endblock %}
