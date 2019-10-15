@@ -102,7 +102,8 @@ main.container-fluid {
   h2 {
     margin-bottom: 1rem;
   }
-  form h5 {
+  > h5,
+  > form h5 {
     margin-top: 1.5rem;
   }
 

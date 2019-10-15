@@ -885,14 +885,12 @@ var VwManagementTableNestRow = {
             <td>{{ nestLongitude}}</td>
             <td>{{ nestLatitude }}</td>
             <td>{{ nest.municipality }}</td>
-            
             <td>
                 {{ nest.action }}
                 <vw-management-action-edit-buttons :nest-id="nest.id" :action-id="nest.actionId" v-on:data-changed="dataChanged" :editable="nest.editable"></vw-management-action-edit-buttons>
             </td>
-            
             <td>
-                <a :href="nest.detailsUrl" class="btn btn-outline-info btn-sm">{{ detailsStr }}</a>
+                <a :href="nest.detailsUrl" target="_blank" class="btn btn-outline-info btn-sm">{{ detailsStr }}</a>
             </td>
         </tr>
         `
@@ -1148,60 +1146,40 @@ var VwManagementActionDisplay = {
     },
     props: ['nestId', 'nestUrl', 'actionId', ],
     template: `
-    <div>
-      <h1>{{actionLabel}}</h1>
-
-      <div v-if="_actionId">
-        <h5>{{outcomeLabel}}</h5>
-        <div class="row">
-          <div class="col-lg-12">
-              <p>{{ outcome }}</p>
-          </div>
-        </div>
-
-        <h5>{{nameLabel}}</h5>
-        <div class="row">
-          <div class="col-lg-12">
-              <p>{{ personName }}</p>
-          </div>
-        </div>
-
-        <h5>{{nrPersonsLabel}}</h5>
-        <div class="row">
-          <div class="col-lg-12">
-              <p>{{ nrPersons }}</p>
-          </div>
-        </div>
-
-        <h5>{{actionTimeLabel}}</h5>
-        <div class="row">
-          <div class="col-lg-12">
-              <p>{{ localActiontime }}</p>
-          </div>
-        </div>
-
-        <h5>{{durationLabel}}</h5>
-        <div class="row">
-          <div class="col-lg-12">
-              <p>{{ durationInMinutes }}</p>
-          </div>
-        </div>
+    <div class="mt-4">
+        <h2>{{ actionLabel }}</h2>
         
-        <h5>{{commentsLabel}}</h5>
-        <div class="row">
-            <div class="col-lg-12">
-                <textarea class="form-control" disabled rows="5">{{comments}}</textarea>
+        <div v-if="_actionId">
+            <div class="row">
+                <div class="col-6 col-lg-3">{{actionTimeLabel}}:</div>
+                <div class="col">{{ localActiontime }}</div>
+            </div>
+            <div class="row">
+                <div class="col-6 col-lg-3">{{durationLabel}}:</div>
+                <div class="col">{{ durationInMinutes }}</div>
+            </div>
+            <div class="row">
+                <div class="col-6 col-lg-3">{{nrPersonsLabel}}:</div>
+                <div class="col">{{ nrPersons }}</div>
+            </div>
+            <div class="row">
+                <div class="col-6 col-lg-3">{{outcomeLabel}}:</div>
+                <div class="col">{{ outcome }}</div>
+            </div>
+            <div class="row">
+                <div class="col-6 col-lg-3">{{nameLabel}}:</div>
+                <div class="col">{{ personName }}</div>
+            </div>
+            <div class="row">
+                <div class="col-6 col-lg-3">{{commentsLabel}}:</div>
+                <div class="col">{{comments}}</div>
             </div>
         </div>
-      </div>
-      
-      <div v-else class="row">
-        <div class="col-lg-12">
+        <div v-else>
             <p>{{noActionLabel}}</p>
         </div>
-      </div>
-
-      <vw-management-action-edit-buttons :nest-id="nestId" :action-id="_actionId" v-on:data-changed="reloadAction"></vw-management-action-edit-buttons>
+        <vw-management-action-edit-buttons :nest-id="nestId" :action-id="_actionId" v-on:data-changed="reloadAction">
+        </vw-management-action-edit-buttons>
     </div>
     `
 };
@@ -1438,21 +1416,18 @@ var VwLocationSelectorInput = {
         }
     },
     template: `
-        <div>
-            <div class="form-row">
-                <input type="hidden" id="id_latitude" name="latitude" v-model="lat">
-                <input type="hidden" id="id_longitude" name="longitude" v-model="long">
-                <div class="form-group col-12">
-                    <div class="input-group">
-                        <input type="text" :class="addressInputClasses()" id="id_location" name="location" v-model="_location" :placeholder="searchPositionLabel" v-on:input="blockLocationDetection">
-                        <div class="input-group-append">
-                            <button class="btn btn-secondary" v-on:click.stop.prevent="search" >{{ searchLabel }}</button>
-                        </div>
-                        <p v-if="addressIsInvalid" class="invalid-feedback"><strong>{{addressErrorMessage}}</strong></p>
-                    </div>
-                    <small class="form-text text-muted">{{addressHelpLabel}}</small>
+        <div class="form-group">
+            <input type="hidden" id="id_latitude" name="latitude" v-model="lat">
+            <input type="hidden" id="id_longitude" name="longitude" v-model="long">
+            
+            <div class="input-group">
+                <input type="text" :class="addressInputClasses()" id="id_location" name="location" v-model="_location" :placeholder="searchPositionLabel" v-on:input="blockLocationDetection">
+                <div class="input-group-append">
+                    <button class="btn btn-secondary" v-on:click.stop.prevent="search" >{{ searchLabel }}</button>
                 </div>
+                <p v-if="addressIsInvalid" class="invalid-feedback"><strong>{{addressErrorMessage}}</strong></p>
             </div>
+            <small class="form-text text-muted">{{addressHelpLabel}}</small>
         </div>
         `
 };
@@ -1742,26 +1717,26 @@ var VwLocationSelector = {
     props: ['location', 'initCoordinates', 'initMarker', 'latitudeIsInvalid', 'longitudeIsInvalid', 'municipality'],
 
     template: `
-        <div class="row">
-            <div class="col-lg-12">
-                <vw-location-selector-input 
+        <div>
+            <vw-location-selector-input 
                 v-on:search="getCoordinates"
                 v-on:block-location-detection="blockLocationDetection"
                 :detection-blocked="locationDetectionBlocked"
                 v-bind:longitude="locationLng" v-bind:latitude="locationLat" v-bind:location="modelAddress"
                 v-bind:latitude-is-invalid="latitudeIsInvalid" v-bind:longitude-is-invalid="longitudeIsInvalid">
-                </vw-location-selector-input>
-                <input type="hidden" id="id_municipality" name="municipality" v-bind:value="_municipality">
+            </vw-location-selector-input>
 
-                <div v-if="searchFailed" class="alert alert-warning alert-dismissible " role="alert">
-                  {{ locationNotFoundText }}
-                  <button type="button" class="close" v-on:click="searchFailed = false" aria-label="Close">
+            <input type="hidden" id="id_municipality" name="municipality" v-bind:value="_municipality">
+
+            <div v-if="searchFailed" class="alert alert-warning alert-dismissible " role="alert">
+                {{ locationNotFoundText }}
+                <button type="button" class="close" v-on:click="searchFailed = false" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <vw-location-selector-map editable="true" v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
-                <vw-location-selector-coordinates :longitude="locationLng" :latitude="locationLat"></vw-location-selector-coordinates>
+                </button>
             </div>
+
+            <vw-location-selector-map editable="true" v-bind:init-marker="initMarker" v-bind:position="markerCoordinates" v-on:marker-move="setCoordinates"></vw-location-selector-map>
+            <vw-location-selector-coordinates :longitude="locationLng" :latitude="locationLat"></vw-location-selector-coordinates>
         </div>
         `
 };

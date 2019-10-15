@@ -8,88 +8,57 @@
 {% block content %}
 
 <main class="container" id="vw-main-app">
-  <div class="row">
-    <div class="col-lg-12">
-        <a class="float-right" href="{% url 'vespawatch:management' %}">{% trans 'Back' %}</a>
-    </div>
-  </div>
-
-  <h1>{% trans 'Detail nest' %}</h1>
+  <h1>{% trans 'Nest' %} {{ nest.id }} - {{ nest.observation_time }}</h1>
 
   <h5>{% trans 'Taxon' %}</h5>
-
-  <div class="row">
-    <div class="col-lg-12">
-      <p>{{ nest.taxon }}</p>
-    </div>
-  </div>
+  <p>{{ nest.taxon }}</p>
 
   <h5>{% trans 'Location' %}</h5>
-
-  <p>{% trans 'Municipality' %}: {{ nest.municipality }}</p>
-
+  <p>{% trans 'Municipality' %}: {{ nest.municipality|default_if_none:'-' }}</p>
   {% localize off %}
     {# turn off localization. Otherwise, longitude and latitude might get a comma as thousands separator, breaking #}
     {# the position array #}
     <vw-location-selector-map v-bind:position="[{{ nest.longitude }}, {{ nest.latitude }}]" init-marker="true">
     </vw-location-selector-map>
   {% endlocalize %}
-  <small class="form-text text-muted">{% trans 'longitude' %}: {{nest.longitude|floatformat:5}} / {% trans 'latitude' %}: {{nest.latitude|floatformat:5}}</small>
-
+  <small class="text-muted">{% trans 'Longitude' %}: {{ nest.longitude|floatformat:5 }} / {% trans 'Latitude' %}: {{ nest.latitude|floatformat:5 }}</small>
+  
   <h5>{% trans 'Date' %}</h5>
-    
-  <div class="row">
-    <div class="col-lg-12">
-      <p>{{ nest.observation_time }}</p>
-    </div>
-  </div>
+  <p>{{ nest.observation_time }}</p>
 
   <h5>{% trans 'Description' %}</h5>
-
   <div class="row">
-    <div class="col-lg-6">
-      <p>{% trans 'Nest height' %}: {{ nest.get_height_display|default_if_none:'-'  }}</p>
-    </div>
-    <div class="col-lg-6">
-      <p>{% trans 'Nest size' %}: {{ nest.get_size_display|default_if_none:'-'  }}</p>
-    </div>
+    <div class="col-6 col-lg-3">{% trans 'Nest height' %}:</div>
+    <div class="col">{{ nest.get_height_display|default_if_none:'-' }}</div>
   </div>
-
   <div class="row">
-    <div class="col-lg-12">
-      <p>{% trans 'Confirmed by expert' %}: {{ nest.expert_vv_confirmed|default_if_none:'-' }}</p>
-    </div>
+    <div class="col-6 col-lg-3">{% trans 'Nest size' %}:</div>
+    <div class="col">{{ nest.get_size_display|default_if_none:'-' }}</div>
+  </div>
+  <div class="row">
+    <div class="col-6 col-lg-3">{% trans 'Confirmed by expert' %}:</div>
+    <div class="col">{{ nest.expert_vv_confirmed|default_if_none:'-' }}</div>
   </div>
 
   <h5>{% trans 'Comments' %}</h5>
-
-  <div class="row">
-    <div class="col-lg-12">
-      <p>{{ nest.comments|default_if_none:'-' }}</p>
-    </div>
-  </div>
-
+  {{ nest.comments|default_if_none:'-' }}
+  
   <h5>{% trans 'Contact information' %}</h5>
-
   <div class="row">
-    <div class="col-lg-3 col-md-6">
-      <p>{% trans 'Name' %}: {{ nest.observer_name|default_if_none:'-' }}</p>
-    </div>
-    <div class="col-lg-3 col-md-6">
-      <p>{% trans 'Telephone number' %}: {{ nest.observer_phone|default_if_none:'-' }}</p>
-    </div>
-    <div class="col-lg-3 col-md-6">
-      <p>{% trans 'Email address' %}: {{ nest.observer_email|default_if_none:'-'}}</p>
-    </div>
+    <div class="col-6 col-lg-3">{% trans 'Name' %}:</div>
+    <div class="col">{{ nest.observer_name|default_if_none:'-' }}</div>
+  </div>
+  <div class="row">
+    <div class="col-6 col-lg-3">{% trans 'Telephone number' %}:</div>
+    <div class="col">{{ nest.observer_phone|default_if_none:'-' }}</div>
+  </div>
+  <div class="row">
+    <div class="col-6 col-lg-3">{% trans 'Email address' %}:</div>
+    <div class="col">{{ nest.observer_email|default_if_none:'-' }}</div>
   </div>
 
   <vw-management-action-display nest-id="{{ nest.id }}"
                                 nest-url="{{ nest.get_absolute_url }}" action-id="{{ action.pk }}">
   </vw-management-action-display>
-
-
-
-
-
 </main>
 {% endblock %}
