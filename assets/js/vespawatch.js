@@ -1149,7 +1149,7 @@ var VwManagementActionDisplay = {
   <div class="mt-4">
     <h2>{{ actionLabel }}</h2>
 
-    <div v-if="_actionId">
+    <div v-if="_actionId" class="mb-2">
       <div class="row">
         <div class="col-6 col-lg-3">{{actionTimeLabel}}:</div>
         <div class="col">{{ localActiontime }}</div>
@@ -1175,9 +1175,10 @@ var VwManagementActionDisplay = {
         <div class="col">{{comments}}</div>
       </div>
     </div>
-    <div v-else>
+    <div v-else class="mb-2">
       <p>{{noActionLabel}}</p>
     </div>
+
     <vw-management-action-edit-buttons :editable="editable" :nest-id="nestId" :action-id="_actionId" v-on:data-changed="reloadAction">
     </vw-management-action-edit-buttons>
   </div>
