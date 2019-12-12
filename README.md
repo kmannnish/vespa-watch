@@ -4,7 +4,7 @@ Django app for the monitoring and management of [_Vespa velutina_](https://www.i
 
 ## Installation (local development)
 
-_Note: deployment instructions of applciation are provided in [deployment dir](https://github.com/inbo/vespa-watch/blob/master/deployment/setup.md)_
+_Note: deployment instructions of application are provided in [deployment dir](https://github.com/inbo/vespa-watch/blob/master/deployment/setup.md)_
 
 ### Setup database
 
@@ -47,30 +47,6 @@ python manage.py migrate
 
     ```
     python manage.py create_su
-    ```
-
-### Create fire brigade users
-
-1. Fire brigade users are responsible for a specific geographic area (= zone). Import the polygons for those zones:
-
-    ```bash
-    python manage.py import_firefighters_zones assets/data/brandweerzones_2019.geojson
-    ```
-
-    <details>
-    <summary>File source</summary>
-
-    The initial fire brigade zone data was received as an ESRI shapefile and converted to GeoJSON with:
-
-    ```bash
-    ogr2ogr -f GeoJSON -t_srs EPSG:4326 assets/data/brandweerzones_2019.geojson <path_to_received_shapefile>/Brandweerzones_2019.shp
-    ```
-    </details>
-
-2. Create a fire brigade user for each zone (this will return passwords for each account, so best to catch those):
-
-    ```bash
-    python manage.py create_firefighters_accounts
     ```
 
 ### Load data from iNaturalist

@@ -6,8 +6,8 @@ from import_export.admin import ExportMixin
 from import_export.fields import Field
 from modeltranslation.admin import TranslationAdmin, TranslationTabularInline
 
-from .models import Taxon, Nest, Individual, NestPicture, IndividualPicture, ManagementAction, Profile, \
-    FirefightersZone, IdentificationCard, IndividualObservationWarning, NestObservationWarning
+from .models import Taxon, Nest, Individual, NestPicture, IndividualPicture, ManagementAction, IdentificationCard, \
+    IndividualObservationWarning, NestObservationWarning, Profile
 
 
 class NestResource(resources.ModelResource):
@@ -113,7 +113,7 @@ class NestAdmin(DeleteObjectsOneByOneMixin, ExportMixin, admin.ModelAdmin):
             r = r + ('taxon', )
         return r
 
-    list_display = ('taxon', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'originates_in_vespawatch', 'has_warnings', 'inat_vv_confirmed')
+    list_display = ('taxon', 'inaturalist_id', 'observation_time', 'latitude', 'longitude', 'municipality', 'originates_in_vespawatch', 'has_warnings', 'inat_vv_confirmed')
     readonly_fields = ('originates_in_vespawatch', 'created_at')
 
     list_filter = ('taxon', 'originates_in_vespawatch')
@@ -150,42 +150,32 @@ class IndividualAdmin(DeleteObjectsOneByOneMixin, ExportMixin, admin.ModelAdmin)
         IndividualObservationWarningInline
     ]
 
+
 @admin.register(ManagementAction)
 class ManagementActionAdmin(admin.ModelAdmin):
     pass
 
 
-class ProfileInline(admin.StackedInline):
+class ProfileInline(admin.TabularInline):
     model = Profile
-    can_delete = False
-    verbose_name_plural = 'Profile'
-    fk_name = 'user'
 
 
 class CustomUserAdmin(UserAdmin):
-    inlines = (ProfileInline, )
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'get_zone')
-    list_select_related = ('profile',)
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'profile')
+    inlines = [ProfileInline]
 
-    def get_zone(self, instance):
-        try:
-            return instance.profile.zone.name
-        except AttributeError:
-            return '-'
-    get_zone.short_description = 'Zone'
-
-    def get_inline_instances(self, request, obj=None):
-        if not obj:
-            return list()
-        return super(CustomUserAdmin, self).get_inline_instances(request, obj)
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
 
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'email_notification')
+    readonly_fields = ('user',)
+
+
+
 @admin.register(IdentificationCard)
 class IdentificationCardAdmin(TranslationAdmin):
     list_display = ('order', 'represented_taxon', 'represents_nest')
-
-@admin.register(FirefightersZone)
-class ZoneAdmin(admin.ModelAdmin):
-    pass

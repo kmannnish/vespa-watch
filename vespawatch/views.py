@@ -1,28 +1,21 @@
-import json
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.serializers import serialize
 from django.forms.models import model_to_dict
-from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ugettext as _
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import DeleteView
 from django.views.generic.base import View
 from django.views.generic.detail import BaseDetailView, SingleObjectMixin, SingleObjectTemplateResponseMixin
 from django.views.generic.edit import DeletionMixin
 from django.urls import reverse_lazy
 
-from django.conf import settings
 
 from vespawatch.utils import ajax_login_required
-from .forms import ManagementActionForm, IndividualForm, IndividualFormUnauthenticated, IndividualPictureForm, \
-    NestForm, NestPictureForm, NestFormUnauthenticated
-from .models import Individual, Nest, ManagementAction, Taxon, FirefightersZone, IdentificationCard, \
-    get_observations, get_individuals, get_nests, IndividualPicture, NestPicture
+from .forms import ManagementActionForm, IndividualForm, IndividualPictureForm, \
+    NestForm, NestPictureForm, ProfileForm
+from .models import Individual, Nest, ManagementAction, IdentificationCard, \
+    get_observations, get_individuals, get_nests, IndividualPicture, NestPicture, Profile
 
 
 class CustomBaseDetailView(SingleObjectMixin, View):
@@ -50,45 +43,37 @@ class CustomDeleteView(SingleObjectTemplateResponseMixin, CustomBaseDeleteView):
 def index(request):
     return render(request, 'vespawatch/index.html', {'observations': get_observations(limit=4)})
 
+
 def getinvolved(request):
     return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'getinvolved'})
+
 
 def identification(request):
     return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'identification'})
 
+
 def about_links(request):
     return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_links'})
+
 
 def about_management(request):
     return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_management'})
 
+
 def about_privacypolicy(request):
     return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_privacypolicy'})
+
 
 def about_project(request):
     return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_project'})
 
+
 def about_vespavelutina(request):
     return render(request, 'vespawatch/simple_page_fragment.html', {'fragment_id': 'about_vespavelutina'})
 
+
 def latest_observations(request):
     return render(request, 'vespawatch/obs.html', {'observations': get_observations(limit=40)})
-
-@login_required
-def management(request):
-    profile = request.user.profile
-    zone = profile.zone
-    if not (zone or request.user.is_staff):
-        raise Http404()
-    print(zone)
-    if zone:
-        nests = Nest.objects.filter(zone=zone).order_by('-observation_time')
-    else:
-        nests = Nest.objects.all().order_by('-observation_time')
-    context = {'nests': json.dumps([x.as_dict() for x in nests]), 'zone': zone}
-    print(context)
-
-    return render(request, 'vespawatch/management.html', context)
 
 
 # CREATE UPDATE INDIVIDUAL OBSERVATIONS
@@ -97,16 +82,8 @@ def create_individual(request):
     if request.method == 'POST':
         redirect_to = request.POST.get('redirect_to')
         card_id = request.POST.get('card_id')
-        print(f'2: {card_id}')
         identif_card = IdentificationCard.objects.get(pk=card_id)
-        if request.user.is_authenticated:
-            # set to terms_of_service to true if the user is authenticated
-            form = IndividualForm(request.POST, request.FILES)
-            form_data_copy = form.data.copy()
-            form_data_copy['terms_of_service'] = True
-            form.data = form_data_copy
-        else:
-            form = IndividualFormUnauthenticated(request.POST, request.FILES)
+        form = IndividualForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, _("Your observation was successfully created. Thanks for your contribution!"))
@@ -117,49 +94,13 @@ def create_individual(request):
         identif_card = IdentificationCard.objects.get(pk=identif_card_id)
         image_ids = request.GET.get('image_ids', '')
         taxon = identif_card.represented_taxon
-        print(f'1: {identif_card_id}')
-        if request.user.is_authenticated:
-            form = IndividualForm(initial={
-                'redirect_to': redirect_to,
-                'card_id': identif_card_id,
-                'image_ids': image_ids,
-                'taxon': taxon})
-        else:
-            form = IndividualFormUnauthenticated(initial={
-                'redirect_to': redirect_to,
-                'card_id': identif_card_id,
-                'image_ids': image_ids,
-                'taxon': taxon})
+        form = IndividualForm(initial={
+            'redirect_to': redirect_to,
+            'card_id': identif_card_id,
+            'image_ids': image_ids,
+            'taxon': taxon})
     return render(request, 'vespawatch/individual_create.html',
                   {'form': form, 'type': 'individual', 'identif_card': identif_card})
-
-
-class IndividualDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
-    model = Individual
-
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super().get_context_data(**kwargs)
-        r = kwargs.get('redirect_to', ['index'])
-        context['redirect_to'] = r[0]
-        return context
-
-
-class IndividualDelete(LoginRequiredMixin, CustomDeleteView):
-    model = Individual
-    success_url = reverse_lazy('vespawatch:index')
-    success_message = "The observation was successfully deleted."
-    requested_success_url = None
-
-    def get_success_url(self, **kwargs):
-        if self.requested_success_url:
-            return reverse_lazy(f'vespawatch:{self.requested_success_url}').format(**self.object.__dict__)
-
-        return super(IndividualDelete, self).get_success_url()
-
-    def delete(self, request, *args, **kwargs):
-        messages.success(self.request, _(self.success_message))
-        return super(IndividualDelete, self).delete(request, *args, **kwargs)
 
 
 # CREATE UPDATE NEST OBSERVATIONS
@@ -169,20 +110,9 @@ def create_nest(request):
         redirect_to = request.POST.get('redirect_to')
         card_id = request.POST.get('card_id')
         identif_card = IdentificationCard.objects.get(pk=card_id)
-        if request.user.is_authenticated:
-            form = NestForm(request.POST, request.FILES)
-            # set to terms_of_service to true if the user is authenticated
-            form_data_copy = form.data.copy()
-            form_data_copy['terms_of_service'] = True
-            form.data = form_data_copy
-        else:
-            form = NestFormUnauthenticated(request.POST, request.FILES)
-            print('location set on form:')
-            print(form.fields['location'])
-        print(request.POST.get('location'))
+        form = NestForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-
             messages.success(request, _("Your observation was successfully created. Thanks for your contribution!"))
             return HttpResponseRedirect(reverse_lazy(f'vespawatch:{redirect_to}'))
     else:
@@ -191,80 +121,44 @@ def create_nest(request):
         image_ids = request.GET.get('image_ids', '')
         identif_card = IdentificationCard.objects.get(pk=identif_card_id)
         taxon = identif_card.represented_taxon
-        if request.user.is_authenticated:
-            form = NestForm(initial={
-                'redirect_to': redirect_to,
-                'card_id': identif_card_id,
-                'image_ids': image_ids,
-                'taxon': taxon
-            })
-        else:
-            form = NestFormUnauthenticated(
-                initial={
-                    'redirect_to': redirect_to,
-                    'card_id': identif_card_id,
-                    'image_ids': image_ids,
-                    'taxon': taxon
-                }
-            )
+        form = NestForm(initial={
+            'redirect_to': redirect_to,
+            'card_id': identif_card_id,
+            'image_ids': image_ids,
+            'taxon': taxon
+        })
     return render(request, 'vespawatch/nest_create.html',
                   {'form': form, 'type': 'nest', 'identif_card': identif_card})
 
 
-class NestDetail(SingleObjectTemplateResponseMixin, CustomBaseDetailView):
-    model = Nest
-
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super().get_context_data(**kwargs)
-        r = kwargs.get('redirect_to', ['index'])
-        context['redirect_to'] = r[0]
-        return context
-
-
-class NestDelete(LoginRequiredMixin, CustomDeleteView):
-    model = Nest
-    success_url = reverse_lazy('vespawatch:index')
-    success_message = "The observation was successfully deleted."
-
-    def delete(self, request, *args, **kwargs):
-        messages.success(self.request, _(self.success_message))
-        return super(NestDelete, self).delete(request, *args, **kwargs)
-
-
-# CREATE/UPDATE/DELETE MANAGEMENT ACTIONS
-# TODO: Check if those 3 actions are still used.
 @login_required
-def create_action(request):
-    if request.method == 'POST':
-        form = ManagementActionForm(request.POST)
-        if form.is_valid():
-            action = ManagementAction(**form.cleaned_data)
-            action.save()
-        return HttpResponseRedirect('/')
-
+def profile(request):
+    if hasattr(request.user, 'profile'):
+        profile = request.user.profile
     else:
-        form = ManagementActionForm()
-    return render(request, 'vespawatch/action_create.html', {'form': form})
-
-
-@login_required
-def update_action(request, pk=None):
-    action = get_object_or_404(ManagementAction, pk=pk)
+        profile = Profile(user=request.user)
     if request.method == 'POST':
-        form = ManagementActionForm(request.POST, instance=action)
+        form = ProfileForm(request.POST, instance=profile)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/')
+            messages.success(request, _('Your profile was successfully updated.'))
+            return HttpResponseRedirect(reverse_lazy(f'vespawatch:index'))
     else:
-        form = ManagementActionForm(instance=action)
+        form = ProfileForm(instance=profile)
+    return render(request, 'vespawatch/profile.html', {'form': form, 'username': request.user.username})
 
-    return render(request, 'vespawatch/action_update.html', {'form': form, 'object': action})
+
+@login_required
+def management(request):
+    return render(request, 'vespawatch/management.html')
 
 
-class ManagmentActionDelete(LoginRequiredMixin, DeleteView):
-    model = ManagementAction
-    success_url = reverse_lazy('vespawatch:index')
+@login_required
+def nest_detail(request, pk=None):
+    nest = get_object_or_404(Nest, pk=pk)
+    action = nest.managementaction if nest.controlled else None
+    return render(request, 'vespawatch/nest_detail.html', {'nest': nest, 'action': action,
+                                                           'editable': nest.editable_by_user(request.user)})
 
 
 def obs_create(request):
@@ -282,8 +176,6 @@ def observations_json(request):
     Return all observations as JSON data.
     """
     # TODO: can we deprecate this function? + If so, can we remove the prefetch_related('pictures') from the get_observations function?
-    zone = request.GET.get('zone', '')
-    zone_id = int(zone) if zone else None
 
     obs_type = request.GET.get('type', None)
     include_individuals = (obs_type == 'individual' or obs_type is None)
@@ -294,7 +186,6 @@ def observations_json(request):
 
     obs = get_observations(include_individuals=include_individuals,
                            include_nests=include_nests,
-                           zone_id=zone_id,
                            limit=limit)
 
     light = request.GET.get('light', None)
@@ -310,6 +201,7 @@ def observations_json(request):
 
     return response
 
+
 def individuals_json(request):
     """
     Return all individuals as JSON data.
@@ -319,8 +211,9 @@ def individuals_json(request):
 
     light = request.GET.get('light', None)
     vv_only = request.GET.get('vvOnly', None)
+    flanders_only = request.GET.get('flOnly', 'false') == 'true'
 
-    obs = get_individuals(limit=limit, vv_only=vv_only)
+    obs = get_individuals(limit=limit, vv_only=vv_only, flanders_only=flanders_only)
 
     if light:
         response = JsonResponse({
@@ -356,9 +249,12 @@ def nests_json(request):
     limit = int(limit) if limit is not None else None
 
     light = request.GET.get('light', None)
-    vv_only = request.GET.get('vvOnly', False)
+    vv_only = request.GET.get('vvOnly', False) == 'true'
+    confirmed_only = request.GET.get('confirmedOnly', False) == 'true'
+    include_pictures = request.GET.get('includePictures', 'true') == 'true'
+    flanders_only = request.GET.get('flOnly', 'false') == 'true'
 
-    obs = get_nests(limit=limit, vv_only=vv_only)
+    obs = get_nests(limit=limit, vv_only=vv_only, confirmed_only=confirmed_only, flanders_only=flanders_only)
 
     if light:
         response = JsonResponse({
@@ -366,7 +262,7 @@ def nests_json(request):
         })
     else:
         response = JsonResponse({
-            'nests': [x.as_dict() for x in obs]
+            'nests': [x.as_dict(request_user=request.user, include_pictures=include_pictures) for x in obs]
         })
 
     return response
@@ -383,7 +279,11 @@ def management_actions_outcomes_json(request):
 @csrf_exempt
 def delete_management_action(request):
     if request.method == 'DELETE':
-        ManagementAction.objects.get(pk=request.GET.get('action_id')).delete()
+        action = get_object_or_404(ManagementAction, pk=request.GET.get('action_id'))
+        if request.user.is_staff or request.user is action.user:
+            action.delete()
+        else:
+            return HttpResponseForbidden('Unauthorized')
         return JsonResponse({'result': 'OK'})
 
 @ajax_login_required
@@ -393,34 +293,38 @@ def save_management_action(request):
         existing_action_id = request.POST.get('action_id', None)
 
         if existing_action_id:  # We want to update an existing action
-            form = ManagementActionForm(request.POST, instance=get_object_or_404(ManagementAction, pk=existing_action_id))
+            action = get_object_or_404(ManagementAction, pk=existing_action_id)
+            if request.user.is_staff or request.user is action.user:
+
+                form = ManagementActionForm(request.POST, instance=action)
+            else:
+                return HttpResponseForbidden('Unauthorized')
         else:  # We want to create a new action
             form = ManagementActionForm(request.POST)
 
         try:
-            form.save()
-            return JsonResponse({'result': 'OK'}, status=201)
+            form_data_copy = form.data.copy()
+            form_data_copy['user'] = request.user.id
+            form.data = form_data_copy
+            action = form.save()
+            return JsonResponse({'result': 'OK', 'actionId': action.pk}, status=201)
         except ValueError:
             return JsonResponse({'result': 'NOTOK', 'errors': form.errors}, status=422)
 
+
+@ajax_login_required
 def get_management_action(request):
     if request.method == 'GET':
         action_id = request.GET.get('action_id')
         action = get_object_or_404(ManagementAction, pk=action_id)
 
         return JsonResponse({'action_time': action.action_time,
+                             'comments': action.comments,
                              'outcome':action.outcome,
+                             'outcome_display':action.get_outcome_display(),
                              'duration': action.duration_in_seconds,
+                             'number_of_persons': action.number_of_persons,
                              'person_name': action.person_name})
-
-def get_zone(request):
-    if request.method == 'GET':
-        zone_id = request.GET.get('zone_id')
-        zone = get_object_or_404(FirefightersZone, pk=zone_id)
-
-        return HttpResponse(serialize('geojson', [zone],
-                  geometry_field='mpolygon',
-                  fields=('pk', 'name')))
 
 
 def get_nest_picture(request, pk=None):

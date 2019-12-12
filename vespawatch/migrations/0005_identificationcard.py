@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('represents_nest', models.BooleanField()),
-                ('identification_picture', models.ImageField(blank=True, null=True, upload_to=vespawatch.models.IdentificationCard.get_file_path)),
+                ('identification_picture', models.ImageField(null=True, upload_to=vespawatch.models.IdentificationCard.get_file_path)),
                 ('description_nl', markdownx.models.MarkdownxField(blank=True)),
                 ('description_en', markdownx.models.MarkdownxField(blank=True)),
                 ('order', models.IntegerField(unique=True)),

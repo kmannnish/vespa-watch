@@ -1,0 +1,65 @@
+{% extends 'vespawatch/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load i18n %}
+{% load l10n %}
+{% load custom_tags %}
+
+{% block content %}
+
+<main class="container" id="vw-main-app">
+  <h1>{% trans 'Nest' %} {{ nest.id }} - {{ nest.observation_time }}</h1>
+
+  <h5>{% trans 'Taxon' %}</h5>
+  <p>{{ nest.taxon }}</p>
+
+  <h5>{% trans 'Location' %}</h5>
+  <p>{% trans 'Municipality' %}: {{ nest.municipality|default_if_none:'-' }}</p>
+  {% localize off %}
+    {# turn off localization. Otherwise, longitude and latitude might get a comma as thousands separator, breaking #}
+    {# the position array #}
+    <vw-location-selector-map v-bind:position="[{{ nest.longitude }}, {{ nest.latitude }}]" init-marker="true">
+    </vw-location-selector-map>
+  {% endlocalize %}
+  <small class="text-muted">{% trans 'Longitude' %}: {{ nest.longitude|floatformat:5 }} / {% trans 'Latitude' %}: {{ nest.latitude|floatformat:5 }}</small>
+  
+  <h5>{% trans 'Date' %}</h5>
+  <p>{{ nest.observation_time }}</p>
+
+  <h5>{% trans 'Description' %}</h5>
+  <div class="row">
+    <div class="col-6 col-lg-3">{% trans 'Nest height' %}:</div>
+    <div class="col">{{ nest.get_height_display|default_if_none:'-' }}</div>
+  </div>
+  <div class="row">
+    <div class="col-6 col-lg-3">{% trans 'Nest size' %}:</div>
+    <div class="col">{{ nest.get_size_display|default_if_none:'-' }}</div>
+  </div>
+  <div class="row">
+    <div class="col-6 col-lg-3">{% trans 'Confirmed by expert' %}:</div>
+    <div class="col">{{ nest.expert_vv_confirmed|default_if_none:'-' }}</div>
+  </div>
+
+  <h5>{% trans 'Comments' %}</h5>
+  {{ nest.comments|default_if_none:'-' }}
+  
+  <h5>{% trans 'Contact information' %}</h5>
+  <div class="row">
+    <div class="col-6 col-lg-3">{% trans 'Name' %}:</div>
+    <div class="col">{{ nest.observer_name|default_if_none:'-' }}</div>
+  </div>
+  <div class="row">
+    <div class="col-6 col-lg-3">{% trans 'Telephone number' %}:</div>
+    <div class="col">{{ nest.observer_phone|default_if_none:'-' }}</div>
+  </div>
+  <div class="row">
+    <div class="col-6 col-lg-3">{% trans 'Email address' %}:</div>
+    <div class="col">{{ nest.observer_email|default_if_none:'-' }}</div>
+  </div>
+
+  <vw-management-action-display nest-id="{{ nest.id }}"
+                                nest-url="{{ nest.get_absolute_url }}" action-id="{{ action.pk }}"
+                                editable="{{ editable }}">
+  </vw-management-action-display>
+</main>
+{% endblock %}

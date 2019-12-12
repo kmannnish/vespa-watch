@@ -1,0 +1,23 @@
+{% extends 'vespawatch/base.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<main class="container">
+  <div class="row justify-content-lg-center">
+    <div class="col-lg-8 col-lg-auto">
+      <h1>{% trans 'Change password' %}</h1>
+
+      <form method="post">
+          {% csrf_token %}
+          <p>{% trans "Please enter your old password, create a new one and confirm it." %}</p>
+          {{ form | crispy }}
+
+        <input class="btn btn-success" type="submit" value="{% trans 'Change password' %}">
+        <a class="btn btn-light" href="{% url 'vespawatch:profile' %}">{% trans 'Cancel' %}</a>
+      </form>
+    </div>
+  </div>
+</main>
+{% endblock %}
