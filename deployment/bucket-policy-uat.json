@@ -9,7 +9,10 @@
             "Resource": "arn:aws:s3:::lw-vespawatch-uat/*",
             "Condition": {
                 "StringLike": {
-                    "aws:Referer": "https://uat.vespawatch.be/*"
+                    "aws:Referer": [
+                        "https://uat.vespawatch.be/*",
+                        "http://uat.vespawatch.be/*"
+                    ]
                 }
             }
         }
