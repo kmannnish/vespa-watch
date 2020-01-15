@@ -63,7 +63,8 @@ The repository contains a number of raw static files that need to be processed
 before deployment. You can build all static files with an npm script:
 
 ```bash
-npm run build:all
+$ npm install # first time only
+$ npm run build:all
 ```
 
 ### Run the application

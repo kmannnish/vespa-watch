@@ -44,7 +44,7 @@ eb deploy vespawatch-xxx --message  "informative message..."
 ### Key-pair combination
 
 It is straightforward to create a new key-pair combination using the AWS Console > EC2 > Key Pairs > `Create Key Pair`.
-For development, the key-pair combination is called `LW-INBO-VESPAWATCH`, which can be used as name both in DEV and PRD. For UAT it is called `LW-INBO-VESPAWATCH-UAT`.
+For development, the key-pair combination is called `LW-INBO-VESPAWATCH`, which can be used as name both in DEV and PRD. For UAT it is called `LW-INBO-VESPAWATCH-UAT2`.
 
 Do not forget to put the key-pair combination in the team-folder location.
 
@@ -165,7 +165,7 @@ eb create
 --vpc.id vpc-a58610c1
 --vpc.securitygroups sg-cf47ddb7,sg-8a9346ec
 --instance_profile aws-elasticbeanstalk-ec2-role-vespawatch
---keyname LW-INBO-VESPAWATCH-UAT
+--keyname LW-INBO-VESPAWATCH-UAT2
 --tags APPLICATION=VESPAWATCH,ENVIRONMENT=UAT,OWNER=LIFEWATCH-VESPAWATCH,BUSINESS_UNIT=LIFEWATCH,COST_CENTER=EVINBO,RUNDECK=TRUE
 ```
 
