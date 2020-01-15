@@ -72,7 +72,8 @@ $ npm run build:all
 In your virtual environment:
 
 ```bash
-python manage.py runserver
+$ export DJANGO_SETTINGS_MODULE=djangoproject.settings.settings_local
+$ python manage.py runserver
 ```
 
 Go to http://localhost:8000 to see the application.
