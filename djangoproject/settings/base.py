@@ -174,6 +174,7 @@ USE_TZ = True
 LANGUAGES = [
     ('nl', _('Dutch')),
     ('en', _('English')),
+    ('fr', _('French'))
 ]
 
 PAGE_FRAGMENTS_FALLBACK_LANGUAGE = 'nl'
