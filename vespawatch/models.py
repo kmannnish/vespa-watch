@@ -45,7 +45,7 @@ class Taxon(models.Model):
                                             help_text="When pulling observations from iNaturalist, reconcile according "
                                                       "to those IDs.")
 
-    @staticmethod
+    # Don't use @staticmethod, Django can't serialize this and this is painful to debug.
     def get_file_path(filename):
         """
         This function is no longer used, but we have to keep it to avoid breaking our migrations
@@ -85,7 +85,7 @@ class IdentificationCard(models.Model):
     represented_taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT)
     represents_nest = models.BooleanField()
 
-    @staticmethod
+    # Don't use @staticmethod, Django can't serialize this and this is painful to debug.
     def get_file_path(filename):
         return os.path.join('pictures/identification_cards/', make_unique_filename(filename))
 
