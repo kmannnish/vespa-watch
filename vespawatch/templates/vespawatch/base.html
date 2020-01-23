@@ -99,7 +99,14 @@
               <input name="next" type="hidden" value="{{ redirect_to }}">
               <select class="form-control form-control-sm" name="language" id="lang">
                 {% get_current_language as LANGUAGE_CODE %}
-                {% get_language_info_list for settings.LANGUAGES_AVAILABLE_IN_SELECTOR as languages %}
+                
+                {% if user.is_superuser %}
+                  {# Superusers get access to languages that are not yet officially available }
+                  {% get_language_info_list for settings.LANGUAGES as languages %}
+                {% else %}  
+                  {% get_language_info_list for settings.LANGUAGES_AVAILABLE_IN_SELECTOR as languages %}
+                {% endif %}
+                
                 {% for language in languages %}
                   <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>{{ language.name_local }}</option>
                 {% endfor %}
