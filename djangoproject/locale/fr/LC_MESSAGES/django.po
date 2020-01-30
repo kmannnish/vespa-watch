@@ -16,16 +16,15 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 #: djangoproject/settings/base.py:175 djangoproject/settings/base.py:284
 msgid "Dutch"
-msgstr "Nederlands"
+msgstr "Néerlandais"
 
 #: djangoproject/settings/base.py:176 djangoproject/settings/base.py:285
 msgid "English"
-msgstr "Engels"
+msgstr "Anglais"
 
 #: djangoproject/settings/base.py:177
 msgid "French"
-msgstr "Frans"
+msgstr "Français"
