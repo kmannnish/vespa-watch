@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-30 15:08+0100\n"
+"POT-Creation-Date: 2020-02-05 14:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,7 +30,8 @@ msgstr "Entrez une date/heure valide"
 msgid ""
 "I agree with the <a href=\"/about/privacy-policy/\" target=\"_blank"
 "\">privacy policy</a>"
-msgstr "J'accepte les <a href=\"/about/privacy-policy/\" target=\"_blank"
+msgstr ""
+"J'accepte les <a href=\"/about/privacy-policy/\" target=\"_blank"
 "\">conditions relatives à la protection de la vie privée</a>"
 
 #: vespawatch/forms.py:37 vespawatch/forms.py:74 vespawatch/models.py:249
@@ -93,7 +94,9 @@ msgstr "Commentaires"
 msgid ""
 "Comments are public: use them to describe your observation and help "
 "verification."
-msgstr "Les commentaires sont publics: utilisez-les pour décrire votre observation et aider à l'identification."
+msgstr ""
+"Les commentaires sont publics: utilisez-les pour décrire votre observation "
+"et aider à l'identification."
 
 #: vespawatch/models.py:240 vespawatch/templates/vespawatch/nest_detail.html:24
 msgid "Latitude"
@@ -257,7 +260,9 @@ msgstr "Modifier le mot de passe"
 
 #: vespawatch/templates/registration/pwd_change_form.html:14
 msgid "Please enter your old password, create a new one and confirm it."
-msgstr "Veuillez saisir votre ancien mot de passe, en choisir un nouveau et confirmer celui-ci"
+msgstr ""
+"Veuillez saisir votre ancien mot de passe, en choisir un nouveau et "
+"confirmer celui-ci"
 
 #: vespawatch/templates/registration/pwd_change_form.html:18
 #: vespawatch/templates/vespawatch/individual_create.html:106
@@ -325,12 +330,12 @@ msgstr ""
 "\n"
 "                Ce projet est financé par <a href=\"https://www.ewi-"
 "vlaanderen.be/oproep-citizen-science-geselecteerde-projecten\">EWI</a>\n"
-"                et développé par l'<a href=\"https://oscibio.inbo.be"
-"\">Open science lab for biodiversity</a>.\n"
+"                et développé par l'<a href=\"https://oscibio.inbo.be\">Open "
+"science lab for biodiversity</a>.\n"
 "                Merci à la <a href=\"https://www.inaturalist.org/"
 "\">communauté iNaturalist</a> pour la vérification des observations.\n"
-"                INBO est membre de l'<a href=\"http://ecsa.citizen-"
-"science.net/\">European Citizen Science Association (ECSA)</a>.\n"
+"                INBO est membre de l'<a href=\"http://ecsa.citizen-science."
+"net/\">European Citizen Science Association (ECSA)</a>.\n"
 "              "
 
 #: vespawatch/templates/vespawatch/base.html:142
@@ -430,8 +435,8 @@ msgid ""
 "be deleted."
 msgstr ""
 "Envoyez au moins une pgoto de votre observation, afin de permettre des "
-"vérifications. Les observations avec des photos inutilisables ou non pertinentes "
-"seront supprimées."
+"vérifications. Les observations avec des photos inutilisables ou non "
+"pertinentes seront supprimées."
 
 #: vespawatch/templates/vespawatch/individual_create.html:48
 #: vespawatch/templates/vespawatch/nest_create.html:46
@@ -497,10 +502,11 @@ msgid ""
 msgstr ""
 "\n"
 "      <p>\n"
-"      Votre observation sera vérifiée par la communauté <a href=\"https://www."
-"inaturalist.org/\">iNaturalist</a>. \n"
-"      Vous voulez contribuer et/ou soumettre des observations en votre nom propre ? <a href="
-"\"https://www.inaturalist.org/signup\">Créez un compte sur iNaturalist</a>.\n"
+"      Votre observation sera vérifiée par la communauté <a href=\"https://"
+"www.inaturalist.org/\">iNaturalist</a>. \n"
+"      Vous voulez contribuer et/ou soumettre des observations en votre nom "
+"propre ? <a href=\"https://www.inaturalist.org/signup\">Créez un compte sur "
+"iNaturalist</a>.\n"
 "      </p>\n"
 "    "
 
@@ -516,15 +522,17 @@ msgid ""
 msgstr ""
 "\n"
 "      <p>\n"
-"    Pour les observations en Wallonie, nous recommandons de reporter l'information directement via <a "
-"href=\"http://biodiversite.wallonie.be/fr/le-frelon-asiatique.html?"
-"IDC=5999\">ce formulaire</a>.\n"
+"    Pour les observations en Wallonie, nous recommandons de reporter "
+"l'information directement via <a href=\"http://biodiversite.wallonie.be/fr/"
+"le-frelon-asiatique.html?IDC=5999\">ce formulaire</a>.\n"
 "    </p>\n"
 "    "
 
 #: vespawatch/templates/vespawatch/obs_create.html:24
 msgid "No identification cards defined. Create these in the admin interface."
-msgstr "Pas de cartes d'identification disponibles, veuillez en créer via l'interface d'administration."
+msgstr ""
+"Pas de cartes d'identification disponibles, veuillez en créer via "
+"l'interface d'administration."
 
 #: vespawatch/templates/vespawatch/obs_create.html:37
 #, python-format
@@ -546,7 +554,8 @@ msgstr "Enregistrer"
 #: vespawatch/views.py:89 vespawatch/views.py:116
 msgid ""
 "Your observation was successfully created. Thanks for your contribution!"
-msgstr "Votre observation a été créée avec succès. Merci pour votre contribution !"
+msgstr ""
+"Votre observation a été créée avec succès. Merci pour votre contribution !"
 
 #: vespawatch/views.py:144
 msgid "Your profile was successfully updated."
