@@ -283,6 +283,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LANGUAGES_AVAILABLE_IN_SELECTOR = [
     ('nl', _('Dutch')),
     ('en', _('English')),
+    ('fr', _('French')),
 ]
 
 LOGIN_REDIRECT_URL = '/'
