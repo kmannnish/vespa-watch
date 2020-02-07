@@ -434,7 +434,7 @@ msgid ""
 "verification. Observations with photos that are unusable or not yours will "
 "be deleted."
 msgstr ""
-"Envoyez au moins une pgoto de votre observation, afin de permettre des "
+"Envoyez au moins une photo de votre observation, afin de permettre des "
 "vérifications. Les observations avec des photos inutilisables ou non "
 "pertinentes seront supprimées."
 
