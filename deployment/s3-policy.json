@@ -18,7 +18,8 @@
                 "s3:DeleteObject"
             ],
             "Resource": [
-                "arn:aws:s3:::lw-vespawatch-*/*"
+                "arn:aws:s3:::lw-vespawatch-*/*",
+                "arn:aws:s3:::vespawatch-*/*"
             ]
         }
     ]
