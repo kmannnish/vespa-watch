@@ -1,5 +1,6 @@
 import datetime
 import logging
+import time
 from json import JSONDecodeError
 
 from constance import config
@@ -14,11 +15,12 @@ from requests import HTTPError
 
 from vespawatch.management.commands._utils import VespaWatchCommand
 from vespawatch.models import Individual, Nest, InatObsToDelete, get_local_observation_with_inaturalist_id, \
-    create_observation_from_inat_data, get_missing_at_inat_observations
+    create_observation_from_inat_data, get_missing_at_inat_observations, TaxonMatchError
 
 OBSERVATION_MODELS = [Individual, Nest]
 
 USER_AGENT = f'VespaWatch (using Pyinaturalist {pyinaturalist.__version__})'
+
 
 def send_email_to_reporter(obs):
     to_email = obs.observer_email
@@ -87,7 +89,7 @@ class Command(VespaWatchCommand):
         determine whether we should create a Nest or an Individual)
         If we do have an observation with that iNaturalist ID, update it.
         """
-        self.w("\n3. Pull all observations from iNaturalist")
+        self.w("\n3. Pull all observations from iNaturalist (based on the project)")
         observations = get_all_observations(params={'project_id': settings.VESPAWATCH_PROJECT_ID})
         pulled_inat_ids = []
         for inat_observation_data in observations:
@@ -114,11 +116,19 @@ class Command(VespaWatchCommand):
         try:
             self.w(f"DEBUG: will perform a get_observation() for obs #{observation.pk} (iNaturalist ID: {observation.inaturalist_id})")
             inat_obs_data = get_observation(observation.inaturalist_id)
+            # Let's slow down things abit to avoid API errors
+            time.sleep(2)
+            self.w(f"\n... obs {observation.pk} still exists at iNat, it's just not part of the project anymore. Flag and update it.")
             observation.flag_based_on_inat_data(inat_obs_data)
             observation.update_from_inat_data(inat_obs_data)
+        except TaxonMatchError:
+            self.w(f"DEBUG: we got a TaxonMatchError on observation {observation.pk}.. Why?")
         except ObservationNotFound:
             self.w(f"\n... obs {observation.pk} was not found. Deleting it.")
             observation.delete()
+        except JSONDecodeError:
+            self.w(f"DEBUG: iNaturalist API returned an error while getting obs {observation.pk}.. Why?")
+            # TODO: what should we do now? delete also locally? or is it a transient error?
 
     def check_all_missing(self, missing_inat_ids):
         """
@@ -126,7 +136,7 @@ class Command(VespaWatchCommand):
         data of the iNaturalist pull. Check the observations one by one.
         """
         missing_obs = get_missing_at_inat_observations(missing_inat_ids)
-        self.w("\n4. Check the observations that were not returned from iNaturalist")
+        self.w("\n4. Check the observations that we know locally but were not returned from iNaturalist (not part of the project anymore? deleted?)")
         for obs in missing_obs:
             self.w(f'   observation {type(obs).__name__} {obs.pk} was missing')
             self.check_missing_obs(obs)
