@@ -11,7 +11,7 @@ from html2text import html2text
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.node_api import get_all_observations, get_observation
 from pyinaturalist.rest_api import get_access_token, delete_observation
-from requests import HTTPError
+from requests import HTTPError, ReadTimeout
 
 from vespawatch.management.commands._utils import VespaWatchCommand
 from vespawatch.models import Individual, Nest, InatObsToDelete, get_local_observation_with_inaturalist_id, \
@@ -129,6 +129,8 @@ class Command(VespaWatchCommand):
         except JSONDecodeError:
             self.w(f"DEBUG: iNaturalist API returned an error while getting obs {observation.pk}.. Why?")
             # TODO: what should we do now? delete also locally? or is it a transient error?
+        except ReadTimeout:
+            self.w(f"DEBUG: got a time out from iNaturalist API while getting obs {observation.pk}.. Why?")
 
     def check_all_missing(self, missing_inat_ids):
         """
