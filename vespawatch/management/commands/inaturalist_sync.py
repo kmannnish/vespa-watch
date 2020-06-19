@@ -116,8 +116,8 @@ class Command(VespaWatchCommand):
         try:
             self.w(f"DEBUG: will perform a get_observation() for obs #{observation.pk} (iNaturalist ID: {observation.inaturalist_id})")
             inat_obs_data = get_observation(observation.inaturalist_id)
-            # Let's slow down things abit to avoid API errors
-            time.sleep(2)
+            # Let's slow down things a bit to avoid API errors
+            time.sleep(1)
             self.w(f"\n... obs {observation.pk} still exists at iNat, it's just not part of the project anymore. Flag and update it.")
             observation.flag_based_on_inat_data(inat_obs_data)
             observation.update_from_inat_data(inat_obs_data)
@@ -138,7 +138,8 @@ class Command(VespaWatchCommand):
         data of the iNaturalist pull. Check the observations one by one.
         """
         missing_obs = get_missing_at_inat_observations(missing_inat_ids)
-        self.w("\n4. Check the observations that we know locally but were not returned from iNaturalist (not part of the project anymore? deleted?)")
+        self.w(f"\n4. Check the observations (count: {len(missing_obs)}) that we know locally but were not returned from iNaturalist (not part of the project anymore? deleted?)")
+
         for obs in missing_obs:
             self.w(f'   observation {type(obs).__name__} {obs.pk} was missing')
             self.check_missing_obs(obs)
