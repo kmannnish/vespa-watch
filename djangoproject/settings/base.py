@@ -93,6 +93,8 @@ INSTALLED_APPS = [
     'page_fragments',
 
     'vespawatch',
+
+    'django_cleanup.apps.CleanupConfig',  # Must be placed last, according to doc
 ]
 
 
