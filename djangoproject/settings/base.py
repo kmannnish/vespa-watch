@@ -88,6 +88,7 @@ INSTALLED_APPS = [
     'import_export',
     'constance',
     'constance.backends.database',
+    'django_unused_media',
 
     # Local helpers
     'page_fragments',
