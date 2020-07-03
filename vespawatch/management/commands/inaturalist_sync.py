@@ -165,4 +165,4 @@ class Command(VespaWatchCommand):
             self.check_all_missing(pulled_inat_ids)
 
             config.LAST_PULL_COMPLETED_AT = datetime.datetime.now()
-        self.w("\ndone\n")
+        self.w("\nInaturalist sync successfully completed.\n")
