@@ -3,6 +3,7 @@ from datetime import datetime, date
 
 import dateparser
 import requests
+import logging
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
@@ -16,6 +17,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.timezone import is_naive, make_aware, now
 from django.utils.translation import ugettext_lazy as _
+from django_cleanup.signals import cleanup_pre_delete, cleanup_post_delete
 from imagekit.models import ImageSpecField
 from markdownx.models import MarkdownxField
 from pilkit.processors import SmartResize
@@ -24,6 +26,8 @@ from pyinaturalist.rest_api import create_observations, add_photo_to_observation
 from vespawatch.utils import make_unique_filename
 
 INAT_VV_TAXONS_IDS = (119019, 560197) # At iNaturalist, those taxon IDS represents Vespa velutina and subspecies
+
+logger = logging.getLogger(__name__)
 
 
 def get_taxon_from_inat_taxon_id(inaturalist_taxon_id):
@@ -831,3 +835,18 @@ def get_missing_at_inat_observations(pulled_inat_ids):
     missing_indiv = Individual.objects.all().filter(inaturalist_id__isnull=False).exclude(inaturalist_id__in=pulled_inat_ids)
     missing_nests = Nest.objects.all().filter(inaturalist_id__isnull=False).exclude(inaturalist_id__in=pulled_inat_ids)
     return list(missing_indiv) + list(missing_nests)
+
+
+# The following functions signals are only there for debugging purposes
+# (I want to see ERRORs in log file for easy checks)
+# This should be removed (or at the very least limited to a INFO log level) once issues are solved
+def cleanup_log_predelete(**kwargs):
+    logger.error(f'Cleanup: predelete {kwargs["file"]} (not an actual error)')
+
+
+def cleanup_log_postdelete(**kwargs):
+    logger.error(f'Cleanup: postdelete {kwargs["file"]} (not an actual error)')
+
+
+cleanup_pre_delete.connect(cleanup_log_predelete)
+cleanup_post_delete.connect(cleanup_log_postdelete)
