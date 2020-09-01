@@ -33,6 +33,10 @@ class Command(VespaWatchCommand):
                     k_wo_media = remove_prefix(k, 'media/')
                     if k_wo_media not in used_filenames:
                         self.w(f"Will mark for deletion: {k_wo_media}")
+
+                        # Rename: copy then delete
+                        s3.Object(settings.AWS_STORAGE_BUCKET_NAME, f'{k}.todelete').copy_from(CopySource=f'{settings.AWS_STORAGE_BUCKET_NAME}/{k}')
+                        s3.Object(settings.AWS_STORAGE_BUCKET_NAME, k).delete()
                     else:
                         self.w(f"{k_wo_media} is in use, skipping....")
                 else:
