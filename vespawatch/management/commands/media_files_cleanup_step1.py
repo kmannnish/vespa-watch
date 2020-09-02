@@ -29,7 +29,7 @@ class Command(VespaWatchCommand):
             my_bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
             for obj in my_bucket.objects.filter(Prefix='media/pictures'):
                 k = obj.key
-                if k.startswith('media/pictures/individuals') or k.startswith('media/pictures/nests'):  # don't delete stuff outside of pictures/individuals and /pictures/nest
+                if (k.startswith('media/pictures/individuals') or k.startswith('media/pictures/nests') and not k.endswith('.todelete')):  # don't delete stuff outside of pictures/individuals and /pictures/nest
                     k_wo_media = remove_prefix(k, 'media/')
                     if k_wo_media not in used_filenames:
                         self.w(f"Will mark for deletion: {k_wo_media}")
