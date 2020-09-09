@@ -11,7 +11,7 @@ def remove_prefix(text, prefix):
 class Command(VespaWatchCommand):
     help = '''Check for unused media files (individual and nest pictures). As a first step, files have a .todelete extension added.'''
 
-    def handle(self, *args, **options):
+    def _get_used_filenames(self):
         models = [IndividualPicture, NestPicture]
         used_filenames_list = []
         for Model in models:
@@ -19,9 +19,9 @@ class Command(VespaWatchCommand):
             for entry in Model.objects.all():
                 used_filenames_list.append(entry.image.name)
 
-        # 1. Get the list of used filenames in the app
-        used_filenames = frozenset(used_filenames_list)
+        return frozenset(used_filenames_list)
 
+    def handle(self, *args, **options):
         if hasattr(settings, 'AWS_STORAGE_BUCKET_NAME'):
             self.w("S3 is detected")
             import boto3
@@ -29,9 +29,9 @@ class Command(VespaWatchCommand):
             my_bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
             for obj in my_bucket.objects.filter(Prefix='media/pictures'):
                 k = obj.key
-                if (k.startswith('media/pictures/individuals') or k.startswith('media/pictures/nests') and not k.endswith('.todelete')):  # don't delete stuff outside of pictures/individuals and /pictures/nest
+                if (k.startswith('media/pictures/individuals') or k.startswith('media/pictures/nests')) and not k.endswith('.todelete'):  # don't delete stuff outside of pictures/individuals and /pictures/nest
                     k_wo_media = remove_prefix(k, 'media/')
-                    if k_wo_media not in used_filenames:
+                    if k_wo_media not in self._get_used_filenames():
                         self.w(f"Will mark for deletion: {k_wo_media}")
 
                         # Rename: copy then delete
