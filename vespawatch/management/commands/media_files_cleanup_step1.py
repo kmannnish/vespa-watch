@@ -15,7 +15,6 @@ class Command(VespaWatchCommand):
         models = [IndividualPicture, NestPicture]
         used_filenames_list = []
         for Model in models:
-            self.w(f"Will cleanup pictures linked to {Model}")
             for entry in Model.objects.all():
                 used_filenames_list.append(entry.image.name)
 
@@ -27,20 +26,24 @@ class Command(VespaWatchCommand):
             import boto3
             s3 = boto3.resource('s3')
             my_bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
+            total_files_counter = 0
+            marked_files_counter = 0
             for obj in my_bucket.objects.filter(Prefix='media/pictures'):
                 k = obj.key
+                self.w(f"Found {k} in bucket, is it something to delete?")
+                total_files_counter += 1
                 if (k.startswith('media/pictures/individuals') or k.startswith('media/pictures/nests')) and not k.endswith('.todelete'):  # don't delete stuff outside of pictures/individuals and /pictures/nest
                     k_wo_media = remove_prefix(k, 'media/')
                     if k_wo_media not in self._get_used_filenames():
-                        self.w(f"Will mark for deletion: {k_wo_media}")
+                        self.w(f"Yes, will mark for deletion: {k_wo_media}")
 
                         # Rename: copy then delete
                         s3.Object(settings.AWS_STORAGE_BUCKET_NAME, f'{k}.todelete').copy_from(CopySource=f'{settings.AWS_STORAGE_BUCKET_NAME}/{k}')
                         s3.Object(settings.AWS_STORAGE_BUCKET_NAME, k).delete()
-                    else:
-                        self.w(f"{k_wo_media} is in use, skipping....")
+                        marked_files_counter += 1
                 else:
                     self.w(f"Skipping {k}...")
+            self.w(f"Done, marked {marked_files_counter}/{total_files_counter} files")
         else:
             self.w("S3 is not used in this environment, skipping.")
 
