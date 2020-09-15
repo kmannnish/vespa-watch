@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-05 14:57+0100\n"
+"POT-Creation-Date: 2020-09-15 14:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,63 +34,63 @@ msgstr ""
 "J'accepte les <a href=\"/about/privacy-policy/\" target=\"_blank"
 "\">conditions relatives à la protection de la vie privée</a>"
 
-#: vespawatch/forms.py:37 vespawatch/forms.py:74 vespawatch/models.py:249
+#: vespawatch/forms.py:37 vespawatch/forms.py:74 vespawatch/models.py:253
 #: vespawatch/templates/vespawatch/nest_detail.html:56
 msgid "Email address"
 msgstr "Adresse e-mail"
 
-#: vespawatch/forms.py:70 vespawatch/models.py:560
+#: vespawatch/forms.py:70 vespawatch/models.py:564
 #: vespawatch/templates/vespawatch/nest_detail.html:31
 msgid "Nest height"
 msgstr "Hauteur du nid"
 
-#: vespawatch/forms.py:73 vespawatch/models.py:248
+#: vespawatch/forms.py:73 vespawatch/models.py:252
 #: vespawatch/templates/vespawatch/nest_detail.html:48
 msgid "Name"
 msgstr "Nom"
 
-#: vespawatch/forms.py:75 vespawatch/models.py:250 vespawatch/models.py:767
+#: vespawatch/forms.py:75 vespawatch/models.py:254 vespawatch/models.py:775
 #: vespawatch/templates/vespawatch/nest_detail.html:52
 msgid "Telephone number"
 msgstr "Téléphone"
 
-#: vespawatch/models.py:37
+#: vespawatch/models.py:41
 msgid "Scientific name"
 msgstr "Nom scientifique"
 
-#: vespawatch/models.py:39
+#: vespawatch/models.py:43
 msgid "Vernacular name"
 msgstr "Nom commun"
 
-#: vespawatch/models.py:92
+#: vespawatch/models.py:96
 msgid "Photo for identification"
 msgstr "Photo pour identification"
 
-#: vespawatch/models.py:94
+#: vespawatch/models.py:98
 msgid "Order"
 msgstr "Ordre"
 
-#: vespawatch/models.py:96 vespawatch/models.py:763
+#: vespawatch/models.py:100 vespawatch/models.py:771
 #: vespawatch/templates/vespawatch/individual_create.html:76
 #: vespawatch/templates/vespawatch/nest_create.html:76
 #: vespawatch/templates/vespawatch/nest_detail.html:29
 msgid "Description"
 msgstr "Description"
 
-#: vespawatch/models.py:231
+#: vespawatch/models.py:235
 msgid "Observation date cannot be in the future."
 msgstr "La date d'observation ne peut être dans le futur."
 
-#: vespawatch/models.py:237
+#: vespawatch/models.py:241
 msgid "Observation date"
 msgstr "Date d'observation"
 
-#: vespawatch/models.py:238 vespawatch/models.py:738
+#: vespawatch/models.py:242 vespawatch/models.py:746
 #: vespawatch/templates/vespawatch/nest_detail.html:43
 msgid "Comments"
 msgstr "Commentaires"
 
-#: vespawatch/models.py:238
+#: vespawatch/models.py:242
 msgid ""
 "Comments are public: use them to describe your observation and help "
 "verification."
@@ -98,143 +98,153 @@ msgstr ""
 "Les commentaires sont publics: utilisez-les pour décrire votre observation "
 "et aider à l'identification."
 
-#: vespawatch/models.py:240 vespawatch/templates/vespawatch/nest_detail.html:24
+#: vespawatch/models.py:244 vespawatch/templates/vespawatch/nest_detail.html:24
 msgid "Latitude"
 msgstr "Latitude"
 
-#: vespawatch/models.py:241 vespawatch/templates/vespawatch/nest_detail.html:24
+#: vespawatch/models.py:245 vespawatch/templates/vespawatch/nest_detail.html:24
 msgid "Longitude"
 msgstr "Longitude"
 
-#: vespawatch/models.py:243
+#: vespawatch/models.py:247
 msgid "iNaturalist ID"
 msgstr "Identifiant iNaturalist"
 
-#: vespawatch/models.py:244
+#: vespawatch/models.py:248
 msgid "iNaturalist species"
 msgstr "Espèce (selon iNaturalist)"
 
-#: vespawatch/models.py:287 vespawatch/models.py:728
+#: vespawatch/models.py:291 vespawatch/models.py:736
 msgid "Unknown"
 msgstr "Inconnu"
 
-#: vespawatch/models.py:549
+#: vespawatch/models.py:553
 msgid "Less than 25cm"
 msgstr "Moins de 25 cm"
 
-#: vespawatch/models.py:550
+#: vespawatch/models.py:554
 msgid "More than 25cm"
 msgstr "Plus de 25 cm"
 
-#: vespawatch/models.py:552 vespawatch/templates/vespawatch/nest_detail.html:35
+#: vespawatch/models.py:556 vespawatch/templates/vespawatch/nest_detail.html:35
 msgid "Nest size"
 msgstr "Taille du nid"
 
-#: vespawatch/models.py:557
+#: vespawatch/models.py:561
 msgid "Below 4 meters"
 msgstr "Moins de 4 mètres"
 
-#: vespawatch/models.py:558
+#: vespawatch/models.py:562
 msgid "Above 4 meters"
 msgstr "Plus de 4 mètres"
 
-#: vespawatch/models.py:561 vespawatch/templates/vespawatch/nest_detail.html:39
+#: vespawatch/models.py:565 vespawatch/templates/vespawatch/nest_detail.html:39
 msgid "Confirmed by expert"
 msgstr "Confirmé par un expert"
 
-#: vespawatch/models.py:562 vespawatch/templates/vespawatch/nest_detail.html:17
+#: vespawatch/models.py:566 vespawatch/templates/vespawatch/nest_detail.html:17
 msgid "Municipality"
 msgstr "Localité"
 
-#: vespawatch/models.py:627
+#: vespawatch/models.py:631
 msgid "Hunting at beehive"
 msgstr "Chasse à proximité d'une ruche"
 
-#: vespawatch/models.py:628
+#: vespawatch/models.py:632
 msgid "Drinking nectar on flower"
 msgstr "En train de boire du nectar sur une fleur"
 
-#: vespawatch/models.py:629
+#: vespawatch/models.py:633
 msgid "Near wood source"
 msgstr "Près d'une source de bois"
 
-#: vespawatch/models.py:630
+#: vespawatch/models.py:634
 msgid "Near water source"
 msgstr "Près d'une source d'eau"
 
-#: vespawatch/models.py:631
+#: vespawatch/models.py:635
 msgid "Flying"
 msgstr "En vol"
 
-#: vespawatch/models.py:632
+#: vespawatch/models.py:636
 msgid "Captured"
 msgstr "Capturé"
 
-#: vespawatch/models.py:633
+#: vespawatch/models.py:637
 msgid "Dead"
 msgstr "Mort"
 
-#: vespawatch/models.py:634
+#: vespawatch/models.py:638
 msgid "Other"
 msgstr "Autre"
 
-#: vespawatch/models.py:638
+#: vespawatch/models.py:642
 msgid "Individual count"
 msgstr "Nombre d'individus"
 
-#: vespawatch/models.py:639
+#: vespawatch/models.py:643
 msgid "Behaviour"
 msgstr "Comportement"
 
-#: vespawatch/models.py:676 vespawatch/models.py:692
+#: vespawatch/models.py:680 vespawatch/models.py:696
 msgid "Photo"
 msgstr "Photo"
 
-#: vespawatch/models.py:725
-msgid "Full destruction, no debris"
-msgstr "Destruction complète, pas de débris"
+#: vespawatch/models.py:731
+#| msgid "Professional permas - D treatment"
+msgid "Professional permas-D treatment"
+msgstr "Traitement permas-D professionel"
 
-#: vespawatch/models.py:726
-msgid "Partial destruction/debris left"
-msgstr "Destruction partielle, débris sur place"
-
-#: vespawatch/models.py:727
-msgid "Empty nest, nothing done"
-msgstr "Nid vide (aucune action effectuée)"
+#: vespawatch/models.py:732
+#| msgid "Classic permas - D treatment"
+msgid "Classic permas-D treatment"
+msgstr "Traitement permas-D classique"
 
 #: vespawatch/models.py:733
+msgid "Complete manual removal"
+msgstr "Retrait manuel complet"
+
+#: vespawatch/models.py:734
+msgid "Partial manual removal"
+msgstr "Retrait manuel partiel"
+
+#: vespawatch/models.py:735
+msgid "Not treated"
+msgstr "Non traité"
+
+#: vespawatch/models.py:741
 msgid "Outcome"
 msgstr "Résultat"
 
-#: vespawatch/models.py:734
+#: vespawatch/models.py:742
 msgid "Date and time"
 msgstr "Date et heure"
 
-#: vespawatch/models.py:735
+#: vespawatch/models.py:743
 msgid "Reported by"
 msgstr "Rapporté par"
 
-#: vespawatch/models.py:736
+#: vespawatch/models.py:744
 msgid "Duration (in minutes)"
 msgstr "Durée (en minutes)"
 
-#: vespawatch/models.py:737
+#: vespawatch/models.py:745
 msgid "Number of persons"
 msgstr "Nombre de personnes"
 
-#: vespawatch/models.py:762
+#: vespawatch/models.py:770
 msgid "Organization / business"
 msgstr "Organisation / société"
 
-#: vespawatch/models.py:763
+#: vespawatch/models.py:771
 msgid "Describe the activities of your organization / business."
 msgstr "Décrivez les activitées menées par votre organisation ou société"
 
-#: vespawatch/models.py:765
+#: vespawatch/models.py:773
 msgid "Only numbers are allowed."
 msgstr "Nombres uniquement"
 
-#: vespawatch/models.py:769
+#: vespawatch/models.py:777
 msgid "Get email notifications for new nests"
 msgstr "Recevez une notification par e-mail pour les nouveaux nids."
 

@@ -720,15 +720,19 @@ class NestObservationWarning(ObservationWarningBase):
 
 
 class ManagementAction(models.Model):
-    FULL_DESTRUCTION_NO_DEBRIS = 'FD'
-    PARTIAL_DESTRUCTION_DEBRIS_LEFT = 'PD'
-    EMPTY_NEST_NOTHING_DONE = 'ND'
+    PERMAS_D_PROF = 'PP'
+    PERMAS_D_CLASSIC = 'PC'
+    REMOVAL_COMPLETE = 'FD'  # previously "full destruction": possible cleanup: create a data migration so FD -> RC?
+    REMOVAL_PARTIAL = 'PD'   # previously "partial destruction": possible cleanup: create a data migration so PD -> RP?
+    NOT_TREATED = 'ND'  # previously "nothing done": : possible cleanup: create a data migration so ND -> NT?
     UNKNOWN = 'UK'
 
     OUTCOME_CHOICE = (
-        (FULL_DESTRUCTION_NO_DEBRIS, _('Full destruction, no debris')),
-        (PARTIAL_DESTRUCTION_DEBRIS_LEFT, _('Partial destruction/debris left')),
-        (EMPTY_NEST_NOTHING_DONE, _('Empty nest, nothing done')),
+        (PERMAS_D_PROF, _('Professional permas-D treatment')),
+        (PERMAS_D_CLASSIC, _('Classic permas-D treatment')),
+        (REMOVAL_COMPLETE, _('Complete manual removal')),
+        (REMOVAL_PARTIAL, _('Partial manual removal')),
+        (NOT_TREATED, _('Not treated')),
         (UNKNOWN, _('Unknown')),
     )
 
